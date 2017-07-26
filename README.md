@@ -1,3 +1,7 @@
+Description
+------------
+This project extends the recent research of Daniel Holden, Taku Komura and Jun Saito on character control using Phase-Functioned Neural Networks.
+
 Phase-Functioned Neural Networks for Character Control
 ======================================================
 
