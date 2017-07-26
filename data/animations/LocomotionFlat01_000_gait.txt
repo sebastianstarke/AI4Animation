@@ -1,0 +1,4 @@
+1 stand
+152 run
+7466 run
+7659 walk

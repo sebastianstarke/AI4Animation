@@ -1,0 +1,6 @@
+1 stand
+88 walk
+9531 walk
+9601 jog
+14565 jog
+14720 walk

@@ -1,0 +1,10 @@
+1 stand
+96 walk
+3589 walk
+3647 jog
+4074 jog
+4274 walk
+4670 walk
+4778 jog
+5178 jog
+5294 walk

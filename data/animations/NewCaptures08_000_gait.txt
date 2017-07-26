@@ -1,0 +1,4 @@
+1 stand
+81 walk
+3550 walk
+3627 jog

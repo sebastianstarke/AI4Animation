@@ -1,0 +1,5 @@
+1 stand
+144 walk
+288 run
+11281 run
+11382 walk

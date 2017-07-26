@@ -1,0 +1,6 @@
+1 stand
+127 walk
+1189 walk
+1277 jog
+7090 jog
+7294 walk

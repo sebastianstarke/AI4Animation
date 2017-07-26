@@ -1,0 +1,10 @@
+1 stand
+72 walk
+5966 walk
+6023 jog
+13471 jog
+13562 walk
+13774 walk
+13855 jog
+14028 jog
+14129 walk

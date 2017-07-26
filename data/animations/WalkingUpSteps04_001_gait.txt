@@ -1,0 +1,15 @@
+1 run
+1541 run
+1610 walk
+2193 walk
+2228 run
+3209 run
+3324 stand
+3390 stand
+3462 run
+3693 run
+3754 walk
+4037 walk
+4149 stand
+4504 stand
+4602 walk

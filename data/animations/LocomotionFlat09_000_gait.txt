@@ -1,0 +1,7 @@
+1 stand
+178 jog
+649 jog
+673 run
+942 run
+1005 stand
+1173 walk

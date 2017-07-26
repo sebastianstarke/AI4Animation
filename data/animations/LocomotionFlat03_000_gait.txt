@@ -1,0 +1,6 @@
+1 stand
+96 jog
+12336 jog
+12423 walk
+12754 walk
+12899 stand

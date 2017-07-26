@@ -1,0 +1,11 @@
+1 walk
+5243 walk
+5315 jog
+13652 jog
+13859 walk
+14215 walk
+14393 jog
+17250 jog
+17337 walk
+17770 walk
+17909 stand 

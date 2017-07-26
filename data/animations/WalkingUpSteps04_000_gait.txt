@@ -1,0 +1,16 @@
+1 stand
+190 walk
+675 walk
+782 jog
+1420 jog
+1483 walk
+2914 walk
+2969 jog
+3987 jog
+4036 walk
+4230 walk
+4308 jog
+4982 jog
+5054 walk
+6964 walk
+7091 run
