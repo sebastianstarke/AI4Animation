@@ -1,6 +1,7 @@
 Description
 ------------
 This project extends the recent research of Daniel Holden, Taku Komura and Jun Saito on character control using Phase-Functioned Neural Networks.
+As part of my Ph.D. research, it will scientifically continued for learning task-specific motion manifolds and different geometries, and made available for character animation in Unity3D.
 
 Phase-Functioned Neural Networks for Character Control
 ======================================================
