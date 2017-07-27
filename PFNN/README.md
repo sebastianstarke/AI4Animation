@@ -1,4 +1,4 @@
-Phase-Functioned Neural Networks for Character Control (http://theorangeduck.com/)
+Phase-Functioned Neural Networks for Character Control
 ======================================================
 
 This project contains the code for Phase-Functioned Neural Networks for 
