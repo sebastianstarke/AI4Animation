@@ -115,9 +115,25 @@ public class PFNN {
         	Debug.Log(e.Message);
         }
 	}
+	
+	public void ELU(Matrix<float> m) {
+		for(int x=0; x<m.RowCount; x++) {
+			for(int y=0; y<m.ColumnCount; y++) {
+				m[x,y] = System.Math.Max(m[x,y], 0f) + (float)System.Math.Exp(System.Math.Min(m[x,y], 0f)) - 1f;
+			}
+		}
+	}
 
-	public void Test(int rows, int cols) {
-		Debug.Log("Nothing to do!");
+	public void Linear(Matrix<float> o, Matrix<float> y0, Matrix<float> y1, float mu) {
+		o = (1.0f-mu) * y0 + (mu) * y1;
+	}
+
+	public void Cubic(Matrix<float> o, Matrix<float> y0, Matrix<float> y1, Matrix<float> y2, Matrix<float> y3, float mu) {
+		o = (
+		(-0.5f*y0+1.5f*y1-1.5f*y2+0.5f*y3)*mu*mu*mu + 
+		(y0-2.5f*y1+2.0f*y2-0.5f*y3)*mu*mu + 
+		(-0.5f*y0+0.5f*y2)*mu + 
+		(y1));
 	}
 
 }
