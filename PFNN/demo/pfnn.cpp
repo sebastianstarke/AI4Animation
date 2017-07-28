@@ -102,6 +102,51 @@ static int X = 0;
 static int Y = 0;
 static bool W, A, S, D;
 
+
+/* Helper Functions */
+
+static glm::vec4 mix_vectors(glm::vec4 a, glm::vec4 b, float c) {
+  return c * a + (1.f-c) * b;
+}
+
+static glm::vec3 mix_vectors(glm::vec3 a, glm::vec3 b, float c) {
+  return c * a + (1.f-c) * b;
+}
+
+static glm::vec2 mix_vectors(glm::vec2 a, glm::vec2 b, float c) {
+  return c * a + (1.f-c) * b;
+}
+
+static glm::vec3 mix_directions(glm::vec3 x, glm::vec3 y, float a) {
+  glm::quat x_q = glm::angleAxis(atan2f(x.x, x.z), glm::vec3(0,1,0));
+  glm::quat y_q = glm::angleAxis(atan2f(y.x, y.z), glm::vec3(0,1,0));
+  glm::quat z_q = glm::slerp(x_q, y_q, a);
+  return z_q * glm::vec3(0,0,1);
+}
+
+static glm::mat4 mix_transforms(glm::mat4 x, glm::mat4 y, float a) {
+  glm::mat4 out = glm::toMat4(glm::slerp(glm::quat(x), glm::quat(y), a));
+  out[3] = mix_vectors(x[3], y[3], a);
+  return out;
+}
+
+static glm::quat quat_exp(glm::vec3 l) {
+  float w = glm::length(l);
+  glm::quat q = w < 0.01 ? glm::quat(1,0,0,0) : glm::quat(
+    cosf(w),
+    l.x * (sinf(w) / w),
+    l.y * (sinf(w) / w),
+    l.z * (sinf(w) / w));
+  return q / sqrtf(q.w*q.w + q.x*q.x + q.y*q.y + q.z*q.z); 
+}
+
+static glm::vec2 segment_nearest(glm::vec2 v, glm::vec2 w, glm::vec2 p) {
+  float l2 = glm::dot(v - w, v - w);
+  if (l2 == 0.0) return v;
+  float t = glm::clamp(glm::dot(p - v, w - v) / l2, 0.0f, 1.0f);
+  return v + t * (w - v);
+}
+
 /* Phase-Functioned Neural Network */
 
 struct PFNN {
@@ -447,7 +492,7 @@ struct Heightmap {
     if (vbo != 0) { glDeleteBuffers(1, &vbo); vbo = 0; }
     if (tbo != 0) { glDeleteBuffers(1, &tbo); tbo = 0; } 
   }
-  
+
   void load(const char* filename, float multiplier) {
     
     vscale = multiplier * vscale;
@@ -496,19 +541,19 @@ struct Heightmap {
       posns[x+y*w] = glm::vec3(cx - cw/2, sample(glm::vec2(cx-cw/2, cy-ch/2)), cy - ch/2);
     }
     
-    /* TODO
     for (int x = 0; x < w; x++)
     for (int y = 0; y < h; y++) {
       norms[x+y*w] = (x > 0 && x < w-1 && y > 0 && y < h-1) ?
-        glm::normalize(glm::mix(
-          glm::cross(
-            posns[(x+0)+(y+1)*w] - posns[x+y*w],
-            posns[(x+1)+(y+0)*w] - posns[x+y*w]),
-          glm::cross(
-            posns[(x+0)+(y-1)*w] - posns[x+y*w],
-            posns[(x-1)+(y+0)*w] - posns[x+y*w]), 0.5)) : glm::vec3(0,1,0);
+        glm::normalize(
+          mix_vectors(
+            glm::cross(
+              posns[(x+0)+(y+1)*w] - posns[x+y*w],
+              posns[(x+1)+(y+0)*w] - posns[x+y*w]),
+            glm::cross(
+              posns[(x+0)+(y-1)*w] - posns[x+y*w],
+              posns[(x-1)+(y+0)*w] - posns[x+y*w]), 0.5f)
+          ) : glm::vec3(0,1,0);
     }
-    */
 
     char ao_filename[512];
     memcpy(ao_filename, filename, strlen(filename)-4);
@@ -999,39 +1044,6 @@ struct Areas {
 };
 
 static Areas* areas = NULL;
-
-/* Helper Functions */
-
-static glm::vec3 mix_directions(glm::vec3 x, glm::vec3 y, float a) {
-  glm::quat x_q = glm::angleAxis(atan2f(x.x, x.z), glm::vec3(0,1,0));
-  glm::quat y_q = glm::angleAxis(atan2f(y.x, y.z), glm::vec3(0,1,0));
-  glm::quat z_q = glm::slerp(x_q, y_q, a);
-  return z_q * glm::vec3(0,0,1);
-}
-
-static glm::mat4 mix_transforms(glm::mat4 x, glm::mat4 y, float a) {
-  //glm::mat4 out = glm::mat4(glm::slerp(glm::quat(x), glm::quat(y), a)); TODO
-  //out[3] = mix(x[3], y[3], a); TODO
-  glm::mat4 m4;
-  return m4;
-}
-
-static glm::quat quat_exp(glm::vec3 l) {
-  float w = glm::length(l);
-  glm::quat q = w < 0.01 ? glm::quat(1,0,0,0) : glm::quat(
-    cosf(w),
-    l.x * (sinf(w) / w),
-    l.y * (sinf(w) / w),
-    l.z * (sinf(w) / w));
-  return q / sqrtf(q.w*q.w + q.x*q.x + q.y*q.y + q.z*q.z); 
-}
-
-static glm::vec2 segment_nearest(glm::vec2 v, glm::vec2 w, glm::vec2 p) {
-  float l2 = glm::dot(v - w, v - w);
-  if (l2 == 0.0) return v;
-  float t = glm::clamp(glm::dot(p - v, w - v) / l2, 0.0f, 1.0f);
-  return v + t * (w - v);
-}
 
 /* Reset */
 
@@ -1993,12 +2005,10 @@ void post_render() {
   character->phase = fmod(character->phase + (stand_amount * 0.9f + 0.1f) * 2*M_PI * pfnn->Yp(3), 2*M_PI);
   
   /* Update Camera */
-  /* TODO
-  camera->target = glm::mix(camera->target, glm::vec3(
+  camera->target = mix_vectors(camera->target, glm::vec3(
     trajectory->positions[Trajectory::LENGTH/2].x, 
     trajectory->heights[Trajectory::LENGTH/2] + 100, 
     trajectory->positions[Trajectory::LENGTH/2].z), 0.1);
-  */
 }
 
 void render() {
@@ -2228,12 +2238,11 @@ void render() {
       glVertex3f(c3.x, c3.y, c3.z); glVertex3f(c1.x, c1.y, c1.z);
       glVertex3f(c3.x, c3.y, c3.z); glVertex3f(c2.x, c2.y, c2.z);
       
-      /* TODO
       for (float j = 0; j < 1.0; j+=0.05) {
-        glm::vec3 cm_a = glm::mix(c0, c1, j     );
-        glm::vec3 cm_b = glm::mix(c0, c1, j+0.05);
-        glm::vec3 cm_c = glm::mix(c3, c2, j     );
-        glm::vec3 cm_d = glm::mix(c3, c2, j+0.05);
+        glm::vec3 cm_a = mix_vectors(c0, c1, j     );
+        glm::vec3 cm_b = mix_vectors(c0, c1, j+0.05);
+        glm::vec3 cm_c = mix_vectors(c3, c2, j     );
+        glm::vec3 cm_d = mix_vectors(c3, c2, j+0.05);
         float cmh_a = ((sinf(cm_a.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;        
         float cmh_b = ((sinf(cm_b.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;
         float cmh_c = ((sinf(cm_c.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;        
@@ -2249,7 +2258,6 @@ void render() {
           glVertex3f(cm_b.x, cmh_b,   c2.z);
         }
       }
-      */
       
       float c0h = ((sinf(c0.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;
       float c1h = ((sinf(c1.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;
@@ -2291,14 +2299,12 @@ void render() {
       glColor3f(0.0, 1.0, 0.0);
       glLineWidth(options->display_scale * 2.0);
       glBegin(GL_LINES);
-      /* TODO
       for (float r = 0; r < 1.0; r+=0.1) {
-        glm::vec2 p0 = glm::mix(areas->wall_start[i], areas->wall_stop[i], r    );
-        glm::vec2 p1 = glm::mix(areas->wall_start[i], areas->wall_stop[i], r+0.1);
+        glm::vec2 p0 = mix_vectors(areas->wall_start[i], areas->wall_stop[i], r    );
+        glm::vec2 p1 = mix_vectors(areas->wall_start[i], areas->wall_stop[i], r+0.1);
         glVertex3f(p0.x, heightmap->sample(p0) + 5, p0.y);
         glVertex3f(p1.x, heightmap->sample(p1) + 5, p1.y);
       }
-      */
       glEnd();
       glLineWidth(1.0);
       glColor3f(1.0, 1.0, 1.0);
@@ -2437,16 +2443,14 @@ void render() {
     glPointSize(1);
     glBegin(GL_POINTS);
     
-    /* TODO
     for (int x = 0; x < W0p.rows(); x++)
     for (int y = 0; y < W0p.cols(); y++) {
       float v = (W0p(x, y)+0.5)/2.0;
-      glm::vec3 col = v > 0.5 ? glm::mix(glm::vec3(1,0,0), glm::vec3(0,0,1), v-0.5) : glm::mix(glm::vec3(0,1,0), glm::vec3(0,0,1), v*2.0);
+      glm::vec3 col = v > 0.5 ? mix_vectors(glm::vec3(1,0,0), glm::vec3(0,0,1), v-0.5) : mix_vectors(glm::vec3(0,1,0), glm::vec3(0,0,1), v*2.0);
       glColor3f(col.x, col.y, col.z); 
       glVertex3f(WINDOW_WIDTH-W0p.cols()+y-25, x+175, 0);
     }
-    */
-    
+
     glEnd();
     glPointSize(1);
     
@@ -2597,7 +2601,6 @@ void render() {
 #endif
   
 }
-
 
 int main(int argc, char **argv) {
   
