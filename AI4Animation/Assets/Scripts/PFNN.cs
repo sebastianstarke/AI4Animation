@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using MathNet.Numerics.LinearAlgebra;
-using System.Text;
 using System.IO;  
 
 public class PFNN {
@@ -135,4 +134,5 @@ public class PFNN {
 		(-0.5f*y0+0.5f*y2)*mu + 
 		(y1));
 	}
+
 }
