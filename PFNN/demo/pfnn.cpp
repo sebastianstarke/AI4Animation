@@ -32,16 +32,10 @@ enum { WINDOW_WIDTH  = 720, WINDOW_HEIGHT = 480 };
 #endif
 
 enum {
-  GAMEPAD_BACK = 5,
-  GAMEPAD_START = 4,
-  GAMEPAD_B = 11,
-  GAMEPAD_X = 12,
   GAMEPAD_TRIGGER_L  = 4,
   GAMEPAD_TRIGGER_R  = 5,
   GAMEPAD_SHOULDER_L = 8,
   GAMEPAD_SHOULDER_R = 9,
-  GAMEPAD_STICK_R_HORIZONTAL = 2,
-  GAMEPAD_STICK_R_VERTICAL   = 3
 };
 
 struct Options {
@@ -839,7 +833,6 @@ struct Character {
   }
     
   void load(const char* filename_v, const char* filename_t, const char* filename_p, const char* filename_r) {
-    
     printf("Read Character '%s %s'\n", filename_v, filename_t);
     
     if (vbo != 0) { glDeleteBuffers(1, &vbo); vbo = 0; }
@@ -882,11 +875,81 @@ struct Character {
     
     f = fopen(filename_r, "rb");
     elements = fread(glm::value_ptr(joint_rest_xform[0]), sizeof(float) * JOINT_NUM * 4 * 4, 1, f);
-    printf("Read %u joint rest elements.\n", elements);
+    printf("Read %u xform elements.\n", elements);
     for (int i = 0; i < JOINT_NUM; i++) { joint_rest_xform[i] = glm::transpose(joint_rest_xform[i]); }
     fclose(f);
-    
   }
+
+  bool loadOBJ(
+      const char * path,
+      std::vector < glm::vec3 > & out_vertices,
+      std::vector < glm::vec2 > & out_uvs,
+      std::vector < glm::vec3 > & out_normals
+  ) {
+    std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+    std::vector< glm::vec3 > temp_vertices;
+    std::vector< glm::vec2 > temp_uvs;
+    std::vector< glm::vec3 > temp_normals;
+
+    FILE * file = fopen(path, "r");
+    if( file == NULL ){
+        printf("Impossible to open the file !\n");
+        return false;
+    }
+
+    while( 1 ){
+
+        char lineHeader[128];
+        // read the first word of the line
+        int res = fscanf(file, "%s", lineHeader);
+        if (res == EOF)
+            break; // EOF = End Of File. Quit the loop.
+
+        // else : parse lineHeader
+
+        if ( strcmp( lineHeader, "v" ) == 0 ){
+            glm::vec3 vertex;
+            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
+            temp_vertices.push_back(vertex);
+
+        }else if ( strcmp( lineHeader, "vt" ) == 0 ){
+            glm::vec2 uv;
+            fscanf(file, "%f %f\n", &uv.x, &uv.y );
+            temp_uvs.push_back(uv);
+
+        }else if ( strcmp( lineHeader, "vn" ) == 0 ){
+            glm::vec3 normal;
+            fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
+            temp_normals.push_back(normal);
+
+        }else if ( strcmp( lineHeader, "f" ) == 0 ){
+            std::string vertex1, vertex2, vertex3;
+            unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+            int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+            if (matches != 9){
+                printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                return false;
+            }
+            vertexIndices.push_back(vertexIndex[0]);
+            vertexIndices.push_back(vertexIndex[1]);
+            vertexIndices.push_back(vertexIndex[2]);
+            uvIndices    .push_back(uvIndex[0]);
+            uvIndices    .push_back(uvIndex[1]);
+            uvIndices    .push_back(uvIndex[2]);
+            normalIndices.push_back(normalIndex[0]);
+            normalIndices.push_back(normalIndex[1]);
+            normalIndices.push_back(normalIndex[2]);
+        }
+    }
+
+      // For each vertex of each triangle
+      for( unsigned int i=0; i<vertexIndices.size(); i++ ){
+        unsigned int vertexIndex = vertexIndices[i];
+        glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
+        out_vertices.push_back(vertex);
+      }
+  
+    }
   
   void forward_kinematics() {
 
@@ -1452,9 +1515,9 @@ static void load_world5(void) {
 static void pre_render() {
         
   /* Update Camera */
-  
-  int x_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_HORIZONTAL);
-  int y_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_VERTICAL);
+
+  int x_move = -X;
+  int y_move = 0;
   
   if (abs(x_move) + abs(y_move) < 10000) { x_move = 0; y_move = 0; };
   
@@ -2697,24 +2760,7 @@ int main(int argc, char **argv) {
     
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      
-      if (event.type == SDL_QUIT) { running = false; break; }
-      
-      if (event.type == SDL_JOYBUTTONDOWN) {
-        if (event.jbutton.button == GAMEPAD_B) {
-          character->crouched_target = character->crouched_target ? 0.0 : 1.0;
-        }
-        if (event.jbutton.button == GAMEPAD_BACK) {
-          character->responsive = !character->responsive;
-        }
-        if (event.jbutton.button == GAMEPAD_X) {
-          options->display_debug = !options->display_debug;
-        }
-        if (event.jbutton.button == GAMEPAD_START) {
-          options->enable_ik = !options->enable_ik;
-        }
-      }
-      
+            
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
           case SDLK_w: W = true; break;
@@ -2728,6 +2774,10 @@ int main(int argc, char **argv) {
           case SDLK_4: load_world3(); break;
           case SDLK_5: load_world4(); break;
           case SDLK_6: load_world5(); break;
+          case SDLK_y: options->enable_ik = !options->enable_ik; break;
+          case SDLK_x: options->display_debug = !options->display_debug; break;
+          case SDLK_c: character->responsive = !character->responsive; break;
+          case SDLK_v: character->crouched_target = character->crouched_target ? 0.0 : 1.0; break;
         }
       }
     
