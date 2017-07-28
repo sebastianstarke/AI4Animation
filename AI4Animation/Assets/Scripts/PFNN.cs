@@ -135,5 +135,4 @@ public class PFNN {
 		(-0.5f*y0+0.5f*y2)*mu + 
 		(y1));
 	}
-
 }
