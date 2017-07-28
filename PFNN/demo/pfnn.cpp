@@ -282,10 +282,17 @@ struct PFNN {
     
   }
   
-  static void ELU(ArrayXf &x) { x = x.max(0) + x.min(0).exp() - 1; }
+  static void ELU(ArrayXf &x) {
+    x = x.max(0) + x.min(0).exp() - 1;
+  }
 
-  static void linear(ArrayXf  &o, const ArrayXf  &y0, const ArrayXf  &y1, float mu) { o = (1.0f-mu) * y0 + (mu) * y1; }
-  static void linear(ArrayXXf &o, const ArrayXXf &y0, const ArrayXXf &y1, float mu) { o = (1.0f-mu) * y0 + (mu) * y1; }
+  static void linear(ArrayXf  &o, const ArrayXf  &y0, const ArrayXf  &y1, float mu) {
+    o = (1.0f-mu) * y0 + (mu) * y1;
+  }
+
+  static void linear(ArrayXXf &o, const ArrayXXf &y0, const ArrayXXf &y1, float mu) {
+    o = (1.0f-mu) * y0 + (mu) * y1;
+  }
   
   static void cubic(ArrayXf  &o, const ArrayXf &y0, const ArrayXf &y1, const ArrayXf &y2, const ArrayXf &y3, float mu) {
     o = (
