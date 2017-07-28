@@ -28,26 +28,26 @@ public class PFNN {
 	public PFNN(MODE mode) {
 		Mode = mode;
 		
-		Xp = Matrix<float>.Build.Dense(1, XDim);
-		Yp = Matrix<float>.Build.Dense(1, YDim);
+		Xp = Matrix<float>.Build.Dense(XDim, 1);
+		Yp = Matrix<float>.Build.Dense(YDim, 1);
 
-		H0 = Matrix<float>.Build.Dense(1, HDim);
-		H1 = Matrix<float>.Build.Dense(1, HDim);
+		H0 = Matrix<float>.Build.Dense(HDim, 1);
+		H1 = Matrix<float>.Build.Dense(HDim, 1);
 
 		W0p = Matrix<float>.Build.Dense(HDim, XDim);
 		W1p = Matrix<float>.Build.Dense(HDim, HDim);
 		W2p = Matrix<float>.Build.Dense(YDim, HDim);
 
-		b0p = Matrix<float>.Build.Dense(1, HDim);
-		b1p = Matrix<float>.Build.Dense(1, HDim);
-		b2p = Matrix<float>.Build.Dense(1, YDim);
+		b0p = Matrix<float>.Build.Dense(HDim, 1);
+		b1p = Matrix<float>.Build.Dense(HDim, 1);
+		b2p = Matrix<float>.Build.Dense(YDim, 1);
 	}
 
 	public void Load() {
-		LoadWeights(ref Xmean, 1, XDim, "../PFNN/demo/network/pfnn/Xmean.bin");
-		LoadWeights(ref Xstd,  1, XDim, "../PFNN/demo/network/pfnn/Xstd.bin");
-		LoadWeights(ref Ymean, 1, YDim, "../PFNN/demo/network/pfnn/Ymean.bin");
-		LoadWeights(ref Ystd,  1, YDim, "../PFNN/demo/network/pfnn/Ystd.bin");
+		LoadWeights(ref Xmean, XDim, 1, "../PFNN/demo/network/pfnn/Xmean.bin");
+		LoadWeights(ref Xstd, XDim, 1, "../PFNN/demo/network/pfnn/Xstd.bin");
+		LoadWeights(ref Ymean, YDim, 1, "../PFNN/demo/network/pfnn/Ymean.bin");
+		LoadWeights(ref Ystd, YDim, 1, "../PFNN/demo/network/pfnn/Ystd.bin");
     
 		switch(Mode) {
 			case MODE.CONSTANT:
@@ -61,9 +61,9 @@ public class PFNN {
 				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+i.ToString("D3")+".bin");
 				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+i.ToString("D3")+".bin");
 				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b0[i], 1, HDim, "../PFNN/demo/network/pfnn/b0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b1[i], 1, HDim, "../PFNN/demo/network/pfnn/b1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b2[i], 1, YDim, "../PFNN/demo/network/pfnn/b2_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+i.ToString("D3")+".bin");
 			}	
 			break;
 			
@@ -78,9 +78,9 @@ public class PFNN {
 				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*5).ToString("D3")+".bin");
 				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*5).ToString("D3")+".bin");
 				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], 1, HDim, "../PFNN/demo/network/pfnn/b0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], 1, HDim, "../PFNN/demo/network/pfnn/b1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], 1, YDim, "../PFNN/demo/network/pfnn/b2_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+(i*5).ToString("D3")+".bin");
 			}	
 			break;
 
@@ -95,9 +95,9 @@ public class PFNN {
 				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*12.5).ToString("D3")+".bin");
 				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*12.5).ToString("D3")+".bin");
 				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], 1, HDim, "../PFNN/demo/network/pfnn/b0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], 1, HDim, "../PFNN/demo/network/pfnn/b1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], 1, YDim, "../PFNN/demo/network/pfnn/b2_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+(i*12.5).ToString("D3")+".bin");
 			}	
 			break;
 		}
@@ -139,7 +139,7 @@ public class PFNN {
 		(y1));
 	}
 
-	void predict(float P) {
+	public void Predict(float phase) {
 		
 		float pamount;
 		int pindex_0, pindex_1, pindex_2, pindex_3;
@@ -148,16 +148,16 @@ public class PFNN {
 		
 		switch(Mode) {
 			case MODE.CONSTANT:
-				pindex_1 = (int)((P / (2*M_PI)) * 50);
+				pindex_1 = (int)((phase / (2*M_PI)) * 50);
 				H0 = (W0[pindex_1] * Xp) + b0[pindex_1]; ELU(ref H0);
 				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
 				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
 			break;
 			
 			case MODE.LINEAR:
-				//TODO: fmod
-				pamount = Mathf.Repeat((P / (2*M_PI)) * 10, 1.0f);
-				pindex_1 = (int)((P / (2*M_PI)) * 10);
+				//TODO: make fmod faster
+				pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
+				pindex_1 = (int)((phase / (2*M_PI)) * 10);
 				pindex_2 = ((pindex_1+1) % 10);
 				Linear(ref W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
 				Linear(ref W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
@@ -171,9 +171,9 @@ public class PFNN {
 			break;
 			
 			case MODE.CUBIC:
-				//TODO: fmod
-				pamount = Mathf.Repeat((P / (2*M_PI)) * 4, 1.0f);
-				pindex_1 = (int)((P / (2*M_PI)) * 4);
+				//TODO: make fmod faster
+				pamount = Mathf.Repeat((phase / (2*M_PI)) * 4, 1.0f);
+				pindex_1 = (int)((phase / (2*M_PI)) * 4);
 				pindex_0 = ((pindex_1+3) % 4);
 				pindex_2 = ((pindex_1+1) % 4);
 				pindex_3 = ((pindex_1+2) % 4);
@@ -192,7 +192,9 @@ public class PFNN {
 			break;
 		}
 		
-		Yp = (Yp * Ystd) + Ymean;
+		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
+
+		Debug.Log(Yp);
 	}
 
 }

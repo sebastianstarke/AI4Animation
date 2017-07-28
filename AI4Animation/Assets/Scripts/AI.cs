@@ -10,7 +10,7 @@ public class AI : MonoBehaviour {
 	}
 
 	void Update() {
-
+		Network.Predict(Random.value);
 	}
 
 }
