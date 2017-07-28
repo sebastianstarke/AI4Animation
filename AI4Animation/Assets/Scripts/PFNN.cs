@@ -65,11 +65,37 @@ public class PFNN {
 			break;
 			
 			case MODE.LINEAR:
-			//TODO
+			W0 = new Matrix<float>[10];
+			W1 = new Matrix<float>[10];
+			W2 = new Matrix<float>[10];
+			b0 = new Matrix<float>[10];
+			b1 = new Matrix<float>[10];
+			b2 = new Matrix<float>[10];
+			for(int i=0; i<10; i++) {
+				LoadWeights(W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(b0[i], 1, HDim, "../PFNN/demo/network/pfnn/b0_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(b1[i], 1, HDim, "../PFNN/demo/network/pfnn/b1_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(b2[i], 1, YDim, "../PFNN/demo/network/pfnn/b2_"+(i*5).ToString("D3")+".bin");
+			}	
 			break;
 
 			case MODE.CUBIC:
-			//TODO
+			W0 = new Matrix<float>[4];
+			W1 = new Matrix<float>[4];
+			W2 = new Matrix<float>[4];
+			b0 = new Matrix<float>[4];
+			b1 = new Matrix<float>[4];
+			b2 = new Matrix<float>[4];
+			for(int i=0; i<4; i++) {
+				LoadWeights(W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(b0[i], 1, HDim, "../PFNN/demo/network/pfnn/b0_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(b1[i], 1, HDim, "../PFNN/demo/network/pfnn/b1_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(b2[i], 1, YDim, "../PFNN/demo/network/pfnn/b2_"+(i*12.5).ToString("D3")+".bin");
+			}	
 			break;
 		}
 	}
