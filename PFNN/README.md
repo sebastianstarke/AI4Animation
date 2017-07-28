@@ -1,9 +1,9 @@
 Phase-Functioned Neural Networks for Character Control
 ======================================================
 
-This project contains the code for Phase-Functioned Neural Networks for 
-Character Control as presented at SIGGRAPH 2017, with the project page found
-below:
+This project contains the code and data for Phase-Functioned Neural Networks 
+for Character Control as presented at SIGGRAPH 2017, with the project page 
+found below:
 
 http://theorangeduck.com/page/phase-functioned-neural-networks-character-control
 
@@ -14,7 +14,7 @@ environment to the pose of the character at a given frame. The rest of this
 README will assume you have read the paper and understand the basic workings 
 and processes involved in this technique.
 
-The code is essentially separated two sub-projects here.
+The code is essentially separated into two sub-projects.
 
 The first project is a set of python scripts written in Numpy/Scipy/Theano 
 which preprocess the motion data, generate a database, and train the phase 
@@ -26,17 +26,17 @@ contains a basic runtime that loads the network weights and runs an interactive
 demo which shows the results of the trained network when controlled via a 
 game-pad.
 
-Below are details of the steps for reproducing the results from the paper from 
-preprocessing and training to runnning the demo.
+Below are details of the steps required for reproducing the results from the 
+paper from preprocessing and training all the way to runnning the demo.
 
 
 Installation
 ------------
 
 Before you do anything else you will first need to install the following python 
-packages `numpy, scipy, Pillow, theano` as well as CUDA, cuDNN etc. This 
-project was built using Python3 but may work with Python2 given a few minor 
-tweaks.
+packages `numpy`, `scipy`, `Pillow`, `theano` as well as `CUDA`, `cuDNN` etc. 
+This project was built using Python3 but may work with Python2 given a few 
+minor tweaks.
 
 
 Preprocessing
@@ -62,7 +62,8 @@ data found in `data/animations` and once complete will output a database called
 `database.npz`. If you want to change the parameterisation used by the network 
 this is probably the place to look - but note that the preprocessing for this 
 work is quite fiddily and complicated so you must be careful when you edit this 
-script not to introduce any bugs.
+script not to introduce any bugs. You will also have to remember to update the
+runtime to match.
 
 
 Training
@@ -83,8 +84,8 @@ During the training process the weights of the network will be saved at each
 epoch to the location `demo/network/pfnn` so don't worry about stopping the 
 training early. It is possible to achieve decent results in just an hour or so
 of training, but for the very best results you may need to wait overnight. For
-this reason it might be making a backup of the pre-trained demo weights before
-beginning training.
+this reason it might be worth making a backup of the pre-trained demo weights 
+in `demo/network/pfnn` before beginning training.
 
 
 Runtime

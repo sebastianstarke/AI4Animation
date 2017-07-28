@@ -5,6 +5,7 @@
 
 #include <eigen3/Eigen/Dense>
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -33,21 +34,19 @@ enum { WINDOW_WIDTH  = 720, WINDOW_HEIGHT = 480 };
 enum {
   GAMEPAD_BACK = 5,
   GAMEPAD_START = 4,
-  GAMEPAD_A = 10,
   GAMEPAD_B = 11,
   GAMEPAD_X = 12,
-  GAMEPAD_Y = 13,
   GAMEPAD_TRIGGER_L  = 4,
   GAMEPAD_TRIGGER_R  = 5,
   GAMEPAD_SHOULDER_L = 8,
   GAMEPAD_SHOULDER_R = 9,
-  GAMEPAD_STICK_L_HORIZONTAL = 0,
-  GAMEPAD_STICK_L_VERTICAL   = 1,
   GAMEPAD_STICK_R_HORIZONTAL = 2,
   GAMEPAD_STICK_R_VERTICAL   = 3
 };
 
 struct Options {
+  
+  bool invert_y;
   
   bool enable_ik;
   
@@ -72,7 +71,8 @@ struct Options {
   float extra_joint_smooth;
   
   Options()
-    : enable_ik(true)
+    : invert_y(false)
+    , enable_ik(true)
     , display_debug(true)
     , display_debug_heights(true)
     , display_debug_joints(false)
@@ -92,15 +92,19 @@ struct Options {
     , extra_strafe_smooth(0.9)
     , extra_crouched_smooth(0.9)
     , extra_gait_smooth(0.1)
-    , extra_joint_smooth(0.75)
+    , extra_joint_smooth(0.5)
     {}
 };
 
 static Options* options = NULL;
 
+static int X = 0;
+static int Y = 0;
+static bool W, A, S, D;
+
 /* Phase-Functioned Neural Network */
 
-struct PFNN : Regression {
+struct PFNN {
   
   enum { XDIM = 342, YDIM = 311, HDIM = 512 };
   enum { MODE_CONSTANT, MODE_LINEAR, MODE_CUBIC };
@@ -444,7 +448,9 @@ struct Heightmap {
     if (tbo != 0) { glDeleteBuffers(1, &tbo); tbo = 0; } 
   }
   
-  void load(const char* filename) {
+  void load(const char* filename, float multiplier) {
+    
+    vscale = multiplier * vscale;
     
     if (vbo != 0) { glDeleteBuffers(1, &vbo); vbo = 0; }
     if (tbo != 0) { glDeleteBuffers(1, &tbo); tbo = 0; }
@@ -490,6 +496,7 @@ struct Heightmap {
       posns[x+y*w] = glm::vec3(cx - cw/2, sample(glm::vec2(cx-cw/2, cy-ch/2)), cy - ch/2);
     }
     
+    /* TODO
     for (int x = 0; x < w; x++)
     for (int y = 0; y < h; y++) {
       norms[x+y*w] = (x > 0 && x < w-1 && y > 0 && y < h-1) ?
@@ -501,7 +508,7 @@ struct Heightmap {
             posns[(x+0)+(y-1)*w] - posns[x+y*w],
             posns[(x-1)+(y+0)*w] - posns[x+y*w]), 0.5)) : glm::vec3(0,1,0);
     }
-
+    */
 
     char ao_filename[512];
     memcpy(ao_filename, filename, strlen(filename)-4);
@@ -1003,9 +1010,10 @@ static glm::vec3 mix_directions(glm::vec3 x, glm::vec3 y, float a) {
 }
 
 static glm::mat4 mix_transforms(glm::mat4 x, glm::mat4 y, float a) {
-  glm::mat4 out = glm::mat4(glm::slerp(glm::quat(x), glm::quat(y), a));
-  out[3] = mix(x[3], y[3], a);
-  return out;
+  //glm::mat4 out = glm::mat4(glm::slerp(glm::quat(x), glm::quat(y), a)); TODO
+  //out[3] = mix(x[3], y[3], a); TODO
+  glm::mat4 m4;
+  return m4;
 }
 
 static glm::quat quat_exp(glm::vec3 l) {
@@ -1077,7 +1085,7 @@ static void load_world0(void) {
   
   printf("Loading World 0\n");
   
-  heightmap->load("./heightmaps/hmap_000_smooth.txt");
+  heightmap->load("./heightmaps/hmap_000_smooth.txt", 1.0);
   
   areas->clear();
   areas->add_wall(glm::vec2( 975, -975), glm::vec2( 975, 975), 20);
@@ -1093,7 +1101,7 @@ static void load_world1(void) {
   
   printf("Loading World 1\n");
   
-  heightmap->load("./heightmaps/hmap_000_smooth.txt");
+  heightmap->load("./heightmaps/hmap_000_smooth.txt", 1.0);
 
   areas->clear();
   areas->add_crouch(glm::vec3(0,5,0), glm::vec2(1000.0f, 250.0f));
@@ -1110,7 +1118,7 @@ static void load_world2(void) {
   
   printf("Loading World 2\n");
   
-  heightmap->load("./heightmaps/hmap_004_smooth.txt");
+  heightmap->load("./heightmaps/hmap_004_smooth.txt", 1.0);
   
   areas->clear();
   areas->add_wall(glm::vec2(1013.78, -1023.47), glm::vec2( 1013.78,  1037.65), 20);
@@ -1130,7 +1138,7 @@ static void load_world3(void) {
   
   printf("Loading World 3\n");
   
-  heightmap->load("./heightmaps/hmap_007_smooth.txt");
+  heightmap->load("./heightmaps/hmap_007_smooth.txt", 1.0);
 
   areas->clear();
   areas->add_wall(glm::vec2(1137.99,  -2583.42), glm::vec2(1154.53,   2604.02), 20);
@@ -1179,7 +1187,7 @@ static void load_world4(void) {
   
   printf("Loading World 4\n");
   
-  heightmap->load("./heightmaps/hmap_013_smooth.txt");
+  heightmap->load("./heightmaps/hmap_013_smooth.txt", 1.0);
   
   areas->clear();
   areas->add_wall(glm::vec2( 1225, -1000), glm::vec2( 1225, 1000), 20);
@@ -1214,7 +1222,7 @@ static void load_world5(void) {
   
   printf("Loading World 5\n");
   
-  heightmap->load("./heightmaps/hmap_urban_001_smooth.txt");
+  heightmap->load("./heightmaps/hmap_urban_001_smooth.txt", 1.0);
 
   areas->clear(); 
   areas->add_wall(glm::vec2(477.54,     762.20), glm::vec2(261.43,     980.61), 20);
@@ -1424,7 +1432,9 @@ static void pre_render() {
   
   if (abs(x_move) + abs(y_move) < 10000) { x_move = 0; y_move = 0; };
   
-  camera->pitch = glm::clamp(camera->pitch + (y_move / 32768.0) * -0.03, M_PI/16, 2*M_PI/5);
+  if (options->invert_y) { y_move = -y_move; }
+  
+  camera->pitch = glm::clamp(camera->pitch + (y_move / 32768.0) * 0.03, M_PI/16, 2*M_PI/5);
   camera->yaw = camera->yaw + (x_move / 32768.0) * 0.03;
   
   float zoom_i = SDL_JoystickGetButton(stick, GAMEPAD_SHOULDER_L) * 20.0;
@@ -1435,8 +1445,8 @@ static void pre_render() {
         
   /* Update Target Direction / Velocity */
     
-  int x_vel = -SDL_JoystickGetAxis(stick, GAMEPAD_STICK_L_HORIZONTAL);
-  int y_vel = -SDL_JoystickGetAxis(stick, GAMEPAD_STICK_L_VERTICAL); 
+  int x_vel = -X;
+  int y_vel = -Y;
   if (abs(x_vel) + abs(y_vel) < 10000) { x_vel = 0; y_vel = 0; };  
   
   glm::vec3 trajectory_target_direction_new = glm::normalize(glm::vec3(camera->direction().x, 0.0, camera->direction().z));
@@ -1686,6 +1696,13 @@ static void pre_render() {
     glm::vec3 vel = (root_rotation * glm::vec3(pfnn->Yp(ovel+i*3+0), pfnn->Yp(ovel+i*3+1), pfnn->Yp(ovel+i*3+2)));
     glm::mat3 rot = (root_rotation * glm::toMat3(quat_exp(glm::vec3(pfnn->Yp(orot+i*3+0), pfnn->Yp(orot+i*3+1), pfnn->Yp(orot+i*3+2)))));
     
+    /*
+    ** Blending Between the predicted positions and
+    ** the previous positions plus the velocities 
+    ** smooths out the motion a bit in the case 
+    ** where the two disagree with each other.
+    */
+    
     character->joint_positions[i]  = glm::mix(character->joint_positions[i] + vel, pos, options->extra_joint_smooth);
     character->joint_velocities[i] = vel;
     character->joint_rotations[i]  = rot;
@@ -1709,7 +1726,7 @@ static void pre_render() {
   
   character->forward_kinematics();
   
-  /* Perform IK (enter here at your own risk...) */
+  /* Perform IK (enter this block at your own risk...) */
   
   if (options->enable_ik) {
     
@@ -1976,12 +1993,12 @@ void post_render() {
   character->phase = fmod(character->phase + (stand_amount * 0.9f + 0.1f) * 2*M_PI * pfnn->Yp(3), 2*M_PI);
   
   /* Update Camera */
-  
+  /* TODO
   camera->target = glm::mix(camera->target, glm::vec3(
     trajectory->positions[Trajectory::LENGTH/2].x, 
     trajectory->heights[Trajectory::LENGTH/2] + 100, 
     trajectory->positions[Trajectory::LENGTH/2].z), 0.1);
-  
+  */
 }
 
 void render() {
@@ -2211,6 +2228,7 @@ void render() {
       glVertex3f(c3.x, c3.y, c3.z); glVertex3f(c1.x, c1.y, c1.z);
       glVertex3f(c3.x, c3.y, c3.z); glVertex3f(c2.x, c2.y, c2.z);
       
+      /* TODO
       for (float j = 0; j < 1.0; j+=0.05) {
         glm::vec3 cm_a = glm::mix(c0, c1, j     );
         glm::vec3 cm_b = glm::mix(c0, c1, j+0.05);
@@ -2231,6 +2249,7 @@ void render() {
           glVertex3f(cm_b.x, cmh_b,   c2.z);
         }
       }
+      */
       
       float c0h = ((sinf(c0.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;
       float c1h = ((sinf(c1.x/Areas::CROUCH_WAVE)+1.0)/2.0) * 50 + 130;
@@ -2272,12 +2291,14 @@ void render() {
       glColor3f(0.0, 1.0, 0.0);
       glLineWidth(options->display_scale * 2.0);
       glBegin(GL_LINES);
+      /* TODO
       for (float r = 0; r < 1.0; r+=0.1) {
         glm::vec2 p0 = glm::mix(areas->wall_start[i], areas->wall_stop[i], r    );
         glm::vec2 p1 = glm::mix(areas->wall_start[i], areas->wall_stop[i], r+0.1);
         glVertex3f(p0.x, heightmap->sample(p0) + 5, p0.y);
         glVertex3f(p1.x, heightmap->sample(p1) + 5, p1.y);
       }
+      */
       glEnd();
       glLineWidth(1.0);
       glColor3f(1.0, 1.0, 1.0);
@@ -2416,6 +2437,7 @@ void render() {
     glPointSize(1);
     glBegin(GL_POINTS);
     
+    /* TODO
     for (int x = 0; x < W0p.rows(); x++)
     for (int y = 0; y < W0p.cols(); y++) {
       float v = (W0p(x, y)+0.5)/2.0;
@@ -2423,6 +2445,7 @@ void render() {
       glColor3f(col.x, col.y, col.z); 
       glVertex3f(WINDOW_WIDTH-W0p.cols()+y-25, x+175, 0);
     }
+    */
     
     glEnd();
     glPointSize(1);
@@ -2515,8 +2538,8 @@ void render() {
     }
     glEnd();
 
-    int x_vel = -SDL_JoystickGetAxis(stick, GAMEPAD_STICK_L_HORIZONTAL);
-    int y_vel = -SDL_JoystickGetAxis(stick, GAMEPAD_STICK_L_VERTICAL); 
+    int x_vel = -X;
+    int y_vel = -Y;
     if (abs(x_vel) + abs(y_vel) < 10000) { x_vel = 0; y_vel = 0; };  
     
     glm::vec2 direction = glm::vec2((-x_vel) / 32768.0f, (-y_vel) / 32768.0f);
@@ -2588,8 +2611,8 @@ int main(int argc, char **argv) {
 #endif
   SDL_Window *window = SDL_CreateWindow(
       "PFNN",
-      SDL_WINDOWPOS_UNDEFINED, 
-      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_CENTERED, 
+      SDL_WINDOWPOS_CENTERED,
       WINDOW_WIDTH, WINDOW_HEIGHT,
       SDL_WINDOW_OPENGL);
       
@@ -2681,6 +2704,10 @@ int main(int argc, char **argv) {
       
       if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
+          case SDLK_w: W = true; break;
+          case SDLK_a: A = true; break;
+          case SDLK_s: S = true; break;
+          case SDLK_d: D = true; break;
           case SDLK_ESCAPE: running = false; break;
           case SDLK_1: load_world0(); break;
           case SDLK_2: load_world1(); break;
@@ -2689,8 +2716,31 @@ int main(int argc, char **argv) {
           case SDLK_5: load_world4(); break;
           case SDLK_6: load_world5(); break;
         }
-        
       }
+    
+      if (event.type == SDL_KEYUP) {
+        switch (event.key.keysym.sym) {
+          case SDLK_w: W = false; break;
+          case SDLK_a: A = false; break;
+          case SDLK_s: S = false; break;
+          case SDLK_d: D = false; break;
+        }
+      }
+    }
+
+    X = 0;
+    Y = 0;
+    if(W) {
+      Y -= 10000;
+    }
+    if(S) {
+      Y += 10000;
+    }
+    if(A) {
+      X -= 10000;
+    }
+    if(D) {
+      X += 10000;
     }
     
     pre_render();
