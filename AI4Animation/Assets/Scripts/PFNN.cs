@@ -23,6 +23,8 @@ public class PFNN {
 	private Matrix<float> W0p, W1p, W2p;
 	private Matrix<float> b0p, b1p, b2p;
 
+	private const float M_PI = 3.14159265358979323846f;
+
 	public PFNN(MODE mode) {
 		Xp = Matrix<float>.Build.Dense(1, XDim);
 		Yp = Matrix<float>.Build.Dense(1, YDim);
@@ -133,6 +135,62 @@ public class PFNN {
 		(y0-2.5f*y1+2.0f*y2-0.5f*y3)*mu*mu + 
 		(-0.5f*y0+0.5f*y2)*mu + 
 		(y1));
+	}
+
+	void predict(float P) {
+		
+		float pamount;
+		int pindex_0, pindex_1, pindex_2, pindex_3;
+		
+		Xp = (Xp - Xmean).PointwiseDivide(Xstd);
+		
+		switch(Mode) {
+			case MODE.CONSTANT:
+				pindex_1 = (int)((P / (2*M_PI)) * 50);
+				H0 = (W0[pindex_1] * Xp) + b0[pindex_1]; ELU(H0);
+				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(H1);
+				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
+			break;
+			
+			case MODE.LINEAR:
+				//TODO: fmod
+				pamount = Mathf.Repeat((P / (2*M_PI)) * 10, 1.0f);
+				pindex_1 = (int)((P / (2*M_PI)) * 10);
+				pindex_2 = ((pindex_1+1) % 10);
+				Linear(W0p, W0[pindex_1], W0[pindex_2], pamount);
+				Linear(W1p, W1[pindex_1], W1[pindex_2], pamount);
+				Linear(W2p, W2[pindex_1], W2[pindex_2], pamount);
+				Linear(b0p, b0[pindex_1], b0[pindex_2], pamount);
+				Linear(b1p, b1[pindex_1], b1[pindex_2], pamount);
+				Linear(b2p, b2[pindex_1], b2[pindex_2], pamount);
+				H0 = (W0p * Xp) + b0p; ELU(H0);
+				H1 = (W1p * H0) + b1p; ELU(H1);
+				Yp = (W2p * H1) + b2p;
+			break;
+			
+			case MODE.CUBIC:
+				//TODO: fmod
+				pamount = Mathf.Repeat((P / (2*M_PI)) * 4, 1.0f);
+				pindex_1 = (int)((P / (2*M_PI)) * 4);
+				pindex_0 = ((pindex_1+3) % 4);
+				pindex_2 = ((pindex_1+1) % 4);
+				pindex_3 = ((pindex_1+2) % 4);
+				Cubic(W0p, W0[pindex_0], W0[pindex_1], W0[pindex_2], W0[pindex_3], pamount);
+				Cubic(W1p, W1[pindex_0], W1[pindex_1], W1[pindex_2], W1[pindex_3], pamount);
+				Cubic(W2p, W2[pindex_0], W2[pindex_1], W2[pindex_2], W2[pindex_3], pamount);
+				Cubic(b0p, b0[pindex_0], b0[pindex_1], b0[pindex_2], b0[pindex_3], pamount);
+				Cubic(b1p, b1[pindex_0], b1[pindex_1], b1[pindex_2], b1[pindex_3], pamount);
+				Cubic(b2p, b2[pindex_0], b2[pindex_1], b2[pindex_2], b2[pindex_3], pamount);
+				H0 = (W0p * Xp) + b0p; ELU(H0);
+				H1 = (W1p * H0) + b1p; ELU(H1);
+				Yp = (W2p * H1) + b2p;
+			break;
+			
+			default:
+			break;
+		}
+		
+		Yp = (Yp * Ystd) + Ymean;
 	}
 
 }
