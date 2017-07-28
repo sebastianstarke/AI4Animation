@@ -6,10 +6,11 @@ public class AI : MonoBehaviour {
 
 	void Start() {
 		Network = new PFNN(PFNN.MODE.CONSTANT);
+		Network.Load();
 	}
 
 	void Update() {
-		
+
 	}
 
 }
