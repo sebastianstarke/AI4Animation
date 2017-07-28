@@ -196,12 +196,14 @@ struct PFNN {
     if (f == NULL) { fprintf(stderr, "Couldn't load file %s\n", filename); exit(1); }
 
     A = ArrayXXf(rows, cols);
+    int elements = 0;
     for (int x = 0; x < rows; x++)
     for (int y = 0; y < cols; y++) {
       float item = 0.0;
-      fread(&item, sizeof(float), 1, f);
+      elements += fread(&item, sizeof(float), 1, f);
       A(x, y) = item;
     }
+    printf("Read %u weight elements.\n", elements);
     fclose(f); 
   }
 
@@ -216,11 +218,13 @@ struct PFNN {
     if (f == NULL) { fprintf(stderr, "Couldn't load file %s\n", filename); exit(1); }
     
     V = ArrayXf(items);
+    int elements = 0;
     for (int i = 0; i < items; i++) {
       float item = 0.0;
-      fread(&item, sizeof(float), 1, f);
+      elements += fread(&item, sizeof(float), 1, f);
       V(i) = item;
     }
+    printf("Read %u weight elements.\n", elements);
     fclose(f); 
   }  
   
@@ -569,6 +573,8 @@ struct Heightmap {
       //ao_generate = true;
     }
    
+   int elements = 0;
+
     for (int x = 0; x < w; x++)
     for (int y = 0; y < h; y++) {
       
@@ -590,10 +596,12 @@ struct Heightmap {
         aos[x+y*w] = 1.0 - (ao_amount / ao_samples);
         fprintf(ao_file, y == h-1 ? "%f\n" : "%f ", aos[x+y*w]);
       } else {
-        fscanf(ao_file, y == h-1 ? "%f\n" : "%f ", &aos[x+y*w]);
+        elements += fscanf(ao_file, y == h-1 ? "%f\n" : "%f ", &aos[x+y*w]);
       }
       
     }
+
+    printf("Read %u heightmap elements.\n", elements);
     
     fclose(ao_file);
 
@@ -842,14 +850,18 @@ struct Character {
     
     FILE *f;
     
+    int elements;
+
     f = fopen(filename_v, "rb");
     float *vbo_data = (float*)malloc(sizeof(float) * 15 * nvtx);
-    fread(vbo_data, sizeof(float) * 15 * nvtx, 1, f);
+    elements = fread(vbo_data, sizeof(float) * 15 * nvtx, 1, f);
+    printf("Read %u VBO elements.\n", elements);
     fclose(f);
     
     f = fopen(filename_t, "rb");
     uint32_t *tbo_data = (uint32_t*)malloc(sizeof(uint32_t) * ntri);  
-    fread(tbo_data, sizeof(uint32_t) * ntri, 1, f);
+    elements = fread(tbo_data, sizeof(uint32_t) * ntri, 1, f);
+    printf("Read %u TBO elements.\n", elements);
     fclose(f);
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -863,12 +875,14 @@ struct Character {
     
     f = fopen(filename_p, "rb");
     float fparents[JOINT_NUM];
-    fread(fparents, sizeof(float) * JOINT_NUM, 1, f);
+    elements = fread(fparents, sizeof(float) * JOINT_NUM, 1, f);
+    printf("Read %u joint elements.\n", elements);
     for (int i = 0; i < JOINT_NUM; i++) { joint_parents[i] = (int)fparents[i]; }
     fclose(f);
     
     f = fopen(filename_r, "rb");
-    fread(glm::value_ptr(joint_rest_xform[0]), sizeof(float) * JOINT_NUM * 4 * 4, 1, f);
+    elements = fread(glm::value_ptr(joint_rest_xform[0]), sizeof(float) * JOINT_NUM * 4 * 4, 1, f);
+    printf("Read %u joint rest elements.\n", elements);
     for (int i = 0; i < JOINT_NUM; i++) { joint_rest_xform[i] = glm::transpose(joint_rest_xform[i]); }
     fclose(f);
     
@@ -1459,8 +1473,6 @@ static void pre_render() {
     
   int x_vel = -X;
   int y_vel = -Y;
-  if (abs(x_vel) + abs(y_vel) < 10000) { x_vel = 0; y_vel = 0; };  
-  
   glm::vec3 trajectory_target_direction_new = glm::normalize(glm::vec3(camera->direction().x, 0.0, camera->direction().z));
   glm::mat3 trajectory_target_rotation = glm::mat3(glm::rotate(atan2f(
     trajectory_target_direction_new.x,
@@ -2544,8 +2556,6 @@ void render() {
 
     int x_vel = -X;
     int y_vel = -Y;
-    if (abs(x_vel) + abs(y_vel) < 10000) { x_vel = 0; y_vel = 0; };  
-    
     glm::vec2 direction = glm::vec2((-x_vel) / 32768.0f, (-y_vel) / 32768.0f);
     glLineWidth(1 * options->display_scale);    
     glBegin(GL_LINES);
