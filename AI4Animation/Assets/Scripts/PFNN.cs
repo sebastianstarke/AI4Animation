@@ -193,8 +193,6 @@ public class PFNN {
 		}
 		
 		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
-
-		Debug.Log(Yp);
 	}
 
 }
