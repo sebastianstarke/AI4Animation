@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\Camera.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\PFNN.cs" />
+     <Compile Include="Assets\Scripts\Trajectory.cs" />
      <Compile Include="Assets\Scripts\World.cs" />
      <None Include="Assets\Libraries\MathNet.Numerics.xml" />
      <None Include="Assets\Libraries\System.Threading.xml" />

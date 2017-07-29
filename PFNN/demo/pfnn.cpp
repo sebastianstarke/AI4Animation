@@ -1707,8 +1707,10 @@ static void pre_render() {
     int w = (Trajectory::LENGTH)/10;
     glm::vec3 pos = glm::inverse(root_rotation) * (trajectory->positions[i] - root_position);
     glm::vec3 dir = glm::inverse(root_rotation) * trajectory->directions[i];  
-    pfnn->Xp((w*0)+i/10) = pos.x; pfnn->Xp((w*1)+i/10) = pos.z;
-    pfnn->Xp((w*2)+i/10) = dir.x; pfnn->Xp((w*3)+i/10) = dir.z;
+    pfnn->Xp((w*0)+i/10) = pos.x;
+    pfnn->Xp((w*1)+i/10) = pos.z;
+    pfnn->Xp((w*2)+i/10) = dir.x; 
+    pfnn->Xp((w*3)+i/10) = dir.z;
   }
     
   /* Input Trajectory Gaits */

@@ -6,22 +6,22 @@ public class PFNN {
 
 	public enum MODE { CONSTANT, LINEAR, CUBIC };
 
-	private MODE Mode;
+	public MODE Mode;
 
-	private int XDim = 342;
-	private int YDim = 311;
-	private int HDim = 512;
+	public int XDim = 342;
+	public int YDim = 311;
+	public int HDim = 512;
 
-	private Matrix<float> Xmean, Xstd;
-	private Matrix<float> Ymean, Ystd;
-	private Matrix<float>[] W0, W1, W2;
-	private Matrix<float>[] b0, b1, b2;
+	public Matrix<float> Xmean, Xstd;
+	public Matrix<float> Ymean, Ystd;
+	public Matrix<float>[] W0, W1, W2;
+	public Matrix<float>[] b0, b1, b2;
 
-	private Matrix<float> Xp, Yp;
-	private Matrix<float> H0, H1;
+	public Matrix<float> Xp, Yp;
+	public Matrix<float> H0, H1;
 
-	private Matrix<float> W0p, W1p, W2p;
-	private Matrix<float> b0p, b1p, b2p;
+	public Matrix<float> W0p, W1p, W2p;
+	public Matrix<float> b0p, b1p, b2p;
 
 	private const float M_PI = 3.14159265358979323846f;
 
