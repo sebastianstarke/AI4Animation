@@ -96,7 +96,6 @@ static int X = 0;
 static int Y = 0;
 static bool W, A, S, D;
 
-
 /* Helper Functions */
 
 static glm::vec4 mix_vectors(glm::vec4 a, glm::vec4 b, float c) {
@@ -2756,7 +2755,7 @@ int main(int argc, char **argv) {
   //pfnn = new PFNN(PFNN::MODE_CUBIC);
   //pfnn = new PFNN(PFNN::MODE_LINEAR);
   pfnn->load();
-  
+
   load_world0();
   
   /* Game Loop */
