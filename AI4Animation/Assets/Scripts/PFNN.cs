@@ -48,7 +48,7 @@ public class PFNN {
 		LoadWeights(ref Xstd, XDim, 1, "../PFNN/demo/network/pfnn/Xstd.bin");
 		LoadWeights(ref Ymean, YDim, 1, "../PFNN/demo/network/pfnn/Ymean.bin");
 		LoadWeights(ref Ystd, YDim, 1, "../PFNN/demo/network/pfnn/Ystd.bin");
-    
+
 		switch(Mode) {
 			case MODE.CONSTANT:
 			W0 = new Matrix<float>[50];

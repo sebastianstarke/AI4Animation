@@ -7,10 +7,25 @@ public class AI : MonoBehaviour {
 	void Start() {
 		Network = new PFNN(PFNN.MODE.CONSTANT);
 		Network.Load();
+		Network.Predict(0.5f);
 	}
 
 	void Update() {
-		Network.Predict(Random.value);
+		PreUpdate();
+		RegularUpdate();
+		PostUpdate();
+	}
+
+	private void PreUpdate() {
+
+	}
+
+	private void RegularUpdate() {
+		
+	}
+
+	private void PostUpdate() {
+		
 	}
 
 }
