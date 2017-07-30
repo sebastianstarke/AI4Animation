@@ -74,39 +74,82 @@ public class AI : MonoBehaviour {
 
 	private void HandleTrajectory() {
 		int current = Trajectory.Length/2;
+		int last = Trajectory.Length-1;
 		Trajectory.Positions[current] = transform.position;
 		Trajectory.Rotations[current] = transform.rotation;
 		Trajectory.Directions[current] = transform.forward;
-		
-		//Future Trajectory
+
+		//Predict Future Trajectory
+		Vector3 targetDirection = UnityEngine.Camera.main.transform.rotation * new Vector3(XAxis, 0f, YAxis);
+		Vector3 targetPosition = transform.position + targetDirection;
+		Quaternion targetRotation = transform.rotation;
+		Trajectory.SetTarget(Utility.Interpolate(Trajectory.Positions[last],targetPosition,0.5f), targetRotation, targetDirection);
+
 		float futureWeight = 0.8f;
-		for(int i=current+1; i<Trajectory.Length; i++) {
-			Trajectory.Positions[i] = transform.position;
-			Trajectory.Rotations[i] = transform.rotation;
-			Trajectory.Directions[i] = transform.forward;
+		for(int i=current; i<Trajectory.Length-1; i++) {
+			int index = i-current-1;
+			int points = Trajectory.Length-current-1;
+			float factor = (float)(index)/(float)(points);
+
+			Trajectory.Positions[i+1] = 
+				Trajectory.Positions[i] + Utility.Interpolate(
+					Trajectory.Positions[i+1] - Trajectory.Positions[i],
+					factor * (Trajectory.Positions[last] - Trajectory.Positions[i]),
+					futureWeight
+				);
+
+			/*
+			Trajectory.Positions[i] = 
+				Trajectory.Positions[i-1] + Utility.Interpolate(
+					Trajectory.Positions[i] - Trajectory.Positions[i-1],
+					factor * (Trajectory.Positions[last] - Trajectory.Positions[i-1]),
+					futureWeight
+				);
+				*/
+				
+
+			/*
+			Trajectory.Rotations[i] = 
+				Trajectory.Rotations[i] * Utility.Interpolate(
+					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
+					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[last] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
+					futureWeight
+				);
+	
+			Trajectory.Directions[i] = 
+				Trajectory.Directions[i] + Utility.Interpolate(
+					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
+					factor * (Trajectory.Directions[last] - Trajectory.Directions[i]), 
+					futureWeight
+				);
+			*/
 		}
 
-		//Past Trajectory
+		//Update Previous Trajectory
 		float pastWeight = 0.8f;
 		for(int i=current-1; i>=0; i--) {
+			int index = i+1;
+			int points = current + 1;
+			float factor = (float)(index)/(float)(points);
+
 			Trajectory.Positions[i] = 
 				Trajectory.Positions[i] + Utility.Interpolate(
 					Trajectory.Positions[i+1] - Trajectory.Positions[i], 
-					(float)(i+1)/current * (Trajectory.Positions[current] - Trajectory.Positions[i]), 
+					factor * (Trajectory.Positions[current] - Trajectory.Positions[i]), 
 					pastWeight
 				);
 
 			Trajectory.Rotations[i] = 
 				Trajectory.Rotations[i] * Utility.Interpolate(
 					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
-					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), (float)(i+1)/current), 
+					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
 					pastWeight
 				);
 	
 			Trajectory.Directions[i] = 
 				Trajectory.Directions[i] + Utility.Interpolate(
 					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
-					(float)(i+1)/current * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
+					factor * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
 					pastWeight
 				);
 		}

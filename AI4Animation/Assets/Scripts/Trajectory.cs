@@ -20,17 +20,14 @@ public class Trajectory {
 	public float[] GaitBump;
 	*/
 
-  	public Vector3 TargetDirection;
-	public Vector3 TargetVelocity;
-
 	private Transform Transform;
 
 	public Trajectory(Transform t) {
 		Transform = t;
 
 		Positions = new Vector3[Length];
-		Directions = new Vector3[Length];
 		Rotations = new Quaternion[Length];
+		Directions = new Vector3[Length];
 		Heights = new float[Length];
 
 		/*
@@ -42,15 +39,18 @@ public class Trajectory {
 		GaitBump = new float[Length];
 		*/
 
-		TargetDirection = new Vector3(0f,0f,1f);
-		TargetVelocity = new Vector3(0f,0f,0f);
-
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
-			Directions[i] = Transform.forward;
 			Rotations[i] = Transform.rotation;
+			Directions[i] = Transform.forward;
 			Heights[i] = Transform.position.y;
 		}
+	}
+
+	public void SetTarget(Vector3 position, Quaternion rotation, Vector3 direction) {
+		Positions[Length-1] = position;
+		Rotations[Length-1] = rotation;
+		Directions[Length-1] = direction;
 	}
 
 }
