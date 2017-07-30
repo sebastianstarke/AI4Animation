@@ -72,7 +72,7 @@ public class AI : MonoBehaviour {
 		}
 	}
 
-	private void HandleTrajecotry() {
+	private void HandleTrajectory() {
 		/* Update Target Direction / Velocity */
 		float velocity = 1f*Time.deltaTime;
 		Vector3 targetDirection = UnityEngine.Camera.main.transform.forward;
