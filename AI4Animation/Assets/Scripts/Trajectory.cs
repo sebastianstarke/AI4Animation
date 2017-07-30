@@ -21,7 +21,11 @@ public class Trajectory {
   	public Vector3 TargetDirection;
 	public Vector3 TargetVelocity;
 
-	public Trajectory() {
+	private Transform Transform;
+
+	public Trajectory(Transform t) {
+		Transform = t;
+
 		Positions = new Vector3[Length];
 		Directions = new Vector3[Length];
 		Rotations = new Quaternion[Length];
@@ -36,6 +40,13 @@ public class Trajectory {
 
 		TargetDirection = new Vector3(0f,0f,1f);
 		TargetVelocity = new Vector3(0f,0f,0f);
+
+		for(int i=0; i<Length; i++) {
+			Positions[i] = Transform.position;
+			Directions[i] = Transform.forward;
+			Rotations[i] = Transform.rotation;
+			Heights[i] = Transform.position.y;
+		}
 	}
 
 }

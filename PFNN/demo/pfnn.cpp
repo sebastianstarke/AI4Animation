@@ -1640,6 +1640,7 @@ static void pre_render() {
     trajectory->gait_bump[i]   = trajectory->gait_bump[Trajectory::LENGTH/2];  
   }
   
+  /* Positions */
   for (int i = Trajectory::LENGTH/2+1; i < Trajectory::LENGTH; i++) {
     trajectory->positions[i] = trajectory_positions_blend[i];
   }
