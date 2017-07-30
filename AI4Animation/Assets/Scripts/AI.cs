@@ -14,8 +14,8 @@ public class AI : MonoBehaviour {
 	private const float M_PI = 3.14159265358979323846f;
 
 	void Start() {
-		//Network = new PFNN(PFNN.MODE.CONSTANT);
-		//Network.Load();
+		Network = new PFNN(PFNN.MODE.CONSTANT);
+		Network.Load();
 		
 		Character = new Character(transform);
 		Trajectory = new Trajectory(transform);
@@ -29,12 +29,13 @@ public class AI : MonoBehaviour {
 
 	private void PreUpdate() {
 		HandleInput();
-		HandleTrajecotry();
+		HandleTrajectory();
 	}
 
 	private void RegularUpdate() {
 		Character.Move(new Vector2(XAxis, YAxis));
 		Character.Turn(Turn);
+		//Network.Predict(0.5f);
 	}
 
 	private void PostUpdate() {
@@ -76,8 +77,6 @@ public class AI : MonoBehaviour {
 		float velocity = 1f*Time.deltaTime;
 		Vector3 targetDirection = UnityEngine.Camera.main.transform.forward;
 		
-		float angle = Utility.GetSignedAngle(Vector3.forward, targetDirection, Vector3.up);
-		Debug.Log(angle);
 		Quaternion targetRotation = Quaternion.Euler(0f, Utility.GetSignedAngle(Vector3.forward, targetDirection, Vector3.up), 0f);
 		Vector3 targetVelocity = velocity * (targetRotation * new Vector3(XAxis, 0f, YAxis));
 		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, targetVelocity, 0.5f);
@@ -118,6 +117,37 @@ public class AI : MonoBehaviour {
 		}
   	}
 
+	/*
+	private void HandlePostTrajectory() {
+		for(int i=0; i<Trajectory.Length/2; i++) {
+			Trajectory.Positions[i]  = Trajectory.Positions[i+1];
+			Trajectory.Directions[i] = Trajectory.Directions[i+1];
+			Trajectory.Rotations[i] = Trajectory.Rotations[i+1];
+			Trajectory.Heights[i] = Trajectory.Heights[i+1];
+		}
+
+		float gaitStand = 0.5f;
+		float stand_amount = Mathf.Pow(1.0f - gaitStand, 0.25f);
+		Vector3 trajectoryUpdate = Trajectory.Rotations[Trajectory.Length/2] * new Vector3(Network.Yp[0,0], 0f, Network.Yp[1,0]);
+		Trajectory.Positions[Trajectory.Length/2]  = Trajectory.Positions[Trajectory.Length/2] + stand_amount * trajectoryUpdate;
+		Trajectory.Directions[Trajectory.Length/2] = 
+		Quaternion.Euler(0f, stand_amount * -Network.Yp[2,0], 0f) * Trajectory.Directions[Trajectory.Length/2];
+		Trajectory.Rotations[Trajectory.Length/2] = Quaternion.Euler(0f, Utility.GetSignedAngle(Trajectory.Directions[Trajectory.Length/2], Vector3.forward, Vector3.up), 0f);
+
+		for(int i=Trajectory.Length/2+1; i<Trajectory.Length; i++) {
+			int w = (Trajectory.Length/2) / 10;
+			float m = Mathf.Repeat(((float)i - (Trajectory.Length/2)) / 10f, 1f);
+			Trajectory.Positions[i].x = (1-m) * Network.Yp[8+(w*0)+(i/10)-w,0] + m * Network.Yp[8+(w*0)+(i/10)-w+1,0];
+			Trajectory.Positions[i].z  = (1-m) * Network.Yp[8+(w*1)+(i/10)-w,0] + m * Network.Yp[8+(w*1)+(i/10)-w+1,0];
+			Trajectory.Directions[i].x = (1-m) * Network.Yp[8+(w*2)+(i/10)-w,0] + m * Network.Yp[8+(w*2)+(i/10)-w+1,0];
+			Trajectory.Directions[i].z = (1-m) * Network.Yp[8+(w*3)+(i/10)-w,0] + m * Network.Yp[8+(w*3)+(i/10)-w+1,0];
+			Trajectory.Positions[i]    = (Trajectory.Rotations[Trajectory.Length/2] * Trajectory.Positions[i]) + Trajectory.Positions[Trajectory.Length/2];
+			Trajectory.Directions[i]   = Vector3.Normalize((Trajectory.Rotations[Trajectory.Length/2] * Trajectory.Directions[i]));
+			Trajectory.Rotations[i]    = Quaternion.Euler(0f, Utility.GetSignedAngle(Trajectory.Directions[i], Vector3.forward, Vector3.up), 0f);
+		}
+	}
+	*/
+	
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
 			return;
