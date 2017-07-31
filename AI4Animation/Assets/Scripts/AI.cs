@@ -127,7 +127,7 @@ public class AI : MonoBehaviour {
 			Trajectory.TargetPosition.Normalize();
 		}
 		Quaternion targetRotation = transform.rotation;
-		Trajectory.SetTarget(transform.position + transform.rotation * Trajectory.TargetPosition, targetRotation, targetDirection);
+		Trajectory.SetTarget(transform.position + transform.rotation * Trajectory.TargetPosition, targetRotation, transform.rotation * targetDirection);
 
 		float futureWeight = 0.75f;
 		for(int i=current+1; i<Trajectory.Length-1; i++) {
