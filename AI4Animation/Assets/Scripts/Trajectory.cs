@@ -6,6 +6,10 @@ public class Trajectory {
 
 	public float Width = 25f;
 
+	public Vector3 TargetVelocity;
+	public Vector3 TargetPosition;
+	public Vector3 TargetDirection;
+
 	public Vector3[] Positions;
 	public Quaternion[] Rotations;
 	public Vector3[] Directions;
@@ -39,6 +43,7 @@ public class Trajectory {
 		GaitBump = new float[Length];
 		*/
 
+		TargetPosition = Vector3.zero;
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
 			Rotations[i] = Transform.rotation;
