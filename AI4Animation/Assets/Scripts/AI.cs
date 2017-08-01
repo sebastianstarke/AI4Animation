@@ -33,8 +33,8 @@ public class AI : MonoBehaviour {
 	}
 
 	private void RegularUpdate() {
-		Character.Move(new Vector2(XAxis, YAxis));
-		Character.Turn(Turn);
+		//Character.Move(new Vector2(XAxis, YAxis));
+		//Character.Turn(Turn);
 		//Network.Predict(0.5f);
 	}
 
@@ -88,79 +88,43 @@ public class AI : MonoBehaviour {
 		Trajectory.TargetDirection.y = 0f;
 		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
 		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
-		//Trajectory.TargetVelocity = Mathf.Min(Trajectory.TargetVelocity.magnitude, maxVelocity) * Trajectory.TargetVelocity.normalized;
-		//Debug.Log(Trajectory.TargetVelocity.magnitude);
 		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
 		Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
 
-		//Trajectory.TargetVelocity = 0.9f * Trajectory.TargetVelocity;
-		//Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, 0.1f);
+		//Update Future Trajectory
+		float futureWeight = 0.5f;
+		Trajectory.Positions[last] = Trajectory.TargetPosition;
+		Trajectory.Directions[last] = Trajectory.TargetVelocity;
+		Trajectory.Rotations[last] = Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
+		for(int i=Trajectory.Length-2; i>=current; i--) {
+			int index = i - current + 1;
+			int points = Trajectory.Length - 1 - current;
+			float factor = 1f - (float)(index)/(float)(points);
 
-		//Vector3 direction = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
-		//direction.y = 0f;
-
-		//Trajectory.TargetVelocity += 1f * Time.deltaTime * Utility.Interpolate(direction, Trajectory.TargetVelocity, 0.25f).normalized;
-		//Trajectory.TargetVelocity = 0.8f * Trajectory.TargetVelocity;
-
-		/*
-		Vector3[] positionsBlend = new Vector3[Trajectory.Length];
-		positionsBlend[current] = Trajectory.Positions[current];
-		for(int i=current+1; i<Trajectory.Length; i++) {
-			float bias_pos = 2f;
-			float bias_dir = 0.5f;
-			float scale_pos = (1.0f - Mathf.Pow(1.0f - (float)(i - current) / current, bias_pos));
-			float scale_dir = (1.0f - Mathf.Pow(1.0f - (float)(i - current) / current, bias_dir));
-			positionsBlend[i] = positionsBlend[i-1] + Utility.Interpolate(Trajectory.Positions[i] - Trajectory.Positions[i-1], Trajectory.TargetVelocity, scale_pos);
-			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], Trajectory.TargetVelocity, scale_dir);
-			Trajectory.Heights[i] = Trajectory.Heights[current];
-			Trajectory.Positions[i] = positionsBlend[i];
-			Trajectory.Rotations[i] = Quaternion.Euler(0f, Vector3.Angle(Vector3.forward, Trajectory.Directions[i]), 0f);
-		}
-		*/
-
-		for(int i=current+1; i<Trajectory.Length; i++) {
-			Trajectory.Positions[i] = Trajectory.Positions[current];
-		}
-		
-		/*
-		//Predict Future Trajectory
-		float targetVelocity = 10f;
-		Vector3 targetDirection = Vector3.Normalize(new Vector3(XAxis, 0f, YAxis));
-		Trajectory.TargetPosition +=
-			targetDirection.magnitude != 0f ?
-			targetVelocity * Time.deltaTime * new Vector3(targetDirection.x, 0f, targetDirection.z)
-			:
-			- targetVelocity * Time.deltaTime * Trajectory.TargetPosition
-			;
-		if(Trajectory.TargetPosition.magnitude > 1f) {
-			Trajectory.TargetPosition.Normalize();
-		}
-		Quaternion targetRotation = transform.rotation;
-		Trajectory.SetTarget(transform.position + transform.rotation * Trajectory.TargetPosition, targetRotation, transform.rotation * targetDirection);
-
-		float futureWeight = 0.75f;
-		for(int i=current+1; i<Trajectory.Length-1; i++) {
-			int index = i-current;
-			int points = Trajectory.Length-current;
-			float factor = (float)(index)/(float)(points);
-
-			Trajectory.Positions[i] =
-				Utility.Interpolate(
-					Trajectory.Positions[current] + Utility.Interpolate(
-						Trajectory.Positions[i-1] - Trajectory.Positions[current],
-						factor * (Trajectory.Positions[last] - Trajectory.Positions[current]),
-						futureWeight
-					),
-					Trajectory.Positions[i-1],
-					1f-futureWeight
+			Trajectory.Positions[i] = 
+				Trajectory.Positions[i] + Utility.Interpolate(
+					Trajectory.Positions[i+1] - Trajectory.Positions[i], 
+					factor * (Trajectory.Positions[current] - Trajectory.Positions[i]), 
+					futureWeight
+				);
+	
+			Trajectory.Directions[i] = 
+				Trajectory.Directions[i] + Utility.Interpolate(
+					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
+					factor * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
+					futureWeight
 				);
 
-			Trajectory.Rotations[i] = Trajectory.Rotations[last];
-			Trajectory.Directions[i] = Trajectory.Directions[last];
+			Trajectory.Rotations[i] = 
+				Trajectory.Rotations[i] * Utility.Interpolate(
+					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
+					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
+					futureWeight
+				);
 		}
-		*/
+
 		//Update Previous Trajectory
-		float pastWeight = 0.8f;
+		float pastWeight = 0.5f;
 		for(int i=current-1; i>=0; i--) {
 			int index = i+1;
 			int points = current + 1;
@@ -173,17 +137,17 @@ public class AI : MonoBehaviour {
 					pastWeight
 				);
 
-			Trajectory.Rotations[i] = 
-				Trajectory.Rotations[i] * Utility.Interpolate(
-					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
-					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
-					pastWeight
-				);
-	
 			Trajectory.Directions[i] = 
 				Trajectory.Directions[i] + Utility.Interpolate(
 					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
 					factor * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
+					pastWeight
+				);
+
+			Trajectory.Rotations[i] = 
+				Trajectory.Rotations[i] * Utility.Interpolate(
+					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
+					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
 					pastWeight
 				);
 		}
