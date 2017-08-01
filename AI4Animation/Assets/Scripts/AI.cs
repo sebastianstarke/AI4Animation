@@ -74,7 +74,7 @@ public class AI : MonoBehaviour {
 	private void HandleTrajectory() {
 		float acceleration = 10f;
 		float damping = 5f;
-		float decay = 1f;
+		float decay = 2.5f;
 
 		int current = Trajectory.Length/2;
 		int last = Trajectory.Length-1;
@@ -84,10 +84,19 @@ public class AI : MonoBehaviour {
 		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
 		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
 		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
-		//Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, Trajectory.Positions[current], decay * Time.deltaTime);
-		
-		transform.position = Trajectory.Positions[current];
-		transform.rotation = Trajectory.Rotations[current];
+
+		if(Trajectory.TargetDirection.magnitude == 0f) {
+			Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
+			Trajectory.TargetDirection = Utility.Interpolate(Trajectory.TargetDirection, transform.forward, decay * Time.deltaTime);
+			Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, decay * Time.deltaTime);
+			for(int i=current+1; i<Trajectory.Length; i++) {
+				Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, decay * Time.deltaTime);
+				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, decay * Time.deltaTime);
+				Trajectory.Rotations[i] = Utility.Interpolate(Trajectory.Rotations[i], transform.rotation, decay * Time.deltaTime);
+			}
+		} else {
+
+		}
 
 		//Update Trajectory
 		float rate = acceleration * Time.deltaTime;
@@ -102,6 +111,7 @@ public class AI : MonoBehaviour {
 			float factor = (float)(i+1)/(float)Trajectory.Length;
 			factor = 2f * factor - 1f;
 			factor = 1f - Mathf.Abs(factor);
+			factor = Utility.Normalise(factor, 0f, 1f, 1f - 60f / Trajectory.Length, 1f);
 
 			Trajectory.Positions[i] = 
 				Trajectory.Positions[i] + Utility.Interpolate(
@@ -124,6 +134,9 @@ public class AI : MonoBehaviour {
 					rate
 				);
 		}
+
+		transform.position = Trajectory.Positions[current];
+		transform.rotation = Trajectory.Rotations[current];
 	}
 	
 	void OnDrawGizmos() {
@@ -140,7 +153,7 @@ public class AI : MonoBehaviour {
 		}
 		Gizmos.color = Color.blue;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.5f * Trajectory.Directions[i]);
+			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
 		}
 
 		Gizmos.color = Color.grey;
