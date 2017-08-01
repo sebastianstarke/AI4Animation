@@ -4,7 +4,7 @@ public class Character {
 
 	public Transform Transform;
 
-	public float Speed = 2.5f;
+	public float Speed = 1f;
 	public float StrafeAmount = 1f;
 	public float StrafeTarget = 1f;
 	public float Phase = 0.0f;

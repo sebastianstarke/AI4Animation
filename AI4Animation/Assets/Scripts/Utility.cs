@@ -21,22 +21,27 @@ public static class Utility {
 	}
 
 	public static float Interpolate(float from, float to, float amount) {
+		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;
 	}
 
 	public static double Interpolate(double from, double to, float amount) {
+		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;
 	}
 
 	public static Vector2 Interpolate(Vector2 from, Vector2 to, float amount) {
+		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;
 	}
 
 	public static Vector3 Interpolate(Vector3 from, Vector3 to, float amount) {
+		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;
 	}
 
 	public static Quaternion Interpolate(Quaternion from, Quaternion to, float amount) {
+		amount = Mathf.Clamp(amount,0f,1f);
 		return Quaternion.Slerp(from,to,amount);
 	}
 

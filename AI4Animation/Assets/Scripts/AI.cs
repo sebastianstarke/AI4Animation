@@ -33,8 +33,8 @@ public class AI : MonoBehaviour {
 	}
 
 	private void RegularUpdate() {
-		//Character.Move(new Vector2(XAxis, YAxis));
-		//Character.Turn(Turn);
+		Character.Move(new Vector2(XAxis, YAxis));
+		Character.Turn(Turn);
 		//Network.Predict(0.5f);
 	}
 
@@ -73,6 +73,11 @@ public class AI : MonoBehaviour {
 	}
 
 	private void HandleTrajectory() {
+		float acceleration = 20f;
+		//float maxVelocity = 2f;
+		float damping = 2f;
+		float decay = 4f;
+
 		int current = Trajectory.Length/2;
 		int last = Trajectory.Length-1;
 		Trajectory.Positions[current] = transform.position;
@@ -81,10 +86,14 @@ public class AI : MonoBehaviour {
 
 		Trajectory.TargetDirection = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
 		Trajectory.TargetDirection.y = 0f;
-		Trajectory.TargetVelocity = Trajectory.TargetVelocity + 5f * Time.deltaTime * Trajectory.TargetDirection;
+		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
+		//Trajectory.TargetVelocity = Mathf.Min(Trajectory.TargetVelocity.magnitude, maxVelocity) * Trajectory.TargetVelocity.normalized;
+		//Debug.Log(Trajectory.TargetVelocity.magnitude);
 		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
 
-		Trajectory.TargetVelocity = 0.9f * Trajectory.TargetVelocity;
+		//Trajectory.TargetVelocity = 0.9f * Trajectory.TargetVelocity;
 		//Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, 0.1f);
 
 		//Vector3 direction = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
