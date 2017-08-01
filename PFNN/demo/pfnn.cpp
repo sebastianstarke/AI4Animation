@@ -1595,7 +1595,6 @@ static void pre_render() {
   }
 
   /* Predict Future Trajectory */
-  
   glm::vec3 trajectory_positions_blend[Trajectory::LENGTH];
   trajectory_positions_blend[Trajectory::LENGTH/2] = trajectory->positions[Trajectory::LENGTH/2];
 

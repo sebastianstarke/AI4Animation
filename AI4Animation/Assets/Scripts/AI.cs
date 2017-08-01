@@ -33,8 +33,8 @@ public class AI : MonoBehaviour {
 	}
 
 	private void RegularUpdate() {
-		Character.Move(new Vector2(XAxis, YAxis));
-		Character.Turn(Turn);
+		//Character.Move(new Vector2(XAxis, YAxis));
+		//Character.Turn(Turn);
 		//Network.Predict(0.5f);
 	}
 
@@ -79,41 +79,41 @@ public class AI : MonoBehaviour {
 		Trajectory.Rotations[current] = transform.rotation;
 		Trajectory.Directions[current] = transform.forward;
 
+		Trajectory.TargetDirection = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
+		Trajectory.TargetDirection.y = 0f;
+		Trajectory.TargetVelocity = Trajectory.TargetVelocity + 5f * Time.deltaTime * Trajectory.TargetDirection;
+		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+
+		Trajectory.TargetVelocity = 0.9f * Trajectory.TargetVelocity;
+		//Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, 0.1f);
+
+		//Vector3 direction = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
+		//direction.y = 0f;
+
+		//Trajectory.TargetVelocity += 1f * Time.deltaTime * Utility.Interpolate(direction, Trajectory.TargetVelocity, 0.25f).normalized;
+		//Trajectory.TargetVelocity = 0.8f * Trajectory.TargetVelocity;
+
 		/*
-		float velocity = 1f*Time.deltaTime;
-		Vector3 targetDirection = UnityEngine.Camera.main.transform.forward;
-		targetDirection.y = 0f;
-		
-		Quaternion targetRotation = UnityEngine.Camera.main.transform.rotation;
-		Vector3 targetVelocity = velocity * (targetRotation * new Vector3(XAxis, 0f, YAxis));
-		targetVelocity.y = 0f;
-		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, targetVelocity, 0.1f);
-
-		targetDirection = Utility.Interpolate(Vector3.Normalize(Trajectory.TargetVelocity), targetDirection, 0.5f);
-		Trajectory.TargetDirection = targetDirection;
-
 		Vector3[] positionsBlend = new Vector3[Trajectory.Length];
 		positionsBlend[current] = Trajectory.Positions[current];
-
 		for(int i=current+1; i<Trajectory.Length; i++) {
 			float bias_pos = 2f;
 			float bias_dir = 0.5f;
-			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - current) / (current)), bias_pos));
-			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - current) / (current)), bias_dir));
+			float scale_pos = (1.0f - Mathf.Pow(1.0f - (float)(i - current) / current, bias_pos));
+			float scale_dir = (1.0f - Mathf.Pow(1.0f - (float)(i - current) / current, bias_dir));
 			positionsBlend[i] = positionsBlend[i-1] + Utility.Interpolate(Trajectory.Positions[i] - Trajectory.Positions[i-1], Trajectory.TargetVelocity, scale_pos);
-			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], Trajectory.TargetDirection, scale_dir);
+			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], Trajectory.TargetVelocity, scale_dir);
 			Trajectory.Heights[i] = Trajectory.Heights[current];
-		}
-
-		for(int i=current+1; i<Trajectory.Length; i++) {
 			Trajectory.Positions[i] = positionsBlend[i];
-		}
-
-		for(int i=0; i<Trajectory.Length; i++) {
 			Trajectory.Rotations[i] = Quaternion.Euler(0f, Vector3.Angle(Vector3.forward, Trajectory.Directions[i]), 0f);
 		}
 		*/
+
+		for(int i=current+1; i<Trajectory.Length; i++) {
+			Trajectory.Positions[i] = Trajectory.Positions[current];
+		}
 		
+		/*
 		//Predict Future Trajectory
 		float targetVelocity = 10f;
 		Vector3 targetDirection = Vector3.Normalize(new Vector3(XAxis, 0f, YAxis));
@@ -149,7 +149,7 @@ public class AI : MonoBehaviour {
 			Trajectory.Rotations[i] = Trajectory.Rotations[last];
 			Trajectory.Directions[i] = Trajectory.Directions[last];
 		}
-
+		*/
 		//Update Previous Trajectory
 		float pastWeight = 0.8f;
 		for(int i=current-1; i>=0; i--) {
@@ -277,8 +277,12 @@ public class AI : MonoBehaviour {
 			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
 		}
 
+		Gizmos.color = Color.grey;
+		Gizmos.DrawSphere(Trajectory.TargetPosition, 0.05f);
 		Gizmos.color = Color.red;
-		Gizmos.DrawSphere(Trajectory.Positions[Trajectory.Length/2], 0.05f);
+		Gizmos.DrawLine(Trajectory.TargetPosition, Trajectory.TargetPosition + Trajectory.TargetDirection);
+		Gizmos.color = Color.green;
+		Gizmos.DrawLine(Trajectory.TargetPosition, Trajectory.TargetPosition + Trajectory.TargetVelocity);
 	}
 
 }

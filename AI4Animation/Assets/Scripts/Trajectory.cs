@@ -43,7 +43,7 @@ public class Trajectory {
 		GaitBump = new float[Length];
 		*/
 
-		TargetPosition = Vector3.zero;
+		TargetPosition = Transform.position;
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
 			Rotations[i] = Transform.rotation;
