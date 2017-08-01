@@ -96,6 +96,7 @@ public class AI : MonoBehaviour {
 		Trajectory.Positions[last] = Trajectory.TargetPosition;
 		Trajectory.Directions[last] = Trajectory.TargetVelocity;
 		Trajectory.Rotations[last] = Trajectory.Directions[last] == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
+		
 		for(int i=Trajectory.Length-2; i>=0; i--) {
 			//float factor = Utility.Interpolate(1f - (float)(i+1)/(float)Trajectory.Length, 1f / (float)Trajectory.Length, density);
 			float factor = (float)(i+1)/(float)Trajectory.Length;
@@ -123,76 +124,6 @@ public class AI : MonoBehaviour {
 					rate
 				);
 		}
-
-		/*
-		int current = Trajectory.Length/2;
-		int last = Trajectory.Length-1;
-
-		Trajectory.Positions[current] = transform.position;
-		Trajectory.Rotations[current] = transform.rotation;
-		Trajectory.Directions[current] = transform.forward;
-
-		//Update Future Trajectory
-		float futureWeight = 0.5f;
-		Trajectory.Positions[last] = Trajectory.TargetPosition;
-		Trajectory.Directions[last] = Trajectory.TargetVelocity;
-		Trajectory.Rotations[last] = Trajectory.Directions[last] == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
-		for(int i=Trajectory.Length-2; i>=current; i--) {
-			int index = i - current + 1;
-			int points = Trajectory.Length - 1 - current;
-			float factor = 1f - (float)(index)/(float)(points);
-
-			Trajectory.Positions[i] = 
-				Trajectory.Positions[i] + Utility.Interpolate(
-					Trajectory.Positions[i+1] - Trajectory.Positions[i], 
-					factor * (Trajectory.Positions[current] - Trajectory.Positions[i]), 
-					futureWeight
-				);
-	
-			Trajectory.Directions[i] = 
-				Trajectory.Directions[i] + Utility.Interpolate(
-					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
-					factor * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
-					futureWeight
-				);
-
-			Trajectory.Rotations[i] = 
-				Trajectory.Rotations[i] * Utility.Interpolate(
-					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
-					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
-					futureWeight
-				);
-		}
-
-		//Update Previous Trajectory
-		float pastWeight = 0.5f;
-		for(int i=current-1; i>=0; i--) {
-			int index = i+1;
-			int points = current + 1;
-			float factor = (float)(index)/(float)(points);
-
-			Trajectory.Positions[i] = 
-				Trajectory.Positions[i] + Utility.Interpolate(
-					Trajectory.Positions[i+1] - Trajectory.Positions[i], 
-					factor * (Trajectory.Positions[current] - Trajectory.Positions[i]), 
-					pastWeight
-				);
-
-			Trajectory.Directions[i] = 
-				Trajectory.Directions[i] + Utility.Interpolate(
-					Trajectory.Directions[i+1] - Trajectory.Directions[i], 
-					factor * (Trajectory.Directions[current] - Trajectory.Directions[i]), 
-					pastWeight
-				);
-
-			Trajectory.Rotations[i] = 
-				Trajectory.Rotations[i] * Utility.Interpolate(
-					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]), 
-					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[current] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
-					pastWeight
-				);
-		}
-		*/
 	}
 	
 	void OnDrawGizmos() {
