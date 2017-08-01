@@ -95,7 +95,7 @@ public class AI : MonoBehaviour {
 		float futureWeight = 0.5f;
 		Trajectory.Positions[last] = Trajectory.TargetPosition;
 		Trajectory.Directions[last] = Trajectory.TargetVelocity;
-		Trajectory.Rotations[last] = Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
+		Trajectory.Rotations[last] = Trajectory.Directions[last] == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
 		for(int i=Trajectory.Length-2; i>=current; i--) {
 			int index = i - current + 1;
 			int points = Trajectory.Length - 1 - current;
