@@ -461,9 +461,9 @@ MonoBehaviour:
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -1.0720031, y: -4.5718365, z: 10.96539}
+    m_Target: {x: 0.26527596, y: -5.7437186, z: 11.075459}
     speed: 2
-    m_Value: {x: -1.0720031, y: -4.5718365, z: 10.96539}
+    m_Value: {x: 0.26527596, y: -5.7437186, z: 11.075459}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -486,9 +486,9 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: -0.2609697, y: 0.38064343, z: -0.11289284, w: -0.87992084}
+    m_Target: {x: -0.3126221, y: 0.33358166, z: -0.11830807, w: -0.88147265}
     speed: 2
-    m_Value: {x: -0.2609697, y: 0.38064343, z: -0.11289284, w: -0.87992084}
+    m_Value: {x: -0.3126221, y: 0.33358166, z: -0.11830807, w: -0.88147265}
   m_Size:
     m_Target: 13.809992
     speed: 2
@@ -557,7 +557,7 @@ MonoBehaviour:
     height: 486
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 2c060000
+    m_SelectedIDs: 
     m_LastClickedID: 0
     m_ExpandedIDs: d0fbffff00000000
     m_RenameOverlay:
@@ -686,7 +686,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: d830000038220000282200000c2d00002c2b0000e437000006380000083800000e380000123800000a3800000c3800001253000040220000c2340000ae3b00001e3b000044220000422200001a3b000048220000b03c00007c3d00003a3e00007e3d000000000000ca33000016310000a23200004e410000
     m_RenameOverlay:
       m_UserAcceptedRename: 0

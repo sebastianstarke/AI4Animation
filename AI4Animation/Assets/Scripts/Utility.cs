@@ -52,4 +52,8 @@ public static class Utility {
 			) * Mathf.Rad2Deg;
 	}
 
+	public static Vector3 RotateAround(Vector3 vector, Vector3 pivot, Vector3 axis, float angle) {
+		return Quaternion.AngleAxis(angle, axis) * (vector - pivot) + vector;
+	}
+
 }

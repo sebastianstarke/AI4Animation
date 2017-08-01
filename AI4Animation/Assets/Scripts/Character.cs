@@ -12,7 +12,7 @@ public class Character {
 	}
 
 	public void Move(Vector2 direction) {
-		float acceleration = 6f;
+		float acceleration = 5f;
 		float damping = 2f;
 
 		Velocity = Utility.Interpolate(Velocity, Vector3.zero, damping * Time.deltaTime);

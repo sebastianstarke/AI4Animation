@@ -29,15 +29,102 @@ public class AI : MonoBehaviour {
 
 	private void PreUpdate() {
 		HandleInput();
-		HandleTrajectory();
+
+		//Update Trajectory Targets
+		float acceleration = 15f;
+		float damping = 5f;
+		float decay = 2.5f;
+
+		int current = Trajectory.Length/2;
+		int last = Trajectory.Length-1;
+
+		Trajectory.TargetDirection = /*transform.rotation **/ new Vector3(XAxis, 0f, YAxis).normalized;
+		Trajectory.TargetDirection.y = 0f;
+		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
+		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+
+		if(Trajectory.TargetDirection.magnitude == 0f) {
+			Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
+			Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, decay * Time.deltaTime);
+			for(int i=current+1; i<Trajectory.Length; i++) {
+				Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, decay * Time.deltaTime);
+				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, decay * Time.deltaTime);
+			}
+		} else {
+
+		}
+
+		//Predict Trajectory
+		float rate = 10f * Time.deltaTime;
+
+		Trajectory.Positions[last] = Trajectory.TargetPosition;
+		Trajectory.Directions[last] = Trajectory.TargetVelocity;
+
+		for(int i=Trajectory.Length-2; i>=0; i--) {
+			float factor = (float)(i+1)/(float)Trajectory.Length;
+			factor = 2f * factor - 1f;
+			factor = 1f - Mathf.Abs(factor);
+			factor = Utility.Normalise(factor, 1f/(float)Trajectory.Length, ((float)Trajectory.Length-1f)/(float)Trajectory.Length, 1f - 60f / Trajectory.Length, 1f);
+
+			Trajectory.Positions[i] = 
+				Trajectory.Positions[i] + Utility.Interpolate(
+					factor * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
+					Trajectory.Positions[i+1] - Trajectory.Positions[i],
+					rate
+				);
+
+			Trajectory.Directions[i] = 
+				Trajectory.Directions[i] + Utility.Interpolate(
+					factor * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
+					Trajectory.Directions[i+1] - Trajectory.Directions[i],
+					rate
+				);
+		}
 	}
 
 	private void RegularUpdate() {
-		//Character.Move(new Vector2(XAxis, YAxis));
+		Character.Move(new Vector2(XAxis, YAxis));
+
+		//int current = Trajectory.Length/2;
+		//int last = Trajectory.Length-1;
+		//transform.position = Trajectory.Positions[current];
+		//transform.rotation = Quaternion.LookRotation(Trajectory.Directions[current], Vector3.up);
+		
 		//Network.Predict(0.5f);
 	}
 
 	private void PostUpdate() {
+		//Adjust Trajectory
+		int current = Trajectory.Length/2;
+		int last = Trajectory.Length-1;
+
+		Vector3 error = (transform.position - Trajectory.Positions[current]);
+
+		for(int i=0; i<Trajectory.Length; i++) {
+			float factor = (float)i / (float)(Trajectory.Length-1);
+			Trajectory.Positions[i] += factor * error;
+			Trajectory.Directions[i] += factor * error;
+		}
+
+		Trajectory.TargetVelocity += Trajectory.Positions[last] - Trajectory.TargetPosition;
+		Trajectory.TargetPosition = Trajectory.Positions[last];
+
+		/*
+		for(int i=0; i<=current; i++) {
+			float factor = (float)(i+1) / (float)(current+1);
+			Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, Mathf.Pow(factor,10f));
+			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, Mathf.Pow(factor,10f));
+		}
+
+		//Trajectory.TargetPosition += error;
+		for(int i=current+1; i<Trajectory.Length; i++) {
+			float factor = 1f - (float)(i-current-1) / (float)(Trajectory.Length-current-2);
+			Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, factor);
+			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, factor);
+		}
+		*/
+
 		//Character.Phase = GetPhase();
 	}
 
@@ -71,63 +158,6 @@ public class AI : MonoBehaviour {
 		}
 	}
 
-	private void HandleTrajectory() {
-		float acceleration = 20f;
-		float damping = 5f;
-		float decay = 2.5f;
-
-		int current = Trajectory.Length/2;
-		int last = Trajectory.Length-1;
-
-		Trajectory.TargetDirection = /*transform.rotation **/ new Vector3(XAxis, 0f, YAxis).normalized;
-		Trajectory.TargetDirection.y = 0f;
-		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
-		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
-		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
-
-		if(Trajectory.TargetDirection.magnitude == 0f) {
-			Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
-			Trajectory.TargetDirection = Utility.Interpolate(Trajectory.TargetDirection, transform.forward, decay * Time.deltaTime);
-			Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, decay * Time.deltaTime);
-			for(int i=current+1; i<Trajectory.Length; i++) {
-				Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, decay * Time.deltaTime);
-				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, decay * Time.deltaTime);
-			}
-		} else {
-
-		}
-
-		//Update Trajectory
-		float rate = 5f * Time.deltaTime;
-
-		Trajectory.Positions[last] = Trajectory.TargetPosition;
-		Trajectory.Directions[last] = Trajectory.TargetVelocity;
-
-		for(int i=Trajectory.Length-2; i>=0; i--) {
-			float factor = (float)(i+1)/(float)Trajectory.Length;
-			factor = 2f * factor - 1f;
-			factor = 1f - Mathf.Abs(factor);
-			factor = Utility.Normalise(factor, 1f/(float)Trajectory.Length, ((float)Trajectory.Length-1f)/(float)Trajectory.Length, 1f - 60f / Trajectory.Length, 1f);
-
-			Trajectory.Positions[i] = 
-				Trajectory.Positions[i] + Utility.Interpolate(
-					factor * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
-					Trajectory.Positions[i+1] - Trajectory.Positions[i],
-					rate
-				);
-
-			Trajectory.Directions[i] = 
-				Trajectory.Directions[i] + Utility.Interpolate(
-					factor * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
-					Trajectory.Directions[i+1] - Trajectory.Directions[i],
-					rate
-				);
-		}
-
-		transform.position = Trajectory.Positions[current];
-		transform.rotation = Quaternion.LookRotation(Trajectory.Directions[current], Vector3.up);
-	}
-	
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
 			return;
