@@ -11,7 +11,6 @@ public class Trajectory {
 	public Vector3 TargetDirection;
 
 	public Vector3[] Positions;
-	public Quaternion[] Rotations;
 	public Vector3[] Directions;
 	public float[] Heights;
 	
@@ -30,7 +29,6 @@ public class Trajectory {
 		Transform = t;
 
 		Positions = new Vector3[Length];
-		Rotations = new Quaternion[Length];
 		Directions = new Vector3[Length];
 		Heights = new float[Length];
 
@@ -46,15 +44,13 @@ public class Trajectory {
 		TargetPosition = Transform.position;
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
-			Rotations[i] = Transform.rotation;
 			Directions[i] = Transform.forward;
 			Heights[i] = Transform.position.y;
 		}
 	}
 
-	public void SetTarget(Vector3 position, Quaternion rotation, Vector3 direction) {
+	public void SetTarget(Vector3 position, Vector3 direction) {
 		Positions[Length-1] = position;
-		Rotations[Length-1] = rotation;
 		Directions[Length-1] = direction;
 	}
 

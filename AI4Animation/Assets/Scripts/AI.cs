@@ -72,7 +72,7 @@ public class AI : MonoBehaviour {
 	}
 
 	private void HandleTrajectory() {
-		float acceleration = 10f;
+		float acceleration = 20f;
 		float damping = 5f;
 		float decay = 2.5f;
 
@@ -92,26 +92,22 @@ public class AI : MonoBehaviour {
 			for(int i=current+1; i<Trajectory.Length; i++) {
 				Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, decay * Time.deltaTime);
 				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, decay * Time.deltaTime);
-				Trajectory.Rotations[i] = Utility.Interpolate(Trajectory.Rotations[i], transform.rotation, decay * Time.deltaTime);
 			}
 		} else {
 
 		}
 
 		//Update Trajectory
-		float rate = acceleration * Time.deltaTime;
-		//float density = 0f;
+		float rate = 5f * Time.deltaTime;
 
 		Trajectory.Positions[last] = Trajectory.TargetPosition;
 		Trajectory.Directions[last] = Trajectory.TargetVelocity;
-		Trajectory.Rotations[last] = Trajectory.Directions[last] == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
-		
+
 		for(int i=Trajectory.Length-2; i>=0; i--) {
-			//float factor = Utility.Interpolate(1f - (float)(i+1)/(float)Trajectory.Length, 1f / (float)Trajectory.Length, density);
 			float factor = (float)(i+1)/(float)Trajectory.Length;
 			factor = 2f * factor - 1f;
 			factor = 1f - Mathf.Abs(factor);
-			factor = Utility.Normalise(factor, 0f, 1f, 1f - 60f / Trajectory.Length, 1f);
+			factor = Utility.Normalise(factor, 1f/(float)Trajectory.Length, ((float)Trajectory.Length-1f)/(float)Trajectory.Length, 1f - 60f / Trajectory.Length, 1f);
 
 			Trajectory.Positions[i] = 
 				Trajectory.Positions[i] + Utility.Interpolate(
@@ -126,17 +122,10 @@ public class AI : MonoBehaviour {
 					Trajectory.Directions[i+1] - Trajectory.Directions[i],
 					rate
 				);
-
-			Trajectory.Rotations[i] = 
-				Trajectory.Rotations[i] * Utility.Interpolate(
-					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
-					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]),
-					rate
-				);
 		}
 
 		transform.position = Trajectory.Positions[current];
-		transform.rotation = Trajectory.Rotations[current];
+		transform.rotation = Quaternion.LookRotation(Trajectory.Directions[current], Vector3.up);
 	}
 	
 	void OnDrawGizmos() {
