@@ -34,7 +34,6 @@ public class AI : MonoBehaviour {
 
 	private void RegularUpdate() {
 		//Character.Move(new Vector2(XAxis, YAxis));
-		//Character.Turn(Turn);
 		//Network.Predict(0.5f);
 	}
 
@@ -73,23 +72,65 @@ public class AI : MonoBehaviour {
 	}
 
 	private void HandleTrajectory() {
-		float acceleration = 20f;
-		//float maxVelocity = 2f;
-		float damping = 2f;
-		float decay = 4f;
+		float acceleration = 10f;
+		float damping = 5f;
+		float decay = 1f;
 
 		int current = Trajectory.Length/2;
 		int last = Trajectory.Length-1;
-		Trajectory.Positions[current] = transform.position;
-		Trajectory.Rotations[current] = transform.rotation;
-		Trajectory.Directions[current] = transform.forward;
 
-		Trajectory.TargetDirection = transform.rotation * new Vector3(XAxis, 0f, YAxis).normalized;
+		Trajectory.TargetDirection = /*transform.rotation **/ new Vector3(XAxis, 0f, YAxis).normalized;
 		Trajectory.TargetDirection.y = 0f;
 		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
 		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
 		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
-		Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
+		//Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, Trajectory.Positions[current], decay * Time.deltaTime);
+		
+		transform.position = Trajectory.Positions[current];
+		transform.rotation = Trajectory.Rotations[current];
+
+		//Update Trajectory
+		float rate = acceleration * Time.deltaTime;
+		//float density = 0f;
+
+		Trajectory.Positions[last] = Trajectory.TargetPosition;
+		Trajectory.Directions[last] = Trajectory.TargetVelocity;
+		Trajectory.Rotations[last] = Trajectory.Directions[last] == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(Trajectory.Directions[last], Vector3.up);
+		for(int i=Trajectory.Length-2; i>=0; i--) {
+			//float factor = Utility.Interpolate(1f - (float)(i+1)/(float)Trajectory.Length, 1f / (float)Trajectory.Length, density);
+			float factor = (float)(i+1)/(float)Trajectory.Length;
+			factor = 2f * factor - 1f;
+			factor = 1f - Mathf.Abs(factor);
+
+			Trajectory.Positions[i] = 
+				Trajectory.Positions[i] + Utility.Interpolate(
+					factor * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
+					Trajectory.Positions[i+1] - Trajectory.Positions[i],
+					rate
+				);
+
+			Trajectory.Directions[i] = 
+				Trajectory.Directions[i] + Utility.Interpolate(
+					factor * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
+					Trajectory.Directions[i+1] - Trajectory.Directions[i],
+					rate
+				);
+
+			Trajectory.Rotations[i] = 
+				Trajectory.Rotations[i] * Utility.Interpolate(
+					Utility.Interpolate(Quaternion.identity, (Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i])), factor),
+					Trajectory.Rotations[i+1] * Quaternion.Inverse(Trajectory.Rotations[i]),
+					rate
+				);
+		}
+
+		/*
+		int current = Trajectory.Length/2;
+		int last = Trajectory.Length-1;
+
+		Trajectory.Positions[current] = transform.position;
+		Trajectory.Rotations[current] = transform.rotation;
+		Trajectory.Directions[current] = transform.forward;
 
 		//Update Future Trajectory
 		float futureWeight = 0.5f;
@@ -151,87 +192,8 @@ public class AI : MonoBehaviour {
 					pastWeight
 				);
 		}
+		*/
 	}
-
-	/*
-	private void HandleTrajectory() {
-		float velocity = 1f*Time.deltaTime;
-		Vector3 targetDirection = UnityEngine.Camera.main.transform.forward;
-		
-		Quaternion targetRotation = UnityEngine.Camera.main.transform.rotation;
-		Vector3 targetVelocity = velocity * (targetRotation * new Vector3(XAxis, 0f, YAxis));
-		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, targetVelocity, 0.5f);
-
-		Character.StrafeTarget = 0.5f;
-		Character.StrafeAmount = Utility.Interpolate(Character.StrafeAmount, Character.StrafeTarget, 0.9f);
-
-		targetDirection = Utility.Interpolate(Vector3.Normalize(Trajectory.TargetVelocity), targetDirection, 0.5f);
-		Trajectory.TargetDirection = Utility.Interpolate(Trajectory.TargetDirection, targetDirection, Character.StrafeAmount);
-
-		Vector3[] positionsBlend = new Vector3[Trajectory.Length];
-		positionsBlend[Trajectory.Length/2] = Trajectory.Positions[Trajectory.Length/2];
-
-		for(int i=Trajectory.Length/2+1; i<Trajectory.Length; i++) {
-			float bias_pos = 2f;
-			float bias_dir = 4f;
-			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - Trajectory.Length/2) / (Trajectory.Length/2)), bias_pos));
-			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - Trajectory.Length/2) / (Trajectory.Length/2)), bias_dir));
-			positionsBlend[i] = positionsBlend[i-1] + Utility.Interpolate(Trajectory.Positions[i] - Trajectory.Positions[i-1], Trajectory.TargetVelocity, scale_pos);
-			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], Trajectory.TargetDirection, scale_dir);
-			Trajectory.Heights[i] = Trajectory.Heights[Trajectory.Length/2];
-		}
-
-		for(int i=Trajectory.Length/2+1; i<Trajectory.Length; i++) {
-			Trajectory.Positions[i] = positionsBlend[i];
-		}
-
-		for(int i=0; i<Trajectory.Length; i++) {
-			Trajectory.Rotations[i] = Quaternion.Euler(0f, Vector3.Angle(Vector3.forward, Trajectory.Directions[i]), 0f);
-		}
-
-		for(int i=Trajectory.Length/2; i<Trajectory.Length; i++) {
-			Trajectory.Positions[i].y = transform.position.y;
-		}
-
-		for(int i=Trajectory.Length/2; i>=0; i--) {
-			Trajectory.Positions[i]  = Trajectory.Positions[i+1];
-			Trajectory.Directions[i] = Trajectory.Directions[i+1];
-			Trajectory.Rotations[i] = Trajectory.Rotations[i+1];
-			Trajectory.Heights[i] = Trajectory.Heights[i+1];
-		}
-  	}
-	*/
-
-	/*
-	private void HandlePostTrajectory() {
-		for(int i=0; i<Trajectory.Length/2; i++) {
-			Trajectory.Positions[i]  = Trajectory.Positions[i+1];
-			Trajectory.Directions[i] = Trajectory.Directions[i+1];
-			Trajectory.Rotations[i] = Trajectory.Rotations[i+1];
-			Trajectory.Heights[i] = Trajectory.Heights[i+1];
-		}
-
-		float gaitStand = 0.5f;
-		float stand_amount = Mathf.Pow(1.0f - gaitStand, 0.25f);
-		Vector3 trajectoryUpdate = Trajectory.Rotations[Trajectory.Length/2] * new Vector3(Network.Yp[0,0], 0f, Network.Yp[1,0]);
-		Trajectory.Positions[Trajectory.Length/2]  = Trajectory.Positions[Trajectory.Length/2] + stand_amount * trajectoryUpdate;
-		Trajectory.Directions[Trajectory.Length/2] = 
-		Quaternion.Euler(0f, stand_amount * -Network.Yp[2,0], 0f) * Trajectory.Directions[Trajectory.Length/2];
-		Trajectory.Rotations[Trajectory.Length/2] = Quaternion.Euler(0f, Utility.GetSignedAngle(Trajectory.Directions[Trajectory.Length/2], Vector3.forward, Vector3.up), 0f);
-
-		for(int i=Trajectory.Length/2+1; i<Trajectory.Length; i++) {
-			int w = (Trajectory.Length/2) / 10;
-			float m = Mathf.Repeat(((float)i - (Trajectory.Length/2)) / 10f, 1f);
-			Trajectory.Positions[i].x = (1-m) * Network.Yp[8+(w*0)+(i/10)-w,0] + m * Network.Yp[8+(w*0)+(i/10)-w+1,0];
-			Trajectory.Positions[i].z  = (1-m) * Network.Yp[8+(w*1)+(i/10)-w,0] + m * Network.Yp[8+(w*1)+(i/10)-w+1,0];
-			Trajectory.Directions[i].x = (1-m) * Network.Yp[8+(w*2)+(i/10)-w,0] + m * Network.Yp[8+(w*2)+(i/10)-w+1,0];
-			Trajectory.Directions[i].z = (1-m) * Network.Yp[8+(w*3)+(i/10)-w,0] + m * Network.Yp[8+(w*3)+(i/10)-w+1,0];
-			Trajectory.Positions[i]    = (Trajectory.Rotations[Trajectory.Length/2] * Trajectory.Positions[i]) + Trajectory.Positions[Trajectory.Length/2];
-			Trajectory.Directions[i]   = Vector3.Normalize((Trajectory.Rotations[Trajectory.Length/2] * Trajectory.Directions[i]));
-			Trajectory.Rotations[i]    = Quaternion.Euler(0f, Utility.GetSignedAngle(Trajectory.Directions[i], Vector3.forward, Vector3.up), 0f);
-		}
-	}
-	*/
 	
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
@@ -247,7 +209,7 @@ public class AI : MonoBehaviour {
 		}
 		Gizmos.color = Color.blue;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
+			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.5f * Trajectory.Directions[i]);
 		}
 
 		Gizmos.color = Color.grey;
