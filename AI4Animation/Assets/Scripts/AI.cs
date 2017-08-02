@@ -111,7 +111,7 @@ public class AI : MonoBehaviour {
 			float factor = (float)i / (float)(Trajectory.Length-1);
 			Trajectory.Positions[i] += factor * positionError;
 			//Trajectory.Directions[i] += factor * directionError;
-			Trajectory.Directions[i] += factor * new Vector3(positionError.x, 0f, positionError.y);
+			Trajectory.Directions[i] += factor * positionError;
 		}
 
 		for(int i=0; i<Trajectory.Length; i++) {
@@ -183,7 +183,9 @@ public class AI : MonoBehaviour {
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
 			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Trajectory.Directions[i];
 			Vector3 left = Trajectory.Positions[i] - 0.15f * ortho.normalized;
+			left.y = GetHeight(left.x, left.z);
 			Vector3 right = Trajectory.Positions[i] + 0.15f * ortho.normalized;
+			right.y = GetHeight(right.x, right.z);
 			Gizmos.DrawLine(Trajectory.Positions[i], left);
 			Gizmos.DrawLine(Trajectory.Positions[i], right);
 			Gizmos.DrawSphere(left, 0.01f);
@@ -191,7 +193,7 @@ public class AI : MonoBehaviour {
 		}
 		Gizmos.color = Color.green;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + Trajectory.Directions[i]);
+			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
 		}
 		Gizmos.color = Color.cyan;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
