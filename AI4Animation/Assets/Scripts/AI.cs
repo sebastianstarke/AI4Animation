@@ -40,11 +40,15 @@ public class AI : MonoBehaviour {
 
 		Trajectory.TargetDirection = /*transform.rotation **/ new Vector3(XAxis, 0f, YAxis).normalized;
 		Trajectory.TargetDirection.y = 0f;
-		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
-		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
+		Vector3 velocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		velocity = velocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
+		//Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		//Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
 		Vector3 target = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
-		if(!Physics.CheckSphere(target, 0.03f, LayerMask.GetMask("Obstacles"))) {
-			Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		//Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		if(!Physics.CheckSphere(target, 0.1f, LayerMask.GetMask("Obstacles"))) {
+			Trajectory.TargetPosition = target;
+			Trajectory.TargetVelocity = velocity;
 		}
 
 		if(Trajectory.TargetDirection.magnitude == 0f) {
