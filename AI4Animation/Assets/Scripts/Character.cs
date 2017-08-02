@@ -16,8 +16,12 @@ public class Character {
 		float damping = 2f;
 
 		Velocity = Utility.Interpolate(Velocity, Vector3.zero, damping * Time.deltaTime);
-		Velocity += acceleration * Time.deltaTime * (Transform.rotation * new Vector3(direction.x, 0f, direction.y).normalized);
+		Velocity += acceleration * Time.deltaTime * (new Vector3(direction.x, 0f, direction.y).normalized);
 		Transform.position += Velocity * Time.deltaTime;
+	}
+
+	public void Turn(float direction) {
+		Transform.Rotate(0f, 100f*direction*Time.deltaTime, 0f);
 	}
 
 }

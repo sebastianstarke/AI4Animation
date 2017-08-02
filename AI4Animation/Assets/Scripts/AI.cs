@@ -49,12 +49,10 @@ public class AI : MonoBehaviour {
 			Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, decay * Time.deltaTime);
 			for(int i=current+1; i<Trajectory.Length; i++) {
 				Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, decay * Time.deltaTime);
-				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, decay * Time.deltaTime);
+				Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], Vector3.zero, decay * Time.deltaTime);
 			}
-		} else {
-
 		}
-
+		
 		//Predict Trajectory
 		float rate = 10f * Time.deltaTime;
 
@@ -85,6 +83,7 @@ public class AI : MonoBehaviour {
 
 	private void RegularUpdate() {
 		Character.Move(new Vector2(XAxis, YAxis));
+		//Character.Turn(Turn);
 
 		//int current = Trajectory.Length/2;
 		//int last = Trajectory.Length-1;
@@ -99,33 +98,32 @@ public class AI : MonoBehaviour {
 		int current = Trajectory.Length/2;
 		int last = Trajectory.Length-1;
 
-		Vector3 error = (transform.position - Trajectory.Positions[current]);
-
+		Vector3 positionError = (transform.position - Trajectory.Positions[current]);
+		//Vector3 directionError = (transform.forward - Trajectory.Directions[current]);
 		for(int i=0; i<Trajectory.Length; i++) {
 			float factor = (float)i / (float)(Trajectory.Length-1);
-			Trajectory.Positions[i] += factor * error;
-			Trajectory.Directions[i] += factor * error;
+			Trajectory.Positions[i] += factor * positionError;
+			//Trajectory.Directions[i] += factor * directionError;
+			Trajectory.Directions[i] += factor * new Vector3(positionError.x, 0f, positionError.y);
 		}
 
-		Trajectory.TargetVelocity += Trajectory.Positions[last] - Trajectory.TargetPosition;
+		for(int i=0; i<Trajectory.Length; i++) {
+			Trajectory.Positions[i].y = GetHeight(Trajectory.Positions[i].x, Trajectory.Positions[i].z);
+		}
+
 		Trajectory.TargetPosition = Trajectory.Positions[last];
 
-		/*
-		for(int i=0; i<=current; i++) {
-			float factor = (float)(i+1) / (float)(current+1);
-			Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, Mathf.Pow(factor,10f));
-			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, Mathf.Pow(factor,10f));
-		}
-
-		//Trajectory.TargetPosition += error;
-		for(int i=current+1; i<Trajectory.Length; i++) {
-			float factor = 1f - (float)(i-current-1) / (float)(Trajectory.Length-current-2);
-			Trajectory.Positions[i] = Utility.Interpolate(Trajectory.Positions[i], transform.position, factor);
-			Trajectory.Directions[i] = Utility.Interpolate(Trajectory.Directions[i], transform.forward, factor);
-		}
-		*/
-
 		//Character.Phase = GetPhase();
+	}
+
+	private float GetHeight(float x, float y) {
+		RaycastHit hit;
+		bool intersection = Physics.Raycast(new Vector3(x,-1f,y), Vector3.up, out hit);
+		if(intersection) {
+			return hit.point.y;
+		} else {
+			return 0f;
+		}
 	}
 
 	private float GetPhase() {
@@ -166,17 +164,27 @@ public class AI : MonoBehaviour {
 		for(int i=0; i<Trajectory.Positions.Length-1; i++) {
 			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i+1]);
 		}
-		Gizmos.color = Color.cyan;
-		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawSphere(Trajectory.Positions[i], 0.025f);
-		}
 		Gizmos.color = Color.blue;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
+			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Trajectory.Directions[i];
+			Vector3 left = Trajectory.Positions[i] - 0.15f * ortho.normalized;
+			Vector3 right = Trajectory.Positions[i] + 0.15f * ortho.normalized;
+			Gizmos.DrawLine(Trajectory.Positions[i], left);
+			Gizmos.DrawLine(Trajectory.Positions[i], right);
+			Gizmos.DrawSphere(left, 0.01f);
+			Gizmos.DrawSphere(right, 0.01f);
+		}
+		Gizmos.color = Color.green;
+		for(int i=0; i<Trajectory.Positions.Length; i++) {
+			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.15f * Trajectory.Directions[i]);
+		}
+		Gizmos.color = Color.cyan;
+		for(int i=0; i<Trajectory.Positions.Length; i++) {
+			Gizmos.DrawSphere(Trajectory.Positions[i], 0.015f);
 		}
 
-		Gizmos.color = Color.grey;
-		Gizmos.DrawSphere(Trajectory.TargetPosition, 0.05f);
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawSphere(Trajectory.TargetPosition, 0.03f);
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(Trajectory.TargetPosition, Trajectory.TargetPosition + Trajectory.TargetDirection);
 		Gizmos.color = Color.green;
