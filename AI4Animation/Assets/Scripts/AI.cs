@@ -116,6 +116,11 @@ public class AI : MonoBehaviour {
 
 		for(int i=0; i<Trajectory.Length; i++) {
 			Trajectory.Positions[i].y = GetHeight(Trajectory.Positions[i].x, Trajectory.Positions[i].z);
+			
+			Vector3 start = Trajectory.Positions[i];
+			Vector3 end = Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i].normalized;
+			end.y = (GetHeight(end.x, end.z) - start.y) / 0.1f;
+			Trajectory.Directions[i].y = end.y;
 		}
 
 		Trajectory.TargetPosition = Trajectory.Positions[last];
@@ -125,7 +130,10 @@ public class AI : MonoBehaviour {
 
 	private float GetHeight(float x, float y) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,-1f,y), Vector3.up, out hit);
+		bool intersection = Physics.Raycast(new Vector3(x,-10f,y), Vector3.up, out hit, LayerMask.GetMask("Ground"));
+		if(!intersection) {
+			intersection = Physics.Raycast(new Vector3(x,10f,y), Vector3.down, out hit, LayerMask.GetMask("Ground"));
+		}
 		if(intersection) {
 			return hit.point.y;
 		} else {
@@ -183,7 +191,7 @@ public class AI : MonoBehaviour {
 		}
 		Gizmos.color = Color.green;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.15f * Trajectory.Directions[i]);
+			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + Trajectory.Directions[i]);
 		}
 		Gizmos.color = Color.cyan;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
