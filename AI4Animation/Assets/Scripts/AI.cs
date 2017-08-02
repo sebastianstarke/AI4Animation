@@ -61,30 +61,49 @@ public class AI : MonoBehaviour {
 		}
 		
 		//Predict Trajectory
-		float rate = 10f * Time.deltaTime;
+		//float rate = 10f * Time.deltaTime;
+		float rate = 0.5f;
 
 		Trajectory.Positions[last] = Trajectory.TargetPosition;
 		Trajectory.Directions[last] = Trajectory.TargetVelocity;
 
+		float pastDamp = 1.5f;
+		float futureDamp = 1.5f;
 		for(int i=Trajectory.Length-2; i>=0; i--) {
 			float factor = (float)(i+1)/(float)Trajectory.Length;
 			factor = 2f * factor - 1f;
 			factor = 1f - Mathf.Abs(factor);
 			factor = Utility.Normalise(factor, 1f/(float)Trajectory.Length, ((float)Trajectory.Length-1f)/(float)Trajectory.Length, 1f - 60f / Trajectory.Length, 1f);
 
-			Trajectory.Positions[i] = 
-				Trajectory.Positions[i] + Utility.Interpolate(
-					factor * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
-					Trajectory.Positions[i+1] - Trajectory.Positions[i],
-					rate
-				);
+			if(i < current) {
+				Trajectory.Positions[i] = 
+					Trajectory.Positions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, pastDamp) * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
+						Trajectory.Positions[i+1] - Trajectory.Positions[i],
+						rate
+					);
 
-			Trajectory.Directions[i] = 
-				Trajectory.Directions[i] + Utility.Interpolate(
-					factor * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
-					Trajectory.Directions[i+1] - Trajectory.Directions[i],
-					rate
-				);
+				Trajectory.Directions[i] = 
+					Trajectory.Directions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, pastDamp) * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
+						Trajectory.Directions[i+1] - Trajectory.Directions[i],
+						rate
+					);
+			} else {
+				Trajectory.Positions[i] = 
+					Trajectory.Positions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, futureDamp) * (Trajectory.Positions[i+1] - Trajectory.Positions[i]), 
+						Trajectory.Positions[i+1] - Trajectory.Positions[i],
+						rate
+					);
+
+				Trajectory.Directions[i] = 
+					Trajectory.Directions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, futureDamp) * (Trajectory.Directions[i+1] - Trajectory.Directions[i]), 
+						Trajectory.Directions[i+1] - Trajectory.Directions[i],
+						rate
+					);
+			}
 		}
 	}
 
@@ -116,7 +135,6 @@ public class AI : MonoBehaviour {
 
 		for(int i=0; i<Trajectory.Length; i++) {
 			Trajectory.Positions[i].y = GetHeight(Trajectory.Positions[i].x, Trajectory.Positions[i].z);
-			
 			Vector3 start = Trajectory.Positions[i];
 			Vector3 end = Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i].normalized;
 			end.y = (GetHeight(end.x, end.z) - start.y) / 0.1f;
@@ -195,7 +213,7 @@ public class AI : MonoBehaviour {
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
 			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + 0.25f * Trajectory.Directions[i]);
 		}
-		Gizmos.color = Color.cyan;
+		Gizmos.color = Color.red;
 		for(int i=0; i<Trajectory.Positions.Length; i++) {
 			Gizmos.DrawSphere(Trajectory.Positions[i], 0.015f);
 		}
