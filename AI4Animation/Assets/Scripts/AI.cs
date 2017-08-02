@@ -42,7 +42,10 @@ public class AI : MonoBehaviour {
 		Trajectory.TargetDirection.y = 0f;
 		Trajectory.TargetVelocity = Utility.Interpolate(Trajectory.TargetVelocity, Vector3.zero, damping * Time.deltaTime);
 		Trajectory.TargetVelocity = Trajectory.TargetVelocity + acceleration * Time.deltaTime * Trajectory.TargetDirection;
-		Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		Vector3 target = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		if(!Physics.CheckSphere(target, 0.03f, LayerMask.GetMask("Obstacles"))) {
+			Trajectory.TargetPosition = Trajectory.TargetPosition + Time.deltaTime * Trajectory.TargetVelocity;
+		}
 
 		if(Trajectory.TargetDirection.magnitude == 0f) {
 			Trajectory.TargetPosition = Utility.Interpolate(Trajectory.TargetPosition, transform.position, decay * Time.deltaTime);
