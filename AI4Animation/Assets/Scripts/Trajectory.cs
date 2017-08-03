@@ -11,7 +11,7 @@ public class Trajectory {
 	public Vector3 TargetDirection;
 
 	public Vector3[] Positions;
-	public Vector3[] Directions;
+	public Vector3[] Velocities;
 	public float[] Heights;
 	
 	/*
@@ -29,7 +29,7 @@ public class Trajectory {
 		Transform = t;
 
 		Positions = new Vector3[Length];
-		Directions = new Vector3[Length];
+		Velocities = new Vector3[Length];
 		Heights = new float[Length];
 
 		/*
@@ -44,14 +44,14 @@ public class Trajectory {
 		TargetPosition = Transform.position;
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
-			Directions[i] = Transform.forward;
+			Velocities[i] = Transform.forward;
 			Heights[i] = Transform.position.y;
 		}
 	}
 
-	public void SetTarget(Vector3 position, Vector3 direction) {
+	public void SetTarget(Vector3 position, Vector3 velocity) {
 		Positions[Length-1] = position;
-		Directions[Length-1] = direction;
+		Velocities[Length-1] = velocity;
 	}
 
 }
