@@ -1,7 +1,6 @@
 import numpy as np
 import theano
 import theano.tensor as T
-
 from Layer import Layer
 
 class ActivationLayer(Layer):
