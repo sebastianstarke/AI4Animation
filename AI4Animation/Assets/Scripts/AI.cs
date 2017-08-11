@@ -18,7 +18,6 @@ public class AI : MonoBehaviour {
 		Network.Load();
 
 		Network.Predict(0f);
-		
 		for(int i=0; i<Network.Yp.RowCount; i++) {
 			Debug.Log(Network.Yp[i, 0]);
 		}
