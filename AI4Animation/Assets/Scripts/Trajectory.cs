@@ -42,6 +42,7 @@ public class Trajectory {
 		*/
 
 		TargetPosition = Transform.position;
+		
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
 			Velocities[i] = Transform.forward;
