@@ -13,6 +13,6 @@ The algorithmic framework is shown below. In addition to the extended PFNN versi
 
 Development Status
 ------------
-Currently, the code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano to generate the motion of the characters. However, it is not yet mapped to the bones of the character (Kyle) who is currently used inside the project. This is the next task to be done. The trajectory estimation module has been implemented which is required for generating the input for the network through user input, as shown below. It provides a smooth transition between past and future states, and rejects paths which would collide with obstacles.
+Currently, the code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano to generate the motion of the characters. However, it is not yet mapped to the bones of the character (Kyle) who is currently used inside the project. This is the next task to be done. The trajectory estimation module has been implemented which is required for generating the input for the network through user input, as shown below. It provides a smooth transition between past and future states, provides position and direction / velocity information, and rejects paths which would collide with obstacles.
 
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Trajectory.png" width="100%">
