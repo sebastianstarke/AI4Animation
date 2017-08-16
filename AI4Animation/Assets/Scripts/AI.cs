@@ -14,20 +14,16 @@ public class AI : MonoBehaviour {
 	private const float M_PI = 3.14159265358979323846f;
 
 	void Start() {
-		/*
+		
 		Network = new PFNN(PFNN.MODE.CONSTANT);
-		Network.Load();
-
-		Network.Predict(0f);
-		for(int i=0; i<Network.Yp.RowCount; i++) {
-			Debug.Log(Network.Yp[i, 0]);
-		}
-		*/
+		
 		Character = new Character(transform);
 		Trajectory = new Trajectory(transform);
 	}
 
 	void Update() {
+		Predict();
+
 		PreUpdate();
 		RegularUpdate();
 		PostUpdate();
@@ -35,6 +31,15 @@ public class AI : MonoBehaviour {
 		Vector3 angles = Quaternion.LookRotation(Trajectory.Velocities[Trajectory.Length/2], Vector3.up).eulerAngles;
 		angles.x = 0f;
 		transform.rotation = Quaternion.Euler(0f,90f,0f) * Quaternion.Euler(angles);
+	}
+
+	private void Predict() {
+		string output = string.Empty;
+		Matrix<float> result = Network.Predict(0f);
+		for(int i=0; i<Network.YDim; i++) {
+			output += result[i, 0] +  " ";
+		}
+		Debug.Log(output);
 	}
 
 	private void PreUpdate() {
