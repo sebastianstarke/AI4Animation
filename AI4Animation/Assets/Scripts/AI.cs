@@ -34,15 +34,15 @@ public class AI : MonoBehaviour {
 		
 		Vector3 angles = Quaternion.LookRotation(Trajectory.Velocities[Trajectory.Length/2], Vector3.up).eulerAngles;
 		angles.x = 0f;
-		transform.rotation = Quaternion.Euler(angles);
+		transform.rotation = Quaternion.Euler(0f,90f,0f) * Quaternion.Euler(angles);
 	}
 
 	private void PreUpdate() {
 		HandleInput();
 
 		//Update Trajectory Targets
-		float acceleration = 15f;
-		float damping = 5f;
+		float acceleration = 30f;
+		float damping = 10f;
 		float decay = 2.5f;
 
 		int current = Trajectory.Length/2;
