@@ -46,7 +46,6 @@ public class PFNN {
 	}
 
 	public Matrix<float> Predict(float phase) {
-		
 		float pamount;
 		int pindex_0, pindex_1, pindex_2, pindex_3;
 

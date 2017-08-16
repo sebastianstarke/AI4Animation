@@ -49,9 +49,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\AI.cs" />
      <Compile Include="Assets\Scripts\Camera.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
+     <Compile Include="Assets\Scripts\Demo.cs" />
      <Compile Include="Assets\Scripts\PFNN.cs" />
      <Compile Include="Assets\Scripts\Trajectory.cs" />
      <Compile Include="Assets\Scripts\Utility.cs" />

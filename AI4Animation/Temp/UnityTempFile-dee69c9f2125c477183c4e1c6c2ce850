@@ -15,8 +15,6 @@
 -r:Assets/Libraries/System.Threading.dll
 -r:Assets/Libraries/MathNet.Numerics.dll
 -r:/opt/Unity/Editor/Data/Managed/UnityEditor.dll
--r:/opt/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll
--r:/opt/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll
 -define:UNITY_5_3_OR_NEWER
 -define:UNITY_5_4_OR_NEWER
 -define:UNITY_5_5_OR_NEWER
@@ -89,9 +87,9 @@
 -define:UNITY_EDITOR_LINUX
 -define:ENABLE_NATIVE_ARRAY_CHECKS
 -define:UNITY_TEAM_LICENSE
-Assets/Scripts/AI.cs
 Assets/Scripts/Camera.cs
 Assets/Scripts/Character.cs
+Assets/Scripts/Demo.cs
 Assets/Scripts/PFNN.cs
 Assets/Scripts/Trajectory.cs
 Assets/Scripts/Utility.cs

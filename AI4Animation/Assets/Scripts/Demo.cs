@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
 using MathNet.Numerics.LinearAlgebra;
 
-public class AI : MonoBehaviour {
+public class Demo : MonoBehaviour {
+
+	public Transform Root;
+
+	public float Scale = 1f;
+	public float Speed = 0f;
+	public float Phase = 0f;
 
 	private PFNN Network;
 	private Character Character;
@@ -14,11 +20,11 @@ public class AI : MonoBehaviour {
 	private const float M_PI = 3.14159265358979323846f;
 
 	void Start() {
-		
 		Network = new PFNN(PFNN.MODE.CONSTANT);
-		
-		Character = new Character(transform);
+		Character = new Character(transform, Root);
 		Trajectory = new Trajectory(transform);
+
+		//Predict();
 	}
 
 	void Update() {
@@ -34,12 +40,29 @@ public class AI : MonoBehaviour {
 	}
 
 	private void Predict() {
+		Phase += Speed * Time.deltaTime;
 		string output = string.Empty;
-		Matrix<float> result = Network.Predict(0f);
+		Matrix<float> result = Network.Predict(Mathf.Repeat(Phase, 2f*M_PI));
+
+		/*
 		for(int i=0; i<Network.YDim; i++) {
 			output += result[i, 0] +  " ";
 		}
 		Debug.Log(output);
+		*/
+
+		for(int i=0; i<Character.Joints.Length; i++) {
+			int opos = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*0);
+			int orot = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*2);
+			
+			Vector3 position = Scale * new Vector3(result[opos+i*3+0, 0], result[opos+i*3+1, 0], result[opos+i*3+2, 0]);
+			Quaternion rotation = Quaternion.Euler(Mathf.Rad2Deg*result[orot+i*3+0, 0], Mathf.Rad2Deg*result[orot+i*3+1, 0], Mathf.Rad2Deg*result[orot+i*3+2, 0]);
+
+			Character.Joints[i].SetConfiguration(position, rotation);
+
+			//Debug.Log(position);
+			//Debug.Log(rotation);
+		}
 	}
 
 	private void PreUpdate() {
