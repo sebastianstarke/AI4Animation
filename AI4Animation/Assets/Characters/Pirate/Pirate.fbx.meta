@@ -1,0 +1,171 @@
+fileFormatVersion: 2
+guid: 9e3733dfd9c8c45f8825943b6f454d0f
+timeCreated: 1502752654
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: character_pirate:character_pirate:SMD_root_
+    100002: character_pirate:character_pirate:SMD_root_1
+    100004: character_pirate:character_pirate:SMD_root_2
+    100006: character_pirate:character_pirate:SMD_root_3
+    100008: character_pirate:character_pirate:SMD_root_4
+    100010: character_pirate:character_pirate:SMD_root_5
+    100012: character_pirate:joint_0
+    100014: character_pirate:joint_1
+    100016: character_pirate:joint_10
+    100018: character_pirate:joint_11
+    100020: character_pirate:joint_12
+    100022: character_pirate:joint_13
+    100024: character_pirate:joint_14
+    100026: character_pirate:joint_15
+    100028: character_pirate:joint_16
+    100030: character_pirate:joint_17
+    100032: character_pirate:joint_18
+    100034: character_pirate:joint_19
+    100036: character_pirate:joint_2
+    100038: character_pirate:joint_20
+    100040: character_pirate:joint_21
+    100042: character_pirate:joint_22
+    100044: character_pirate:joint_23
+    100046: character_pirate:joint_24
+    100048: character_pirate:joint_25
+    100050: character_pirate:joint_26
+    100052: character_pirate:joint_27
+    100054: character_pirate:joint_28
+    100056: character_pirate:joint_29
+    100058: character_pirate:joint_3
+    100060: character_pirate:joint_30
+    100062: character_pirate:joint_4
+    100064: character_pirate:joint_5
+    100066: character_pirate:joint_6
+    100068: character_pirate:joint_7
+    100070: character_pirate:joint_8
+    100072: character_pirate:joint_9
+    100074: character_pirate:polySurface1
+    100076: character_pirate:transform1
+    100078: character_pirate:transform2
+    100080: character_pirate:transform3
+    100082: character_pirate:transform4
+    100084: character_pirate:transform5
+    100086: character_pirate:transform6
+    100088: //RootNode
+    400000: character_pirate:character_pirate:SMD_root_
+    400002: character_pirate:character_pirate:SMD_root_1
+    400004: character_pirate:character_pirate:SMD_root_2
+    400006: character_pirate:character_pirate:SMD_root_3
+    400008: character_pirate:character_pirate:SMD_root_4
+    400010: character_pirate:character_pirate:SMD_root_5
+    400012: character_pirate:joint_0
+    400014: character_pirate:joint_1
+    400016: character_pirate:joint_10
+    400018: character_pirate:joint_11
+    400020: character_pirate:joint_12
+    400022: character_pirate:joint_13
+    400024: character_pirate:joint_14
+    400026: character_pirate:joint_15
+    400028: character_pirate:joint_16
+    400030: character_pirate:joint_17
+    400032: character_pirate:joint_18
+    400034: character_pirate:joint_19
+    400036: character_pirate:joint_2
+    400038: character_pirate:joint_20
+    400040: character_pirate:joint_21
+    400042: character_pirate:joint_22
+    400044: character_pirate:joint_23
+    400046: character_pirate:joint_24
+    400048: character_pirate:joint_25
+    400050: character_pirate:joint_26
+    400052: character_pirate:joint_27
+    400054: character_pirate:joint_28
+    400056: character_pirate:joint_29
+    400058: character_pirate:joint_3
+    400060: character_pirate:joint_30
+    400062: character_pirate:joint_4
+    400064: character_pirate:joint_5
+    400066: character_pirate:joint_6
+    400068: character_pirate:joint_7
+    400070: character_pirate:joint_8
+    400072: character_pirate:joint_9
+    400074: character_pirate:polySurface1
+    400076: character_pirate:transform1
+    400078: character_pirate:transform2
+    400080: character_pirate:transform3
+    400082: character_pirate:transform4
+    400084: character_pirate:transform5
+    400086: character_pirate:transform6
+    400088: //RootNode
+    4300000: character_pirate:polySurface1
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: character_pirate:polySurface1
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
