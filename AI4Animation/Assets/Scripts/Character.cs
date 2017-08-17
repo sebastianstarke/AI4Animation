@@ -56,10 +56,13 @@ public class Character {
 		}
 
 		public void SetConfiguration(Vector3 relativePosition, Quaternion relativeRotation) {
-			Vector3 position = Character.Transform.position + Character.PositionOffset;
-			Quaternion rotation = Character.RotationOffset * Character.Transform.rotation;
-			Transform.position = position + rotation * relativePosition;
-			Transform.rotation = rotation * relativeRotation;
+			Transform.position = (Character.Transform.position + Character.PositionOffset) + (Character.RotationOffset * Character.Transform.rotation) * relativePosition;
+			Transform.rotation = (Character.RotationOffset * Character.Transform.rotation) * relativeRotation;
+		}
+
+		public void GetConfiguration(out Vector3 relativePosition, out Quaternion relativeRotation) {
+			relativePosition = Quaternion.Inverse(Character.RotationOffset * Character.Transform.rotation) * (Transform.position - (Character.Transform.position + Character.PositionOffset));
+			relativeRotation = Quaternion.Inverse(Character.RotationOffset * Character.Transform.rotation) * Transform.rotation;
 		}
 	}
 
