@@ -49,15 +49,6 @@ public class PFNN {
 		float pamount;
 		int pindex_0, pindex_1, pindex_2, pindex_3;
 
-		Matrix<float> _W0p = W0p.Clone();
-		Matrix<float> _W1p = W1p.Clone();
-		Matrix<float> _W2p = W2p.Clone();
-		Matrix<float> _b0p = b0p.Clone();
-		Matrix<float> _b1p = b1p.Clone();
-		Matrix<float> _b2p = b2p.Clone();
-		Matrix<float> _H0 = H0.Clone();
-		Matrix<float> _H1 = H1.Clone();
-
 		Matrix<float> _Xp = Xp.Clone();
 		
 		_Xp = (_Xp - Xmean).PointwiseDivide(Xstd);
@@ -65,9 +56,9 @@ public class PFNN {
 		switch(Mode) {
 			case MODE.CONSTANT:
 				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				_H0 = (W0[pindex_1] * _Xp) + b0[pindex_1]; ELU(ref _H0);
-				_H1 = (W1[pindex_1] * _H0) + b1[pindex_1]; ELU(ref _H1);
-				Yp = (W2[pindex_1] * _H1) + b2[pindex_1];
+				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1]; ELU(ref H0);
+				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
 			break;
 			
 			case MODE.LINEAR:
@@ -75,15 +66,15 @@ public class PFNN {
 				pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
 				pindex_1 = (int)((phase / (2*M_PI)) * 10);
 				pindex_2 = ((pindex_1+1) % 10);
-				Linear(ref _W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
-				Linear(ref _W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
-				Linear(ref _W2p, ref W2[pindex_1], ref W2[pindex_2], pamount);
-				Linear(ref _b0p, ref b0[pindex_1], ref b0[pindex_2], pamount);
-				Linear(ref _b1p, ref b1[pindex_1], ref b1[pindex_2], pamount);
-				Linear(ref _b2p, ref b2[pindex_1], ref b2[pindex_2], pamount);
-				_H0 = (_W0p * _Xp) + _b0p; ELU(ref _H0);
-				_H1 = (_W1p * _H0) + _b1p; ELU(ref _H1);
-				Yp = (_W2p * _H1) + _b2p;
+				Linear(ref W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
+				Linear(ref W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
+				Linear(ref W2p, ref W2[pindex_1], ref W2[pindex_2], pamount);
+				Linear(ref b0p, ref b0[pindex_1], ref b0[pindex_2], pamount);
+				Linear(ref b1p, ref b1[pindex_1], ref b1[pindex_2], pamount);
+				Linear(ref b2p, ref b2[pindex_1], ref b2[pindex_2], pamount);
+				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
+				H1 = (W1p * H0) + b1p; ELU(ref H1);
+				Yp = (W2p * H1) + b2p;
 			break;
 			
 			case MODE.CUBIC:
@@ -93,15 +84,15 @@ public class PFNN {
 				pindex_0 = ((pindex_1+3) % 4);
 				pindex_2 = ((pindex_1+1) % 4);
 				pindex_3 = ((pindex_1+2) % 4);
-				Cubic(ref _W0p, ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
-				Cubic(ref _W1p, ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
-				Cubic(ref _W2p, ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
-				Cubic(ref _b0p, ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
-				Cubic(ref _b1p, ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
-				Cubic(ref _b2p, ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
-				_H0 = (_W0p * _Xp) + _b0p; ELU(ref _H0);
-				_H1 = (_W1p * _H0) + _b1p; ELU(ref _H1);
-				Yp = (_W2p * _H1) + _b2p;
+				Cubic(ref W0p, ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
+				Cubic(ref W1p, ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
+				Cubic(ref W2p, ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
+				Cubic(ref b0p, ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
+				Cubic(ref b1p, ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
+				Cubic(ref b2p, ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
+				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
+				H1 = (W1p * H0) + b1p; ELU(ref H1);
+				Yp = (W2p * H1) + b2p;
 			break;
 			
 			default:

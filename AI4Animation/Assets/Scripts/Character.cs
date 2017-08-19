@@ -22,7 +22,7 @@ public class Character {
 		BuildJoints(root, ref index);
 
 		PositionOffset = Vector3.zero;
-		RotationOffset = Quaternion.Euler(0f, 90f, 0f);
+		RotationOffset = Quaternion.Euler(0f, 0f, 0f);
 	}
 
 	public void Move(Vector2 direction) {
