@@ -6,12 +6,15 @@ public class Trajectory {
 
 	public float Width = 25f;
 
-	public Vector3 TargetVelocity;
 	public Vector3 TargetPosition;
+	public Vector3 TargetVelocity;
 	public Vector3 TargetDirection;
+	public Quaternion TargetRotation;
 
 	public Vector3[] Positions;
 	public Vector3[] Velocities;
+	public Vector3[] Directions;
+	public Quaternion[] Rotations;
 	public float[] Heights;
 	
 	/*
@@ -42,17 +45,15 @@ public class Trajectory {
 		*/
 
 		TargetPosition = Transform.position;
+		TargetVelocity = Vector3.zero;
+		TargetDirection = Transform.forward;
+		TargetRotation = Quaternion.identity;
 		
 		for(int i=0; i<Length; i++) {
 			Positions[i] = Transform.position;
 			Velocities[i] = Transform.forward;
 			Heights[i] = Transform.position.y;
 		}
-	}
-
-	public void SetTarget(Vector3 position, Vector3 velocity) {
-		Positions[Length-1] = position;
-		Velocities[Length-1] = velocity;
 	}
 
 }

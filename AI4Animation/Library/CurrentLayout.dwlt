@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.0020395555, y: -0.9820734, z: 0.010639714, w: 0.18818747}
     speed: 2
-    m_Value: {x: 0.0020395555, y: -0.9820734, z: 0.010639714, w: 0.18818747}
+    m_Value: {x: -0.0020395592, y: 0.9820734, z: -0.010639712, w: -0.18818747}
   m_Size:
     m_Target: 6.7229657
     speed: 2
@@ -556,24 +556,24 @@ MonoBehaviour:
     width: 230
     height: 486
   m_TreeViewState:
-    scrollPos: {x: 0, y: 115}
-    m_SelectedIDs: d4250000
-    m_LastClickedID: 9684
-    m_ExpandedIDs: 24fbffff28fbffff2afbffff2cfbffff30fbffff32fbffff36fbffff3cfbffff3efbffff40fbffff6cfbffff82fbffff88fbffff8efbffff9efbffffb0fbffffc2fbffffd0fbffff00000000d4250000
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 
+    m_LastClickedID: 0
+    m_ExpandedIDs: d0fbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: character_pirate:character_pirate:SMD_root_
-      m_OriginalName: character_pirate:character_pirate:SMD_root_
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: -1074
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 0
       m_ClientGUIView: {fileID: 13}
     m_SearchString: 
@@ -631,7 +631,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 1c250000
     m_LastClickedID: 9500
-    m_ExpandedIDs: 00000000b6240000502500005c25000066250000b227000000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000b6240000502500005c25000066250000ae27000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -659,7 +659,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000b6240000502500005c25000066250000b2270000
+    m_ExpandedIDs: 00000000b6240000502500005c25000066250000ae270000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -686,7 +686,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: d830000038220000282200000c2d00002c2b0000e437000006380000083800000e380000123800000a3800000c3800001253000040220000c2340000ae3b00001e3b000044220000422200001a3b000048220000b03c00007c3d00003a3e00007e3d000000000000ca33000016310000a23200004e41000068250000
     m_RenameOverlay:
       m_UserAcceptedRename: 0

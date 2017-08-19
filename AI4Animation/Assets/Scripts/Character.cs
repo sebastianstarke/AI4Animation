@@ -17,9 +17,8 @@ public class Character {
 
 		Phase = 0.0f;
 
-		Joints = new CharacterJoint[31];
-		int index = 0;
-		BuildJoints(root, ref index);
+		Joints = new CharacterJoint[0];
+		BuildJoints(root);
 
 		PositionOffset = Vector3.zero;
 		RotationOffset = Quaternion.Euler(0f, 0f, 0f);
@@ -38,11 +37,11 @@ public class Character {
 		Transform.Rotate(0f, 100f*direction*Time.deltaTime, 0f);
 	}
 
-	private void BuildJoints(Transform t, ref int index) {
-		Joints[index] = new CharacterJoint(this, t);
-		index += 1;
+	private void BuildJoints(Transform t) {
+		System.Array.Resize(ref Joints, Joints.Length+1);
+		Joints[Joints.Length-1] = new CharacterJoint(this, t);
 		for(int i=0; i<t.childCount; i++) {
-			BuildJoints(t.GetChild(i), ref index);
+			BuildJoints(t.GetChild(i));
 		}
 	}
 

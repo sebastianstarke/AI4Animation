@@ -20,7 +20,7 @@ public class Demo : MonoBehaviour {
 	private const float M_PI = 3.14159265358979323846f;
 
 	void Start() {
-		Network = new PFNN(PFNN.MODE.CONSTANT);
+		//Network = new PFNN(PFNN.MODE.CONSTANT);
 		Character = new Character(transform, Root);
 		Trajectory = new Trajectory(transform);
 
@@ -31,7 +31,7 @@ public class Demo : MonoBehaviour {
 		Scale = Mathf.Max(1e-5f, Scale);
 
 		PreUpdate();
-		Predict();
+		//Predict();
 		//RegularUpdate();
 		PostUpdate();
 		
