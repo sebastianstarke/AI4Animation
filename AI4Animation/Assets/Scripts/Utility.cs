@@ -56,4 +56,17 @@ public static class Utility {
 		return Quaternion.AngleAxis(angle, axis) * (vector - pivot) + vector;
 	}
 
+	public static float GetHeight(float x, float y, LayerMask mask) {
+		RaycastHit hit;
+		bool intersection = Physics.Raycast(new Vector3(x,0f,y), Vector3.up, out hit, mask);
+		if(!intersection) {
+			intersection = Physics.Raycast(new Vector3(x,0f,y), Vector3.down, out hit, mask);
+		}
+		if(intersection) {
+			return hit.point.y;
+		} else {
+			return 0f;
+		}
+	}
+
 }

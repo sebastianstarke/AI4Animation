@@ -33,6 +33,8 @@ public class Trajectory {
 
 		Positions = new Vector3[Length];
 		Velocities = new Vector3[Length];
+		Directions = new Vector3[Length];
+		Rotations = new Quaternion[Length];
 		Heights = new float[Length];
 
 		/*
@@ -50,10 +52,115 @@ public class Trajectory {
 		TargetRotation = Quaternion.identity;
 		
 		for(int i=0; i<Length; i++) {
-			Positions[i] = Transform.position;
-			Velocities[i] = Transform.forward;
+			Positions[i] = TargetPosition;
+			Velocities[i] = TargetVelocity;
+			Directions[i] = TargetDirection;
+			Rotations[i] = TargetRotation;
 			Heights[i] = Transform.position.y;
 		}
+	}
+
+	public void Predict(Vector3 direction) {
+		//Update Trajectory Targets
+		float acceleration = 30f;
+		float damping = 10f;
+		float decay = 2.5f;
+
+		int current = Length/2;
+		int last = Length-1;
+
+		TargetDirection = /*transform.rotation **/ direction;
+		TargetDirection.y = 0f;
+		Vector3 velocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		velocity = velocity + acceleration * Time.deltaTime * TargetDirection;
+		//TargetVelocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime);
+		//TargetVelocity = TargetVelocity + acceleration * Time.deltaTime * TargetDirection;
+		Vector3 target = TargetPosition + Time.deltaTime * TargetVelocity;
+		//TargetPosition = TargetPosition + Time.deltaTime * TargetVelocity;
+		if(!Physics.CheckSphere(target, 0.1f, LayerMask.GetMask("Obstacles"))) {
+			TargetPosition = target;
+			TargetVelocity = velocity;
+		}
+
+		if(TargetDirection.magnitude == 0f) {
+			TargetPosition = Utility.Interpolate(TargetPosition, Transform.position, decay * Time.deltaTime);
+			TargetVelocity = Utility.Interpolate(TargetVelocity, Vector3.zero, decay * Time.deltaTime);
+			for(int i=current+1; i<Length; i++) {
+				Positions[i] = Utility.Interpolate(Positions[i], Transform.position, decay * Time.deltaTime);
+				Velocities[i] = Utility.Interpolate(Velocities[i], Vector3.zero, decay * Time.deltaTime);
+			}
+		}
+		
+		//Predict Trajectory
+		//float rate = 10f * Time.deltaTime;
+		float rate = 0.5f;
+
+		Positions[last] = TargetPosition;
+		Velocities[last] = TargetVelocity;
+
+		float pastDamp = 1.5f;
+		float futureDamp = 1.5f;
+		for(int i=Length-2; i>=0; i--) {
+			float factor = (float)(i+1)/(float)Length;
+			factor = 2f * factor - 1f;
+			factor = 1f - Mathf.Abs(factor);
+			factor = Utility.Normalise(factor, 1f/(float)Length, ((float)Length-1f)/(float)Length, 1f - 60f / Length, 1f);
+
+			if(i < current) {
+				Positions[i] = 
+					Positions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, pastDamp) * (Positions[i+1] - Positions[i]), 
+						Positions[i+1] - Positions[i],
+						rate
+					);
+
+				Velocities[i] = 
+					Velocities[i] + Utility.Interpolate(
+						Mathf.Pow(factor, pastDamp) * (Velocities[i+1] - Velocities[i]), 
+						Velocities[i+1] - Velocities[i],
+						rate
+					);
+			} else {
+				Positions[i] = 
+					Positions[i] + Utility.Interpolate(
+						Mathf.Pow(factor, futureDamp) * (Positions[i+1] - Positions[i]), 
+						Positions[i+1] - Positions[i],
+						rate
+					);
+
+				Velocities[i] = 
+					Velocities[i] + Utility.Interpolate(
+						Mathf.Pow(factor, futureDamp) * (Velocities[i+1] - Velocities[i]), 
+						Velocities[i+1] - Velocities[i],
+						rate
+					);
+			}
+		}
+	}
+
+	public void Correct() {
+		//Adjust Trajectory
+		int current = Length/2;
+		int last = Length-1;
+
+		Vector3 error = (Transform.position - Positions[current]);
+		for(int i=0; i<Length; i++) {
+			float factor = (float)i / (float)(Length-1);
+			Positions[i] += factor * error;
+			Velocities[i] = Velocities[i].magnitude * (Velocities[i] + factor * error).normalized;
+		}
+
+		for(int i=0; i<Length; i++) {
+			Positions[i].y = Utility.GetHeight(Positions[i].x, Positions[i].z, LayerMask.GetMask("Ground"));
+			Vector3 start = Positions[i];
+			Vector3 end = Positions[i] + 0.1f * Velocities[i].normalized;
+			end.y = (Utility.GetHeight(end.x, end.z, LayerMask.GetMask("Ground")) - start.y) / 0.1f;
+			Velocities[i] = Velocities[i].magnitude * new Vector3(Velocities[i].x, end.y, Velocities[i].z).normalized;
+		}
+
+		TargetPosition = Positions[last];
+
+		//Character.Phase = GetPhase();
 	}
 
 }
