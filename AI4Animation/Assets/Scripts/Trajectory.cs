@@ -69,19 +69,16 @@ public class Trajectory {
 		int current = Length/2;
 		int last = Length-1;
 
-		TargetDirection = /*transform.rotation **/ direction;
-		TargetDirection.y = 0f;
-		Vector3 velocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime);
-		velocity = velocity + acceleration * Time.deltaTime * TargetDirection;
-		//TargetVelocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime);
-		//TargetVelocity = TargetVelocity + acceleration * Time.deltaTime * TargetDirection;
+		TargetDirection = new Vector3(direction.x, 0f, direction.z);
+		Vector3 velocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime) + acceleration * Time.deltaTime * TargetDirection;
 		Vector3 target = TargetPosition + Time.deltaTime * TargetVelocity;
-		//TargetPosition = TargetPosition + Time.deltaTime * TargetVelocity;
-		if(!Physics.CheckSphere(target, 0.1f, LayerMask.GetMask("Obstacles"))) {
+		if(!Physics.Raycast(Transform.position, target-Transform.position, (target-Transform.position).magnitude, LayerMask.GetMask("Obstacles"))) {
 			TargetPosition = target;
 			TargetVelocity = velocity;
+		} else {
+			TargetVelocity = Vector3.zero;
 		}
-
+		
 		if(TargetDirection.magnitude == 0f) {
 			TargetPosition = Utility.Interpolate(TargetPosition, Transform.position, decay * Time.deltaTime);
 			TargetVelocity = Utility.Interpolate(TargetVelocity, Vector3.zero, decay * Time.deltaTime);
