@@ -69,8 +69,8 @@ public class Trajectory {
 		int current = Length/2;
 		int last = Length-1;
 
-		TargetDirection = new Vector3(direction.x, 0f, direction.z);
-		Vector3 velocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime) + acceleration * Time.deltaTime * TargetDirection;
+		direction = new Vector3(direction.x, 0f, direction.z).normalized;
+		Vector3 velocity = Utility.Interpolate(TargetVelocity, Vector3.zero, damping * Time.deltaTime) + acceleration * Time.deltaTime * direction;
 		Vector3 target = TargetPosition + Time.deltaTime * TargetVelocity;
 		if(!Physics.Raycast(Transform.position, target-Transform.position, (target-Transform.position).magnitude, LayerMask.GetMask("Obstacles"))) {
 			TargetPosition = target;
@@ -79,13 +79,16 @@ public class Trajectory {
 			TargetVelocity = Vector3.zero;
 		}
 		
-		if(TargetDirection.magnitude == 0f) {
+		if(direction.magnitude == 0f) {
 			TargetPosition = Utility.Interpolate(TargetPosition, Transform.position, decay * Time.deltaTime);
 			TargetVelocity = Utility.Interpolate(TargetVelocity, Vector3.zero, decay * Time.deltaTime);
+			TargetDirection = Vector3.zero;
 			for(int i=current+1; i<Length; i++) {
 				Positions[i] = Utility.Interpolate(Positions[i], Transform.position, decay * Time.deltaTime);
 				Velocities[i] = Utility.Interpolate(Velocities[i], Vector3.zero, decay * Time.deltaTime);
 			}
+		} else {
+			TargetDirection = direction;
 		}
 		
 		//Predict Trajectory
