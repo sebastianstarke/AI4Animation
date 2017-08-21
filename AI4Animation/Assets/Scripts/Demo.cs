@@ -16,7 +16,7 @@ public class Demo : MonoBehaviour {
 	private const float M_PI = 3.14159265358979323846f;
 
 	void Start() {
-		//Network = new PFNN(PFNN.MODE.CONSTANT);
+		Network = new PFNN(PFNN.MODE.CONSTANT);
 		Character = new Character(transform, Root);
 		Trajectory = new Trajectory(transform);
 
@@ -27,7 +27,7 @@ public class Demo : MonoBehaviour {
 		Scale = Mathf.Max(1e-5f, Scale);
 
 		PreUpdate();
-		//Predict();
+		Predict();
 		//RegularUpdate();
 		PostUpdate();
 		
@@ -109,6 +109,7 @@ public class Demo : MonoBehaviour {
 			Vector3 pos;
 			Quaternion rot;
 			Character.Joints[i].GetConfiguration(out pos, out rot);
+			rot = Character.Joints[i].Transform.rotation;
 			//Quaternion rotation = quat_exp(new Vector3(result[orot+i*3+0, 0], result[orot+i*3+1, 0], result[orot+i*3+2, 0]));
 
 			Character.Joints[i].SetConfiguration(position, rot);
