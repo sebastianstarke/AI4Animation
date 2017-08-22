@@ -20,6 +20,18 @@ public static class Utility {
 		}
 	}
 
+	public static Vector3 ExtractPosition(Matrix4x4 mat) {
+		return mat.GetColumn(3);
+	}
+
+	public static Quaternion ExtractRotation(Matrix4x4 mat) {
+		return Quaternion.LookRotation(mat.GetColumn(2), mat.GetColumn(1));
+	}
+
+	public static Vector3 ExtractScale(Matrix4x4 mat) {
+		return new Vector3(mat.GetColumn(0).magnitude, mat.GetColumn(1).magnitude, mat.GetColumn(2).magnitude);
+	}
+
 	public static float Interpolate(float from, float to, float amount) {
 		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;

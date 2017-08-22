@@ -3,9 +3,9 @@ using MathNet.Numerics.LinearAlgebra;
 
 public class Demo : MonoBehaviour {
 
-	public Transform Root;
+	public Transform ChainStart;
 
-	public float Scale = 1f;
+	//public float Scale = 1f;
 	public float Speed = 0f;
 	public float Phase = 0f;
 
@@ -17,106 +17,117 @@ public class Demo : MonoBehaviour {
 
 	void Start() {
 		Network = new PFNN(PFNN.MODE.CONSTANT);
-		Character = new Character(transform, Root);
-		Trajectory = new Trajectory(transform);
+		Character = new Character(transform, ChainStart);
+		Trajectory = new Trajectory(transform, 120, 0.15f);
 
 		//Predict();
 	}
 
 	void Update() {
-		Scale = Mathf.Max(1e-5f, Scale);
+		//Scale = Mathf.Max(1e-5f, Scale);
 
 		PreUpdate();
 		Predict();
-		//RegularUpdate();
 		PostUpdate();
-		
-		//Vector3 angles = Quaternion.LookRotation(Trajectory.Velocities[Trajectory.Length/2], Vector3.up).eulerAngles;
-		//angles.x = 0f;
-		//transform.rotation = Quaternion.Euler(0f,90f,0f) * Quaternion.Euler(angles);
 	}
 
 	private void Predict() {
+		////////////////////////////////////////
+		////////// Input
+		////////////////////////////////////////
+
 		/* Input Trajectory Positions / Directions */
+		//Debug.Log("Setting Trajectory Positions / Directions");
 		for(int i=0; i<Trajectory.Length; i+=10) {
 			int w = (Trajectory.Length)/10;
-			Vector3 pos = Quaternion.Inverse(Character.Transform.rotation) * (Trajectory.Positions[i] - Character.Transform.position);
-			Vector3 dir = Quaternion.Inverse(Character.Transform.rotation) * Trajectory.Velocities[i].normalized;  
-			Network.Xp[(w*0)+i/10, 0] = 0;
-			Network.Xp[(w*1)+i/10, 0] = 0;
-			Network.Xp[(w*2)+i/10, 0] = 0;
-			Network.Xp[(w*3)+i/10, 0] = 0;
+			Vector3 pos = Trajectory.Points[i].GetRelativeToRootPosition();
+			Vector3 dir = Trajectory.Points[i].GetRelativeToRootDirection();
+			Network.SetInput((w*0)+i/10, pos.x);
+			Network.SetInput((w*1)+i/10, pos.z);
+			Network.SetInput((w*2)+i/10, dir.x);
+			Network.SetInput((w*3)+i/10, dir.z);
 		}
 
 		/* Input Trajectory Gaits */
+		//Debug.Log("Setting Trajectory Gaits");
 		for (int i=0; i<Trajectory.Length; i+=10) {
 			int w = (Trajectory.Length)/10;
-			Network.Xp[(w*4)+i/10, 0] = 0;
-			Network.Xp[(w*5)+i/10, 0] = 0;
-			Network.Xp[(w*6)+i/10, 0] = 0;
-			Network.Xp[(w*7)+i/10, 0] = 0;
-			Network.Xp[(w*8)+i/10, 0] = 0;
-			Network.Xp[(w*9)+i/10, 0] = 0;
+			Network.SetInput((w*4)+i/10, 0f);
+			Network.SetInput((w*5)+i/10, 0f);
+			Network.SetInput((w*6)+i/10, 0f);
+			Network.SetInput((w*7)+i/10, 0f);
+			Network.SetInput((w*8)+i/10, 0f);
+			Network.SetInput((w*9)+i/10, 0f);
 		}
 
-		//TODO: Maybe take previous state? But why?
+		/* Input Joint Previous Positions / Velocities / Rotations */
+		//Debug.Log("Setting Joint Positions / Velocities / Rotations");
 		for(int i=0; i<Character.Joints.Length; i++) {
-			int o = Trajectory.Length;
-			Vector3 pos; Quaternion rot;
-			Vector3 vel = Quaternion.Inverse(Character.Transform.rotation) * transform.forward;
-			Character.Joints[i].GetConfiguration(out pos, out rot);
-			pos = 1f/Scale * pos;
-			//glm::vec3 prv = glm::inverse(prev_root_rotation) *  character->joint_velocities[i];
-			Network.Xp[o+(Character.Joints.Length*3*0)+i*3+0, 0] = pos.x;
-			Network.Xp[o+(Character.Joints.Length*3*0)+i*3+1, 0] = pos.y;
-			Network.Xp[o+(Character.Joints.Length*3*0)+i*3+2, 0] = pos.z;
-			Network.Xp[o+(Character.Joints.Length*3*1)+i*3+0, 0] = 0;
-			Network.Xp[o+(Character.Joints.Length*3*1)+i*3+1, 0] = 0;
-			Network.Xp[o+(Character.Joints.Length*3*1)+i*3+2, 0] = 0;
+			int o = (((Trajectory.Length)/10)*10);  
+			Vector3 pos = Character.Joints[i].GetRelativeToRootPosition(Character.Joints[i].Transform.position);
+			Vector3 vel = Vector3.zero;
+			Network.SetInput(o+(Character.Joints.Length*3*0)+i*3+0, pos.x);
+			Network.SetInput(o+(Character.Joints.Length*3*0)+i*3+1, pos.y);
+			Network.SetInput(o+(Character.Joints.Length*3*0)+i*3+2, pos.z);
+			Network.SetInput(o+(Character.Joints.Length*3*1)+i*3+0, vel.x);
+			Network.SetInput(o+(Character.Joints.Length*3*1)+i*3+1, vel.y);
+			Network.SetInput(o+(Character.Joints.Length*3*1)+i*3+2, vel.z);
 		}
 
 		/* Input Trajectory Heights */
+		//Debug.Log("Setting Trajectory Heights");
 		for (int i=0; i<Trajectory.Length; i+=10) {
-			int o = Trajectory.Length + Character.Joints.Length*3*2;
+			int o = (((Trajectory.Length)/10)*10) + Character.Joints.Length*3*2;
 			int w = Trajectory.Length/10;
-			/*
-			glm::vec3 position_r = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3( trajectory->width, 0, 0));
-			glm::vec3 position_l = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3(-trajectory->width, 0, 0));
-			pfnn->Xp(o+(w*0)+(i/10)) = heightmap->sample(glm::vec2(position_r.x, position_r.z)) - root_position.y;
-			pfnn->Xp(o+(w*1)+(i/10)) = trajectory->positions[i].y - root_position.y;
-			pfnn->Xp(o+(w*2)+(i/10)) = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
-			*/
+			Network.SetInput(o+(w*0)+(i/10), (Trajectory.Points[i].ProjectLeft().y - Character.Root.position.y));
+			Network.SetInput(o+(w*1)+(i/10), (Trajectory.Points[i].Position.y - Character.Root.position.y));
+			Network.SetInput(o+(w*2)+(i/10), (Trajectory.Points[i].ProjectRight().y - Character.Root.position.y));
 		}
 
-		Phase += Speed * Time.deltaTime;
-		Matrix<float> result = Network.Predict(Mathf.Repeat(Phase, 2f*M_PI));
+		////////////////////////////////////////
+		////////// Predict
+		////////////////////////////////////////
+		//Phase += Speed * Time.deltaTime;
+		
+		Character.Root.position = Vector3.zero;
+		Character.Root.rotation = Quaternion.identity;
+		for(int i=0; i<342; i++) {
+			Network.SetInput(i, 0f);
+		}
+		Phase = 0f;
+
+		Network.Predict(Mathf.Repeat(Phase, 2f*M_PI));
 
 		/*
 		string output = string.Empty;
 		for(int i=0; i<Network.YDim; i++) {
-			output += result[i, 0] +  " ";
+			output += "OUTPUT " + i + ": " + Network.GetOutput(i) +  "\n";
 		}
 		Debug.Log(output);
 		*/
 
-		for(int i=0; i<Character.Joints.Length; i++) {
-			int opos = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*0);
-			int orot = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*2);
-			
-			Vector3 position = Scale * new Vector3(result[opos+i*3+0, 0], result[opos+i*3+1, 0], result[opos+i*3+2, 0]);
-			//Quaternion rotation = Quaternion.Euler(new Vector3(result[orot+i*3+2, 0], result[orot+i*3+0, 0], result[orot+i*3+1, 0]));
+		////////////////////////////////////////
+		////////// Output
+		////////////////////////////////////////
 
-			Vector3 pos;
-			Quaternion rot;
-			Character.Joints[i].GetConfiguration(out pos, out rot);
-			rot = Character.Joints[i].Transform.rotation;
-			//Quaternion rotation = quat_exp(new Vector3(result[orot+i*3+0, 0], result[orot+i*3+1, 0], result[orot+i*3+2, 0]));
+		int opos = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*0);
+		int orot = 8+(((Trajectory.Length/2)/10)*4)+(Character.Joints.Length*3*2);
+		for(int i=0; i<Character.Joints.Length; i++) {			
+			Vector3 position = new Vector3(Network.GetOutput(opos+i*3+0), Network.GetOutput(opos+i*3+1), Network.GetOutput(opos+i*3+2));
+			Quaternion rotation = quat_exp(new Vector3(Network.GetOutput(orot+i*3+0), Network.GetOutput(orot+i*3+1), Network.GetOutput(orot+i*3+2)));
+			//Quaternion rotation = Quaternion.Euler(Mathf.Rad2Deg*new Vector3(Network.GetOutput(orot+i*3+0), Network.GetOutput(orot+i*3+1), Network.GetOutput(orot+i*3+2)));
 
-			Character.Joints[i].SetConfiguration(position, rot);
+			//Debug.Log("JOINT NUM: " + i + " X: " + position.x + " Y: " + position.y + " Z: " + position.z);
 
-			//Debug.Log(position);
-			//Debug.Log(rotation);
+			Character.Joints[i].SetPosition(position);
+			Character.Joints[i].SetRotation(rotation);
+
+			//Debug.Log("QUAT: " + i + " X: " + rotation.x + " Y: " + rotation.y + " Z: " + rotation.z + " W: " + rotation.w);
+
+			//Debug.Log("JOINT NUM: " + i + " X: " + Character.Joints[i].Transform.position.x + " Y: " + Character.Joints[i].Transform.position.y + " Z: " + Character.Joints[i].Transform.position.z);
 		}
+
+		Character.ForwardKinematics();
 	}
 
 	private Quaternion quat_exp(Vector3 l) {
@@ -150,20 +161,6 @@ public class Demo : MonoBehaviour {
 		Trajectory.Predict(new Vector3(x, 0f, y).normalized);
 	}
 
-	/*
-	private void RegularUpdate() {
-		//Character.Move(new Vector2(XAxis, YAxis));
-		//Character.Turn(Turn);
-
-		//int current = Trajectory.Length/2;
-		//int last = Trajectory.Length-1;
-		//transform.position = Trajectory.Positions[current];
-		//transform.rotation = Quaternion.LookRotation(Trajectory.Directions[current], Vector3.up);
-		
-		//Network.Predict(0.5f);
-	}
-	*/
-
 	private void PostUpdate() {
 		Trajectory.Correct();
 	}
@@ -179,28 +176,26 @@ public class Demo : MonoBehaviour {
 			return;
 		}
 		Gizmos.color = Color.black;
-		for(int i=0; i<Trajectory.Positions.Length-1; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i+1]);
+		for(int i=0; i<Trajectory.Points.Length-1; i++) {
+			Gizmos.DrawLine(Trajectory.Points[i].Position, Trajectory.Points[i+1].Position);
 		}
 		Gizmos.color = Color.blue;
-		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Trajectory.Velocities[i];
-			Vector3 left = Trajectory.Positions[i] - 0.15f * ortho.normalized;
-			left.y = Utility.GetHeight(left.x, left.z, LayerMask.GetMask("Ground"));
-			Vector3 right = Trajectory.Positions[i] + 0.15f * ortho.normalized;
-			right.y = Utility.GetHeight(right.x, right.z, LayerMask.GetMask("Ground"));
-			Gizmos.DrawLine(Trajectory.Positions[i], left);
-			Gizmos.DrawLine(Trajectory.Positions[i], right);
+		for(int i=0; i<Trajectory.Points.Length; i++) {
+			Vector3 center = Trajectory.Points[i].Position;
+			Vector3 left = Trajectory.Points[i].ProjectLeft();
+			Vector3 right = Trajectory.Points[i].ProjectRight();
+			Gizmos.DrawLine(center, left);
+			Gizmos.DrawLine(center, right);
 			Gizmos.DrawSphere(left, 0.01f);
 			Gizmos.DrawSphere(right, 0.01f);
 		}
 		Gizmos.color = Color.green;
-		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Positions[i], Trajectory.Positions[i] + Trajectory.Velocities[i]);
+		for(int i=0; i<Trajectory.Points.Length; i++) {
+			Gizmos.DrawLine(Trajectory.Points[i].Position, Trajectory.Points[i].Position + Trajectory.Points[i].Velocity);
 		}
 		Gizmos.color = Color.red;
-		for(int i=0; i<Trajectory.Positions.Length; i++) {
-			Gizmos.DrawSphere(Trajectory.Positions[i], 0.015f);
+		for(int i=0; i<Trajectory.Points.Length; i++) {
+			Gizmos.DrawSphere(Trajectory.Points[i].Position, 0.015f);
 		}
 
 		Gizmos.color = Color.cyan;

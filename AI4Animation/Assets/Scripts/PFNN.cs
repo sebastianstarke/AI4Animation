@@ -45,6 +45,14 @@ public class PFNN {
 		Load();
 	}
 
+	public void SetInput(int i, float value) {
+		Xp[i, 0] = value;
+	}
+
+	public float GetOutput(int i) {
+		return Yp[i, 0];
+	}
+
 	public Matrix<float> Predict(float phase) {
 		float pamount;
 		int pindex_0, pindex_1, pindex_2, pindex_3;

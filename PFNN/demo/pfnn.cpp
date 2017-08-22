@@ -1754,6 +1754,14 @@ static void pre_render() {
     pfnn->Xp(o+(w*1)+(i/10)) = trajectory->positions[i].y - root_position.y;
     pfnn->Xp(o+(w*2)+(i/10)) = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
   }
+
+  //TEST INPUT
+  character->phase = 0.0;
+  for(int i=0; i<342; i++) {
+    pfnn->Xp(i) = 0;
+  }
+  root_position = glm::vec3(0,0,0);
+  root_rotation = glm::mat3(1,0,0,0,1,0,0,0,1);
     
   /* Perform Regression */
   
@@ -1763,6 +1771,14 @@ static void pre_render() {
 
   clock_t time_end = clock();
   
+  //TEST OUTPUT
+  /*
+  for(int i=0; i<311; i++) {
+    std::cout << "OUTPUT " << i << " " << pfnn->Yp(i) << std::endl;
+  }
+  std::cout << std::endl;
+  */
+
   /* Timing */
   
   enum { TIME_MSAMPLES = 500 };
@@ -1781,15 +1797,19 @@ static void pre_render() {
   }
     
   /* Build Local Transforms */
-  
   for (int i = 0; i < Character::JOINT_NUM; i++) {
     int opos = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*0);
-    int ovel = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*1);
+    //int ovel = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*1);
     int orot = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*2);
     
     glm::vec3 pos = (root_rotation * glm::vec3(pfnn->Yp(opos+i*3+0), pfnn->Yp(opos+i*3+1), pfnn->Yp(opos+i*3+2))) + root_position;
-    glm::vec3 vel = (root_rotation * glm::vec3(pfnn->Yp(ovel+i*3+0), pfnn->Yp(ovel+i*3+1), pfnn->Yp(ovel+i*3+2)));
+    //glm::vec3 vel = (root_rotation * glm::vec3(pfnn->Yp(ovel+i*3+0), pfnn->Yp(ovel+i*3+1), pfnn->Yp(ovel+i*3+2)));
+    glm::vec3 vel = glm::vec3(0,0,0);
     glm::mat3 rot = (root_rotation * glm::toMat3(quat_exp(glm::vec3(pfnn->Yp(orot+i*3+0), pfnn->Yp(orot+i*3+1), pfnn->Yp(orot+i*3+2)))));
+
+    glm::quat quat = quat_exp(glm::vec3(pfnn->Yp(orot+i*3+0), pfnn->Yp(orot+i*3+1), pfnn->Yp(orot+i*3+2)));
+    std::cout << "QUAT: " << i << " X: " << quat.x << " Y: " << quat.y << " Z: " << quat.z << " W: " << quat.w << std::endl;
+    std::cout << "JOINT NUM: " << i << " X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
     
     /*
     ** Blending Between the predicted positions and
