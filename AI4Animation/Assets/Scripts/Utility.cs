@@ -68,11 +68,11 @@ public static class Utility {
 		return Quaternion.AngleAxis(angle, axis) * (vector - pivot) + vector;
 	}
 
-	public static float GetHeight(float x, float y, LayerMask mask) {
+	public static float GetHeight(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,y), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,y), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return hit.point.y;

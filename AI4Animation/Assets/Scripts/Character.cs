@@ -1,78 +1,102 @@
 ﻿using UnityEngine;
 
-public class Character {
+public class Character : MonoBehaviour {
 
-	public Transform Root;
+	public CharacterJoint[] Joints = new CharacterJoint[0];
 
-	public Vector3 Velocity = Vector3.zero;
-	
-	public float Phase;
-	public CharacterJoint[] Joints;
+	private float JointSize = 0.01f;
 
-	public Character(Transform t, Transform start) {
-		Root = t;
-		Phase = 0.0f;
-		Joints = new CharacterJoint[0];
-		BuildJoints(start);
+	public Vector3 GetRelativePosition(Vector3 position) {
+		return Quaternion.Inverse(transform.rotation) * (position - transform.position);
 	}
 
-	public void ForwardKinematics() {
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].Apply();
-		}
+	public Vector3 GetRelativeDirection(Vector3 direction) {
+		return Quaternion.Inverse(transform.rotation) * direction;
 	}
 
-	private void BuildJoints(Transform t) {
+	public Quaternion GetRelativeRotation(Quaternion rotation) {
+		return Quaternion.Inverse(transform.rotation) * rotation;
+	}
+
+	public bool IsJoint(Transform t) {
+		return System.Array.Find(Joints, x => x.Transform == t) != null;
+	}
+
+	public void AddJoint(int index) {
 		System.Array.Resize(ref Joints, Joints.Length+1);
-		Joints[Joints.Length-1] = new CharacterJoint(this, t);
-		Joints[Joints.Length-1].Parent = FindJoint(t.parent);
+		for(int i=Joints.Length-2; i>=index; i--) {
+			Joints[i+1] = Joints[i];
+		}
+		Joints[index] = new CharacterJoint(this);
+	}
+
+	public void RemoveJoint(int index) {
+		if(Joints.Length < index) {
+			return;
+		}
+		for(int i=index; i<Joints.Length-1; i++) {
+			Joints[i] = Joints[i+1];
+		}
+		System.Array.Resize(ref Joints, Joints.Length-1);
+	}
+
+	void OnDrawGizmos() {
+		DrawSkeleton(transform);
+		DrawJoints(transform);
+	}
+
+	private void DrawSkeleton(Transform t, Transform parent = null) {
+		Gizmos.color = Color.cyan;
+		bool isJoint = IsJoint(t);
+		if(parent != null && isJoint) {
+			Gizmos.DrawLine(parent.position, t.position);
+		}
 		for(int i=0; i<t.childCount; i++) {
-			BuildJoints(t.GetChild(i));
+			if(isJoint) {
+				DrawSkeleton(t.GetChild(i), t);
+			} else {
+				DrawSkeleton(t.GetChild(i), parent);
+			}
 		}
 	}
 
-	private CharacterJoint FindJoint(Transform t) {
-		return System.Array.Find(Joints, x => x.Transform == t);
+	private void DrawJoints(Transform t) {
+		Gizmos.color = Color.magenta;
+		bool isJoint = IsJoint(t);
+		if(isJoint) {
+			Gizmos.DrawSphere(t.position, JointSize);
+		}
+		for(int i=0; i<t.childCount; i++) {
+			DrawJoints(t.GetChild(i));
+		}
 	}
 
+	[System.Serializable]
 	public class CharacterJoint {
-		public Transform Transform;
 		public Character Character;
-		public CharacterJoint Parent;
+		public Transform Transform;
+		public Vector3 Velocity;
 
-		public Vector3 Position;
-		public Quaternion Rotation;
-
-		public Matrix4x4 MeshTransformation;
-		public Matrix4x4 RestTransformation;
-
-		public CharacterJoint(Character character, Transform transform) {
-			Character = character;
-			Transform = transform;
-
-			RestTransformation = Matrix4x4.TRS(GetRelativeToRootPosition(Transform.position), GetRelativeToRootRotation(Transform.rotation), Vector3.one);
+		public CharacterJoint(Character c) {
+			Character = c;
+			Transform = null;
+			Velocity = Vector3.zero;
 		}
 
-		public void SetPosition(Vector3 relativeToRoot) {
-			Position = Character.Root.position + Character.Root.rotation * relativeToRoot;
+		public void SetRelativePosition(Vector3 relativePosition) {
+			Transform.position = Character.transform.position + Character.transform.rotation * relativePosition;
+		}
+		
+		public Vector3 GetRelativePosition() {
+			return Quaternion.Inverse(Character.transform.rotation) * (Transform.position - Character.transform.position);
 		}
 
-		public void SetRotation(Quaternion relativeToRoot) {
-			Rotation = Character.Root.rotation * relativeToRoot;
+		public void SetRelativeVelocity(Vector3 relativeVelocity) {
+			Velocity = Character.transform.rotation * relativeVelocity;
 		}
 
-		public Vector3 GetRelativeToRootPosition(Vector3 position) {
-			return Quaternion.Inverse(Character.Root.rotation) * (position - Character.Root.position);
-		}
-
-		public Quaternion GetRelativeToRootRotation(Quaternion rotation) {
-			return Quaternion.Inverse(Character.Root.rotation) * rotation;
-		}
-
-		public void Apply() {
-			MeshTransformation = Matrix4x4.TRS(Position, Rotation, Vector3.one) * RestTransformation.inverse;
-			Transform.position = Utility.ExtractPosition(MeshTransformation);
-			Transform.rotation = Utility.ExtractRotation(MeshTransformation);
+		public Vector3 GetRelativeVelocity() {
+			return Quaternion.Inverse(Character.transform.rotation) * Velocity;
 		}
 	}
 

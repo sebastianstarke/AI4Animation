@@ -98,10 +98,6 @@ static bool W, A, S, D;
 
 /* Helper Functions */
 
-static glm::vec4 mix_vectors(glm::vec4 a, glm::vec4 b, float c) {
-  return c * a + (1.f-c) * b;
-}
-
 static glm::vec3 mix_vectors(glm::vec3 a, glm::vec3 b, float c) {
   return c * a + (1.f-c) * b;
 }
@@ -115,12 +111,6 @@ static glm::vec3 mix_directions(glm::vec3 x, glm::vec3 y, float a) {
   glm::quat y_q = glm::angleAxis(atan2f(y.x, y.z), glm::vec3(0,1,0));
   glm::quat z_q = glm::slerp(x_q, y_q, a);
   return z_q * glm::vec3(0,0,1);
-}
-
-static glm::mat4 mix_transforms(glm::mat4 x, glm::mat4 y, float a) {
-  glm::mat4 out = glm::toMat4(glm::slerp(glm::quat(x), glm::quat(y), a));
-  out[3] = mix_vectors(x[3], y[3], a);
-  return out;
 }
 
 static glm::quat quat_exp(glm::vec3 l) {
@@ -1546,10 +1536,8 @@ static void pre_render() {
   glm::mat3 trajectory_target_rotation = glm::mat3(glm::rotate(atan2f(
     trajectory_target_direction_new.x,
     trajectory_target_direction_new.z), glm::vec3(0,1,0)));
-  
-  float target_vel_speed = 2.5 + 2.5 * ((SDL_JoystickGetAxis(stick, GAMEPAD_TRIGGER_R) / 32768.0) + 1.0);
-  
-  glm::vec3 trajectory_target_velocity_new = target_vel_speed * (trajectory_target_rotation * glm::vec3(x_vel / 32768.0, 0, y_vel / 32768.0));
+
+  glm::vec3 trajectory_target_velocity_new = (trajectory_target_rotation * 2.0f * glm::vec3(x_vel, 0, y_vel));
   trajectory->target_vel = glm::mix(trajectory->target_vel, trajectory_target_velocity_new, options->extra_velocity_smooth);
     
   character->strafe_target = ((SDL_JoystickGetAxis(stick, GAMEPAD_TRIGGER_L) / 32768.0) + 1.0) / 2.0;
@@ -1557,7 +1545,7 @@ static void pre_render() {
   
   glm::vec3 trajectory_target_velocity_dir = glm::length(trajectory->target_vel) < 1e-05 ? trajectory->target_dir : glm::normalize(trajectory->target_vel);
   trajectory_target_direction_new = mix_directions(trajectory_target_velocity_dir, trajectory_target_direction_new, character->strafe_amount);  
-  trajectory->target_dir = mix_directions(trajectory->target_dir, trajectory_target_direction_new, options->extra_direction_smooth);  
+  trajectory->target_dir = mix_directions(trajectory->target_dir, trajectory_target_direction_new, options->extra_direction_smooth);
   
   character->crouched_amount = glm::mix(character->crouched_amount, character->crouched_target, options->extra_crouched_smooth);
 
@@ -1639,7 +1627,6 @@ static void pre_render() {
     trajectory->gait_bump[i]   = trajectory->gait_bump[Trajectory::LENGTH/2];  
   }
   
-  /* Positions */
   for (int i = Trajectory::LENGTH/2+1; i < Trajectory::LENGTH; i++) {
     trajectory->positions[i] = trajectory_positions_blend[i];
   }
@@ -1712,6 +1699,17 @@ static void pre_render() {
     pfnn->Xp((w*2)+i/10) = dir.x; 
     pfnn->Xp((w*3)+i/10) = dir.z;
   }
+
+  /* Input Trajectory Positions / Directions */
+  /*
+  for (int i = 0; i < Trajectory::LENGTH; i+=10) {
+    int w = (Trajectory::LENGTH)/10;
+    pfnn->Xp((w*0)+i/10) = 0.0;
+    pfnn->Xp((w*1)+i/10) = 0.0;
+    pfnn->Xp((w*2)+i/10) = 0.0; 
+    pfnn->Xp((w*3)+i/10) = 0.0;
+  }
+  */
     
   /* Input Trajectory Gaits */
   for (int i = 0; i < Trajectory::LENGTH; i+=10) {
@@ -1723,15 +1721,26 @@ static void pre_render() {
     pfnn->Xp((w*8)+i/10) = trajectory->gait_jump[i];
     pfnn->Xp((w*9)+i/10) = 0.0; // Unused.
   }
-      
+
+  /* MANIPULATE Trajectory Gaits */
+  /*
+  for (int i = 0; i < Trajectory::LENGTH; i+=10) {
+    int w = (Trajectory::LENGTH)/10;
+    pfnn->Xp((w*4)+i/10) = 0.0;
+    pfnn->Xp((w*5)+i/10) = 0.0;
+    pfnn->Xp((w*6)+i/10) = 0.0;
+    pfnn->Xp((w*7)+i/10) = 0.0;
+    pfnn->Xp((w*8)+i/10) = 0.0;
+    pfnn->Xp((w*9)+i/10) = 0.0; // Unused.
+  }
+  */
+
   /* Input Joint Previous Positions / Velocities / Rotations */
   glm::vec3 prev_root_position = glm::vec3(
     trajectory->positions[Trajectory::LENGTH/2-1].x, 
     trajectory->heights[Trajectory::LENGTH/2-1],
     trajectory->positions[Trajectory::LENGTH/2-1].z);
-   
   glm::mat3 prev_root_rotation = trajectory->rotations[Trajectory::LENGTH/2-1];
-  
   for (int i = 0; i < Character::JOINT_NUM; i++) {
     int o = (((Trajectory::LENGTH)/10)*10);  
     glm::vec3 pos = glm::inverse(prev_root_rotation) * (character->joint_positions[i] - prev_root_position);
@@ -1755,13 +1764,38 @@ static void pre_render() {
     pfnn->Xp(o+(w*2)+(i/10)) = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
   }
 
-  //TEST INPUT
+  /* MANIPULATE Trajectory Heights */
+  /*
+  for (int i = 0; i < Trajectory::LENGTH; i += 10) {
+    int o = (((Trajectory::LENGTH)/10)*10)+Character::JOINT_NUM*3*2;
+    int w = (Trajectory::LENGTH)/10;
+    pfnn->Xp(o+(w*0)+(i/10)) = 0.0;
+    pfnn->Xp(o+(w*1)+(i/10)) = 0.0;
+    pfnn->Xp(o+(w*2)+(i/10)) = 0.0;
+  }
+  */
+
+  //TEST
+  /*
   character->phase = 0.0;
   for(int i=0; i<342; i++) {
-    pfnn->Xp(i) = 0;
+    pfnn->Xp(i) = (float)(i+1)/342.0;
   }
-  root_position = glm::vec3(0,0,0);
-  root_rotation = glm::mat3(1,0,0,0,1,0,0,0,1);
+  std::cout << "INPUT" << std::endl;
+  for(int i=0; i<342; i++) {
+    std::cout << i << ": " << pfnn->Xp(i) << " ";
+  }
+  std::cout << std::endl;
+  
+  pfnn->predict(character->phase);
+
+  std::cout << "OUTPUT" << std::endl;
+  for(int i=0; i<311; i++) {
+    std::cout << i << ": " << pfnn->Yp(i) << " ";
+  }
+  std::cout << std::endl;
+  */
+  //
     
   /* Perform Regression */
   
@@ -1770,14 +1804,6 @@ static void pre_render() {
   pfnn->predict(character->phase);
 
   clock_t time_end = clock();
-  
-  //TEST OUTPUT
-  /*
-  for(int i=0; i<311; i++) {
-    std::cout << "OUTPUT " << i << " " << pfnn->Yp(i) << std::endl;
-  }
-  std::cout << std::endl;
-  */
 
   /* Timing */
   
@@ -1799,18 +1825,13 @@ static void pre_render() {
   /* Build Local Transforms */
   for (int i = 0; i < Character::JOINT_NUM; i++) {
     int opos = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*0);
-    //int ovel = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*1);
+    int ovel = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*1);
     int orot = 8+(((Trajectory::LENGTH/2)/10)*4)+(Character::JOINT_NUM*3*2);
     
     glm::vec3 pos = (root_rotation * glm::vec3(pfnn->Yp(opos+i*3+0), pfnn->Yp(opos+i*3+1), pfnn->Yp(opos+i*3+2))) + root_position;
-    //glm::vec3 vel = (root_rotation * glm::vec3(pfnn->Yp(ovel+i*3+0), pfnn->Yp(ovel+i*3+1), pfnn->Yp(ovel+i*3+2)));
-    glm::vec3 vel = glm::vec3(0,0,0);
+    glm::vec3 vel = (root_rotation * glm::vec3(pfnn->Yp(ovel+i*3+0), pfnn->Yp(ovel+i*3+1), pfnn->Yp(ovel+i*3+2)));
     glm::mat3 rot = (root_rotation * glm::toMat3(quat_exp(glm::vec3(pfnn->Yp(orot+i*3+0), pfnn->Yp(orot+i*3+1), pfnn->Yp(orot+i*3+2)))));
 
-    glm::quat quat = quat_exp(glm::vec3(pfnn->Yp(orot+i*3+0), pfnn->Yp(orot+i*3+1), pfnn->Yp(orot+i*3+2)));
-    std::cout << "QUAT: " << i << " X: " << quat.x << " Y: " << quat.y << " Z: " << quat.z << " W: " << quat.w << std::endl;
-    std::cout << "JOINT NUM: " << i << " X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
-    
     /*
     ** Blending Between the predicted positions and
     ** the previous positions plus the velocities 
@@ -1840,210 +1861,6 @@ static void pre_render() {
   }
   
   character->forward_kinematics();
-  
-  /* Perform IK (enter this block at your own risk...) */
-  
-  if (options->enable_ik) {
-    
-    /* Get Weights */
-    
-    glm::vec4 ik_weight = glm::vec4(pfnn->Yp(4+0), pfnn->Yp(4+1), pfnn->Yp(4+2), pfnn->Yp(4+3));
-    
-    glm::vec3 key_hl = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_L][3]);
-    glm::vec3 key_tl = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_L][3]);
-    glm::vec3 key_hr = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_R][3]);
-    glm::vec3 key_tr = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_R][3]);
-    
-    key_hl = glm::mix(key_hl, ik->position[IK::HL], ik->lock[IK::HL]);
-    key_tl = glm::mix(key_tl, ik->position[IK::TL], ik->lock[IK::TL]);
-    key_hr = glm::mix(key_hr, ik->position[IK::HR], ik->lock[IK::HR]);
-    key_tr = glm::mix(key_tr, ik->position[IK::TR], ik->lock[IK::TR]);
-
-    ik->height[IK::HL] = glm::mix(ik->height[IK::HL], heightmap->sample(glm::vec2(key_hl.x, key_hl.z)) + ik->heel_height, ik->smoothness);
-    ik->height[IK::TL] = glm::mix(ik->height[IK::TL], heightmap->sample(glm::vec2(key_tl.x, key_tl.z)) + ik->toe_height, ik->smoothness);
-    ik->height[IK::HR] = glm::mix(ik->height[IK::HR], heightmap->sample(glm::vec2(key_hr.x, key_hr.z)) + ik->heel_height, ik->smoothness);
-    ik->height[IK::TR] = glm::mix(ik->height[IK::TR], heightmap->sample(glm::vec2(key_tr.x, key_tr.z)) + ik->toe_height, ik->smoothness);
-    
-    key_hl.y = glm::max(key_hl.y, ik->height[IK::HL]);
-    key_tl.y = glm::max(key_tl.y, ik->height[IK::TL]);
-    key_hr.y = glm::max(key_hr.y, ik->height[IK::HR]);
-    key_tr.y = glm::max(key_tr.y, ik->height[IK::TR]);
-    
-    /* Rotate Hip / Knee */
-    
-    {
-      glm::vec3 hip_l  = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HIP_L][3]);
-      glm::vec3 knee_l = glm::vec3(character->joint_global_anim_xform[Character::JOINT_KNEE_L][3]);
-      glm::vec3 heel_l = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_L][3]);
-
-      glm::vec3 hip_r  = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HIP_R][3]);
-      glm::vec3 knee_r = glm::vec3(character->joint_global_anim_xform[Character::JOINT_KNEE_R][3]);
-      glm::vec3 heel_r = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_R][3]);
-
-      ik->two_joint(hip_l, knee_l, heel_l, key_hl, 1.0,
-        character->joint_global_anim_xform[Character::JOINT_ROOT_L],
-        character->joint_global_anim_xform[Character::JOINT_HIP_L],
-        character->joint_global_anim_xform[Character::JOINT_HIP_L],
-        character->joint_global_anim_xform[Character::JOINT_KNEE_L],
-        character->joint_anim_xform[Character::JOINT_HIP_L],
-        character->joint_anim_xform[Character::JOINT_KNEE_L]);
-      
-      ik->two_joint(hip_r, knee_r, heel_r, key_hr, 1.0, 
-        character->joint_global_anim_xform[Character::JOINT_ROOT_R],
-        character->joint_global_anim_xform[Character::JOINT_HIP_R],
-        character->joint_global_anim_xform[Character::JOINT_HIP_R],
-        character->joint_global_anim_xform[Character::JOINT_KNEE_R],
-        character->joint_anim_xform[Character::JOINT_HIP_R],
-        character->joint_anim_xform[Character::JOINT_KNEE_R]);
-      
-      character->forward_kinematics();
-    }
-    
-    /* Rotate Heel */
-    
-    {
-      const float heel_max_bend_s = 4;
-      const float heel_max_bend_u = 4;
-      const float heel_max_bend_d = 4;
-      
-      glm::vec4 ik_toe_pos_blend = glm::clamp(ik_weight * 2.5f, 0.0f, 1.0f);
-      
-      glm::vec3 heel_l = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_L][3]);
-      glm::vec4 side_h0_l = character->joint_global_anim_xform[Character::JOINT_HEEL_L] * glm::vec4( 10,0,0,1);
-      glm::vec4 side_h1_l = character->joint_global_anim_xform[Character::JOINT_HEEL_L] * glm::vec4(-10,0,0,1);
-      glm::vec3 side0_l = glm::vec3(side_h0_l) / side_h0_l.w;
-      glm::vec3 side1_l = glm::vec3(side_h1_l) / side_h1_l.w;
-      glm::vec3 floor_l = key_tl;
-
-      side0_l.y = glm::clamp(heightmap->sample(glm::vec2(side0_l.x, side0_l.z)) + ik->toe_height, heel_l.y - heel_max_bend_s, heel_l.y + heel_max_bend_s);
-      side1_l.y = glm::clamp(heightmap->sample(glm::vec2(side1_l.x, side1_l.z)) + ik->toe_height, heel_l.y - heel_max_bend_s, heel_l.y + heel_max_bend_s);
-      floor_l.y = glm::clamp(floor_l.y, heel_l.y - heel_max_bend_d, heel_l.y + heel_max_bend_u);
-      
-      glm::vec3 targ_z_l = glm::normalize(floor_l - heel_l);
-      glm::vec3 targ_x_l = glm::normalize(side0_l - side1_l);
-      glm::vec3 targ_y_l = glm::normalize(glm::cross(targ_x_l, targ_z_l));
-      targ_x_l = glm::cross(targ_z_l, targ_y_l);
-      
-      character->joint_anim_xform[Character::JOINT_HEEL_L] = mix_transforms(
-        character->joint_anim_xform[Character::JOINT_HEEL_L],
-        glm::inverse(character->joint_global_anim_xform[Character::JOINT_KNEE_L]) * glm::mat4(
-        glm::vec4( targ_x_l, 0),
-        glm::vec4(-targ_y_l, 0),
-        glm::vec4( targ_z_l, 0),
-        glm::vec4( heel_l, 1)), ik_toe_pos_blend.y);
-      
-      glm::vec3 heel_r = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_R][3]);
-      glm::vec4 side_h0_r = character->joint_global_anim_xform[Character::JOINT_HEEL_R] * glm::vec4( 10,0,0,1);
-      glm::vec4 side_h1_r = character->joint_global_anim_xform[Character::JOINT_HEEL_R] * glm::vec4(-10,0,0,1);
-      glm::vec3 side0_r = glm::vec3(side_h0_r) / side_h0_r.w;
-      glm::vec3 side1_r = glm::vec3(side_h1_r) / side_h1_r.w;
-      glm::vec3 floor_r = key_tr;
-
-      side0_r.y = glm::clamp(heightmap->sample(glm::vec2(side0_r.x, side0_r.z)) + ik->toe_height, heel_r.y - heel_max_bend_s, heel_r.y + heel_max_bend_s);
-      side1_r.y = glm::clamp(heightmap->sample(glm::vec2(side1_r.x, side1_r.z)) + ik->toe_height, heel_r.y - heel_max_bend_s, heel_r.y + heel_max_bend_s);
-      floor_r.y = glm::clamp(floor_r.y, heel_r.y - heel_max_bend_d, heel_r.y + heel_max_bend_u);
-      
-      glm::vec3 targ_z_r = glm::normalize(floor_r - heel_r);
-      glm::vec3 targ_x_r = glm::normalize(side0_r - side1_r);
-      glm::vec3 targ_y_r = glm::normalize(glm::cross(targ_z_r, targ_x_r));
-      targ_x_r = glm::cross(targ_z_r, targ_y_r);
-
-      character->joint_anim_xform[Character::JOINT_HEEL_R] = mix_transforms(
-        character->joint_anim_xform[Character::JOINT_HEEL_R],
-        glm::inverse(character->joint_global_anim_xform[Character::JOINT_KNEE_R]) * glm::mat4(
-        glm::vec4(-targ_x_r, 0),
-        glm::vec4( targ_y_r, 0),
-        glm::vec4( targ_z_r, 0),
-        glm::vec4( heel_r, 1)), ik_toe_pos_blend.w);
-      
-      character->forward_kinematics();
-    }
-    
-    /* Rotate Toe */
-    
-    {
-      const float toe_max_bend_d = 0;
-      const float toe_max_bend_u = 10;
-      
-      glm::vec4 ik_toe_rot_blend = glm::clamp(ik_weight * 2.5f, 0.0f, 1.0f);
-      
-      glm::vec3 toe_l     = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_L][3]);
-      glm::vec4 fwrd_h_l  = character->joint_global_anim_xform[Character::JOINT_TOE_L] * glm::vec4(  0, 0, 10, 1);
-      glm::vec4 side_h0_l = character->joint_global_anim_xform[Character::JOINT_TOE_L] * glm::vec4( 10, 0,  0, 1);
-      glm::vec4 side_h1_l = character->joint_global_anim_xform[Character::JOINT_TOE_L] * glm::vec4(-10, 0,  0, 1);
-      glm::vec3 fwrd_l  = glm::vec3(fwrd_h_l) / fwrd_h_l.w;
-      glm::vec3 side0_l = glm::vec3(side_h0_l) / side_h0_l.w;
-      glm::vec3 side1_l = glm::vec3(side_h1_l) / side_h1_l.w;
-      
-      fwrd_l.y  = glm::clamp(heightmap->sample(glm::vec2(fwrd_l.x, fwrd_l.z))   + ik->toe_height, toe_l.y - toe_max_bend_d, toe_l.y + toe_max_bend_u);
-      side0_l.y = glm::clamp(heightmap->sample(glm::vec2(side0_l.x, side0_l.z)) + ik->toe_height, toe_l.y - toe_max_bend_d, toe_l.y + toe_max_bend_u);
-      side1_l.y = glm::clamp(heightmap->sample(glm::vec2(side0_l.x, side1_l.z)) + ik->toe_height, toe_l.y - toe_max_bend_d, toe_l.y + toe_max_bend_u);
-      
-      glm::vec3 side_l = glm::normalize(side0_l - side1_l);
-      fwrd_l = glm::normalize(fwrd_l - toe_l);
-      glm::vec3 upwr_l = glm::normalize(glm::cross(side_l, fwrd_l));
-      side_l = glm::cross(fwrd_l, upwr_l);
-      
-      character->joint_anim_xform[Character::JOINT_TOE_L] = mix_transforms(
-        character->joint_anim_xform[Character::JOINT_TOE_L],
-        glm::inverse(character->joint_global_anim_xform[Character::JOINT_HEEL_L]) * glm::mat4(
-        glm::vec4( side_l, 0),
-        glm::vec4(-upwr_l, 0),
-        glm::vec4( fwrd_l, 0),
-        glm::vec4( toe_l, 1)), ik_toe_rot_blend.y);
-      
-      glm::vec3 toe_r     = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_R][3]);
-      glm::vec4 fwrd_h_r  = character->joint_global_anim_xform[Character::JOINT_TOE_R] * glm::vec4( 0,0,10,1);
-      glm::vec4 side_h0_r = character->joint_global_anim_xform[Character::JOINT_TOE_R] * glm::vec4( 10,0, 0,1);
-      glm::vec4 side_h1_r = character->joint_global_anim_xform[Character::JOINT_TOE_R] * glm::vec4(-10,0, 0,1);
-      glm::vec3 fwrd_r  = glm::vec3(fwrd_h_r) / fwrd_h_r.w;
-      glm::vec3 side0_r = glm::vec3(side_h0_r) / side_h0_r.w;
-      glm::vec3 side1_r = glm::vec3(side_h1_r) / side_h1_r.w;
-      
-      fwrd_r.y  = glm::clamp(heightmap->sample(glm::vec2(fwrd_r.x, fwrd_r.z))   + ik->toe_height, toe_r.y - toe_max_bend_d, toe_r.y + toe_max_bend_u);
-      side0_r.y = glm::clamp(heightmap->sample(glm::vec2(side0_r.x, side0_r.z)) + ik->toe_height, toe_r.y - toe_max_bend_d, toe_r.y + toe_max_bend_u);
-      side1_r.y = glm::clamp(heightmap->sample(glm::vec2(side1_r.x, side1_r.z)) + ik->toe_height, toe_r.y - toe_max_bend_d, toe_r.y + toe_max_bend_u);
-      
-      glm::vec3 side_r = glm::normalize(side0_r - side1_r);
-      fwrd_r = glm::normalize(fwrd_r - toe_r);
-      glm::vec3 upwr_r = glm::normalize(glm::cross(side_r, fwrd_r));
-      side_r = glm::cross(fwrd_r, upwr_r);
-      
-      character->joint_anim_xform[Character::JOINT_TOE_R] = mix_transforms(
-        character->joint_anim_xform[Character::JOINT_TOE_R],
-        glm::inverse(character->joint_global_anim_xform[Character::JOINT_HEEL_R]) * glm::mat4(
-        glm::vec4( side_r, 0),
-        glm::vec4(-upwr_r, 0),
-        glm::vec4( fwrd_r, 0),
-        glm::vec4( toe_r, 1)), ik_toe_rot_blend.w);
-      
-      character->forward_kinematics();
-    }
-    
-    /* Update Locks */
-    
-    if ((ik->lock[IK::HL] == 0.0) && (ik_weight.y >= ik->threshold)) {
-      ik->lock[IK::HL] = 1.0; ik->position[IK::HL] = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_L][3]);
-      ik->lock[IK::TL] = 1.0; ik->position[IK::TL] = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_L][3]);
-    }
-    
-    if ((ik->lock[IK::HR] == 0.0) && (ik_weight.w >= ik->threshold)) {
-      ik->lock[IK::HR] = 1.0; ik->position[IK::HR] = glm::vec3(character->joint_global_anim_xform[Character::JOINT_HEEL_R][3]);
-      ik->lock[IK::TR] = 1.0; ik->position[IK::TR] = glm::vec3(character->joint_global_anim_xform[Character::JOINT_TOE_R][3]);
-    }
-    
-    if ((ik->lock[IK::HL] > 0.0) && (ik_weight.y < ik->threshold)) {
-      ik->lock[IK::HL] = glm::clamp(ik->lock[IK::HL] - ik->fade, 0.0f, 1.0f);
-      ik->lock[IK::TL] = glm::clamp(ik->lock[IK::TL] - ik->fade, 0.0f, 1.0f);
-    }
-    
-    if ((ik->lock[IK::HR] > 0.0) && (ik_weight.w < ik->threshold)) {
-      ik->lock[IK::HR] = glm::clamp(ik->lock[IK::HR] - ik->fade, 0.0f, 1.0f);
-      ik->lock[IK::TR] = glm::clamp(ik->lock[IK::TR] - ik->fade, 0.0f, 1.0f);
-    }
-  
-  }
-    
 }
 
 void post_render() {
@@ -2108,10 +1925,12 @@ void post_render() {
   character->phase = fmod(character->phase + (stand_amount * 0.9f + 0.1f) * 2*M_PI * pfnn->Yp(3), 2*M_PI);
   
   /* Update Camera */
+
   camera->target = mix_vectors(camera->target, glm::vec3(
     trajectory->positions[Trajectory::LENGTH/2].x, 
     trajectory->heights[Trajectory::LENGTH/2] + 100, 
     trajectory->positions[Trajectory::LENGTH/2].z), 0.1);
+  
 }
 
 void render() {
@@ -2822,16 +2641,16 @@ int main(int argc, char **argv) {
     X = 0;
     Y = 0;
     if(W) {
-      Y -= 10000;
+      Y -= 1;
     }
     if(S) {
-      Y += 10000;
+      Y += 1;
     }
     if(A) {
-      X -= 10000;
+      X -= 1;
     }
     if(D) {
-      X += 10000;
+      X += 1;
     }
     
     pre_render();

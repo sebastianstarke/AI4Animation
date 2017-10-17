@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using MathNet.Numerics.LinearAlgebra;
-using System.IO;  
 
-public class PFNN {
+public class PFNN : MonoBehaviour {
 
 	public enum MODE { CONSTANT, LINEAR, CUBIC };
 
-	public MODE Mode;
+	public MODE Mode = MODE.CONSTANT;
 
 	public int XDim = 342;
 	public int YDim = 311;
 	public int HDim = 512;
+
+	public NetworkParameters Parameters;
 
 	public Matrix<float> Xmean, Xstd;
 	public Matrix<float> Ymean, Ystd;
@@ -25,24 +26,10 @@ public class PFNN {
 
 	private const float M_PI = 3.14159265358979323846f;
 
-	public PFNN(MODE mode) {
-		Mode = mode;
-		
-		Xp = Matrix<float>.Build.Dense(XDim, 1);
-		Yp = Matrix<float>.Build.Dense(YDim, 1);
+	public void LoadParameters() {
+		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
+		Parameters.Load(XDim, YDim, HDim);
 
-		H0 = Matrix<float>.Build.Dense(HDim, 1);
-		H1 = Matrix<float>.Build.Dense(HDim, 1);
-
-		W0p = Matrix<float>.Build.Dense(HDim, XDim);
-		W1p = Matrix<float>.Build.Dense(HDim, HDim);
-		W2p = Matrix<float>.Build.Dense(YDim, HDim);
-
-		b0p = Matrix<float>.Build.Dense(HDim, 1);
-		b1p = Matrix<float>.Build.Dense(HDim, 1);
-		b2p = Matrix<float>.Build.Dense(YDim, 1);
-
-		Load();
 	}
 
 	public void SetInput(int i, float value) {
@@ -108,86 +95,56 @@ public class PFNN {
 		}
 		
 		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
-		
+
 		return Yp;
 	}
 
-	private void Load() {
-		LoadWeights(ref Xmean, XDim, 1, "../PFNN/demo/network/pfnn/Xmean.bin");
-		LoadWeights(ref Xstd, XDim, 1, "../PFNN/demo/network/pfnn/Xstd.bin");
-		LoadWeights(ref Ymean, YDim, 1, "../PFNN/demo/network/pfnn/Ymean.bin");
-		LoadWeights(ref Ystd, YDim, 1, "../PFNN/demo/network/pfnn/Ystd.bin");
+	public void Build() {
+		Xmean = Parameters.Xmean.Build();
+		Xstd = Parameters.Xstd.Build();
+		Ymean = Parameters.Ymean.Build();
+		Ystd = Parameters.Ystd.Build();
 
-		switch(Mode) {
-			case MODE.CONSTANT:
-			W0 = new Matrix<float>[50];
-			W1 = new Matrix<float>[50];
-			W2 = new Matrix<float>[50];
-			b0 = new Matrix<float>[50];
-			b1 = new Matrix<float>[50];
-			b2 = new Matrix<float>[50];
-			for(int i=0; i<50; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+i.ToString("D3")+".bin");
-			}	
-			break;
-			
-			case MODE.LINEAR:
-			W0 = new Matrix<float>[10];
-			W1 = new Matrix<float>[10];
-			W2 = new Matrix<float>[10];
-			b0 = new Matrix<float>[10];
-			b1 = new Matrix<float>[10];
-			b2 = new Matrix<float>[10];
-			for(int i=0; i<10; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+(i*5).ToString("D3")+".bin");
-			}	
-			break;
-
-			case MODE.CUBIC:
-			W0 = new Matrix<float>[4];
-			W1 = new Matrix<float>[4];
-			W2 = new Matrix<float>[4];
-			b0 = new Matrix<float>[4];
-			b1 = new Matrix<float>[4];
-			b2 = new Matrix<float>[4];
-			for(int i=0; i<4; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "../PFNN/demo/network/pfnn/W0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "../PFNN/demo/network/pfnn/W1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "../PFNN/demo/network/pfnn/W2_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "../PFNN/demo/network/pfnn/b0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "../PFNN/demo/network/pfnn/b1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "../PFNN/demo/network/pfnn/b2_"+(i*12.5).ToString("D3")+".bin");
-			}	
-			break;
+		W0 = new Matrix<float>[Parameters.W0.Length];
+		W1 = new Matrix<float>[Parameters.W1.Length];
+		W2 = new Matrix<float>[Parameters.W2.Length];
+		b0 = new Matrix<float>[Parameters.b0.Length];
+		b1 = new Matrix<float>[Parameters.b1.Length];
+		b2 = new Matrix<float>[Parameters.b2.Length];
+		for(int i=0; i<W0.Length; i++) {
+			W0[i] = Parameters.W0[i].Build();
 		}
+		for(int i=0; i<W0.Length; i++) {
+			W1[i] = Parameters.W1[i].Build();
+		}
+		for(int i=0; i<W0.Length; i++) {
+			W2[i] = Parameters.W2[i].Build();
+		}
+		for(int i=0; i<W0.Length; i++) {
+			b0[i] = Parameters.b0[i].Build();
+		}
+		for(int i=0; i<W0.Length; i++) {
+			b1[i] = Parameters.b1[i].Build();
+		}
+		for(int i=0; i<W0.Length; i++) {
+			b2[i] = Parameters.b2[i].Build();
+		}
+
+		Xp = Matrix<float>.Build.Dense(XDim, 1);
+		Yp = Matrix<float>.Build.Dense(YDim, 1);
+
+		H0 = Matrix<float>.Build.Dense(HDim, 1);
+		H1 = Matrix<float>.Build.Dense(HDim, 1);
+
+		W0p = Matrix<float>.Build.Dense(HDim, XDim);
+		W1p = Matrix<float>.Build.Dense(HDim, HDim);
+		W2p = Matrix<float>.Build.Dense(YDim, HDim);
+
+		b0p = Matrix<float>.Build.Dense(HDim, 1);
+		b1p = Matrix<float>.Build.Dense(HDim, 1);
+		b2p = Matrix<float>.Build.Dense(YDim, 1);
 	}
 
-	private void LoadWeights(ref Matrix<float> m, int rows, int cols, string fn) {
-		try {
-			BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
-			m = Matrix<float>.Build.Dense(rows, cols);
-			int elements = 0;
-			for(int x=0; x<rows; x++) {
-				for(int y=0; y<cols; y++) {
-					elements += 1;
-					m[x,y] = reader.ReadSingle();
-				}
-			}
-		} catch (System.Exception e) {
-        	Debug.Log(e.Message);
-        }
-	}
-	
 	private void ELU(ref Matrix<float> m) {
 		for(int x=0; x<m.RowCount; x++) {
 			for(int y=0; y<m.ColumnCount; y++) {

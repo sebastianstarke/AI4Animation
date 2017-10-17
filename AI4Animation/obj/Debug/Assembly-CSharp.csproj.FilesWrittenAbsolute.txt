@@ -22,3 +22,6 @@
 /media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/Unity.CecilTools.dll
 /media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/UnityEngine.Timeline.dll
+/media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/ExCSS.Unity.dll
+/media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Temp/bin/Debug/Unity.Legacy.NRefactory.dll
