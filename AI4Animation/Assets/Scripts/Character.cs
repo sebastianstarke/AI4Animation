@@ -35,15 +35,58 @@ public class Character {
 		System.Array.Resize(ref Joints, Joints.Length-1);
 	}
 
+	public void CreateVisuals() {
+		for(int i=0; i<Joints.Length; i++) {
+			Joints[i].CreateVisual();
+		}
+	}
+
+	public void RemoveVisuals() {
+		for(int i=0; i<Joints.Length; i++) {
+			Joints[i].RemoveVisual();
+		}
+	}
+
 	[System.Serializable]
 	public class Joint {
 		public Transform Transform;
+
+		public GameObject Visual;
 
 		private Vector3 Position;
 		private Vector3 Velocity;
 
 		public Joint() {
 
+		}
+
+		public void CreateVisual() {
+			if(Visual != null) {
+				return;
+			}
+			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			Visual.transform.SetParent(Transform);
+			Visual.transform.localPosition = Vector3.zero;
+			Visual.transform.localRotation = Quaternion.identity;
+			Visual.transform.localScale = 0.05f * Vector3.one;
+			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Joint", typeof(Material)) as Material;
+
+			if(Application.isPlaying) {
+				GameObject.Destroy(Visual.GetComponent<Collider>());
+			} else {
+				GameObject.DestroyImmediate(Visual.GetComponent<Collider>());
+			}
+		}
+
+		public void RemoveVisual() {
+			if(Visual == null) {
+				return;
+			}
+			if(Application.isPlaying) {
+				GameObject.Destroy(Visual);
+			} else {
+				GameObject.DestroyImmediate(Visual);
+			}
 		}
 
 		public void SetPosition(Vector3 position) {

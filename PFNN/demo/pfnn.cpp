@@ -1831,7 +1831,6 @@ void post_render() {
   for (int i = Trajectory::LENGTH/2+1; i < Trajectory::LENGTH; i++) {
     int w = (Trajectory::LENGTH/2)/10;
     float m = fmod(((float)i - (Trajectory::LENGTH/2)) / 10.0, 1.0);
-        std::cout << m << std::endl;
     trajectory->positions[i].x  = (1-m) * pfnn->Yp(8+(w*0)+(i/10)-w) + m * pfnn->Yp(8+(w*0)+(i/10)-w+1);
     trajectory->positions[i].z  = (1-m) * pfnn->Yp(8+(w*1)+(i/10)-w) + m * pfnn->Yp(8+(w*1)+(i/10)-w+1);
     trajectory->directions[i].x = (1-m) * pfnn->Yp(8+(w*2)+(i/10)-w) + m * pfnn->Yp(8+(w*2)+(i/10)-w+1);
@@ -1842,7 +1841,6 @@ void post_render() {
   }
   
   /* Update Phase */
-
   character->phase = fmod(character->phase + (stand_amount * 0.9f + 0.1f) * 2*M_PI * pfnn->Yp(3), 2*M_PI);
   
   /* Update Camera */

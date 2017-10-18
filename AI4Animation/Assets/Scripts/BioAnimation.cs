@@ -18,7 +18,13 @@ public class BioAnimation : MonoBehaviour {
 
 	private float Phase = 0f;
 
+	private enum DrawingMode {Scene, Game};
+
 	void Awake() {
+		#if UNITY_EDITOR
+		QualitySettings.vSyncCount = 0;
+		#endif
+		Application.targetFrameRate = 60;
 		Trajectory.Initialise(transform.position, transform.forward);
 		PFNN.Initialise();
 	}
@@ -26,7 +32,7 @@ public class BioAnimation : MonoBehaviour {
 	void Start() {
 
 	}
-	
+
 	void Update() {
 		if(PFNN.Parameters == null) {
 			return;
@@ -142,12 +148,6 @@ public class BioAnimation : MonoBehaviour {
 			PFNN.SetInput(o+(w*2)+(i/10), UnitScale * (Trajectory.Points[i].Project(-Trajectory.Width/2f).y - currRoot.Position.y));
 		}
 
-		//Update Phase
-		//Phase += 2f * Time.deltaTime;
-		//Phase = Mathf.Repeat(Phase, 2f*Mathf.PI);
-		//float stand_amount = Mathf.Pow(1.0f-Trajectory.GetCurrent().GetHeight(), 0.25f);
-		//Phase  = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * 2f*Mathf.PI * PFNN.GetOutput(3), 2f*Mathf.PI);
-
 		//Predict
 		PFNN.Predict(Phase);
 
@@ -162,24 +162,14 @@ public class BioAnimation : MonoBehaviour {
 			Character.Joints[i].SetVelocity(velocity / UnitScale, currRoot);
 		}
 
+		//Root Position
+		transform.position = Trajectory.GetCurrent().GetPosition();
+		transform.rotation = Trajectory.GetCurrent().GetRotation();
+
 		//Update Posture
 		Character.ForwardKinematics();
 
 		//Update Past Trajectory
-		//TODO BETTER BLENDING
-		/*
-		for(int i=Trajectory.Size/2-1; i>=0; i--) {
-			Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
-			Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
-			Trajectory.Points[i].Stand = Trajectory.Points[i+1].Stand;
-			Trajectory.Points[i].Walk = Trajectory.Points[i+1].Walk;
-			Trajectory.Points[i].Jog = Trajectory.Points[i+1].Jog;
-			Trajectory.Points[i].Crouch = Trajectory.Points[i+1].Crouch;
-			Trajectory.Points[i].Jump = Trajectory.Points[i+1].Jump;
-			Trajectory.Points[i].Bump = Trajectory.Points[i+1].Bump;
-		}
-		*/
-
 		for(int i=0; i<Trajectory.Size/2; i++) {
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 			Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
@@ -193,16 +183,15 @@ public class BioAnimation : MonoBehaviour {
 
 		//Update Current Trajectory
 		float stand_amount = Mathf.Pow(1.0f-Trajectory.GetCurrent().Stand, 0.25f);
-		Vector3 trajectory_update = Trajectory.GetCurrent().GetRotation() * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale);
-		Trajectory.GetCurrent().SetPosition(Trajectory.GetCurrent().GetPosition() + stand_amount * trajectory_update);
-		Trajectory.GetCurrent().SetDirection(Quaternion.AngleAxis(UnitScale * stand_amount * -PFNN.GetOutput(2), Vector3.up) * Trajectory.GetCurrent().GetDirection());
+		Trajectory.GetCurrent().SetPosition(Trajectory.GetCurrent().GetPosition() + stand_amount * (Trajectory.GetCurrent().GetRotation() * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)));
+		Trajectory.GetCurrent().SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.GetCurrent().GetDirection());
 		
 		for(int i=Trajectory.Size/2+1; i<Trajectory.Size; i++) {
-			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + stand_amount * trajectory_update);
+			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + stand_amount * (Trajectory.GetCurrent().GetRotation() * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)));
 		}
 
+		/*
 		//Update Future Trajectory
-		
 		for(int i=Trajectory.Size/2+1; i<Trajectory.Size; i++) {
 			int w = (Trajectory.Size/2)/10;
 			float m = Mathf.Repeat(((float)i - (Trajectory.Size/2f)) / 10.0f, 1.0f);
@@ -211,42 +200,50 @@ public class BioAnimation : MonoBehaviour {
 			float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/10)-w) + m * PFNN.GetOutput(8+(w*2)+(i/10)-w+1);
 			float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/10)-w) + m * PFNN.GetOutput(8+(w*3)+(i/10)-w+1);
 			//Trajectory.Points[i].SetPosition(new Vector3(posX / UnitScale, 0f, posZ / UnitScale), new Transformation(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetRotation()));
-			//Trajectory.Points[i].SetDirection(Trajectory.GetCurrent().GetRotation() * new Vector3(dirX, 0f, dirZ).normalized);
+			//Trajectory.Points[i].SetDirection((Trajectory.GetCurrent().GetRotation() * new Vector3(dirX, 0f, dirZ)).normalized);
 		}
-		
+		*/
 		
 		/* Update Phase */
 		Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * 2*Mathf.PI * PFNN.GetOutput(3), 2f*Mathf.PI);
 		
 	}
-
-	void LateUpdate() {
-		
+	
+	void OnGUI() {
+		if(Camera.main == null) {
+			return;
+		}
+		DrawCharacterSkeleton(DrawingMode.Game, transform);
 	}
 
 	void OnDrawGizmos() {
-		DrawCharacterSkeleton(transform);
+		DrawCharacterSkeleton(DrawingMode.Scene, transform);
 		DrawCharacterJoints(transform);
 		DrawTrajectory();
 	}
 
-	private void DrawCharacterSkeleton(Transform bone, Transform parent = null) {
-		Gizmos.color = Color.cyan;
+	private void DrawCharacterSkeleton(DrawingMode mode, Transform bone, Transform parent = null) {
 		bool isJoint = System.Array.Find(Character.Joints, x => x.Transform == bone) != null;
 		if(parent != null && isJoint) {
-			Gizmos.DrawLine(parent.position, bone.position);
+			if(mode == DrawingMode.Scene) {
+				Gizmos.color = Color.cyan;
+				Gizmos.DrawLine(parent.position, bone.position);
+			}
+			if(mode == DrawingMode.Game) {
+				Drawing.DrawLine(GUIUtility.ScreenToGUIPoint(Camera.main.WorldToScreenPoint(parent.position)), GUIUtility.ScreenToGUIPoint(Camera.main.WorldToScreenPoint(bone.position)), Color.cyan, 2f, true);
+			}
 		}
 		for(int i=0; i<bone.childCount; i++) {
 			if(isJoint) {
-				DrawCharacterSkeleton(bone.GetChild(i), bone);
+				DrawCharacterSkeleton(mode, bone.GetChild(i), bone);
 			} else {
-				DrawCharacterSkeleton(bone.GetChild(i), parent);
+				DrawCharacterSkeleton(mode, bone.GetChild(i), parent);
 			}
 		}
 	}
 
 	private void DrawCharacterJoints(Transform bone) {
-		Gizmos.color = Color.magenta;
+		Gizmos.color = Color.black;
 		bool isJoint = System.Array.Find(Character.Joints, x => x.Transform == bone) != null;
 		if(isJoint) {
 			Gizmos.DrawSphere(bone.position, 0.01f);
@@ -261,20 +258,27 @@ public class BioAnimation : MonoBehaviour {
 			return;
 		}
 		
-		//Root
-		Gizmos.color = Color.magenta;
-		Gizmos.DrawSphere(Trajectory.GetCurrent().GetPosition(), 0.01f);
-
-		//Target
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetPosition() + Trajectory.TargetDirection);
-		Gizmos.color = Color.green;
-		Gizmos.DrawLine(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetPosition() + Trajectory.TargetVelocity);
+		//Projections
+		for(int i=0; i<Trajectory.Points.Length; i++) {
+			Vector3 right = Trajectory.Points[i].Project(Trajectory.Width/2f);
+			Vector3 left = Trajectory.Points[i].Project(-Trajectory.Width/2f);
+			//Gizmos.color = Color.white;
+			//Gizmos.DrawLine(left, right);
+			Gizmos.color = Color.black;
+			Gizmos.DrawSphere(right, 0.005f);
+			Gizmos.DrawSphere(left, 0.005f);
+		}
 
 		//Connections
 		Gizmos.color = Color.cyan;
 		for(int i=0; i<Trajectory.Points.Length-1; i++) {
 			Gizmos.DrawLine(Trajectory.Points[i].GetPosition(), Trajectory.Points[i+1].GetPosition());
+		}
+
+		//Directions
+		Gizmos.color = Color.red;
+		for(int i=0; i<Trajectory.Points.Length; i++) {
+			Gizmos.DrawLine(Trajectory.Points[i].GetPosition(), Trajectory.Points[i].GetPosition() + 0.1f * Trajectory.Points[i].GetDirection());
 		}
 
 		//Positions
@@ -283,18 +287,15 @@ public class BioAnimation : MonoBehaviour {
 			Gizmos.DrawSphere(Trajectory.Points[i].GetPosition(), 0.005f);
 		}
 
-		//Directions
-		Gizmos.color = Color.magenta;
-		for(int i=0; i<Trajectory.Points.Length; i++) {
-			Gizmos.DrawLine(Trajectory.Points[i].GetPosition(), Trajectory.Points[i].GetPosition() + 0.1f * Trajectory.Points[i].GetDirection());
-		}
+		//Target
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetPosition() + Trajectory.TargetDirection);
+		Gizmos.color = Color.green;
+		Gizmos.DrawLine(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetPosition() + Trajectory.TargetVelocity);
 
-		//Projections
-		Gizmos.color = Color.black;
-		for(int i=0; i<Trajectory.Points.Length; i++) {
-			Gizmos.DrawSphere(Trajectory.Points[i].Project(Trajectory.Width/2f), 0.005f);
-			Gizmos.DrawSphere(Trajectory.Points[i].Project(-Trajectory.Width/2f), 0.005f);
-		}
+		//Root
+		Gizmos.color = Color.magenta;
+		Gizmos.DrawSphere(Trajectory.GetCurrent().GetPosition(), 0.01f);
 
 		/*
 		Gizmos.color = Color.blue;

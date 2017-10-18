@@ -56,6 +56,13 @@ public class BioAnimation_Editor : Editor {
 						if(GUILayout.Button("-")) {
 							Target.Character.RemoveJoint(Target.Character.Joints.Length);
 						}
+
+						if(GUILayout.Button("Create Visuals")) {
+							Target.Character.CreateVisuals();
+						}
+						if(GUILayout.Button("Remove Visuals")) {
+							Target.Character.RemoveVisuals();
+						}
 					}
 				}
 			}
