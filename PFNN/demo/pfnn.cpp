@@ -42,8 +42,6 @@ struct Options {
   
   bool invert_y;
   
-  bool enable_ik;
-  
   bool display_debug;
   bool display_debug_heights;
   bool display_debug_joints;
@@ -66,7 +64,6 @@ struct Options {
   
   Options()
     : invert_y(false)
-    , enable_ik(true)
     , display_debug(true)
     , display_debug_heights(true)
     , display_debug_joints(false)
@@ -998,74 +995,6 @@ struct Trajectory {
 
 static Trajectory* trajectory = NULL;
 
-/* IK */
-
-struct IK {
-  
-  enum { HL = 0, HR = 1, TL = 2, TR = 3 };
-  
-  float lock[4];
-  glm::vec3 position[4]; 
-  float height[4];
-  float fade;
-  float threshold;
-  float smoothness;
-  float heel_height;
-  float toe_height;
-  
-  IK()
-    : fade(0.075)
-    , threshold(0.8)
-    , smoothness(0.5)
-    , heel_height(5.0)
-    , toe_height(4.0) {
-    memset(lock, 4, sizeof(float));
-    memset(position, 4, sizeof(glm::vec3));
-    memset(height, 4, sizeof(float));
-  }
-  
-  void two_joint(
-    glm::vec3 a, glm::vec3 b, 
-    glm::vec3 c, glm::vec3 t, float eps, 
-    glm::mat4& a_pR, glm::mat4& b_pR,
-    glm::mat4& a_gR, glm::mat4& b_gR,
-    glm::mat4& a_lR, glm::mat4& b_lR) {
-    
-    float lc = glm::length(b - a);
-    float la = glm::length(b - c);
-    float lt = glm::clamp(glm::length(t - a), eps, lc + la - eps);
-    
-    if (glm::length(c - t) < eps) { return; }
-
-    float ac_ab_0 = acosf(glm::clamp(glm::dot(glm::normalize(c - a), glm::normalize(b - a)), -1.0f, 1.0f));
-    float ba_bc_0 = acosf(glm::clamp(glm::dot(glm::normalize(a - b), glm::normalize(c - b)), -1.0f, 1.0f));
-    float ac_at_0 = acosf(glm::clamp(glm::dot(glm::normalize(c - a), glm::normalize(t - a)), -1.0f, 1.0f));
-    
-    float ac_ab_1 = acosf(glm::clamp((la*la - lc*lc - lt*lt) / (-2*lc*lt), -1.0f, 1.0f));
-    float ba_bc_1 = acosf(glm::clamp((lt*lt - lc*lc - la*la) / (-2*lc*la), -1.0f, 1.0f));
-    
-    glm::vec3 a0 = glm::normalize(glm::cross(b - a, c - a));
-    glm::vec3 a1 = glm::normalize(glm::cross(t - a, c - a));
-    
-    glm::mat3 r0 = glm::mat3(glm::rotate(ac_ab_1 - ac_ab_0, -a0));
-    glm::mat3 r1 = glm::mat3(glm::rotate(ba_bc_1 - ba_bc_0, -a0));
-    glm::mat3 r2 = glm::mat3(glm::rotate(ac_at_0,           -a1));
-    
-    glm::mat3 a_lRR = glm::inverse(glm::mat3(a_pR)) * (r2 * r0 * glm::mat3(a_gR)); 
-    glm::mat3 b_lRR = glm::inverse(glm::mat3(b_pR)) * (r1 * glm::mat3(b_gR)); 
-    
-    for (int x = 0; x < 3; x++)
-    for (int y = 0; y < 3; y++) {
-      a_lR[x][y] = a_lRR[x][y];
-      b_lR[x][y] = b_lRR[x][y];
-    }
-    
-  }
-  
-};
-
-static IK* ik = NULL;
-
 /* Areas */
 
 struct Areas {
@@ -1156,11 +1085,6 @@ static void reset(glm::vec2 position) {
   }
   
   character->phase = 0.0;
-  
-  ik->position[IK::HL] = glm::vec3(0,0,0); ik->lock[IK::HL] = 0; ik->height[IK::HL] = root_position.y;
-  ik->position[IK::HR] = glm::vec3(0,0,0); ik->lock[IK::HR] = 0; ik->height[IK::HR] = root_position.y;
-  ik->position[IK::TL] = glm::vec3(0,0,0); ik->lock[IK::TL] = 0; ik->height[IK::TL] = root_position.y;
-  ik->position[IK::TR] = glm::vec3(0,0,0); ik->lock[IK::TR] = 0; ik->height[IK::TR] = root_position.y;
   
 }
 
@@ -1513,7 +1437,7 @@ static void pre_render() {
   /* Update Camera */
 
   int x_move = -X;
-  int y_move = 0;
+  int y_move = -Y;
   
   if (abs(x_move) + abs(y_move) < 10000) { x_move = 0; y_move = 0; };
   
@@ -1864,9 +1788,8 @@ static void pre_render() {
 }
 
 void post_render() {
-            
-  /* Update Past Trajectory */
   
+  //Update Past Trajectory
   for (int i = 0; i < Trajectory::LENGTH/2; i++) {
     trajectory->positions[i]  = trajectory->positions[i+1];
     trajectory->directions[i] = trajectory->directions[i+1];
@@ -1880,8 +1803,7 @@ void post_render() {
     trajectory->gait_bump[i] = trajectory->gait_bump[i+1];
   }
   
-  /* Update Current Trajectory */
-  
+  //Update Current Trajectory
   float stand_amount = powf(1.0f-trajectory->gait_stand[Trajectory::LENGTH/2], 0.25f);
   
   glm::vec3 trajectory_update = (trajectory->rotations[Trajectory::LENGTH/2] * glm::vec3(pfnn->Yp(0), 0, pfnn->Yp(1)));
@@ -1891,8 +1813,7 @@ void post_render() {
       trajectory->directions[Trajectory::LENGTH/2].x,
       trajectory->directions[Trajectory::LENGTH/2].z), glm::vec3(0,1,0)));
       
-  /* Collide with walls */
-      
+  //Collide with walls
   for (int j = 0; j < areas->num_walls(); j++) {
     glm::vec2 trjpoint = glm::vec2(trajectory->positions[Trajectory::LENGTH/2].x, trajectory->positions[Trajectory::LENGTH/2].z);
     glm::vec2 segpoint = segment_nearest(areas->wall_start[j], areas->wall_stop[j], trjpoint);
@@ -1906,11 +1827,11 @@ void post_render() {
     }
   }
 
-  /* Update Future Trajectory */
-  
+  //Update Future Trajectory
   for (int i = Trajectory::LENGTH/2+1; i < Trajectory::LENGTH; i++) {
     int w = (Trajectory::LENGTH/2)/10;
     float m = fmod(((float)i - (Trajectory::LENGTH/2)) / 10.0, 1.0);
+        std::cout << m << std::endl;
     trajectory->positions[i].x  = (1-m) * pfnn->Yp(8+(w*0)+(i/10)-w) + m * pfnn->Yp(8+(w*0)+(i/10)-w+1);
     trajectory->positions[i].z  = (1-m) * pfnn->Yp(8+(w*1)+(i/10)-w) + m * pfnn->Yp(8+(w*1)+(i/10)-w+1);
     trajectory->directions[i].x = (1-m) * pfnn->Yp(8+(w*2)+(i/10)-w) + m * pfnn->Yp(8+(w*2)+(i/10)-w+1);
@@ -2391,7 +2312,6 @@ void render() {
     glEnd();
     glLineWidth(1);
     
-    if (options->enable_ik) { glColor3f(0.0, 1.0, 0.0); } else { glColor3f(1.0, 0.0, 0.0); }
     glPointSize(10);
     glBegin(GL_POINTS);
     glVertex3f(125+60, 30, 0);
@@ -2571,7 +2491,6 @@ int main(int argc, char **argv) {
     "./network/character_xforms.bin");
   
   trajectory = new Trajectory();
-  ik = new IK();
   
   shader_terrain = new Shader();
   shader_terrain_shadow = new Shader();
@@ -2621,7 +2540,6 @@ int main(int argc, char **argv) {
           case SDLK_4: load_world3(); break;
           case SDLK_5: load_world4(); break;
           case SDLK_6: load_world5(); break;
-          case SDLK_y: options->enable_ik = !options->enable_ik; break;
           case SDLK_x: options->display_debug = !options->display_debug; break;
           case SDLK_c: character->responsive = !character->responsive; break;
           case SDLK_v: character->crouched_target = character->crouched_target ? 0.0 : 1.0; break;
@@ -2670,7 +2588,6 @@ int main(int argc, char **argv) {
   delete light;
   delete character;
   delete trajectory;
-  delete ik;
   delete shader_terrain;
   delete shader_terrain_shadow;
   delete shader_character;

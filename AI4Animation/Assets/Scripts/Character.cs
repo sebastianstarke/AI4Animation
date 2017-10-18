@@ -1,25 +1,20 @@
 ﻿using UnityEngine;
 
-public class Character : MonoBehaviour {
+[System.Serializable]
+public class Character {
 
-	public CharacterJoint[] Joints = new CharacterJoint[0];
+	public bool Inspect = false;
 
-	private float JointSize = 0.01f;
+	public Joint[] Joints = new Joint[0];
 
-	public Vector3 GetRelativePosition(Vector3 position) {
-		return Quaternion.Inverse(transform.rotation) * (position - transform.position);
+	public Character() {
+
 	}
 
-	public Vector3 GetRelativeDirection(Vector3 direction) {
-		return Quaternion.Inverse(transform.rotation) * direction;
-	}
-
-	public Quaternion GetRelativeRotation(Quaternion rotation) {
-		return Quaternion.Inverse(transform.rotation) * rotation;
-	}
-
-	public bool IsJoint(Transform t) {
-		return System.Array.Find(Joints, x => x.Transform == t) != null;
+	public void ForwardKinematics() {
+		for(int i=0; i<Joints.Length; i++) {
+			Joints[i].Transform.position = Joints[i].GetPosition();
+		}
 	}
 
 	public void AddJoint(int index) {
@@ -27,11 +22,11 @@ public class Character : MonoBehaviour {
 		for(int i=Joints.Length-2; i>=index; i--) {
 			Joints[i+1] = Joints[i];
 		}
-		Joints[index] = new CharacterJoint(this);
+		Joints[index] = new Joint();
 	}
 
 	public void RemoveJoint(int index) {
-		if(Joints.Length < index) {
+		if(Joints.Length < index || Joints.Length == 0) {
 			return;
 		}
 		for(int i=index; i<Joints.Length-1; i++) {
@@ -40,63 +35,47 @@ public class Character : MonoBehaviour {
 		System.Array.Resize(ref Joints, Joints.Length-1);
 	}
 
-	void OnDrawGizmos() {
-		DrawSkeleton(transform);
-		DrawJoints(transform);
-	}
-
-	private void DrawSkeleton(Transform t, Transform parent = null) {
-		Gizmos.color = Color.cyan;
-		bool isJoint = IsJoint(t);
-		if(parent != null && isJoint) {
-			Gizmos.DrawLine(parent.position, t.position);
-		}
-		for(int i=0; i<t.childCount; i++) {
-			if(isJoint) {
-				DrawSkeleton(t.GetChild(i), t);
-			} else {
-				DrawSkeleton(t.GetChild(i), parent);
-			}
-		}
-	}
-
-	private void DrawJoints(Transform t) {
-		Gizmos.color = Color.magenta;
-		bool isJoint = IsJoint(t);
-		if(isJoint) {
-			Gizmos.DrawSphere(t.position, JointSize);
-		}
-		for(int i=0; i<t.childCount; i++) {
-			DrawJoints(t.GetChild(i));
-		}
-	}
-
 	[System.Serializable]
-	public class CharacterJoint {
-		public Character Character;
+	public class Joint {
 		public Transform Transform;
-		public Vector3 Velocity;
 
-		public CharacterJoint(Character c) {
-			Character = c;
-			Transform = null;
-			Velocity = Vector3.zero;
+		private Vector3 Position;
+		private Vector3 Velocity;
+
+		public Joint() {
+
 		}
 
-		public void SetRelativePosition(Vector3 relativePosition) {
-			Transform.position = Character.transform.position + Character.transform.rotation * relativePosition;
-		}
-		
-		public Vector3 GetRelativePosition() {
-			return Quaternion.Inverse(Character.transform.rotation) * (Transform.position - Character.transform.position);
+		public void SetPosition(Vector3 position) {
+			Position = position;
 		}
 
-		public void SetRelativeVelocity(Vector3 relativeVelocity) {
-			Velocity = Character.transform.rotation * relativeVelocity;
+		public void SetPosition(Vector3 position, Transformation relativeTo) {
+			Position = relativeTo.Position + relativeTo.Rotation * position;
 		}
 
-		public Vector3 GetRelativeVelocity() {
-			return Quaternion.Inverse(Character.transform.rotation) * Velocity;
+		public Vector3 GetPosition() {
+			return Position;
+		}
+
+		public Vector3 GetPosition(Transformation relativeTo) {
+			return Quaternion.Inverse(relativeTo.Rotation) * (Position - relativeTo.Position);
+		}
+
+		public void SetVelocity(Vector3 velocity) {
+			Velocity = velocity;
+		}
+
+		public void SetVelocity(Vector3 velocity, Transformation relativeTo) {
+			Velocity = relativeTo.Rotation * velocity;
+		}
+
+		public Vector3 GetVelocity() {
+			return Velocity;
+		}
+
+		public Vector3 GetVelocity(Transformation relativeTo) {
+			return Quaternion.Inverse(relativeTo.Rotation) * Velocity;
 		}
 	}
 

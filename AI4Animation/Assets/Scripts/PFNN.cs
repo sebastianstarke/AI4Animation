@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using MathNet.Numerics.LinearAlgebra;
 
-public class PFNN : MonoBehaviour {
+[System.Serializable]
+public class PFNN {
 
-	public enum MODE { CONSTANT, LINEAR, CUBIC };
+	public bool Inspect = false;
 
-	public MODE Mode = MODE.CONSTANT;
+	//public enum MODE { CONSTANT, LINEAR, CUBIC };
+
+	//public MODE Mode = MODE.CONSTANT;
 
 	public int XDim = 342;
 	public int YDim = 311;
@@ -26,80 +29,12 @@ public class PFNN : MonoBehaviour {
 
 	private const float M_PI = 3.14159265358979323846f;
 
-	public void LoadParameters() {
-		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		Parameters.Load(XDim, YDim, HDim);
-
-	}
-
-	public void SetInput(int i, float value) {
-		Xp[i, 0] = value;
-	}
-
-	public float GetOutput(int i) {
-		return Yp[i, 0];
-	}
-
-	public Matrix<float> Predict(float phase) {
-		float pamount;
-		int pindex_0, pindex_1, pindex_2, pindex_3;
-
-		Matrix<float> _Xp = Xp.Clone();
-		
-		_Xp = (_Xp - Xmean).PointwiseDivide(Xstd);
-		
-		switch(Mode) {
-			case MODE.CONSTANT:
-				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1]; ELU(ref H0);
-				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
-				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
-			break;
-			
-			case MODE.LINEAR:
-				//TODO: make fmod faster
-				pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
-				pindex_1 = (int)((phase / (2*M_PI)) * 10);
-				pindex_2 = ((pindex_1+1) % 10);
-				Linear(ref W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
-				Linear(ref W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
-				Linear(ref W2p, ref W2[pindex_1], ref W2[pindex_2], pamount);
-				Linear(ref b0p, ref b0[pindex_1], ref b0[pindex_2], pamount);
-				Linear(ref b1p, ref b1[pindex_1], ref b1[pindex_2], pamount);
-				Linear(ref b2p, ref b2[pindex_1], ref b2[pindex_2], pamount);
-				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
-				H1 = (W1p * H0) + b1p; ELU(ref H1);
-				Yp = (W2p * H1) + b2p;
-			break;
-			
-			case MODE.CUBIC:
-				//TODO: make fmod faster
-				pamount = Mathf.Repeat((phase / (2*M_PI)) * 4, 1.0f);
-				pindex_1 = (int)((phase / (2*M_PI)) * 4);
-				pindex_0 = ((pindex_1+3) % 4);
-				pindex_2 = ((pindex_1+1) % 4);
-				pindex_3 = ((pindex_1+2) % 4);
-				Cubic(ref W0p, ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
-				Cubic(ref W1p, ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
-				Cubic(ref W2p, ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
-				Cubic(ref b0p, ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
-				Cubic(ref b1p, ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
-				Cubic(ref b2p, ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
-				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
-				H1 = (W1p * H0) + b1p; ELU(ref H1);
-				Yp = (W2p * H1) + b2p;
-			break;
-			
-			default:
-			break;
+	public void Initialise() {
+		if(Parameters == null) {
+			Debug.Log("Building PFNN failed because no parameters were loaded.");
+			return;
 		}
-		
-		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
 
-		return Yp;
-	}
-
-	public void Build() {
 		Xmean = Parameters.Xmean.Build();
 		Xstd = Parameters.Xstd.Build();
 		Ymean = Parameters.Ymean.Build();
@@ -143,6 +78,85 @@ public class PFNN : MonoBehaviour {
 		b0p = Matrix<float>.Build.Dense(HDim, 1);
 		b1p = Matrix<float>.Build.Dense(HDim, 1);
 		b2p = Matrix<float>.Build.Dense(YDim, 1);
+	}
+
+	public void LoadParameters() {
+		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
+		Parameters.Load(XDim, YDim, HDim);
+		if(Application.isPlaying) {
+			Initialise();
+		}
+	}
+
+	public void SetInput(int i, float value) {
+		Xp[i, 0] = value;
+	}
+
+	public float GetOutput(int i) {
+		return Yp[i, 0];
+	}
+
+	public Matrix<float> Predict(float phase) {
+		//float pamount;
+		//int pindex_0;
+		int pindex_1;
+		//int pindex_2;
+		//int pindex_3;
+
+		Matrix<float> _Xp = Xp.Clone();
+		
+		_Xp = (_Xp - Xmean).PointwiseDivide(Xstd);
+		
+		//switch(Mode) {
+		//	case MODE.CONSTANT:
+				pindex_1 = (int)((phase / (2*M_PI)) * 50);
+				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1]; ELU(ref H0);
+				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
+		/*	break;
+			
+			case MODE.LINEAR:
+				//TODO: make fmod faster
+				pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
+				pindex_1 = (int)((phase / (2*M_PI)) * 10);
+				pindex_2 = ((pindex_1+1) % 10);
+				Linear(ref W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
+				Linear(ref W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
+				Linear(ref W2p, ref W2[pindex_1], ref W2[pindex_2], pamount);
+				Linear(ref b0p, ref b0[pindex_1], ref b0[pindex_2], pamount);
+				Linear(ref b1p, ref b1[pindex_1], ref b1[pindex_2], pamount);
+				Linear(ref b2p, ref b2[pindex_1], ref b2[pindex_2], pamount);
+				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
+				H1 = (W1p * H0) + b1p; ELU(ref H1);
+				Yp = (W2p * H1) + b2p;
+			break;
+			
+			case MODE.CUBIC:
+				//TODO: make fmod faster
+				pamount = Mathf.Repeat((phase / (2*M_PI)) * 4, 1.0f);
+				pindex_1 = (int)((phase / (2*M_PI)) * 4);
+				pindex_0 = ((pindex_1+3) % 4);
+				pindex_2 = ((pindex_1+1) % 4);
+				pindex_3 = ((pindex_1+2) % 4);
+				Cubic(ref W0p, ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
+				Cubic(ref W1p, ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
+				Cubic(ref W2p, ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
+				Cubic(ref b0p, ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
+				Cubic(ref b1p, ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
+				Cubic(ref b2p, ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
+				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
+				H1 = (W1p * H0) + b1p; ELU(ref H1);
+				Yp = (W2p * H1) + b2p;
+			break;
+			
+			default:
+			break;
+		}
+		*/
+		
+		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
+
+		return Yp;
 	}
 
 	private void ELU(ref Matrix<float> m) {

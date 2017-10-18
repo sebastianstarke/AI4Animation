@@ -20,6 +20,30 @@ public static class Utility {
 		}
 	}
 
+	public static Vector3 TransformPosition(Transform frame, Vector3 position) {
+		return frame.position + frame.rotation * position;
+	}
+
+	public static Vector3 DeltaPosition(Transform frame, Vector3 position) {
+		return Quaternion.Inverse(frame.rotation) * (position - frame.position);
+	}
+
+	public static Vector3 TransformDirection(Transform frame, Vector3 direction) {
+		return frame.rotation * direction;
+	}
+
+	public static Vector3 DeltaDirection(Transform frame, Vector3 direction) {
+		return Quaternion.Inverse(frame.rotation) * direction;
+	}
+
+	public static Quaternion TransformRotation(Transform frame, Quaternion rotation) {
+		return frame.rotation * rotation;
+	}
+
+	public static Quaternion DeltaRotation(Transform frame, Quaternion rotation) {
+		return Quaternion.Inverse(frame.rotation) * rotation;
+	}
+
 	public static Vector3 ExtractPosition(Matrix4x4 mat) {
 		return mat.GetColumn(3);
 	}

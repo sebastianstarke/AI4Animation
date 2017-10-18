@@ -54,15 +54,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Backup\B_Character.cs" />
+     <Compile Include="Assets\Scripts\Backup\B_Demo.cs" />
+     <Compile Include="Assets\Scripts\Backup\B_NetworkParameters.cs" />
+     <Compile Include="Assets\Scripts\Backup\B_PFNN.cs" />
+     <Compile Include="Assets\Scripts\Backup\B_Trajectory.cs" />
+     <Compile Include="Assets\Scripts\Backup\Trash\Trajectory_BACKUP.cs" />
+     <Compile Include="Assets\Scripts\Backup\Trash\World.cs" />
+     <Compile Include="Assets\Scripts\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
-     <Compile Include="Assets\Scripts\Demo.cs" />
+     <Compile Include="Assets\Scripts\Controller.cs" />
      <Compile Include="Assets\Scripts\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\PFNN.cs" />
+     <Compile Include="Assets\Scripts\Structs.cs" />
      <Compile Include="Assets\Scripts\Trajectory.cs" />
-     <Compile Include="Assets\Scripts\Trash\Test.cs" />
-     <Compile Include="Assets\Scripts\Trash\Trajectory_BACKUP.cs" />
-     <Compile Include="Assets\Scripts\Trash\World.cs" />
      <Compile Include="Assets\Scripts\Utility.cs" />
      <None Include="Assets\Libraries\MathNet.Numerics.xml" />
      <None Include="Assets\Libraries\System.Threading.xml" />
