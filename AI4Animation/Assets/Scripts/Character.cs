@@ -13,7 +13,19 @@ public class Character {
 
 	public void ForwardKinematics() {
 		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].Transform.position = Joints[i].GetPosition();
+			if(Joints[i].Transform != null) {
+				Joints[i].Transform.position = Joints[i].GetPosition();
+				if(Joints[i].Visual != null) {
+					Joints[i].Visual.SetActive(true);
+					if(Joints[i].Parent != null) {
+						Joints[i].Visual.GetComponent<Line>().Draw(Joints[i].Parent.position, Joints[i].Transform.position);
+					}
+				}
+			} else {
+				if(Joints[i].Visual != null) {
+					Joints[i].Visual.SetActive(false);
+				}
+			}
 		}
 	}
 
@@ -35,6 +47,10 @@ public class Character {
 		System.Array.Resize(ref Joints, Joints.Length-1);
 	}
 
+	public Joint FindJoint(Transform t) {
+		return System.Array.Find(Joints, x => x.Transform == t);
+	}
+
 	public void CreateVisuals() {
 		for(int i=0; i<Joints.Length; i++) {
 			Joints[i].CreateVisual();
@@ -50,6 +66,8 @@ public class Character {
 	[System.Serializable]
 	public class Joint {
 		public Transform Transform;
+		public Transform Parent;
+		public Transform[] Childs;
 
 		public GameObject Visual;
 
@@ -57,7 +75,7 @@ public class Character {
 		private Vector3 Velocity;
 
 		public Joint() {
-
+			Childs = new Transform[0];
 		}
 
 		public void CreateVisual() {
@@ -70,6 +88,10 @@ public class Character {
 			Visual.transform.localRotation = Quaternion.identity;
 			Visual.transform.localScale = 0.05f * Vector3.one;
 			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Joint", typeof(Material)) as Material;
+			
+			Line line = Visual.AddComponent<Line>();
+			line.SetWidth(0.005f);
+			line.SetMaterial(Resources.Load("Materials/Joint", typeof(Material)) as Material);
 
 			if(Application.isPlaying) {
 				GameObject.Destroy(Visual.GetComponent<Collider>());
@@ -86,6 +108,71 @@ public class Character {
 				GameObject.Destroy(Visual);
 			} else {
 				GameObject.DestroyImmediate(Visual);
+			}
+		}
+
+		public void SetTransform(Transform t, Character character) {
+			if(t == Transform) {
+				return;
+			}
+			Debug.Log("Setting Transform " + t);
+			if(t == null) {
+				//Unset
+				Transform = null;
+				if(Parent != null) {
+					character.FindJoint(Parent).UpdateChilds(character);
+				}
+				for(int i=0; i<Childs.Length; i++) {
+					character.FindJoint(Childs[i]).UpdateParent(character);
+				}
+				Parent = null;
+				Childs = new Transform[0];
+			} else {
+				//Set
+				Transform = t;
+				UpdateParent(character);
+				UpdateChilds(character);
+				if(Parent != null) {
+					character.FindJoint(Parent).UpdateChilds(character);
+				}
+				for(int i=0; i<Childs.Length; i++) {
+					character.FindJoint(Childs[i]).UpdateParent(character);
+				}
+			}
+		}
+
+		private void UpdateParent(Character character) {
+			Parent = null;
+			if(Transform != Transform.root) {
+				FindParent(Transform.parent, character);
+			}
+		}
+
+		private void FindParent(Transform t, Character character) {
+			Joint parentJoint = character.FindJoint(t);
+			if(parentJoint != null) {
+				Parent = t;
+				return;
+			}
+			if(t != t.root) {
+				FindParent(t.parent, character);
+			}
+		}
+
+		private void UpdateChilds(Character character) {
+			Childs = new Transform[0];
+			FindChilds(Transform, character);
+		}
+
+		private void FindChilds(Transform t, Character character) {
+			for(int i=0; i<t.childCount; i++) {
+				Joint childJoint = character.FindJoint(t.GetChild(i));
+				if(childJoint != null) {
+					System.Array.Resize(ref Childs, Childs.Length+1);
+					Childs[Childs.Length-1] = t.GetChild(i);
+				} else {
+					FindChilds(t.GetChild(i), character);
+				}
 			}
 		}
 

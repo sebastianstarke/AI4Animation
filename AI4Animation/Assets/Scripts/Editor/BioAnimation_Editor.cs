@@ -45,7 +45,7 @@ public class BioAnimation_Editor : Editor {
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								EditorGUILayout.BeginHorizontal();
 								EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20));
-								Target.Character.Joints[i].Transform = (Transform)EditorGUILayout.ObjectField(Target.Character.Joints[i].Transform, typeof(Transform), true);
+								Target.Character.Joints[i].SetTransform((Transform)EditorGUILayout.ObjectField(Target.Character.Joints[i].Transform, typeof(Transform), true), Target.Character);
 								EditorGUILayout.EndHorizontal();
 							}
 						}

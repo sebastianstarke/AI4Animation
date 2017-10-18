@@ -11,6 +11,8 @@ public class Controller {
 	public KeyCode MoveRight = KeyCode.D;
 	public KeyCode TurnLeft = KeyCode.Q;
 	public KeyCode TurnRight = KeyCode.E;
+	public KeyCode Jog = KeyCode.LeftShift;
+	public KeyCode Crouch = KeyCode.LeftControl;
 
 	public Controller() {
 
@@ -42,6 +44,14 @@ public class Controller {
 			turn += 1f;
 		}
 		return turn;
+	}
+
+	public float QueryJog() {
+		return Input.GetKey(Jog) ? 1f : 0f;
+	}
+
+	public float QueryCrouch() {
+		return Input.GetKey(Crouch) ? 1f : 0f;
 	}
 
 }
