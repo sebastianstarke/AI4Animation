@@ -8,7 +8,8 @@ public class Trajectory {
 	public int Size = 120;
 	public float Width = 0.5f;
 
-	public float Smoothing = 0.1f;
+	public float TargetSmoothing = 0.25f;
+	public float GaitSmoothing = 0.25f;
 
 	public Vector3 TargetDirection;
 	public Vector3 TargetVelocity;
@@ -25,8 +26,9 @@ public class Trajectory {
 	}
 
 	public void UpdateTarget(Vector3 move, float turn) {
-		TargetDirection = Quaternion.AngleAxis(turn*120f*Time.deltaTime, Vector3.up) * TargetDirection;
-		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, Smoothing);
+		//TargetDirection = Quaternion.AngleAxis(turn*120f*Time.deltaTime, Vector3.up) * TargetDirection;
+		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn*45f, Vector3.up) * GetCurrent().GetDirection(), TargetSmoothing);
+		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, TargetSmoothing);
 	}
 
 	public Point GetCurrent() {
@@ -55,14 +57,18 @@ public class Trajectory {
 			Bump = 0f;
 		}
 
-		public void SetPosition(Vector3 position) {
+		public void SetPosition(Vector3 position, bool recalculateHeight = true) {
 			Position = position;
-			Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			if(recalculateHeight) {
+				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			}
 		}
 
-		public void SetPosition(Vector3 position, Transformation relativeTo) {
+		public void SetPosition(Vector3 position, Transformation relativeTo, bool recalculateHeight = true) {
 			Position = relativeTo.Position + relativeTo.Rotation * position;
-			Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			if(recalculateHeight) {
+				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			}
 		}
 
 		public Vector3 GetPosition() {

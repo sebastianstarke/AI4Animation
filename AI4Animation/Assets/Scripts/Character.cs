@@ -5,6 +5,10 @@ public class Character {
 
 	public bool Inspect = false;
 
+	public float JointSmoothing = 0.5f;
+
+	public float Phase = 0f;
+
 	public Joint[] Joints = new Joint[0];
 
 	public Character() {

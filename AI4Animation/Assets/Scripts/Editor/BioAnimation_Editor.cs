@@ -28,6 +28,8 @@ public class BioAnimation_Editor : Editor {
 						Target.Controller.MoveRight = (KeyCode)EditorGUILayout.EnumPopup("Move Right", Target.Controller.MoveRight);
 						Target.Controller.TurnLeft = (KeyCode)EditorGUILayout.EnumPopup("Turn Left", Target.Controller.TurnLeft);
 						Target.Controller.TurnRight = (KeyCode)EditorGUILayout.EnumPopup("Turn Right", Target.Controller.TurnRight);
+						Target.Controller.Jog = (KeyCode)EditorGUILayout.EnumPopup("Jog", Target.Controller.Jog);
+						Target.Controller.Crouch = (KeyCode)EditorGUILayout.EnumPopup("Crouch", Target.Controller.Crouch);
 					}
 				}
 			}
@@ -39,6 +41,8 @@ public class BioAnimation_Editor : Editor {
 
 				if(Target.Character.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Target.Character.JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", Target.Character.JointSmoothing, 0f, 1f);
+
 						EditorGUILayout.LabelField("Joints");
 
 						for(int i=0; i<Target.Character.Joints.Length; i++) {
@@ -76,6 +80,8 @@ public class BioAnimation_Editor : Editor {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Target.Trajectory.Size = EditorGUILayout.IntField("Size", Target.Trajectory.Size);
 						Target.Trajectory.Width = EditorGUILayout.FloatField("Width", Target.Trajectory.Width);
+						Target.Trajectory.TargetSmoothing = EditorGUILayout.Slider("Target Smoothing", Target.Trajectory.TargetSmoothing, 0f, 1f);
+						Target.Trajectory.GaitSmoothing = EditorGUILayout.Slider("Gait Smoothing", Target.Trajectory.GaitSmoothing, 0f, 1f);
 					}
 				}
 			}
