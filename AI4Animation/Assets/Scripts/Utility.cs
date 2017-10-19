@@ -92,6 +92,14 @@ public static class Utility {
 		return Quaternion.AngleAxis(angle, axis) * (vector - pivot) + vector;
 	}
 
+	public static Vector3 ProjectCollision(Vector3 start, Vector3 end, LayerMask mask) {
+		RaycastHit hit;
+		if(Physics.Raycast(start, end-start, out hit, Vector3.Magnitude(end-start), mask)) {
+			return hit.point;
+		}
+		return end;
+	}
+
 	public static float GetHeight(float x, float z, LayerMask mask) {
 		RaycastHit hit;
 		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
