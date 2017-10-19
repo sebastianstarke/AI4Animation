@@ -2167,10 +2167,10 @@ void render() {
     glColor3f(1.0, 1.0, 1.0);
     glPointSize(1.0);
 
-    
+    /*
     glPointSize(4.0 * options->display_scale);
     glBegin(GL_POINTS);
-    for (int i = 0; i < Trajectory::LENGTH; i+=10) {
+    for (int i = 0; i < Trajectory::LENGTH; i++) {
       glm::vec3 position_c = trajectory->positions[i];
       glColor3f(trajectory->gait_jump[i], trajectory->gait_bump[i], trajectory->gait_crouch[i]);
       glVertex3f(position_c.x, position_c.y + 2.0, position_c.z);
@@ -2182,7 +2182,7 @@ void render() {
     if (options->display_debug_heights) {
       glPointSize(2.0 * options->display_scale);
       glBegin(GL_POINTS);
-      for (int i = 0; i < Trajectory::LENGTH; i+=10) {
+      for (int i = 0; i < Trajectory::LENGTH; i++) {
         glm::vec3 position_r = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3( trajectory->width, 0, 0));
         glm::vec3 position_l = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3(-trajectory->width, 0, 0));
         glColor3f(trajectory->gait_jump[i], trajectory->gait_bump[i], trajectory->gait_crouch[i]);
@@ -2193,10 +2193,12 @@ void render() {
       glColor3f(1.0, 1.0, 1.0);
       glPointSize(1.0);
     }
+    */
     
+    /*
     glLineWidth(1.0 * options->display_scale);
     glBegin(GL_LINES);
-    for (int i = 0; i < Trajectory::LENGTH; i+=10) {
+    for (int i = 0; i < Trajectory::LENGTH; i++) {
       glm::vec3 base = trajectory->positions[i] + glm::vec3(0.0, 2.0, 0.0);
       glm::vec3 side = glm::normalize(glm::cross(trajectory->directions[i], glm::vec3(0.0, 1.0, 0.0)));
       glm::vec3 fwrd = base + 15.0f * trajectory->directions[i];
@@ -2214,6 +2216,7 @@ void render() {
     glEnd();
     glLineWidth(1.0);
     glColor3f(1.0, 1.0, 1.0);
+    */
   }
   
   /* Render Joints */

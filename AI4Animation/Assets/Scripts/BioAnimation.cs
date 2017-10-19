@@ -71,7 +71,7 @@ public class BioAnimation : MonoBehaviour {
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Size];
 		trajectory_positions_blend[Trajectory.Size/2] = Trajectory.GetCurrent().GetPosition();
 
-		for(int i=Trajectory.Size/2+1; i<Trajectory.Size; i++) {
+		for(int i=Trajectory.Size/2+1; i<Trajectory.Size-9; i++) {
 			float bias_pos = 0.75f;
 			float bias_dir = 1.25f;
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - Trajectory.Size/2) / (Trajectory.Size/2)), bias_pos));
@@ -105,7 +105,8 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Trajectory Positions / Directions
 		for(int i=0; i<Trajectory.Size; i+=10) {
-			int w = (Trajectory.Size)/10;
+			//From 0 to 110
+			int w = Trajectory.Size/10;
 			Vector3 pos = Trajectory.Points[i].GetPosition(currRoot);
 			Vector3 dir = Trajectory.Points[i].GetDirection(currRoot);
 			PFNN.SetInput((w*0)+i/10, UnitScale * pos.x);
@@ -116,7 +117,8 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Trajectory Gaits
 		for (int i=0; i<Trajectory.Size; i+=10) {
-			int w = (Trajectory.Size)/10;
+			//From 0 to 110
+			int w = Trajectory.Size/10;
 			PFNN.SetInput((w*4)+i/10, Trajectory.Points[i].Stand);
 			PFNN.SetInput((w*5)+i/10, Trajectory.Points[i].Walk);
 			PFNN.SetInput((w*6)+i/10, Trajectory.Points[i].Jog);
@@ -127,7 +129,7 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Joint Previous Positions / Velocities / Rotations
 		for(int i=0; i<Character.Joints.Length; i++) {
-			int o = (((Trajectory.Size)/10)*10);  
+			int o = Trajectory.Size;
 
 			Vector3 pos = Character.Joints[i].GetPosition(prevRoot);
 			Vector3 vel = Character.Joints[i].GetVelocity(prevRoot);
@@ -141,7 +143,8 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		//Input Trajectory Heights
-		for (int i=0; i<Trajectory.Size; i+=10) {
+		for(int i=0; i<Trajectory.Size; i+=10) {
+			//From 0 to 110
 			int o = (((Trajectory.Size)/10)*10) + Character.Joints.Length*3*2;
 			int w = Trajectory.Size/10;
 			PFNN.SetInput(o+(w*0)+(i/10), UnitScale * (Trajectory.Points[i].Project(Trajectory.Width/2f).y - currRoot.Position.y));
@@ -165,6 +168,7 @@ public class BioAnimation : MonoBehaviour {
 
 		//Update Past Trajectory
 		for(int i=0; i<Trajectory.Size/2; i++) {
+			//From 0 to 59
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 			Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
 			Trajectory.Points[i].Stand = Trajectory.Points[i+1].Stand;
@@ -176,6 +180,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		//Update Current Trajectory
+		//60
 		float stand_amount = Mathf.Pow(1.0f-Trajectory.GetCurrent().Stand, 0.25f);
 		Trajectory.GetCurrent().SetPosition(Trajectory.GetCurrent().GetPosition() + stand_amount * (Trajectory.GetCurrent().GetRotation() * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)));
 		Trajectory.GetCurrent().SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.GetCurrent().GetDirection());
@@ -187,27 +192,16 @@ public class BioAnimation : MonoBehaviour {
 		*/
 		
 		//Update Future Trajectory
-		for(int i=Trajectory.Size/2+1; i<Trajectory.Size; i++) {
-			if(i >= Trajectory.Size-10) {
-				int k = Trajectory.Size-10;
-				int w = (Trajectory.Size/2)/10;
-				float m = Mathf.Repeat(((float)k - (Trajectory.Size/2f)) / 10.0f, 1.0f);
-				float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(k/10)-w) + m * PFNN.GetOutput(8+(w*0)+(k/10)-w+1);
-				float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(k/10)-w) + m * PFNN.GetOutput(8+(w*1)+(k/10)-w+1);
-				float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(k/10)-w) + m * PFNN.GetOutput(8+(w*2)+(k/10)-w+1);
-				float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(k/10)-w) + m * PFNN.GetOutput(8+(w*3)+(k/10)-w+1);
-				Trajectory.Points[i].SetPosition(new Vector3(posX / UnitScale, 0f, posZ / UnitScale), new Transformation(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetRotation()));
-				Trajectory.Points[i].SetDirection((Trajectory.GetCurrent().GetRotation() * new Vector3(dirX, 0f, dirZ)).normalized);
-			} else {
-				int w = (Trajectory.Size/2)/10;
-				float m = Mathf.Repeat(((float)i - (Trajectory.Size/2f)) / 10.0f, 1.0f);
-				float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(i/10)-w) + m * PFNN.GetOutput(8+(w*0)+(i/10)-w+1);
-				float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(i/10)-w) + m * PFNN.GetOutput(8+(w*1)+(i/10)-w+1);
-				float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/10)-w) + m * PFNN.GetOutput(8+(w*2)+(i/10)-w+1);
-				float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/10)-w) + m * PFNN.GetOutput(8+(w*3)+(i/10)-w+1);
-				Trajectory.Points[i].SetPosition(new Vector3(posX / UnitScale, 0f, posZ / UnitScale), new Transformation(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetRotation()));
-				Trajectory.Points[i].SetDirection((Trajectory.GetCurrent().GetRotation() * new Vector3(dirX, 0f, dirZ)).normalized);
-			}
+		for(int i=Trajectory.Size/2+1; i<Trajectory.Size-9; i++) {
+			//From 61 to 110
+			int w = (Trajectory.Size/2)/10;
+			float m = Mathf.Repeat(((float)i - (Trajectory.Size/2f)) / 10.0f, 1.0f);
+			float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(i/10)-w) + m * PFNN.GetOutput(8+(w*0)+(i/10)-w+1);
+			float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(i/10)-w) + m * PFNN.GetOutput(8+(w*1)+(i/10)-w+1);
+			float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/10)-w) + m * PFNN.GetOutput(8+(w*2)+(i/10)-w+1);
+			float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/10)-w) + m * PFNN.GetOutput(8+(w*3)+(i/10)-w+1);
+			Trajectory.Points[i].SetPosition(new Vector3(posX / UnitScale, 0f, posZ / UnitScale), new Transformation(Trajectory.GetCurrent().GetPosition(), Trajectory.GetCurrent().GetRotation()));
+			Trajectory.Points[i].SetDirection((Trajectory.GetCurrent().GetRotation() * new Vector3(dirX, 0f, dirZ)).normalized);
 		}
 
 		CollisionChecks(Trajectory.Size/2);
@@ -264,7 +258,7 @@ public class BioAnimation : MonoBehaviour {
 					Gizmos.DrawLine(bone.parent.position, bone.position);
 				}
 				if(mode == DrawingMode.Game) {
-					Drawing.DrawLine(Drawing.WorldToScreen(bone.parent.position), Drawing.WorldToScreen(bone.position), Color.cyan, 2f, true);
+				//	Drawing.DrawLine(Drawing.WorldToScreen(bone.parent.position), Drawing.WorldToScreen(bone.position), Color.cyan, 2f, true);
 				}
 			}
 		}
@@ -281,8 +275,7 @@ public class BioAnimation : MonoBehaviour {
 				Gizmos.DrawSphere(bone.position, 0.01f);
 			}
 			if(mode == DrawingMode.Game) {
-				Drawing.DrawCircle(Drawing.WorldToScreen(bone.position), 15, Color.red, 1f, true, 5);
-				//Gizmos.DrawSphere(bone.position, 0.01f);
+				//Drawing.DrawCircle(Drawing.WorldToScreen(bone.position), 15, Color.red, 1f, true, 5);
 			}
 		}
 		for(int i=0; i<bone.childCount; i++) {
@@ -296,7 +289,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		
 		//Projections
-		for(int i=0; i<Trajectory.Points.Length; i++) {
+		for(int i=0; i<Trajectory.Points.Length-9; i++) {
 			Vector3 right = Trajectory.Points[i].Project(Trajectory.Width/2f);
 			Vector3 left = Trajectory.Points[i].Project(-Trajectory.Width/2f);
 			//Gizmos.color = Color.white;
@@ -308,19 +301,19 @@ public class BioAnimation : MonoBehaviour {
 
 		//Connections
 		Gizmos.color = Color.cyan;
-		for(int i=0; i<Trajectory.Points.Length-1; i++) {
+		for(int i=0; i<Trajectory.Points.Length-10; i++) {
 			Gizmos.DrawLine(Trajectory.Points[i].GetPosition(), Trajectory.Points[i+1].GetPosition());
 		}
 
 		//Directions
 		Gizmos.color = new Color(1f, 0.5f, 0f, 1f);
-		for(int i=0; i<Trajectory.Points.Length; i++) {
+		for(int i=0; i<Trajectory.Points.Length-9; i++) {
 			Gizmos.DrawLine(Trajectory.Points[i].GetPosition(), Trajectory.Points[i].GetPosition() + 0.25f * Trajectory.Points[i].GetDirection());
 		}
 
 		//Positions
 		Gizmos.color = Color.black;
-		for(int i=0; i<Trajectory.Points.Length; i++) {
+		for(int i=0; i<Trajectory.Points.Length-9; i++) {
 			Gizmos.DrawSphere(Trajectory.Points[i].GetPosition(), 0.0075f);
 		}
 
