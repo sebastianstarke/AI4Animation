@@ -15,22 +15,30 @@ public class Character {
 
 	}
 
-	public void ForwardKinematics() {
+	public void DrawGeometry() {
 		for(int i=0; i<Joints.Length; i++) {
 			if(Joints[i].Transform != null) {
-				Joints[i].Transform.position = Joints[i].GetPosition();
 				if(Joints[i].Visual != null) {
 					Joints[i].Visual.SetActive(true);
 					if(Joints[i].Parent != null) {
-						LineRenderer line = Joints[i].Visual.GetComponent<LineRenderer>();
-						line.SetPosition(0, Joints[i].Parent.position);
-						line.SetPosition(1, Joints[i].Transform.position);
+						//LineRenderer line = Joints[i].Visual.GetComponent<LineRenderer>();
+						//line.SetPosition(0, Joints[i].Parent.position);
+						//line.SetPosition(1, Joints[i].Transform.position);
+						OpenGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, 0.015f, Color.cyan);
 					}
 				}
 			} else {
 				if(Joints[i].Visual != null) {
 					Joints[i].Visual.SetActive(false);
 				}
+			}
+		}
+	}
+
+	public void ForwardKinematics() {
+		for(int i=0; i<Joints.Length; i++) {
+			if(Joints[i].Transform != null) {
+				Joints[i].Transform.position = Joints[i].GetPosition();
 			}
 		}
 	}

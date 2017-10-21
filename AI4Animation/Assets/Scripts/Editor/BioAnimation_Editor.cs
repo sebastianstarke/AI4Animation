@@ -78,9 +78,11 @@ public class BioAnimation_Editor : Editor {
 
 				if(Target.Trajectory.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
+						/*
 						Target.Trajectory.PastPoints = EditorGUILayout.IntField("Past Points", Target.Trajectory.PastPoints);
 						Target.Trajectory.FuturePoints = EditorGUILayout.IntField("Future Points", Target.Trajectory.FuturePoints);
 						Target.Trajectory.SetDensity(EditorGUILayout.IntField("Density", Target.Trajectory.GetDensity()));
+						*/
 						Target.Trajectory.Width = EditorGUILayout.FloatField("Width", Target.Trajectory.Width);
 						Target.Trajectory.TargetSmoothing = EditorGUILayout.Slider("Target Smoothing", Target.Trajectory.TargetSmoothing, 0f, 1f);
 						Target.Trajectory.GaitSmoothing = EditorGUILayout.Slider("Gait Smoothing", Target.Trajectory.GaitSmoothing, 0f, 1f);

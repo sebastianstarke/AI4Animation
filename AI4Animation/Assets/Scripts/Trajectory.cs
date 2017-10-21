@@ -5,10 +5,6 @@ public class Trajectory {
 
 	public bool Inspect = false;
 
-	public int PastPoints = 6;
-	public int FuturePoints = 5;
-	public int Density = 10;
-
 	public float Width = 0.5f;
 
 	public float TargetSmoothing = 0.25f;
@@ -19,6 +15,59 @@ public class Trajectory {
 	public Vector3 TargetVelocity;
 
 	public Point[] Points;
+
+	private int PastPoints = 6;
+	private int FuturePoints = 5;
+	private int Density = 10;
+
+	private Color PointColor = Color.black;
+	private Color ConnectionColor = Color.black;
+	private Color HeightColor = Color.yellow;
+	private Color RiseColor = Color.blue;
+	private Color DirectionColor = new Color(1f, 0.5f, 0f, 1f);
+	private Color TargetDirectionColor = Color.red;
+	private Color TargetVelocityColor = Color.green;
+
+	public void DrawGeometry() {
+		//int step = Trajectory.GetDensity();
+		int step = Density;
+
+		//Connections
+		for(int i=0; i<GetPointCount()-step; i+=step) {
+			OpenGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
+		}
+
+		//Projections
+		for(int i=0; i<GetPointCount(); i+=step) {
+			Vector3 right = Points[i].Project(Width/2f);
+			Vector3 left = Points[i].Project(-Width/2f);
+			OpenGL.DrawCircle(right, 0.01f, HeightColor);
+			OpenGL.DrawCircle(left, 0.01f, HeightColor);
+		}
+
+		//Directions
+		for(int i=0; i<GetPointCount(); i+=step) {
+			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.01f, DirectionColor);
+		}
+
+		//Rises
+		for(int i=0; i<GetPointCount(); i+=step) {
+			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.01f, RiseColor);
+		}
+
+		//Positions
+		for(int i=0; i<GetPointCount(); i+=step) {
+			if(i % GetDensity() == 0) {
+				OpenGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
+			} else {
+				OpenGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
+			}
+		}
+
+		//Target
+		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.01f, TargetDirectionColor);
+		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.01f, TargetVelocityColor);
+	}
 
 	public void Initialise(Vector3 position, Vector3 direction) {
 		if(Application.isPlaying) {
@@ -37,6 +86,7 @@ public class Trajectory {
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, TargetSmoothing);
 	}
 
+	/*
 	public void SetDensity(int density) {
 		if(density == Density) {
 			return;
@@ -49,6 +99,15 @@ public class Trajectory {
 		} else {
 			Density = density;
 		}
+	}
+	*/
+
+	public int GetPastPoints() {
+		return PastPoints;
+	}
+
+	public int GetFuturePoints() {
+		return FuturePoints;
 	}
 
 	public int GetDensity() {
@@ -101,6 +160,7 @@ public class Trajectory {
 			Position = position;
 			if(recalculateHeight) {
 				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+				Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
 			}
 		}
 
@@ -108,6 +168,7 @@ public class Trajectory {
 			Position = relativeTo.Position + relativeTo.Rotation * position;
 			if(recalculateHeight) {
 				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+				Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
 			}
 		}
 

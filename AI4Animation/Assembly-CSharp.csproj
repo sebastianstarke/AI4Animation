@@ -68,6 +68,7 @@
      <Compile Include="Assets\Scripts\Drawing.cs" />
      <Compile Include="Assets\Scripts\FPS.cs" />
      <Compile Include="Assets\Scripts\NetworkParameters.cs" />
+     <Compile Include="Assets\Scripts\OpenGL.cs" />
      <Compile Include="Assets\Scripts\PFNN.cs" />
      <Compile Include="Assets\Scripts\Structs.cs" />
      <Compile Include="Assets\Scripts\Trajectory.cs" />

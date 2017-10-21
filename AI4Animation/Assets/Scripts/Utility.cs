@@ -113,4 +113,18 @@ public static class Utility {
 		}
 	}
 
+	public static float GetRise(float x, float z, LayerMask mask) {
+		RaycastHit hit;
+		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
+		if(!intersection) {
+			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+		}
+		if(intersection) {
+			float rise = Vector3.Angle(hit.normal, Vector3.up) / 90f;
+			return rise;
+		} else {
+			return 0f;
+		}
+	}
+
 }
