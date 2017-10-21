@@ -1831,8 +1831,14 @@ void post_render() {
   for (int i = Trajectory::LENGTH/2+1; i < Trajectory::LENGTH; i++) {
     int w = (Trajectory::LENGTH/2)/10;
     float m = fmod(((float)i - (Trajectory::LENGTH/2)) / 10.0, 1.0);
-    trajectory->positions[i].x  = (1-m) * pfnn->Yp(8+(w*0)+(i/10)-w) + m * pfnn->Yp(8+(w*0)+(i/10)-w+1);
-    trajectory->positions[i].z  = (1-m) * pfnn->Yp(8+(w*1)+(i/10)-w) + m * pfnn->Yp(8+(w*1)+(i/10)-w+1);
+    //std::cout << m << std::endl;
+    float a = (1-m) * pfnn->Yp(8+(w*0)+(i/10)-w);
+    float b = m * pfnn->Yp(8+(w*0)+(i/10)-w+1);
+    float c = (1-m) * pfnn->Yp(8+(w*1)+(i/10)-w);
+    float d = m * pfnn->Yp(8+(w*1)+(i/10)-w+1);
+    //std::cout << i << " : " << " m " << m << " - " << a << " " << b << " " << c << " " << d << std::endl;
+    trajectory->positions[i].x  = a + b;
+    trajectory->positions[i].z  = c + d;
     trajectory->directions[i].x = (1-m) * pfnn->Yp(8+(w*2)+(i/10)-w) + m * pfnn->Yp(8+(w*2)+(i/10)-w+1);
     trajectory->directions[i].z = (1-m) * pfnn->Yp(8+(w*3)+(i/10)-w) + m * pfnn->Yp(8+(w*3)+(i/10)-w+1);
     trajectory->positions[i]    = (trajectory->rotations[Trajectory::LENGTH/2] * trajectory->positions[i]) + trajectory->positions[Trajectory::LENGTH/2];
@@ -2158,7 +2164,7 @@ void render() {
   if (options->display_debug) {
     glPointSize(1.0 * options->display_scale);
     glBegin(GL_POINTS);
-    for (int i = 0; i < Trajectory::LENGTH-10; i++) {
+    for (int i = 0; i < Trajectory::LENGTH; i++) {
       glm::vec3 position_c = trajectory->positions[i];
       glColor3f(trajectory->gait_jump[i], trajectory->gait_bump[i], trajectory->gait_crouch[i]);
       glVertex3f(position_c.x, position_c.y + 2.0, position_c.z);
@@ -2573,8 +2579,8 @@ int main(int argc, char **argv) {
     }
     
     pre_render();
-    render();
     post_render();
+    render();
     
     glFlush();
     glFinish();

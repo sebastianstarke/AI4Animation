@@ -5,11 +5,15 @@ public class Trajectory {
 
 	public bool Inspect = false;
 
-	public int Size = 120;
+	public int PastPoints = 6;
+	public int FuturePoints = 5;
+	public int Density = 10;
+
 	public float Width = 0.5f;
 
 	public float TargetSmoothing = 0.25f;
 	public float GaitSmoothing = 0.25f;
+	public float CorrectionSmoothing = 0.5f;
 
 	public Vector3 TargetDirection;
 	public Vector3 TargetVelocity;
@@ -17,26 +21,62 @@ public class Trajectory {
 	public Point[] Points;
 
 	public void Initialise(Vector3 position, Vector3 direction) {
-		TargetDirection = direction;
-		TargetVelocity = Vector3.zero;
-		Points = new Point[Size];
-		for(int i=0; i<Size; i++) {
-			Points[i] = new Point(position, direction);
+		if(Application.isPlaying) {
+			TargetDirection = direction;
+			TargetVelocity = Vector3.zero;
+			Points = new Point[GetPointCount()];
+			for(int i=0; i<GetPointCount(); i++) {
+				Points[i] = new Point(position, direction);
+			}
 		}
 	}
 
 	public void UpdateTarget(Vector3 move, float turn) {
 		//TargetDirection = Quaternion.AngleAxis(turn*120f*Time.deltaTime, Vector3.up) * TargetDirection;
-		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn*45f, Vector3.up) * GetCurrent().GetDirection(), TargetSmoothing);
+		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn*60f, Vector3.up) * GetRoot().GetDirection(), TargetSmoothing);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, TargetSmoothing);
 	}
 
-	public Point GetCurrent() {
-		return Points[Size/2];
+	public void SetDensity(int density) {
+		if(density == Density) {
+			return;
+		}
+		if(Application.isPlaying) {
+			Vector3 pos = GetRoot().GetPosition();
+			Vector3 dir = GetRoot().GetDirection();
+			Density = density;
+			Initialise(pos, dir);
+		} else {
+			Density = density;
+		}
+	}
+
+	public int GetDensity() {
+		return Density;
+	}
+
+	public int GetSampleCount() {
+		return PastPoints + FuturePoints + 1;
+	}
+
+	public int GetRootSampleIndex() {
+		return PastPoints;
+	}
+
+	public int GetPointCount() {
+		return Density*(PastPoints + FuturePoints) + 1;
+	}
+
+	public int GetRootPointIndex() {
+		return Density*PastPoints;
+	}
+
+	public Point GetRoot() {
+		return Points[GetRootPointIndex()];
 	}
 
 	public Point GetPrevious() {
-		return Points[Size/2-1];
+		return Points[GetRootPointIndex()-1];
 	}
 
 	public class Point {
@@ -49,7 +89,7 @@ public class Trajectory {
 			SetPosition(position);
 			SetDirection(direction);
 
-			Stand = 0f;
+			Stand = 1f;
 			Walk = 0f;
 			Jog = 0f;
 			Crouch = 0f;

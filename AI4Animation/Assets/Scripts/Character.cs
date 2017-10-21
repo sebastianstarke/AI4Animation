@@ -22,7 +22,9 @@ public class Character {
 				if(Joints[i].Visual != null) {
 					Joints[i].Visual.SetActive(true);
 					if(Joints[i].Parent != null) {
-						Joints[i].Visual.GetComponent<Line>().Draw(Joints[i].Parent.position, Joints[i].Transform.position);
+						LineRenderer line = Joints[i].Visual.GetComponent<LineRenderer>();
+						line.SetPosition(0, Joints[i].Parent.position);
+						line.SetPosition(1, Joints[i].Transform.position);
 					}
 				}
 			} else {
@@ -79,7 +81,7 @@ public class Character {
 		private Vector3 Velocity;
 
 		public Joint() {
-			Childs = new Transform[0];
+
 		}
 
 		public void CreateVisual() {
@@ -93,10 +95,12 @@ public class Character {
 			Visual.transform.localScale = 0.05f * Vector3.one;
 			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Joint", typeof(Material)) as Material;
 			
-			Line line = Visual.AddComponent<Line>();
-			line.SetWidth(0.005f);
-			line.SetMaterial(Resources.Load("Materials/Joint", typeof(Material)) as Material);
-
+			LineRenderer line = Visual.AddComponent<LineRenderer>();
+			line.positionCount = 2;
+			line.startWidth = 0.005f;
+			line.endWidth = 0.005f;
+			line.material = Resources.Load("Materials/Line", typeof(Material)) as Material;
+			
 			if(Application.isPlaying) {
 				GameObject.Destroy(Visual.GetComponent<Collider>());
 			} else {

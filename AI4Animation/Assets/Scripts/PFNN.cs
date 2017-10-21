@@ -29,6 +29,8 @@ public class PFNN {
 
 	private const float M_PI = 3.14159265358979323846f;
 
+	//private bool[] Output;
+
 	public void Initialise() {
 		if(Parameters == null) {
 			Debug.Log("Building PFNN failed because no parameters were loaded.");
@@ -78,6 +80,13 @@ public class PFNN {
 		b0p = Matrix<float>.Build.Dense(HDim, 1);
 		b1p = Matrix<float>.Build.Dense(HDim, 1);
 		b2p = Matrix<float>.Build.Dense(YDim, 1);
+
+		/*
+		Output = new bool[YDim];
+		for(int i=0; i<YDim; i++) {
+			Output[i] = false;
+		}
+		*/
 	}
 
 	public void LoadParameters() {
@@ -93,6 +102,7 @@ public class PFNN {
 	}
 
 	public float GetOutput(int i) {
+		//Output[i] = true;
 		return Yp[i, 0];
 	}
 
@@ -110,8 +120,10 @@ public class PFNN {
 		//switch(Mode) {
 		//	case MODE.CONSTANT:
 				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1]; ELU(ref H0);
-				H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1];
+				ELU(ref H0);
+				H1 = (W1[pindex_1] * H0) + b1[pindex_1];
+				ELU(ref H1);
 				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
 		/*	break;
 			
@@ -157,6 +169,17 @@ public class PFNN {
 		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
 
 		return Yp;
+	}
+
+	public void Finish() {
+		/*
+		for(int i=0; i<YDim; i++) {
+			if(Output[i] == false) {
+				Debug.Log("Output " + i + " not queried.");
+			}
+			Output[i] = false;
+		}
+		*/
 	}
 
 	private void ELU(ref Matrix<float> m) {
