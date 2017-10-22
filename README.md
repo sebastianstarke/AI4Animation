@@ -3,9 +3,7 @@ AI4Animation
 
 Description
 ------------
-This project explores the opportunities of deep learning and evolutionary computation for character animation as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura.
-
-It extends the recent work of Daniel Holden, Taku Komura and Jun Saito on character control using PFNN (Phase-Functioned Neural Networks: https://www.youtube.com/watch?v=Ul0Gilv5wvY) for learning task-specific motion manifolds as well as for learning representations for different geometries. The development is done using Unity3D, and the implementation will be made available for character animation research and games development during my Ph.D. progress.
+This project explores the opportunities of deep learning and evolutionary computation for character animation as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura. It extends the recent work on character control using PFNN (Phase-Functioned Neural Networks: https://www.youtube.com/watch?v=Ul0Gilv5wvY) by generating task-specific procedural animation by learning different motion manifolds. The development is done using Unity3D.
 
 The algorithmic framework is shown below. In addition to the extended PFNN version which utilises multiple phase modules, a memetic evolutionary algorithm for generic inverse kinematics (BioIK: https://github.com/sebastianstarke/BioIK Video: https://www.youtube.com/watch?v=ik45v4WRZKI) is used for animation post-processing.
 
@@ -18,3 +16,7 @@ The code for the PFNN is implemented using MathNet.Numerics, and uses the extern
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Trajectory.png" width="100%">
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Skeleton_1.png" width="100%">
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Skeleton_2.png" width="100%">
+
+Usage
+------------
+Simply import the project into Unity3D, and open the 'Animation' scene. Click on the character, and press the "Load Weights" button in the PFNN tab. Press 'Play', and control your character via W,A,S,D (Move), Q,E (Turn), LeftShift (Run) and LeftCtrl (Crouch).
