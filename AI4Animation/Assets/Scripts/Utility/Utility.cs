@@ -11,7 +11,7 @@ public static class Utility {
 		#else
 		QualitySettings.vSyncCount = 1;
 		#endif
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = fps;
 	}
 
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
@@ -172,6 +172,34 @@ public static class Utility {
 		} else {
 			GameObject.DestroyImmediate(o);
 		}
+	}
+
+	public static void SetGUIColor(Color color) {
+		GUI.backgroundColor = color;
+	}
+
+	public static void ResetGUIColor() {
+		SetGUIColor(Color.white);
+	}	
+	
+	public static bool GUIButton(string label, Color backgroundColor, Color textColor, TextAnchor alignment) {
+		GUIStyle style = new GUIStyle("Button");
+		style.normal.textColor = textColor;
+		style.alignment = alignment;
+		SetGUIColor(backgroundColor);
+		bool clicked = GUILayout.Button(label, style);
+		ResetGUIColor();
+		return clicked;
+	}
+
+	public static bool GUIButton(string label, Color backgroundColor, Color textColor, TextAnchor alignment, float width, float height) {
+		GUIStyle style = new GUIStyle("Button");
+		style.normal.textColor = textColor;
+		style.alignment = alignment;
+		SetGUIColor(backgroundColor);
+		bool clicked = GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
+		ResetGUIColor();
+		return clicked;
 	}
 
 }

@@ -59,7 +59,9 @@ public class Controller {
 
 	#if UNITY_EDITOR
 	public void Inspector() {
-		using(new EditorGUILayout.VerticalScope ("Box")) {
+		Utility.SetGUIColor(Color.grey);
+		using(new GUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
 			if(GUILayout.Button("Controller")) {
 				Inspect = !Inspect;
 			}

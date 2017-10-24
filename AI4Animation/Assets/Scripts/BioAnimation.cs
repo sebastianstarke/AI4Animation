@@ -11,15 +11,21 @@ public class BioAnimation : MonoBehaviour {
 
 	private enum DrawingMode {Scene, Game};
 
+	void Reset() {
+		Character = new Character(transform);
+		Trajectory = new Trajectory(transform);
+	}
+
 	void Awake() {
-		Utility.SetFPS(60);
 		Trajectory.Initialise(transform.position, transform.forward);
 		PFNN.Initialise();
 	}
 
-	void Update() {
+	void Start() {
 		Utility.SetFPS(60);
+	}
 
+	void Update() {
 		if(PFNN.Parameters == null) {
 			return;
 		}
