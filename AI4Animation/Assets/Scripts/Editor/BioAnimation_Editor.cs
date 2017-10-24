@@ -55,15 +55,13 @@ public class BioAnimation_Editor : Editor {
 						}
 						
 						if(GUILayout.Button("+")) {
-							Target.Character.AddJoint(Target.Character.Joints.Length);
+							//Target.Character.AddJoint(Target.Character.Joints.Length);
+							Target.Character.AddJoint();
 						}
 						if(GUILayout.Button("-")) {
-							Target.Character.RemoveJoint(Target.Character.Joints.Length);
+							//Target.Character.RemoveJoint(Target.Character.Joints.Length);
+							Target.Character.RemoveJoint();
 						}
-
-						Target.Character.JointRadius = EditorGUILayout.FloatField("Joint Radius", Target.Character.JointRadius);
-						Target.Character.BoneStartWidth = EditorGUILayout.FloatField("Bone Start Width", Target.Character.BoneStartWidth);
-						Target.Character.BoneEndWidth = EditorGUILayout.FloatField("Bone End Width", Target.Character.BoneEndWidth);
 					}
 				}
 			}

@@ -38,39 +38,39 @@ public class Trajectory {
 
 		//Connections
 		for(int i=0; i<GetPointCount()-step; i+=step) {
-			OpenGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
 		}
 
 		//Projections
 		for(int i=0; i<GetPointCount(); i+=step) {
 			Vector3 right = Points[i].Project(Width/2f);
 			Vector3 left = Points[i].Project(-Width/2f);
-			OpenGL.DrawCircle(right, 0.01f, HeightColor);
-			OpenGL.DrawCircle(left, 0.01f, HeightColor);
+			UnityGL.DrawCircle(right, 0.01f, HeightColor);
+			UnityGL.DrawCircle(left, 0.01f, HeightColor);
 		}
 
 		//Directions
 		for(int i=0; i<GetPointCount(); i+=step) {
-			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
 		}
 
 		//Rises
 		for(int i=0; i<GetPointCount(); i+=step) {
-			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
 		}
 
 		//Positions
 		for(int i=0; i<GetPointCount(); i+=step) {
 			if(i % GetDensity() == 0) {
-				OpenGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
 			} else {
-				OpenGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
 			}
 		}
 
 		//Target
-		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
-		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
 	}
 
 	public void Initialise(Vector3 position, Vector3 direction) {

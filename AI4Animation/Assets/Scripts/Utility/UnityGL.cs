@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 
-public static class OpenGL {
+public static class UnityGL {
 
 	private static bool Initialised = false;
 
 	private static Material ColorMaterial;
-	//private static Material DiffuseMaterial;
 
 	private static int CircleResolution = 10;
 	private static Vector3[] CirclePoints;
@@ -13,24 +12,16 @@ public static class OpenGL {
 	private static int SphereResolution = 10;
 	private static Vector3[] SpherePoints;
 
-	//private static Mesh QuadMesh;
-	//private static Mesh SphereMesh;
-
 	static void Initialise() {
 		if(!Initialised) {
 			CreateMaterial();
 			CreateCircleData();
 			CreateSphereData();
 			Initialised = true;
-
-			//QuadMesh = (Mesh)GameObject.Instantiate(Utility.CreatePrimitiveMesh(PrimitiveType.Quad));
-			//SphereMesh = (Mesh)GameObject.Instantiate(Utility.CreatePrimitiveMesh(PrimitiveType.Sphere));
 		}
 	}
 
     static void CreateMaterial() {
-		// Unity has a built-in shader that is useful for drawing
-		// simple colored things.
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
 		ColorMaterial = new Material(colorShader);
 		ColorMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -41,12 +32,6 @@ public static class OpenGL {
 		ColorMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 		// Turn off depth writes
 		ColorMaterial.SetInt("_ZWrite", 0);
-
-		//Shader diffuseShader = Shader.Find("Transparent/Diffuse");
-		//DiffuseMaterial = new Material(diffuseShader);
-
-		//ColorMaterial.SetPass(0);
-		//DiffuseMaterial.SetPass(0);
     }
 
 	static void CreateCircleData() {
@@ -154,6 +139,16 @@ public static class OpenGL {
         GL.End();
 	}
 
+	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
+		if(tipPivot < 0f || tipPivot > 1f) {
+			Debug.Log("The tip pivot must be specified between 0 and 1.");
+			return;
+		}
+		Vector3 pivot = start + tipPivot * (end-start);
+		DrawLine(start, pivot, shaftWidth, color);
+		DrawLine(pivot, end, tipWidth, 0f, color);
+	}
+
 	private static Camera GetCamera() {
 		if(Camera.current != null) {
 			return Camera.current;
@@ -161,37 +156,5 @@ public static class OpenGL {
 			return Camera.main;
 		}
 	}
-
-	/*
-	public static void DrawLineMesh(Vector3 start, Vector3 end, float width, Color color) {
-		Initialise();
-		
-		ColorMaterial.SetPass(0);
-
-		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = width / 2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position).normalized) * dir);
-		Vector3 orthoEnd = width / 2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position).normalized) * dir);
-		Vector3 a = start+orthoStart;
-		Vector3 b = start-orthoStart;
-		Vector3 c = end+orthoEnd;
-		Vector3 d = end-orthoEnd;
-		Vector3[] vertices = new Vector3[4];
-		vertices[0] = b;
-		vertices[1] = c;
-		vertices[2] = a;
-		vertices[3] = d;
-		Mesh mesh = (Mesh)GameObject.Instantiate(QuadMesh);
-		mesh.vertices = vertices;
-		mesh.RecalculateBounds();
-
-		Graphics.DrawMeshNow(mesh, Vector3.zero, Quaternion.identity);
-	}
-
-	public static void DrawSphereMesh(Vector3 center, float radius, Color color) {
-		Initialise();
-		DiffuseMaterial.SetPass(0);
-		Graphics.DrawMeshNow(SphereMesh, Matrix4x4.TRS(center, Quaternion.identity, 2f*radius*Vector3.one));
-	}
-	*/
 
 }

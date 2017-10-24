@@ -54,25 +54,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Backup\B_Character.cs" />
-     <Compile Include="Assets\Scripts\Backup\B_Demo.cs" />
-     <Compile Include="Assets\Scripts\Backup\B_NetworkParameters.cs" />
-     <Compile Include="Assets\Scripts\Backup\B_PFNN.cs" />
-     <Compile Include="Assets\Scripts\Backup\B_Trajectory.cs" />
-     <Compile Include="Assets\Scripts\Backup\Trash\Trajectory_BACKUP.cs" />
-     <Compile Include="Assets\Scripts\Backup\Trash\World.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
-     <Compile Include="Assets\Scripts\CameraController.cs" />
-     <Compile Include="Assets\Scripts\Character.cs" />
-     <Compile Include="Assets\Scripts\Controller.cs" />
-     <Compile Include="Assets\Scripts\Drawing.cs" />
-     <Compile Include="Assets\Scripts\FPS.cs" />
-     <Compile Include="Assets\Scripts\NetworkParameters.cs" />
-     <Compile Include="Assets\Scripts\OpenGL.cs" />
-     <Compile Include="Assets\Scripts\PFNN.cs" />
-     <Compile Include="Assets\Scripts\Structs.cs" />
-     <Compile Include="Assets\Scripts\Trajectory.cs" />
-     <Compile Include="Assets\Scripts\Utility.cs" />
+     <Compile Include="Assets\Scripts\BVHViewer.cs" />
+     <Compile Include="Assets\Scripts\Serializables\Character.cs" />
+     <Compile Include="Assets\Scripts\Serializables\Controller.cs" />
+     <Compile Include="Assets\Scripts\Serializables\NetworkParameters.cs" />
+     <Compile Include="Assets\Scripts\Serializables\PFNN.cs" />
+     <Compile Include="Assets\Scripts\Serializables\Trajectory.cs" />
+     <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Utility\FPS.cs" />
+     <Compile Include="Assets\Scripts\Utility\Structs.cs" />
+     <Compile Include="Assets\Scripts\Utility\UnityGL.cs" />
+     <Compile Include="Assets\Scripts\Utility\Utility.cs" />
      <None Include="Assets\Plugins\MathNet.Numerics.xml" />
      <None Include="Assets\Plugins\System.Threading.xml" />
  <Reference Include="UnityEngine.UI">

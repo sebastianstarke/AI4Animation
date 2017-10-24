@@ -9,9 +9,9 @@ public class Character {
 
 	public Joint[] Joints = new Joint[0];
 
-	public float JointRadius = 0.05f;
-	public float BoneStartWidth = 0.025f;
-	public float BoneEndWidth = 0.01f;
+	private float JointRadius = 0.05f;
+	private float BoneStartWidth = 0.025f;
+	private float BoneEndWidth = 0.01f;
 
 	public Character() {
 
@@ -28,15 +28,18 @@ public class Character {
 
 				if(!Application.isPlaying) {
 					if(Joints[i].Parent != null) {
-						OpenGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
+						UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
 					}
 				}
 
-				Vector3 start = Joints[i].Transform.position;
-				Vector3 end = Joints[i].Transform.position + 10f*Joints[i].GetVelocity();
-				Vector3 pivot = start + 0.75f * (end-start);
-				OpenGL.DrawLine(start, pivot, 0.0075f, new Color(0f, 1f, 0f, 0.5f));
-				OpenGL.DrawLine(pivot, end, 0.05f, 0f, new Color(0f, 1f, 0f, 0.5f));
+				UnityGL.DrawArrow(
+					Joints[i].Transform.position,
+					Joints[i].Transform.position + 10f*Joints[i].GetVelocity(),
+					0.75f,
+					0.0075f,
+					0.05f,
+					new Color(0f, 1f, 0f, 0.5f)
+				);
 			}
 		}
 	}
@@ -51,21 +54,28 @@ public class Character {
 	}
 	*/
 
-	public void AddJoint(int index) {
+	//public void AddJoint() {
+	public void AddJoint() {
 		System.Array.Resize(ref Joints, Joints.Length+1);
+		Joints[Joints.Length-1] = new Joint();
+		/*
 		for(int i=Joints.Length-2; i>=index; i--) {
 			Joints[i+1] = Joints[i];
 		}
 		Joints[index] = new Joint();
+		*/
 	}
 
-	public void RemoveJoint(int index) {
+	//public void RemoveJoint(int index) {
+	public void RemoveJoint() {
+		/*
 		if(Joints.Length < index || Joints.Length == 0) {
 			return;
 		}
 		for(int i=index; i<Joints.Length-1; i++) {
 			Joints[i] = Joints[i+1];
 		}
+		*/
 		System.Array.Resize(ref Joints, Joints.Length-1);
 	}
 
