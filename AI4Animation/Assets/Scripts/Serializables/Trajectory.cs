@@ -35,16 +35,15 @@ public class Trajectory {
 
 	public Trajectory(Transform owner) {
 		Owner = owner;
+		Initialise();
 	}
 
-	public void Initialise(Vector3 position, Vector3 direction) {
-		if(Application.isPlaying) {
-			TargetDirection = direction;
-			TargetVelocity = Vector3.zero;
-			Points = new Point[GetPointCount()];
-			for(int i=0; i<GetPointCount(); i++) {
-				Points[i] = new Point(position, direction);
-			}
+	public void Initialise() {
+		TargetDirection = Owner.forward;
+		TargetVelocity = Vector3.zero;
+		Points = new Point[GetPointCount()];
+		for(int i=0; i<GetPointCount(); i++) {
+			Points[i] = new Point(Owner.position, Owner.forward);
 		}
 	}
 
@@ -110,6 +109,7 @@ public class Trajectory {
 		return Points[GetRootPointIndex()-1];
 	}
 
+	[System.Serializable]
 	public class Point {
 		private Vector3 Position;
 		private Vector3 Direction;
@@ -193,11 +193,6 @@ public class Trajectory {
 	}
 
 	public void Draw() {
-		if(!Application.isPlaying) {
-			return;
-		}
-		
-		//int step = Trajectory.GetDensity();
 		int step = Density;
 
 		//Connections
