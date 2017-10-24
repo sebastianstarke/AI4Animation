@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class Character {
@@ -15,6 +18,36 @@ public class Character {
 
 	public Character() {
 
+	}
+
+	//public void AddJoint() {
+	public Joint AddJoint() {
+		System.Array.Resize(ref Joints, Joints.Length+1);
+		Joints[Joints.Length-1] = new Joint();
+		return Joints[Joints.Length-1];
+		/*
+		for(int i=Joints.Length-2; i>=index; i--) {
+			Joints[i+1] = Joints[i];
+		}
+		Joints[index] = new Joint();
+		*/
+	}
+
+	//public void RemoveJoint(int index) {
+	public void RemoveJoint() {
+		/*
+		if(Joints.Length < index || Joints.Length == 0) {
+			return;
+		}
+		for(int i=index; i<Joints.Length-1; i++) {
+			Joints[i] = Joints[i+1];
+		}
+		*/
+		System.Array.Resize(ref Joints, Joints.Length-1);
+	}
+
+	public Joint FindJoint(Transform t) {
+		return System.Array.Find(Joints, x => x.Transform == t);
 	}
 
 	public void Draw() {
@@ -44,44 +77,41 @@ public class Character {
 		}
 	}
 
-	/*
-	public void ForwardKinematics() {
-		for(int i=0; i<Joints.Length; i++) {
-			if(Joints[i].Transform != null) {
-				Joints[i].Transform.position = Joints[i].GetPosition();
+	#if UNITY_EDITOR
+	public void Inspector() {
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			if(GUILayout.Button("Character")) {
+				Inspect = !Inspect;
+			}
+
+			if(Inspect) {
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					//Target.Character.JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", Target.Character.JointSmoothing, 0f, 1f);
+
+					EditorGUILayout.LabelField("Joints");
+
+					for(int i=0; i<Joints.Length; i++) {
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							EditorGUILayout.BeginHorizontal();
+							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20));
+							Joints[i].SetTransform((Transform)EditorGUILayout.ObjectField(Joints[i].Transform, typeof(Transform), true), this);
+							EditorGUILayout.EndHorizontal();
+						}
+					}
+					
+					if(GUILayout.Button("+")) {
+						//Target.Character.AddJoint(Target.Character.Joints.Length);
+						AddJoint();
+					}
+					if(GUILayout.Button("-")) {
+						//Target.Character.RemoveJoint(Target.Character.Joints.Length);
+						RemoveJoint();
+					}
+				}
 			}
 		}
 	}
-	*/
-
-	//public void AddJoint() {
-	public void AddJoint() {
-		System.Array.Resize(ref Joints, Joints.Length+1);
-		Joints[Joints.Length-1] = new Joint();
-		/*
-		for(int i=Joints.Length-2; i>=index; i--) {
-			Joints[i+1] = Joints[i];
-		}
-		Joints[index] = new Joint();
-		*/
-	}
-
-	//public void RemoveJoint(int index) {
-	public void RemoveJoint() {
-		/*
-		if(Joints.Length < index || Joints.Length == 0) {
-			return;
-		}
-		for(int i=index; i<Joints.Length-1; i++) {
-			Joints[i] = Joints[i+1];
-		}
-		*/
-		System.Array.Resize(ref Joints, Joints.Length-1);
-	}
-
-	public Joint FindJoint(Transform t) {
-		return System.Array.Find(Joints, x => x.Transform == t);
-	}
+	#endif
 
 	[System.Serializable]
 	public class Joint {

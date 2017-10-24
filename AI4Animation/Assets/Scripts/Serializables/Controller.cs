@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class Controller {
@@ -53,5 +56,28 @@ public class Controller {
 	public float QueryCrouch() {
 		return Input.GetKey(Crouch) ? 1f : 0f;
 	}
+
+	#if UNITY_EDITOR
+	public void Inspector() {
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			if(GUILayout.Button("Controller")) {
+				Inspect = !Inspect;
+			}
+
+			if(Inspect) {
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					MoveForward = (KeyCode)EditorGUILayout.EnumPopup("Move Forward", MoveForward);
+					MoveBackward = (KeyCode)EditorGUILayout.EnumPopup("Move Backward", MoveBackward);
+					MoveLeft = (KeyCode)EditorGUILayout.EnumPopup("Move Left", MoveLeft);
+					MoveRight = (KeyCode)EditorGUILayout.EnumPopup("Move Right", MoveRight);
+					TurnLeft = (KeyCode)EditorGUILayout.EnumPopup("Turn Left", TurnLeft);
+					TurnRight = (KeyCode)EditorGUILayout.EnumPopup("Turn Right", TurnRight);
+					Jog = (KeyCode)EditorGUILayout.EnumPopup("Jog", Jog);
+					Crouch = (KeyCode)EditorGUILayout.EnumPopup("Crouch", Crouch);
+				}
+			}
+		}
+	}
+	#endif
 
 }

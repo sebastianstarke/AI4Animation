@@ -86,6 +86,8 @@ public static class UnityGL {
 		Vector3 c = end+endWidth/2f*orthoEnd;
 		Vector3 d = end-endWidth/2f*orthoEnd;
 
+        //GL.PushMatrix();
+        //GL.LoadProjectionMatrix(GetComponent<Camera>().projectionMatrix);
         GL.Begin(GL.QUADS);
         GL.Color(color);
         GL.Vertex(a);
@@ -93,11 +95,25 @@ public static class UnityGL {
 		GL.Vertex(d);
 		GL.Vertex(c);
         GL.End();
+		//GL.PopMatrix();
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
 		DrawLine(start, end, width, width, color);
     }
+
+	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
+       	Initialise();
+
+		ColorMaterial.SetPass(0);
+
+        GL.Begin(GL.TRIANGLE_STRIP);
+        GL.Color(color);
+        GL.Vertex(a);
+		GL.Vertex(b);
+		GL.Vertex(c);
+        GL.End();
+	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
 		Initialise();
@@ -108,7 +124,7 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius * (Camera.main.transform.rotation * CirclePoints[i]));
+			GL.Vertex(center + radius * (GetCamera().transform.rotation * CirclePoints[i]));
 		}
         GL.End();
 	}

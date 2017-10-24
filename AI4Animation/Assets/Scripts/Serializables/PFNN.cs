@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using MathNet.Numerics.LinearAlgebra;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class PFNN {
@@ -201,5 +204,29 @@ public class PFNN {
 		(-0.5f*y0+0.5f*y2)*mu + 
 		(y1));
 	}
+
+	#if UNITY_EDITOR
+	public void Inspector() {
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			if(GUILayout.Button("PFNN")) {
+				Inspect = !Inspect;
+			}
+
+			if(Inspect) {
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					XDim = EditorGUILayout.IntField("XDim", XDim);
+					YDim = EditorGUILayout.IntField("YDim", YDim);
+					HDim = EditorGUILayout.IntField("HDim", HDim);
+					EditorGUILayout.BeginHorizontal();
+					if(GUILayout.Button("Load Parameters")) {
+						LoadParameters();
+					}
+					Parameters = (NetworkParameters)EditorGUILayout.ObjectField(Parameters, typeof(NetworkParameters), true);
+					EditorGUILayout.EndHorizontal();
+				}
+			}
+		}
+	}
+	#endif
 
 }

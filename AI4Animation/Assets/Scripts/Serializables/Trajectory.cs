@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class Trajectory {
@@ -27,51 +30,6 @@ public class Trajectory {
 	private Color DirectionColor = new Color(1f, 0.5f, 0f, 0.75f);
 	private Color TargetDirectionColor = new Color(1f, 0f, 0f, 0.75f);
 	private Color TargetVelocityColor = new Color(0f, 1f, 0f, 0.75f);
-
-	public void Draw() {
-		if(!Application.isPlaying) {
-			return;
-		}
-		
-		//int step = Trajectory.GetDensity();
-		int step = Density;
-
-		//Connections
-		for(int i=0; i<GetPointCount()-step; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
-		}
-
-		//Projections
-		for(int i=0; i<GetPointCount(); i+=step) {
-			Vector3 right = Points[i].Project(Width/2f);
-			Vector3 left = Points[i].Project(-Width/2f);
-			UnityGL.DrawCircle(right, 0.01f, HeightColor);
-			UnityGL.DrawCircle(left, 0.01f, HeightColor);
-		}
-
-		//Directions
-		for(int i=0; i<GetPointCount(); i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
-		}
-
-		//Rises
-		for(int i=0; i<GetPointCount(); i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
-		}
-
-		//Positions
-		for(int i=0; i<GetPointCount(); i+=step) {
-			if(i % GetDensity() == 0) {
-				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
-			} else {
-				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
-			}
-		}
-
-		//Target
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
-	}
 
 	public void Initialise(Vector3 position, Vector3 direction) {
 		if(Application.isPlaying) {
@@ -145,6 +103,70 @@ public class Trajectory {
 	public Point GetPrevious() {
 		return Points[GetRootPointIndex()-1];
 	}
+
+	public void Draw() {
+		if(!Application.isPlaying) {
+			return;
+		}
+		
+		//int step = Trajectory.GetDensity();
+		int step = Density;
+
+		//Connections
+		for(int i=0; i<GetPointCount()-step; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
+		}
+
+		//Projections
+		for(int i=0; i<GetPointCount(); i+=step) {
+			Vector3 right = Points[i].Project(Width/2f);
+			Vector3 left = Points[i].Project(-Width/2f);
+			UnityGL.DrawCircle(right, 0.01f, HeightColor);
+			UnityGL.DrawCircle(left, 0.01f, HeightColor);
+		}
+
+		//Directions
+		for(int i=0; i<GetPointCount(); i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
+		}
+
+		//Rises
+		for(int i=0; i<GetPointCount(); i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
+		}
+
+		//Positions
+		for(int i=0; i<GetPointCount(); i+=step) {
+			if(i % GetDensity() == 0) {
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
+			} else {
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
+			}
+		}
+
+		//Target
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
+	}
+
+	#if UNITY_EDITOR
+	public void Inspector() {
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			if(GUILayout.Button("Trajectory")) {
+				Inspect = !Inspect;
+			}
+
+			if(Inspect) {
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Width = EditorGUILayout.FloatField("Width", Width);
+					TargetSmoothing = EditorGUILayout.Slider("Target Smoothing", TargetSmoothing, 0f, 1f);
+					GaitSmoothing = EditorGUILayout.Slider("Gait Smoothing", GaitSmoothing, 0f, 1f);
+					CorrectionSmoothing = EditorGUILayout.Slider("Correction Smoothing", CorrectionSmoothing, 0f, 1f);
+				}
+			}
+		}
+	}
+	#endif
 
 	public class Point {
 		private Vector3 Position;
