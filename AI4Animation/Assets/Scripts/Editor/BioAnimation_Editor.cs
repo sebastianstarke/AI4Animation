@@ -41,7 +41,7 @@ public class BioAnimation_Editor : Editor {
 
 				if(Target.Character.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Target.Character.JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", Target.Character.JointSmoothing, 0f, 1f);
+						//Target.Character.JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", Target.Character.JointSmoothing, 0f, 1f);
 
 						EditorGUILayout.LabelField("Joints");
 
@@ -61,12 +61,9 @@ public class BioAnimation_Editor : Editor {
 							Target.Character.RemoveJoint(Target.Character.Joints.Length);
 						}
 
-						if(GUILayout.Button("Create Visuals")) {
-							Target.Character.CreateVisuals();
-						}
-						if(GUILayout.Button("Remove Visuals")) {
-							Target.Character.RemoveVisuals();
-						}
+						Target.Character.JointRadius = EditorGUILayout.FloatField("Joint Radius", Target.Character.JointRadius);
+						Target.Character.BoneStartWidth = EditorGUILayout.FloatField("Bone Start Width", Target.Character.BoneStartWidth);
+						Target.Character.BoneEndWidth = EditorGUILayout.FloatField("Bone End Width", Target.Character.BoneEndWidth);
 					}
 				}
 			}

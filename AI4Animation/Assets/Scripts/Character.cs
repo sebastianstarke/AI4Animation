@@ -5,36 +5,43 @@ public class Character {
 
 	public bool Inspect = false;
 
-	public float JointSmoothing = 0.5f;
-
 	public float Phase = 0f;
 
 	public Joint[] Joints = new Joint[0];
+
+	public float JointRadius = 0.05f;
+	public float BoneStartWidth = 0.025f;
+	public float BoneEndWidth = 0.01f;
 
 	public Character() {
 
 	}
 
-	public void DrawGeometry() {
+	public void Draw() {
 		for(int i=0; i<Joints.Length; i++) {
+			//Joints[i].RemoveVisual();
+			//Joints[i].CreateVisual();
 			if(Joints[i].Transform != null) {
-				if(Joints[i].Visual != null) {
-					Joints[i].Visual.SetActive(true);
+				Joints[i].Visual.transform.localScale = JointRadius * Vector3.one;
+				Joints[i].Visual.startWidth = BoneStartWidth;
+				Joints[i].Visual.endWidth = BoneEndWidth;
+
+				if(!Application.isPlaying) {
 					if(Joints[i].Parent != null) {
-						//LineRenderer line = Joints[i].Visual.GetComponent<LineRenderer>();
-						//line.SetPosition(0, Joints[i].Parent.position);
-						//line.SetPosition(1, Joints[i].Transform.position);
-						OpenGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, 0.015f, Color.cyan);
+						OpenGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
 					}
 				}
-			} else {
-				if(Joints[i].Visual != null) {
-					Joints[i].Visual.SetActive(false);
-				}
+
+				Vector3 start = Joints[i].Transform.position;
+				Vector3 end = Joints[i].Transform.position + 10f*Joints[i].GetVelocity();
+				Vector3 pivot = start + 0.75f * (end-start);
+				OpenGL.DrawLine(start, pivot, 0.0075f, new Color(0f, 1f, 0f, 0.5f));
+				OpenGL.DrawLine(pivot, end, 0.05f, 0f, new Color(0f, 1f, 0f, 0.5f));
 			}
 		}
 	}
 
+	/*
 	public void ForwardKinematics() {
 		for(int i=0; i<Joints.Length; i++) {
 			if(Joints[i].Transform != null) {
@@ -42,6 +49,7 @@ public class Character {
 			}
 		}
 	}
+	*/
 
 	public void AddJoint(int index) {
 		System.Array.Resize(ref Joints, Joints.Length+1);
@@ -65,27 +73,14 @@ public class Character {
 		return System.Array.Find(Joints, x => x.Transform == t);
 	}
 
-	public void CreateVisuals() {
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].CreateVisual();
-		}
-	}
-
-	public void RemoveVisuals() {
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].RemoveVisual();
-		}
-	}
-
 	[System.Serializable]
 	public class Joint {
 		public Transform Transform;
 		public Transform Parent;
 		public Transform[] Childs;
 
-		public GameObject Visual;
+		public LineRenderer Visual;
 
-		private Vector3 Position;
 		private Vector3 Velocity;
 
 		public Joint() {
@@ -96,42 +91,36 @@ public class Character {
 			if(Visual != null) {
 				return;
 			}
-			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere).AddComponent<LineRenderer>();
+			Visual.name = "Visual";
 			Visual.transform.SetParent(Transform);
 			Visual.transform.localPosition = Vector3.zero;
 			Visual.transform.localRotation = Quaternion.identity;
-			Visual.transform.localScale = 0.05f * Vector3.one;
+			Visual.transform.localScale = Vector3.zero;
+			Visual.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
 			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Joint", typeof(Material)) as Material;
+
+			Visual.positionCount = 2;
+			Visual.startWidth = 0f;
+			Visual.endWidth = 0f;
+			Visual.SetPosition(0, Visual.transform.position);
+			Visual.SetPosition(1, Visual.transform.position);
+			Visual.material = Resources.Load("Materials/Line", typeof(Material)) as Material;
 			
-			LineRenderer line = Visual.AddComponent<LineRenderer>();
-			line.positionCount = 2;
-			line.startWidth = 0.005f;
-			line.endWidth = 0.005f;
-			line.material = Resources.Load("Materials/Line", typeof(Material)) as Material;
-			
-			if(Application.isPlaying) {
-				GameObject.Destroy(Visual.GetComponent<Collider>());
-			} else {
-				GameObject.DestroyImmediate(Visual.GetComponent<Collider>());
-			}
+			Utility.Destroy(Visual.GetComponent<Collider>());
 		}
 
 		public void RemoveVisual() {
 			if(Visual == null) {
 				return;
 			}
-			if(Application.isPlaying) {
-				GameObject.Destroy(Visual);
-			} else {
-				GameObject.DestroyImmediate(Visual);
-			}
+			Utility.Destroy(Visual.gameObject);
 		}
 
 		public void SetTransform(Transform t, Character character) {
 			if(t == Transform) {
 				return;
 			}
-			Debug.Log("Setting Transform " + t);
 			if(t == null) {
 				//Unset
 				Transform = null;
@@ -143,6 +132,8 @@ public class Character {
 				}
 				Parent = null;
 				Childs = new Transform[0];
+				
+				RemoveVisual();
 			} else {
 				//Set
 				Transform = t;
@@ -154,6 +145,8 @@ public class Character {
 				for(int i=0; i<Childs.Length; i++) {
 					character.FindJoint(Childs[i]).UpdateParent(character);
 				}
+
+				CreateVisual();
 			}
 		}
 
@@ -193,19 +186,36 @@ public class Character {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Position = position;
+			Transform[] childs = new Transform[Transform.childCount];
+			for(int i=0; i<childs.Length; i++) {
+				childs[i] = Transform.GetChild(i);
+			}
+			Transform.DetachChildren();
+			Transform.position = position;
+			for(int i=0; i<childs.Length; i++) {
+				childs[i].SetParent(Transform);
+			}
+
+			Visual.transform.position = position;
+			Visual.SetPosition(1, position);
+			if(Parent == null) {
+				Visual.SetPosition(0, position);
+			}
+			for(int i=0; i<Childs.Length; i++) {
+				Childs[i].Find("Visual").GetComponent<LineRenderer>().SetPosition(0, position);
+			}
 		}
 
 		public void SetPosition(Vector3 position, Transformation relativeTo) {
-			Position = relativeTo.Position + relativeTo.Rotation * position;
+			SetPosition(relativeTo.Position + relativeTo.Rotation * position);
 		}
 
 		public Vector3 GetPosition() {
-			return Position;
+			return Transform.position;
 		}
 
 		public Vector3 GetPosition(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * (Position - relativeTo.Position);
+			return Quaternion.Inverse(relativeTo.Rotation) * (GetPosition() - relativeTo.Position);
 		}
 
 		public void SetVelocity(Vector3 velocity) {
@@ -213,7 +223,7 @@ public class Character {
 		}
 
 		public void SetVelocity(Vector3 velocity, Transformation relativeTo) {
-			Velocity = relativeTo.Rotation * velocity;
+			SetVelocity(relativeTo.Rotation * velocity);
 		}
 
 		public Vector3 GetVelocity() {
@@ -221,7 +231,7 @@ public class Character {
 		}
 
 		public Vector3 GetVelocity(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * Velocity;
+			return Quaternion.Inverse(relativeTo.Rotation) * GetVelocity();
 		}
 	}
 

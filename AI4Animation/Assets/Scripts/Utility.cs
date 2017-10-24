@@ -1,6 +1,18 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public static class Utility {
+
+	private static Dictionary<PrimitiveType, Mesh> PrimitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
+
+	public static void SetFPS(int fps) {
+		#if UNITY_EDITOR
+		QualitySettings.vSyncCount = 0;
+		#else
+		QualitySettings.vSyncCount = 1;
+		#endif
+		Application.targetFrameRate = 60;
+	}
 
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
 		if(valueMax-valueMin != 0f) {
@@ -102,9 +114,9 @@ public static class Utility {
 
 	public static float GetHeight(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return hit.point.y;
@@ -115,15 +127,50 @@ public static class Utility {
 
 	public static float GetRise(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
-			float rise = Vector3.Angle(hit.normal, Vector3.up) / 90f;
-			return rise;
+			return Vector3.Angle(hit.normal, Vector3.up) / 90f;
 		} else {
 			return 0f;
+		}
+	}
+ 
+	public static GameObject CreatePrimitive(PrimitiveType type, bool withCollider) {
+		if (withCollider) { return GameObject.CreatePrimitive(type); }
+
+		GameObject gameObject = new GameObject(type.ToString());
+		MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
+		meshFilter.sharedMesh = GetPrimitiveMesh(type);
+		gameObject.AddComponent<MeshRenderer>();
+
+		return gameObject;
+	}
+
+	public static Mesh GetPrimitiveMesh(PrimitiveType type) {
+		if (!PrimitiveMeshes.ContainsKey(type)) {
+			CreatePrimitiveMesh(type);
+		}
+
+		return PrimitiveMeshes[type];
+	}
+
+	public static Mesh CreatePrimitiveMesh(PrimitiveType type) {
+		GameObject gameObject = GameObject.CreatePrimitive(type);
+		Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+		Destroy(gameObject);
+
+		PrimitiveMeshes[type] = mesh;
+		return mesh;
+	}
+
+	public static void Destroy(Object o) {
+		if(Application.isPlaying) {
+			GameObject.Destroy(o);
+		} else {
+			GameObject.DestroyImmediate(o);
 		}
 	}
 

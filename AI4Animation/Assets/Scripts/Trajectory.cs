@@ -23,12 +23,16 @@ public class Trajectory {
 	private Color PointColor = Color.black;
 	private Color ConnectionColor = Color.black;
 	private Color HeightColor = Color.yellow;
-	private Color RiseColor = Color.blue;
-	private Color DirectionColor = new Color(1f, 0.5f, 0f, 1f);
-	private Color TargetDirectionColor = Color.red;
-	private Color TargetVelocityColor = Color.green;
+	private Color RiseColor = new Color(0f, 0f, 1f, 0.75f);
+	private Color DirectionColor = new Color(1f, 0.5f, 0f, 0.75f);
+	private Color TargetDirectionColor = new Color(1f, 0f, 0f, 0.75f);
+	private Color TargetVelocityColor = new Color(0f, 1f, 0f, 0.75f);
 
-	public void DrawGeometry() {
+	public void Draw() {
+		if(!Application.isPlaying) {
+			return;
+		}
+		
 		//int step = Trajectory.GetDensity();
 		int step = Density;
 
@@ -47,12 +51,12 @@ public class Trajectory {
 
 		//Directions
 		for(int i=0; i<GetPointCount(); i+=step) {
-			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.01f, DirectionColor);
+			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
 		}
 
 		//Rises
 		for(int i=0; i<GetPointCount(); i+=step) {
-			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.01f, RiseColor);
+			OpenGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
 		}
 
 		//Positions
@@ -65,8 +69,8 @@ public class Trajectory {
 		}
 
 		//Target
-		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.01f, TargetDirectionColor);
-		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.01f, TargetVelocityColor);
+		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
+		OpenGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
 	}
 
 	public void Initialise(Vector3 position, Vector3 direction) {
@@ -114,16 +118,20 @@ public class Trajectory {
 		return Density;
 	}
 
+	public Point GetSample(int index) {
+		return Points[index*Density];
+	}
+
 	public int GetSampleCount() {
 		return PastPoints + FuturePoints + 1;
 	}
 
-	public int GetRootSampleIndex() {
-		return PastPoints;
-	}
-
 	public int GetPointCount() {
 		return Density*(PastPoints + FuturePoints) + 1;
+	}
+
+	public int GetRootSampleIndex() {
+		return PastPoints;
 	}
 
 	public int GetRootPointIndex() {
