@@ -11,12 +11,4 @@ public struct Transformation {
 		Position = position;
 		Rotation = rotation;
 	}
-	public Transformation(Vector3 position) {
-		Position = position;
-		Rotation = Quaternion.identity;
-	}
-	public Transformation(Quaternion rotation) {
-		Position = Vector3.zero;
-		Rotation = rotation;
-	}
 }

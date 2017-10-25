@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public static class Utility {
 
-	private static Dictionary<PrimitiveType, Mesh> PrimitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
+	public static Color Black = Color.black;
+	public static Color Red = Color.red;
+	public static Color Green = Color.green;
+	public static Color Blue = Color.blue;
+	public static Color Cyan = Color.cyan;
+	public static Color Magenta = Color.magenta;
+	public static Color Yellow = Color.yellow;
+	public static Color Grey = Color.grey;
+	public static Color Orange = new Color(1f, 0.5f, 0f, 1f);
 
 	public static void SetFPS(int fps) {
 		#if UNITY_EDITOR
@@ -104,6 +111,54 @@ public static class Utility {
 		return Quaternion.AngleAxis(angle, axis) * (vector - pivot) + vector;
 	}
 
+	public static void OverridePosition(this Transform transform, Vector3 position) {
+		Transform[] childs = new Transform[transform.childCount];
+		for(int i=0; i<childs.Length; i++) {
+			childs[i] = transform.GetChild(i);
+		}
+		transform.DetachChildren();
+		transform.position = position;
+		for(int i=0; i<childs.Length; i++) {
+			childs[i].SetParent(transform);
+		}
+	}
+
+	public static void OverrideRotation(this Transform transform, Quaternion rotation) {
+		Transform[] childs = new Transform[transform.childCount];
+		for(int i=0; i<childs.Length; i++) {
+			childs[i] = transform.GetChild(i);
+		}
+		transform.DetachChildren();
+		transform.rotation = rotation;
+		for(int i=0; i<childs.Length; i++) {
+			childs[i].SetParent(transform);
+		}
+	}
+
+	public static Vector3 RelativePositionFrom(this Vector3 vector, Transformation from) {
+		return from.Position + from.Rotation * vector;
+	}
+
+	public static Vector3 RelativeDirectionFrom(this Vector3 vector, Transformation from) {
+		return from.Rotation * vector;
+	}
+
+	public static Quaternion RelativeRotationFrom(this Quaternion quaternion, Transformation from) {
+		return from.Rotation * quaternion;
+	}
+
+	public static Vector3 RelativePositionTo(this Vector3 vector, Transformation to) {
+		return Quaternion.Inverse(to.Rotation) * (vector - to.Position);
+	}
+
+	public static Vector3 RelativeDirectionTo(this Vector3 vector, Transformation to) {
+		return Quaternion.Inverse(to.Rotation) * vector;
+	}
+
+	public static Quaternion RelativeRotationTo(this Quaternion quaternion, Transformation to) {
+		return Quaternion.Inverse(to.Rotation) * quaternion;
+	}
+
 	public static Vector3 ProjectCollision(Vector3 start, Vector3 end, LayerMask mask) {
 		RaycastHit hit;
 		if(Physics.Raycast(start, end-start, out hit, Vector3.Magnitude(end-start), mask)) {
@@ -114,9 +169,9 @@ public static class Utility {
 
 	public static float GetHeight(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return hit.point.y;
@@ -127,43 +182,15 @@ public static class Utility {
 
 	public static float GetRise(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return Vector3.Angle(hit.normal, Vector3.up) / 90f;
 		} else {
 			return 0f;
 		}
-	}
- 
-	public static GameObject CreatePrimitive(PrimitiveType type, bool withCollider) {
-		if (withCollider) { return GameObject.CreatePrimitive(type); }
-
-		GameObject gameObject = new GameObject(type.ToString());
-		MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
-		meshFilter.sharedMesh = GetPrimitiveMesh(type);
-		gameObject.AddComponent<MeshRenderer>();
-
-		return gameObject;
-	}
-
-	public static Mesh GetPrimitiveMesh(PrimitiveType type) {
-		if (!PrimitiveMeshes.ContainsKey(type)) {
-			CreatePrimitiveMesh(type);
-		}
-
-		return PrimitiveMeshes[type];
-	}
-
-	public static Mesh CreatePrimitiveMesh(PrimitiveType type) {
-		GameObject gameObject = GameObject.CreatePrimitive(type);
-		Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
-		Destroy(gameObject);
-
-		PrimitiveMeshes[type] = mesh;
-		return mesh;
 	}
 
 	public static void Destroy(Object o) {

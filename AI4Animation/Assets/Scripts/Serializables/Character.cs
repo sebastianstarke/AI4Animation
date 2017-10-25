@@ -12,8 +12,6 @@ public class Character {
 
 	public float Phase = 0f;
 
-	public Bone[] Bones = new Bone[0];
-
 	public Joint[] Joints = new Joint[0];
 
 	private const float JointRadius = 0.05f;
@@ -22,41 +20,26 @@ public class Character {
 
 	public Character(Transform owner) {
 		Owner = owner;
-		DetectHierarchy();
 	}
 
-	public void DetectHierarchy() {
-		for(int i=0; i<Bones.Length; i++) {
-			if(Bones[i].Transform == null) {
-				for(int j=i; j<Bones.Length-1; j++) {
-					Bones[j] = Bones[j+1];
+	public void ForwardKinematics() {
+		for(int i=0; i<Joints.Length; i++) {
+			if(Joints[i].Transform != null) {
+				Joints[i].Transform.position = Joints[i].GetPosition();
+				if(Joints[i].Parent != null) {
+					Joints[i].Visual.SetPosition(0, Joints[i].Parent.position);
+					Joints[i].Visual.SetPosition(1, Joints[i].Transform.position);
+				} else {
+					Joints[i].Visual.SetPosition(0, Joints[i].Transform.position);
+					Joints[i].Visual.SetPosition(1, Joints[i].Transform.position);
 				}
-				System.Array.Resize(ref Bones, Bones.Length-1);
-				i--;
 			}
 		}
-		DetectHierarchy(Owner, 0);
 	}
 
-	private void DetectHierarchy(Transform transform, int depth) {
-		Bone bone = FindBone(transform);
-		if(bone == null) {
-			System.Array.Resize(ref Bones, Bones.Length+1);
-			Bones[Bones.Length-1] = new Bone(transform);
-		}
-		for(int i=0; i<transform.childCount; i++) {
-			DetectHierarchy(transform.GetChild(i), depth+1);
-		}
-	}
-
-	public Bone FindBone(Transform transform) {
-		return System.Array.Find(Bones, x => x.Transform == transform);
-	}
-
-	public Joint AddJoint() {
+	public void AddJoint() {
 		System.Array.Resize(ref Joints, Joints.Length+1);
 		Joints[Joints.Length-1] = new Joint();
-		return Joints[Joints.Length-1];
 	}
 
 	public void RemoveJoint() {
@@ -70,19 +53,15 @@ public class Character {
 		return System.Array.Find(Joints, x => x.Transform == t);
 	}
 
-	public int FindIndex(Transform t) {
-		return System.Array.FindIndex(Joints, x => x.Transform == t);
+	public void CreateVisuals() {
+		for(int i=0; i<Joints.Length; i++) {
+			Joints[i].CreateVisual();
+		}
 	}
 
-	[System.Serializable]
-	public class Bone {
-		public bool Expanded = false;
-		public bool Inspect = false;
-		
-		public Transform Transform = null;
-
-		public Bone(Transform t) {
-			Transform = t;
+	public void RemoveVisuals() {
+		for(int i=0; i<Joints.Length; i++) {
+			Joints[i].RemoveVisual();
 		}
 	}
 
@@ -94,6 +73,7 @@ public class Character {
 
 		public LineRenderer Visual;
 
+		private Vector3 Position;
 		private Vector3 Velocity;
 
 		public Joint() {
@@ -199,59 +179,24 @@ public class Character {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Transform[] childs = new Transform[Transform.childCount];
-			for(int i=0; i<childs.Length; i++) {
-				childs[i] = Transform.GetChild(i);
-			}
-			Transform.DetachChildren();
-			Transform.position = position;
-			for(int i=0; i<childs.Length; i++) {
-				childs[i].SetParent(Transform);
-			}
-
-			Visual.transform.position = position;
-			Visual.SetPosition(1, position);
-			if(Parent == null) {
-				Visual.SetPosition(0, position);
-			}
-			for(int i=0; i<Childs.Length; i++) {
-				Childs[i].Find("Visual").GetComponent<LineRenderer>().SetPosition(0, position);
-			}
-		}
-
-		public void SetPosition(Vector3 position, Transformation relativeTo) {
-			SetPosition(relativeTo.Position + relativeTo.Rotation * position);
+			Position = position;
 		}
 
 		public Vector3 GetPosition() {
-			return Transform.position;
-		}
-
-		public Vector3 GetPosition(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * (GetPosition() - relativeTo.Position);
+			return Position;
 		}
 
 		public void SetVelocity(Vector3 velocity) {
 			Velocity = velocity;
 		}
 
-		public void SetVelocity(Vector3 velocity, Transformation relativeTo) {
-			SetVelocity(relativeTo.Rotation * velocity);
-		}
-
 		public Vector3 GetVelocity() {
 			return Velocity;
-		}
-
-		public Vector3 GetVelocity(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * GetVelocity();
 		}
 	}
 
 	public void Draw() {
 		for(int i=0; i<Joints.Length; i++) {
-			//Joints[i].RemoveVisual();
-			//Joints[i].CreateVisual();
 			if(Joints[i].Transform != null) {
 				Joints[i].Visual.transform.localScale = JointRadius * Vector3.one;
 				Joints[i].Visual.startWidth = BoneStartWidth;
@@ -286,12 +231,13 @@ public class Character {
 
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					if(Utility.GUIButton("Detect Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						DetectHierarchy();
-					}
-					InspectHierarchy(Owner, 0);
+					//if(Utility.GUIButton("Detect Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					//	DetectHierarchy();
+					//}
+					//InspectHierarchy(Owner, 0);
 
 					//Obsolete
+					//JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", JointSmoothing, 0f, 1f);
 					EditorGUILayout.LabelField("Joints");
 					for(int i=0; i<Joints.Length; i++) {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -313,6 +259,7 @@ public class Character {
 		}
 	}
 
+	/*
 	private void InspectHierarchy(Transform t, int indent) {
 		Bone bone = FindBone(t);
 		EditorGUILayout.BeginHorizontal();
@@ -361,6 +308,7 @@ public class Character {
 			}
 		}
 	}
+	*/
 	#endif
 
 }

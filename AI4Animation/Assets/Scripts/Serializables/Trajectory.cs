@@ -25,49 +25,24 @@ public class Trajectory {
 	private const int FuturePoints = 5;
 	private const int Density = 10;
 
-	private Color PointColor {get {return Color.black;}}
-	private Color ConnectionColor {get {return Color.black;}}
-	private Color HeightColor {get {return Color.yellow;}}
-	private Color RiseColor {get {return new Color(0f, 0f, 1f, 0.75f);}}
-	private Color DirectionColor {get {return new Color(1f, 0.5f, 0f, 0.75f);}}
-	private Color TargetDirectionColor {get {return new Color(1f, 0f, 0f, 0.75f);}}
-	private Color TargetVelocityColor {get {return new Color(0f, 1f, 0f, 0.75f);}}
-
 	public Trajectory(Transform owner) {
 		Owner = owner;
 		Initialise();
 	}
 
 	public void Initialise() {
-		TargetDirection = Owner.forward;
+		TargetDirection = new Vector3(Owner.forward.x, 0f, Owner.forward.z);
 		TargetVelocity = Vector3.zero;
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<GetPointCount(); i++) {
-			Points[i] = new Point(Owner.position, Owner.forward);
+			Points[i] = new Point(Owner.position, TargetDirection);
 		}
 	}
 
 	public void UpdateTarget(Vector3 move, float turn) {
-		//TargetDirection = Quaternion.AngleAxis(turn*120f*Time.deltaTime, Vector3.up) * TargetDirection;
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn*60f, Vector3.up) * GetRoot().GetDirection(), TargetSmoothing);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, TargetSmoothing);
 	}
-
-	/*
-	public void SetDensity(int density) {
-		if(density == Density) {
-			return;
-		}
-		if(Application.isPlaying) {
-			Vector3 pos = GetRoot().GetPosition();
-			Vector3 dir = GetRoot().GetDirection();
-			Density = density;
-			Initialise(pos, dir);
-		} else {
-			Density = density;
-		}
-	}
-	*/
 
 	public int GetPastPoints() {
 		return PastPoints;
@@ -117,7 +92,7 @@ public class Trajectory {
 		public float Stand, Walk, Jog, Crouch, Jump, Bump;
 
 		public Point(Vector3 position, Vector3 direction) {
-			SetPosition(position);
+			SetPosition(position, true);
 			SetDirection(direction);
 
 			Stand = 1f;
@@ -128,16 +103,8 @@ public class Trajectory {
 			Bump = 0f;
 		}
 
-		public void SetPosition(Vector3 position, bool recalculateHeight = true) {
+		public void SetPosition(Vector3 position, bool recalculateHeight) {
 			Position = position;
-			if(recalculateHeight) {
-				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
-				Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
-			}
-		}
-
-		public void SetPosition(Vector3 position, Transformation relativeTo, bool recalculateHeight = true) {
-			Position = relativeTo.Position + relativeTo.Rotation * position;
 			if(recalculateHeight) {
 				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
 				Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
@@ -148,40 +115,20 @@ public class Trajectory {
 			return Position;
 		}
 
-		public Vector3 GetPosition(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * (Position - relativeTo.Position);
-		}
-
 		public void SetDirection(Vector3 direction) {
 			Direction = direction;
-		}
-
-		public void SetDirection(Vector3 direction, Transformation relativeTo) {
-			Direction = relativeTo.Rotation * direction;
 		}
 
 		public Vector3 GetDirection() {
 			return Direction;
 		}
 
-		public Vector3 GetDirection(Transformation relativeTo) {
-			return Quaternion.Inverse(relativeTo.Rotation) * Direction;
-		}
-
 		public float GetHeight() {
 			return Position.y;
 		}
 
-		public float GetHeight(Transformation relativeTo) {
-			return Position.y - relativeTo.Position.y;
-		}
-
 		public Quaternion GetRotation() {
 			return Quaternion.LookRotation(Direction, Vector3.up);
-		}
-
-		public Quaternion GetRotation(Transformation relativeTo) {
-			return Quaternion.LookRotation(Quaternion.Inverse(relativeTo.Rotation) * Direction, Vector3.up);
 		}
 
 		public Vector3 Project(float distance) {
@@ -197,39 +144,43 @@ public class Trajectory {
 
 		//Connections
 		for(int i=0; i<GetPointCount()-step; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, ConnectionColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Utility.Black);
 		}
 
 		//Projections
 		for(int i=0; i<GetPointCount(); i+=step) {
 			Vector3 right = Points[i].Project(Width/2f);
 			Vector3 left = Points[i].Project(-Width/2f);
-			UnityGL.DrawCircle(right, 0.01f, HeightColor);
-			UnityGL.DrawCircle(left, 0.01f, HeightColor);
+			UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
+			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
 		}
 
 		//Directions
+		Color transparentDirection = new Color(Utility.Orange.r, Utility.Orange.g, Utility.Orange.b, 0.75f);
 		for(int i=0; i<GetPointCount(); i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, DirectionColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
 		}
 
 		//Rises
+		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
 		for(int i=0; i<GetPointCount(); i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, RiseColor);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, transparentRise);
 		}
 
 		//Positions
 		for(int i=0; i<GetPointCount(); i+=step) {
 			if(i % GetDensity() == 0) {
-				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, PointColor);
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
 			} else {
-				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, PointColor);
+				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, Utility.Black);
 			}
 		}
 
 		//Target
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, TargetDirectionColor);
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, TargetVelocityColor);
+		Color transparentTargetDirection = new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f);
+		Color transparentTargetVelocity = new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f);
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, transparentTargetDirection);
+		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
 	}
 
 	#if UNITY_EDITOR
