@@ -26,13 +26,6 @@ public class Character {
 		for(int i=0; i<Joints.Length; i++) {
 			if(Joints[i].Transform != null) {
 				Joints[i].Transform.position = Joints[i].GetPosition();
-				if(Joints[i].Parent != null) {
-					Joints[i].Visual.SetPosition(0, Joints[i].Parent.position);
-					Joints[i].Visual.SetPosition(1, Joints[i].Transform.position);
-				} else {
-					Joints[i].Visual.SetPosition(0, Joints[i].Transform.position);
-					Joints[i].Visual.SetPosition(1, Joints[i].Transform.position);
-				}
 			}
 		}
 	}
@@ -71,7 +64,7 @@ public class Character {
 		public Transform Parent;
 		public Transform[] Childs;
 
-		public LineRenderer Visual;
+		public GameObject Visual;
 
 		private Vector3 Position;
 		private Vector3 Velocity;
@@ -84,22 +77,14 @@ public class Character {
 			if(Visual != null) {
 				return;
 			}
-			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere).AddComponent<LineRenderer>();
+			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			Visual.name = "Visual";
 			Visual.transform.SetParent(Transform);
 			Visual.transform.localPosition = Vector3.zero;
 			Visual.transform.localRotation = Quaternion.identity;
 			Visual.transform.localScale = Vector3.zero;
-			Visual.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
-			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Joint", typeof(Material)) as Material;
-
-			Visual.positionCount = 2;
-			Visual.startWidth = 0f;
-			Visual.endWidth = 0f;
-			Visual.SetPosition(0, Visual.transform.position);
-			Visual.SetPosition(1, Visual.transform.position);
-			Visual.material = Resources.Load("Materials/Line", typeof(Material)) as Material;
-			
+			Visual.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Black", typeof(Material)) as Material;
 			Utility.Destroy(Visual.GetComponent<Collider>());
 		}
 
@@ -197,15 +182,14 @@ public class Character {
 
 	public void Draw() {
 		for(int i=0; i<Joints.Length; i++) {
+			//Joints[i].RemoveVisual();
+			//Joints[i].CreateVisual();
 			if(Joints[i].Transform != null) {
 				Joints[i].Visual.transform.localScale = JointRadius * Vector3.one;
-				Joints[i].Visual.startWidth = BoneStartWidth;
-				Joints[i].Visual.endWidth = BoneEndWidth;
 
-				if(!Application.isPlaying) {
-					if(Joints[i].Parent != null) {
-						UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
-					}
+				if(Joints[i].Parent != null) {
+					UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth+0.005f, BoneEndWidth+0.005f, new Color(0.25f, 0.25f, 0.25f, 1f));
+					UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
 				}
 
 				UnityGL.DrawArrow(
