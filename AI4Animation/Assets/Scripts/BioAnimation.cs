@@ -201,9 +201,9 @@ public class BioAnimation : MonoBehaviour {
 		//Post-Correct Trajectory
 		CollisionChecks(Trajectory.GetRootPointIndex());
 		
-		//Update Posture
-		transform.position = newRoot.Position;
-		transform.rotation = newRoot.Rotation;
+		//Update Posture via Forward Kinematics
+		transform.OverridePosition(newRoot.Position);
+		transform.OverrideRotation(newRoot.Rotation);
 		int opos = 8 + 4*Trajectory.GetRootSampleIndex() + Character.Joints.Length*3*0;
 		int ovel = 8 + 4*Trajectory.GetRootSampleIndex() + Character.Joints.Length*3*1;
 		for(int i=0; i<Character.Joints.Length; i++) {			
@@ -217,7 +217,7 @@ public class BioAnimation : MonoBehaviour {
 				velocity.RelativeDirectionFrom(currentRoot)
 			);
 		}
-		Character.ForwardKinematics();
+		//Character.ForwardKinematics();
 
 		/* Update Phase */
 		Character.Phase = Mathf.Repeat(Character.Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);

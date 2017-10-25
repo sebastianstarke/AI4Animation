@@ -22,6 +22,7 @@ public class Character {
 		Owner = owner;
 	}
 
+	/*
 	public void ForwardKinematics() {
 		for(int i=0; i<Joints.Length; i++) {
 			if(Joints[i].Transform != null) {
@@ -29,6 +30,7 @@ public class Character {
 			}
 		}
 	}
+	*/
 
 	public void AddJoint() {
 		System.Array.Resize(ref Joints, Joints.Length+1);
@@ -66,7 +68,7 @@ public class Character {
 
 		public GameObject Visual;
 
-		private Vector3 Position;
+		//private Vector3 Position;
 		private Vector3 Velocity;
 
 		public Joint() {
@@ -164,11 +166,12 @@ public class Character {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Position = position;
+			Transform.OverridePosition(position);
+			Visual.transform.position = position;
 		}
 
 		public Vector3 GetPosition() {
-			return Position;
+			return Transform.position;
 		}
 
 		public void SetVelocity(Vector3 velocity) {
