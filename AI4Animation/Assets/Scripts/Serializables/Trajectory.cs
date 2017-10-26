@@ -71,8 +71,8 @@ public class Trajectory {
 
 	[System.Serializable]
 	public class Point {
-		private Vector3 Position;
-		private Vector3 Direction;
+		[SerializeField] private Vector3 Position;
+		[SerializeField] private Vector3 Direction;
 
 		public float Stand, Walk, Jog, Crouch, Jump, Bump;
 
@@ -116,7 +116,7 @@ public class Trajectory {
 			return Quaternion.LookRotation(Direction, Vector3.up);
 		}
 
-		public Vector3 Project(float distance) {
+		public Vector3 SampleSide(float distance) {
 			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Direction;
 			Vector3 proj = Position + distance * ortho.normalized;
 			proj.y = Utility.GetHeight(proj.x, proj.z, LayerMask.GetMask("Ground"));
@@ -134,8 +134,8 @@ public class Trajectory {
 
 		//Projections
 		for(int i=0; i<GetPointCount(); i+=step) {
-			Vector3 right = Points[i].Project(Width/2f);
-			Vector3 left = Points[i].Project(-Width/2f);
+			Vector3 right = Points[i].SampleSide(Width/2f);
+			Vector3 left = Points[i].SampleSide(-Width/2f);
 			UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
 			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
 		}
