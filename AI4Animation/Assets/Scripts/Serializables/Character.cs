@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -6,172 +7,157 @@ using UnityEditor;
 [System.Serializable]
 public class Character {
 
-	public bool Inspect = false;
-
 	public Transform Owner = null;
 
-	public float Phase = 0f;
+	public bool Inspect = false;
 
-	public Joint[] Joints = new Joint[0];
+	public Bone[] Bones = new Bone[0];
 
-	private const float JointRadius = 0.05f;
-	private const float BoneStartWidth = 1f/30f;
-	private const float BoneEndWidth = 0.01f;
+	public float BoneSize = 0.025f;
 
 	public Character(Transform owner) {
 		Owner = owner;
+		Inspect = false;
+		BuildHierarchy();
+		BoneSize = 0.025f;
 	}
 
-	/*
 	public void ForwardKinematics() {
-		for(int i=0; i<Joints.Length; i++) {
-			if(Joints[i].Transform != null) {
-				Joints[i].Transform.position = Joints[i].GetPosition();
+		
+	}
+
+	public Bone FindBone(string name) {
+		return System.Array.Find(Bones, x => x.Transform.name == name);
+	}
+
+	public Bone FindBone(Transform transform) {
+		return System.Array.Find(Bones, x => x.Transform == transform);
+	}
+
+	public bool RebuildRequired() {
+		for(int i=0; i<Bones.Length; i++) {
+			if(Bones[i].Transform == null) {
+				return true;
+			}
+			if(Bones[i].Transform.childCount != Bones[i].Childs.Length) {
+				return true;
+			} else {
+				for(int j=0; j<Bones[i].Transform.childCount; j++) {
+					if(Bones[i].Transform.GetChild(j) != Bones[i].GetChild(this, j).Transform) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public void BuildHierarchy() {
+		List<Bone> bones = new List<Bone>();
+		BuildHierarchy(Owner, ref bones);
+		Bones = bones.ToArray();
+		for(int i=0; i<Bones.Length; i++) {
+			Bones[i].SetParent(this, FindBone(Bones[i].Transform.parent));
+			for(int j=0; j<Bones[i].Transform.childCount; j++) {
+				Bones[i].AddChild(this, FindBone(Bones[i].Transform.GetChild(j)));
 			}
 		}
 	}
-	*/
 
-	public void AddJoint() {
-		System.Array.Resize(ref Joints, Joints.Length+1);
-		Joints[Joints.Length-1] = new Joint();
-	}
-
-	public void RemoveJoint() {
-		if(Joints.Length == 0) {
-			return;
+	private void BuildHierarchy(Transform transform, ref List<Bone> bones) {
+		Bone bone = FindBone(transform);
+		if(bone == null) {
+			bone = new Bone(transform, bones.Count);
+		} else {
+			bone.Index = bones.Count;
+			bone.RemoveParent();
+			bone.RemoveChilds();
 		}
-		System.Array.Resize(ref Joints, Joints.Length-1);
-	}
-
-	public Joint FindJoint(Transform t) {
-		return System.Array.Find(Joints, x => x.Transform == t);
-	}
-
-	public void CreateVisuals() {
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].CreateVisual();
-		}
-	}
-
-	public void RemoveVisuals() {
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].RemoveVisual();
+		bones.Add(bone);
+		for(int i=0; i<transform.childCount; i++) {
+			BuildHierarchy(transform.GetChild(i), ref bones);
 		}
 	}
 
 	[System.Serializable]
-	public class Joint {
-		public Transform Transform;
-		public Transform Parent;
-		public Transform[] Childs;
+	public class Bone {
+		public bool Expanded = false;
+		public bool Draw = true;
+		
+		public Transform Transform = null;	
+		public int Index = -1;
+		public int Parent = -1;
+		public int[] Childs = new int[0];
+		
+		public Vector3 Velocity = Vector3.zero;
 
-		public GameObject Visual;
-
-		//private Vector3 Position;
-		private Vector3 Velocity;
-
-		public Joint() {
-
+		public Bone(Transform t, int index) {
+			Draw = true;
+			Transform = t;
+			Index = index;
+			Parent = -1;
+			Childs = new int[0];
+			
+			Velocity = Vector3.zero;
 		}
 
-		public void CreateVisual() {
-			if(Visual != null) {
-				return;
-			}
-			Visual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			Visual.name = "Visual";
-			Visual.transform.SetParent(Transform);
-			Visual.transform.localPosition = Vector3.zero;
-			Visual.transform.localRotation = Quaternion.identity;
-			Visual.transform.localScale = Vector3.zero;
-			Visual.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-			Visual.GetComponent<MeshRenderer>().material = Resources.Load("Materials/Black", typeof(Material)) as Material;
-			Utility.Destroy(Visual.GetComponent<Collider>());
-		}
-
-		public void RemoveVisual() {
-			if(Visual == null) {
-				return;
-			}
-			Utility.Destroy(Visual.gameObject);
-		}
-
-		public void SetTransform(Transform t, Character character) {
-			if(t == Transform) {
-				return;
-			}
-			if(t == null) {
-				//Unset
-				Transform = null;
-				if(Parent != null) {
-					character.FindJoint(Parent).UpdateChilds(character);
-				}
-				for(int i=0; i<Childs.Length; i++) {
-					character.FindJoint(Childs[i]).UpdateParent(character);
-				}
-				Parent = null;
-				Childs = new Transform[0];
-				
-				RemoveVisual();
+		public void SetParent(Character character, Bone parent) {
+			if(parent == null) {
+				Parent = -1;
 			} else {
-				//Set
-				Transform = t;
-				UpdateParent(character);
-				UpdateChilds(character);
-				if(Parent != null) {
-					character.FindJoint(Parent).UpdateChilds(character);
-				}
-				for(int i=0; i<Childs.Length; i++) {
-					character.FindJoint(Childs[i]).UpdateParent(character);
-				}
-
-				CreateVisual();
+				Parent = parent.Index;
 			}
 		}
 
-		private void UpdateParent(Character character) {
-			Parent = null;
-			if(Transform != Transform.root) {
-				FindParent(Transform.parent, character);
+		public Bone GetParent(Character character) {
+			if(Parent == -1) {
+				return null;
+			} else {
+				return character.Bones[Parent];
 			}
 		}
 
-		private void FindParent(Transform t, Character character) {
-			Joint parentJoint = character.FindJoint(t);
-			if(parentJoint != null) {
-				Parent = t;
-				return;
-			}
-			if(t != t.root) {
-				FindParent(t.parent, character);
+		public void RemoveParent() {
+			Parent = -1;
+		}
+
+		public void AddChild(Character character, Bone child) {
+			if(child != null) {
+				System.Array.Resize(ref Childs, Childs.Length+1);
+				Childs[Childs.Length-1] = child.Index;
 			}
 		}
 
-		private void UpdateChilds(Character character) {
-			Childs = new Transform[0];
-			FindChilds(Transform, character);
+		public Bone GetChild(Character character, int index) {
+			return character.Bones[Childs[index]];
+		}
+		
+		public Bone[] GetChilds(Character character) {
+			Bone[] childs = new Bone[Childs.Length];
+			for(int i=0; i<childs.Length; i++) {
+				childs[i] = character.Bones[Childs[i]];
+			}
+			return childs;
 		}
 
-		private void FindChilds(Transform t, Character character) {
-			for(int i=0; i<t.childCount; i++) {
-				Joint childJoint = character.FindJoint(t.GetChild(i));
-				if(childJoint != null) {
-					System.Array.Resize(ref Childs, Childs.Length+1);
-					Childs[Childs.Length-1] = t.GetChild(i);
-				} else {
-					FindChilds(t.GetChild(i), character);
-				}
-			}
+		public void RemoveChilds() {
+			System.Array.Resize(ref Childs, 0);
 		}
 
 		public void SetPosition(Vector3 position) {
 			Transform.OverridePosition(position);
-			Visual.transform.position = position;
+		}
+
+		public void SetRotation(Quaternion rotation) {
+			Transform.OverrideRotation(rotation);
 		}
 
 		public Vector3 GetPosition() {
 			return Transform.position;
+		}
+
+		public Quaternion GetRotation() {
+			return Transform.rotation;
 		}
 
 		public void SetVelocity(Vector3 velocity) {
@@ -184,26 +170,22 @@ public class Character {
 	}
 
 	public void Draw() {
-		for(int i=0; i<Joints.Length; i++) {
-			//Joints[i].RemoveVisual();
-			//Joints[i].CreateVisual();
-			if(Joints[i].Transform != null) {
-				Joints[i].Visual.transform.localScale = JointRadius * Vector3.one;
+		Draw(FindBone(Owner));
+	}
 
-				if(Joints[i].Parent != null) {
-					UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth+0.005f, BoneEndWidth+0.005f, new Color(0.25f, 0.25f, 0.25f, 1f));
-					UnityGL.DrawLine(Joints[i].Parent.position, Joints[i].Transform.position, BoneStartWidth, BoneEndWidth, Color.cyan);
+	private void Draw(Bone bone) {
+		if(bone.Transform != null && bone.Draw) {
+			for(int i=0; i<bone.Childs.Length; i++) {
+				Bone child = bone.GetChild(this, i);
+				if(child.Transform != null && child.Draw) {
+					UnityGL.DrawLine(bone.Transform.position, child.Transform.position, BoneSize, 0f, Color.cyan);
 				}
-
-				UnityGL.DrawArrow(
-					Joints[i].Transform.position,
-					Joints[i].Transform.position + 10f*Joints[i].GetVelocity(),
-					0.75f,
-					0.0075f,
-					0.05f,
-					new Color(0f, 1f, 0f, 0.5f)
-				);
 			}
+			((Material)Resources.Load("Materials/Black", typeof(Material))).SetPass(0);
+			Graphics.DrawMeshNow(Utility.GetPrimitiveMesh(PrimitiveType.Sphere), Matrix4x4.TRS(bone.Transform.position, bone.Transform.rotation, BoneSize*Vector3.one));
+		}
+		for(int i=0; i<bone.Childs.Length; i++) {
+			Draw(bone.GetChild(this, i));
 		}
 	}
 
@@ -217,85 +199,57 @@ public class Character {
 			}
 
 			if(Inspect) {
+				BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					//if(Utility.GUIButton("Detect Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-					//	DetectHierarchy();
-					//}
-					//InspectHierarchy(Owner, 0);
-
-					//Obsolete
-					//JointSmoothing = EditorGUILayout.Slider("Joint Smoothing", JointSmoothing, 0f, 1f);
-					EditorGUILayout.LabelField("Joints");
-					for(int i=0; i<Joints.Length; i++) {
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							EditorGUILayout.BeginHorizontal();
-							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20));
-							Joints[i].SetTransform((Transform)EditorGUILayout.ObjectField(Joints[i].Transform, typeof(Transform), true), this);
-							EditorGUILayout.EndHorizontal();
+					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+						BuildHierarchy();
+					}
+					EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Expand All", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+						for(int i=0; i<Bones.Length; i++) {
+							Bones[i].Expanded = true;
 						}
 					}
-					if(GUILayout.Button("+")) {
-						AddJoint();
+					if(Utility.GUIButton("Collapse All", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+						for(int i=0; i<Bones.Length; i++) {
+							Bones[i].Expanded = false;
+						}
 					}
-					if(GUILayout.Button("-")) {
-						RemoveJoint();
+					EditorGUILayout.EndHorizontal();
+					if(RebuildRequired()) {
+						EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
 					}
-					//
+					InspectHierarchy(FindBone(Owner), 0);
 				}
 			}
 		}
 	}
 
-	/*
-	private void InspectHierarchy(Transform t, int indent) {
-		Bone bone = FindBone(t);
+	private void InspectHierarchy(Bone bone, int indent) {
 		EditorGUILayout.BeginHorizontal();
-		for(int i=0; i<indent; i++) {
-			EditorGUILayout.LabelField("", GUILayout.Width(20));
-		}
-		if(bone == null) {
+		EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
+		if(bone.Transform == null) {
 			EditorGUILayout.LabelField("Bone information missing.");
-			EditorGUILayout.EndHorizontal();
 		} else {
-			if(t.childCount == 0) {
-				bone.Expanded = false;
-			} else {
-				if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
-					bone.Expanded = !bone.Expanded;
-				}
+			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
+				bone.Expanded = !bone.Expanded;
 			}
-
-			EditorGUILayout.BeginVertical();
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField(bone.Transform.name);
-			if(Utility.GUIButton("Edit", Color.white, Color.black, TextAnchor.MiddleLeft, 40, 20)) {
-				bone.Inspect = !bone.Inspect;
+			EditorGUILayout.LabelField(bone.Transform.name, GUILayout.Width(100f), GUILayout.Height(20f));
+			GUILayout.FlexibleSpace();
+			if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, TextAnchor.MiddleLeft, 40f, 20f)) {
+				bone.Draw = !bone.Draw;
 			}
-			EditorGUILayout.EndHorizontal();
-			if(bone.Inspect) {
-				InspectBone(bone);
-			}
-			EditorGUILayout.EndVertical();
-			EditorGUILayout.EndHorizontal();
-
-			if(bone.Expanded) {
-				for(int i=0; i<t.childCount; i++) {
-					InspectHierarchy(t.GetChild(i), indent+1);
+		}
+		EditorGUILayout.EndHorizontal();
+		if(bone.Expanded) {
+			for(int i=0; i<bone.Childs.Length; i++) {
+				Bone child = bone.GetChild(this, i);
+				if(child != null) {
+					InspectHierarchy(bone.GetChild(this, i), indent+1);
 				}
 			}
 		}
 	}
-
-	private void InspectBone(Bone bone) {
-		Utility.SetGUIColor(Color.grey);
-		using(new EditorGUILayout.VerticalScope ("Box")) {
-			Utility.ResetGUIColor();
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				EditorGUILayout.LabelField("INSPECTING");
-			}
-		}
-	}
-	*/
 	#endif
 
 }

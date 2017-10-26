@@ -2,23 +2,34 @@
 
 public class BioAnimation : MonoBehaviour {
 
+	public bool Inspect = false;
+
+	public Transform Root;
+	public Transform[] Joints = new Transform[0];
+
 	public Controller Controller;
 	public Character Character;
 	public Trajectory Trajectory;
 	public PFNN PFNN;
 
+	private float Phase = 0f;
 	private float UnitScale = 100f;
 
 	private enum DrawingMode {Scene, Game};
 
+	private Vector3[] Velocities;
+
 	void Reset() {
-		Trajectory = new Trajectory(transform);
+		Controller = new Controller();
 		Character = new Character(transform);
+		Trajectory = new Trajectory(transform);
+		PFNN = new PFNN();
 	}
 
 	void Awake() {
 		Trajectory.Initialise();
 		PFNN.Initialise();
+		Velocities = new Vector3[Joints.Length];
 	}
 
 	void Start() {
@@ -126,30 +137,30 @@ public class BioAnimation : MonoBehaviour {
 			PFNN.SetInput(Trajectory.GetSampleCount()*9 + i, Trajectory.Points[Trajectory.GetDensity()*i].Bump);
 		}
 
-		//Input Joint Previous Positions / Velocities / Rotations
+		//Input Previous Bone Positions / Velocities
 		Transformation previousRoot = new Transformation(Trajectory.GetPrevious().GetPosition(), Trajectory.GetPrevious().GetRotation());
-		for(int i=0; i<Character.Joints.Length; i++) {
+		for(int i=0; i<Joints.Length; i++) {
 			int o = 10*Trajectory.GetSampleCount();
-			Vector3 pos = Character.Joints[i].GetPosition().RelativePositionTo(previousRoot);
-			Vector3 vel = Character.Joints[i].GetVelocity().RelativeDirectionTo(previousRoot);
-			PFNN.SetInput(o + Character.Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
-			PFNN.SetInput(o + Character.Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
-			PFNN.SetInput(o + Character.Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
-			PFNN.SetInput(o + Character.Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
-			PFNN.SetInput(o + Character.Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
-			PFNN.SetInput(o + Character.Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
+			Vector3 pos = Joints[i].position.RelativePositionTo(previousRoot);
+			Vector3 vel = Velocities[i].RelativeDirectionTo(previousRoot);
+			PFNN.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
+			PFNN.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
+			PFNN.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
+			PFNN.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
+			PFNN.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
+			PFNN.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
 		}
 
 		//Input Trajectory Heights
 		for(int i=0; i<Trajectory.GetSampleCount(); i++) {
-			int o = 10*Trajectory.GetSampleCount() + Character.Joints.Length*3*2;
+			int o = 10*Trajectory.GetSampleCount() + Joints.Length*3*2;
 			PFNN.SetInput(o + Trajectory.GetSampleCount()*0 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].Project(Trajectory.Width/2f).y - currentRoot.Position.y));
 			PFNN.SetInput(o + Trajectory.GetSampleCount()*1 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].GetHeight() - currentRoot.Position.y));
 			PFNN.SetInput(o + Trajectory.GetSampleCount()*2 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].Project(-Trajectory.Width/2f).y - currentRoot.Position.y));
 		}
 
 		//Predict
-		PFNN.Predict(Character.Phase);
+		PFNN.Predict(Phase);
 
 		//Update Past Trajectory
 		for(int i=0; i<Trajectory.GetRootPointIndex(); i++) {
@@ -201,26 +212,23 @@ public class BioAnimation : MonoBehaviour {
 		//Post-Correct Trajectory
 		CollisionChecks(Trajectory.GetRootPointIndex());
 		
-		//Update Posture via Forward Kinematics
-		transform.OverridePosition(newRoot.Position);
-		transform.OverrideRotation(newRoot.Rotation);
-		int opos = 8 + 4*Trajectory.GetRootSampleIndex() + Character.Joints.Length*3*0;
-		int ovel = 8 + 4*Trajectory.GetRootSampleIndex() + Character.Joints.Length*3*1;
-		for(int i=0; i<Character.Joints.Length; i++) {			
+		//Update Posture
+		//TODO: Do not override...
+		Root.OverridePosition(newRoot.Position);
+		Root.OverrideRotation(newRoot.Rotation);
+		int opos = 8 + 4*Trajectory.GetRootSampleIndex() + Joints.Length*3*0;
+		int ovel = 8 + 4*Trajectory.GetRootSampleIndex() + Joints.Length*3*1;
+		for(int i=0; i<Joints.Length; i++) {			
 			Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
 			Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
-
-			Character.Joints[i].SetPosition(
-				Vector3.Lerp(Character.Joints[i].GetPosition().RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot)
-			);
-			Character.Joints[i].SetVelocity(
-				velocity.RelativeDirectionFrom(currentRoot)
-			);
+			Joints[i].OverridePosition(Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot));
+			Joints[i].OverrideRotation(Quaternion.identity); //TODO: Compute mesh rotations
+			Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 		}
 		//Character.ForwardKinematics();
 
 		/* Update Phase */
-		Character.Phase = Mathf.Repeat(Character.Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
+		Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
 
 		//PFNN.Finish();
 	}
@@ -230,7 +238,6 @@ public class BioAnimation : MonoBehaviour {
 			float safety = 0.5f;
 			Vector3 previousPos = Trajectory.Points[i-1].GetPosition();
 			Vector3 currentPos = Trajectory.Points[i].GetPosition();
-			
 			Vector3 testPos = previousPos + safety*(currentPos-previousPos).normalized;
 			Vector3 projectedPos = Utility.ProjectCollision(previousPos, testPos, LayerMask.GetMask("Obstacles"));
 			if(testPos != projectedPos) {
@@ -240,9 +247,40 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
+	public void SetRoot(Transform root) {
+		Root = root;
+	}
+
+	public void SetJoint(int index, Transform t) {
+		if(index < 0 || index >= Joints.Length) {
+			return;
+		}
+		Joints[index] = t;
+	}
+
+	public void SetJointCount(int count) {
+		count = Mathf.Max(0, count);
+		if(Joints.Length != count) {
+			System.Array.Resize(ref Joints, count);
+		}
+	}
+
 	void OnRenderObject() {
 		Trajectory.Draw();
 		Character.Draw();
+		for(int i=0; i<Character.Bones.Length; i++) {
+			Character.Bone bone = Character.Bones[i];
+			if(bone.Draw) {
+				UnityGL.DrawArrow(
+					bone.Transform.position,
+					bone.Transform.position + 10f*bone.GetVelocity(),
+					0.75f,
+					0.0075f,
+					0.05f,
+					new Color(0f, 1f, 0f, 0.5f)
+				);
+			}
+		}
 	}
 
 	void OnDrawGizmos() {
@@ -250,5 +288,5 @@ public class BioAnimation : MonoBehaviour {
 			OnRenderObject();
 		}
 	}
-
+	
 }

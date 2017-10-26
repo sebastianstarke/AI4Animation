@@ -34,6 +34,10 @@ public class PFNN {
 
 	//private bool[] Output;
 
+	public PFNN() {
+		
+	}
+
 	public void Initialise() {
 		if(Parameters == null) {
 			Debug.Log("Building PFNN failed because no parameters were loaded.");

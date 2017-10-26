@@ -6,15 +6,15 @@ using UnityEditor;
 [System.Serializable]
 public class Trajectory {
 
-	public bool Inspect = false;
-	
 	public Transform Owner = null;
+
+	public bool Inspect = false;
 
 	public float Width = 0.5f;
 
 	public float TargetSmoothing = 0.25f;
 	public float GaitSmoothing = 0.25f;
-	public float CorrectionSmoothing = 0.5f;
+	public float CorrectionSmoothing = 0.25f;
 
 	public Vector3 TargetDirection;
 	public Vector3 TargetVelocity;
@@ -27,6 +27,11 @@ public class Trajectory {
 
 	public Trajectory(Transform owner) {
 		Owner = owner;
+		Inspect = false;
+		Width = 0.5f;
+		TargetSmoothing = 0.25f;
+		GaitSmoothing = 0.25f;
+		CorrectionSmoothing = 0.25f;
 		Initialise();
 	}
 

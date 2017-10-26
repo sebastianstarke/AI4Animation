@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public static class Utility {
 
@@ -12,6 +13,8 @@ public static class Utility {
 	public static Color Grey = Color.grey;
 	public static Color Orange = new Color(1f, 0.5f, 0f, 1f);
 
+	private static Dictionary<PrimitiveType, Mesh> primitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
+
 	public static void SetFPS(int fps) {
 		#if UNITY_EDITOR
 		QualitySettings.vSyncCount = 0;
@@ -19,6 +22,24 @@ public static class Utility {
 		QualitySettings.vSyncCount = 1;
 		#endif
 		Application.targetFrameRate = fps;
+	}
+
+	public static Mesh GetPrimitiveMesh(PrimitiveType type) {
+		if (!primitiveMeshes.ContainsKey(type)) {
+			CreatePrimitiveMesh(type);
+		}
+
+		return primitiveMeshes[type];
+	}
+
+	private static Mesh CreatePrimitiveMesh(PrimitiveType type) {
+		GameObject gameObject = GameObject.CreatePrimitive(type);
+		gameObject.GetComponent<MeshRenderer>().enabled = false;
+		Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+		Destroy(gameObject);
+
+		primitiveMeshes[type] = mesh;
+		return mesh;
 	}
 
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
