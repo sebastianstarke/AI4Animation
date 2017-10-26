@@ -37,7 +37,9 @@ public class BioAnimation_Editor : Editor {
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 						Target.GaitTransition = EditorGUILayout.Slider("Gait Transition", Target.GaitTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
-						Target.SetRoot((Transform)EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true));
+						EditorGUI.BeginDisabledGroup(true);
+						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
+						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {

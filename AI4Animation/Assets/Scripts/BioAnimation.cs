@@ -8,12 +8,8 @@ public class BioAnimation : MonoBehaviour {
 	public float GaitTransition = 0.25f;
 	public float TrajectoryCorrection = 0.75f;
 
-	public Vector3 TargetDirection;
-	public Vector3 TargetVelocity;
-
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
-	public Vector3[] Velocities = new Vector3[0];
 
 	public Controller Controller;
 	public Character Character;
@@ -21,11 +17,16 @@ public class BioAnimation : MonoBehaviour {
 	public PFNN PFNN;
 
 	private float Phase = 0f;
+	private Vector3 TargetDirection;
+	private Vector3 TargetVelocity;
+	private Vector3[] Velocities = new Vector3[0];
+
 	private float UnitScale = 100f;
 
 	private enum DrawingMode {Scene, Game};
 
 	void Reset() {
+		Root = transform;
 		Controller = new Controller();
 		Character = new Character(transform);
 		Trajectory = new Trajectory();
@@ -33,9 +34,10 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void Awake() {
-		TargetDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
+		TargetDirection = GetRootDirection();
 		TargetVelocity = Vector3.zero;
-		Trajectory.Initialise(transform.position, TargetDirection);
+		Velocities = new Vector3[Joints.Length];
+		Trajectory.Initialise(GetRootPosition(), GetRootDirection());
 		PFNN.Initialise();
 	}
 
@@ -127,8 +129,8 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Trajectory Positions / Directions
 		for(int i=0; i<Trajectory.GetSampleCount(); i++) {
-			Vector3 pos = Trajectory.Points[Trajectory.GetDensity()*i].GetPosition().RelativePositionTo(currentRoot);
-			Vector3 dir = Trajectory.Points[Trajectory.GetDensity()*i].GetDirection().RelativeDirectionTo(currentRoot);
+			Vector3 pos = Trajectory.GetSample(i).GetPosition().RelativePositionTo(currentRoot);
+			Vector3 dir = Trajectory.GetSample(i).GetDirection().RelativeDirectionTo(currentRoot);
 			PFNN.SetInput(Trajectory.GetSampleCount()*0 + i, UnitScale * pos.x);
 			PFNN.SetInput(Trajectory.GetSampleCount()*1 + i, UnitScale * pos.z);
 			PFNN.SetInput(Trajectory.GetSampleCount()*2 + i, dir.x);
@@ -137,12 +139,12 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Trajectory Gaits
 		for (int i=0; i<Trajectory.GetSampleCount(); i++) {
-			PFNN.SetInput(Trajectory.GetSampleCount()*4 + i, Trajectory.Points[Trajectory.GetDensity()*i].Stand);
-			PFNN.SetInput(Trajectory.GetSampleCount()*5 + i, Trajectory.Points[Trajectory.GetDensity()*i].Walk);
-			PFNN.SetInput(Trajectory.GetSampleCount()*6 + i, Trajectory.Points[Trajectory.GetDensity()*i].Jog);
-			PFNN.SetInput(Trajectory.GetSampleCount()*7 + i, Trajectory.Points[Trajectory.GetDensity()*i].Crouch);
-			PFNN.SetInput(Trajectory.GetSampleCount()*8 + i, Trajectory.Points[Trajectory.GetDensity()*i].Jump);
-			PFNN.SetInput(Trajectory.GetSampleCount()*9 + i, Trajectory.Points[Trajectory.GetDensity()*i].Bump);
+			PFNN.SetInput(Trajectory.GetSampleCount()*4 + i, Trajectory.GetSample(i).Stand);
+			PFNN.SetInput(Trajectory.GetSampleCount()*5 + i, Trajectory.GetSample(i).Walk);
+			PFNN.SetInput(Trajectory.GetSampleCount()*6 + i, Trajectory.GetSample(i).Jog);
+			PFNN.SetInput(Trajectory.GetSampleCount()*7 + i, Trajectory.GetSample(i).Crouch);
+			PFNN.SetInput(Trajectory.GetSampleCount()*8 + i, Trajectory.GetSample(i).Jump);
+			PFNN.SetInput(Trajectory.GetSampleCount()*9 + i, Trajectory.GetSample(i).Bump);
 		}
 
 		//Input Previous Bone Positions / Velocities
@@ -162,9 +164,9 @@ public class BioAnimation : MonoBehaviour {
 		//Input Trajectory Heights
 		for(int i=0; i<Trajectory.GetSampleCount(); i++) {
 			int o = 10*Trajectory.GetSampleCount() + Joints.Length*3*2;
-			PFNN.SetInput(o + Trajectory.GetSampleCount()*0 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].SampleSide(Trajectory.Width/2f).y - currentRoot.Position.y));
-			PFNN.SetInput(o + Trajectory.GetSampleCount()*1 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].GetHeight() - currentRoot.Position.y));
-			PFNN.SetInput(o + Trajectory.GetSampleCount()*2 + i, UnitScale * (Trajectory.Points[Trajectory.GetDensity()*i].SampleSide(-Trajectory.Width/2f).y - currentRoot.Position.y));
+			PFNN.SetInput(o + Trajectory.GetSampleCount()*0 + i, UnitScale * (Trajectory.GetSample(i).SampleSide(Trajectory.Width/2f).y - currentRoot.Position.y));
+			PFNN.SetInput(o + Trajectory.GetSampleCount()*1 + i, UnitScale * (Trajectory.GetSample(i).GetHeight() - currentRoot.Position.y));
+			PFNN.SetInput(o + Trajectory.GetSampleCount()*2 + i, UnitScale * (Trajectory.GetSample(i).SampleSide(-Trajectory.Width/2f).y - currentRoot.Position.y));
 		}
 
 		//Predict
@@ -264,10 +266,6 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
-	public void SetRoot(Transform root) {
-		Root = root;
-	}
-
 	public void SetJoint(int index, Transform t) {
 		if(index < 0 || index >= Joints.Length) {
 			return;
@@ -278,31 +276,48 @@ public class BioAnimation : MonoBehaviour {
 	public void SetJointCount(int count) {
 		count = Mathf.Max(0, count);
 		if(Joints.Length != count) {
-			Debug.Log("FAIL");
 			System.Array.Resize(ref Joints, count);
-			System.Array.Resize(ref Velocities, count);
 		}
 	}
 
+	public Vector3 GetRootPosition() {
+		return Root.position;
+	}
+
+	public Vector3 GetRootDirection() {
+		return new Vector3(Root.forward.x, 0f, Root.forward.z);
+	}
+
 	void OnRenderObject() {
-		Trajectory.Draw();
 		Color transparentTargetDirection = new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f);
 		Color transparentTargetVelocity = new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f);
+
+		if(!Application.isPlaying) {
+			if(Trajectory.GetRoot().GetPosition() != GetRootPosition() || Trajectory.GetRoot().GetDirection() != GetRootDirection()) {
+				Trajectory.Initialise(GetRootPosition(), GetRootDirection());
+			}
+			UnityGL.DrawLine(GetRootPosition(), GetRootPosition() + GetRootDirection(), 0.05f, 0f, transparentTargetDirection);
+		}
+		Trajectory.Draw();
+
 		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, transparentTargetDirection);
 		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
+
 		Character.Draw();
-		for(int i=0; i<Joints.Length; i++) {
-			Character.Bone bone = Character.FindBone(Joints[i]);
-			if(bone != null) {
-				if(bone.Draw) {
-					UnityGL.DrawArrow(
-						Joints[i].position,
-						Joints[i].position + 10f*Velocities[i],
-						0.75f,
-						0.0075f,
-						0.05f,
-						new Color(0f, 1f, 0f, 0.5f)
-					);
+		if(Application.isPlaying) {
+			for(int i=0; i<Joints.Length; i++) {
+				Character.Bone bone = Character.FindBone(Joints[i]);
+				if(bone != null) {
+					if(bone.Draw) {
+						UnityGL.DrawArrow(
+							Joints[i].position,
+							Joints[i].position + 10f*Velocities[i],
+							0.75f,
+							0.0075f,
+							0.05f,
+							new Color(0f, 1f, 0f, 0.5f)
+						);
+					}
 				}
 			}
 		}
