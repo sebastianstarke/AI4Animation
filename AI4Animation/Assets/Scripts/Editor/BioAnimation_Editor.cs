@@ -25,7 +25,7 @@ public class BioAnimation_Editor : Editor {
 		}
 
 		private void Inspector() {
-			Utility.SetGUIColor(Color.grey);
+			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				if(GUILayout.Button("Animation")) {
@@ -33,10 +33,21 @@ public class BioAnimation_Editor : Editor {
 				}
 
 				if(Target.Inspect) {
-					Target.SetRoot((Transform)EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true));
-					Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-					for(int i=0; i<Target.Joints.Length; i++) {
-						Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField("Joint " + (i+1), Target.Joints[i], typeof(Transform), true));
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
+						Target.GaitTransition = EditorGUILayout.Slider("Gait Transition", Target.GaitTransition, 0f, 1f);
+						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
+						Target.SetRoot((Transform)EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true));
+						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
+						for(int i=0; i<Target.Joints.Length; i++) {
+							if(Target.Joints[i] != null) {
+								Utility.SetGUIColor(Utility.Green);
+							} else {
+								Utility.SetGUIColor(Utility.Red);
+							}
+							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField("Joint " + (i+1), Target.Joints[i], typeof(Transform), true));
+							Utility.ResetGUIColor();
+						}
 					}
 				}
 			}

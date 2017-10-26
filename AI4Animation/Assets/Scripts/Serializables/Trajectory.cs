@@ -6,18 +6,9 @@ using UnityEditor;
 [System.Serializable]
 public class Trajectory {
 
-	public Transform Owner = null;
-
 	public bool Inspect = false;
 
 	public float Width = 0.5f;
-
-	public float TargetSmoothing = 0.25f;
-	public float GaitSmoothing = 0.25f;
-	public float CorrectionSmoothing = 0.25f;
-
-	public Vector3 TargetDirection;
-	public Vector3 TargetVelocity;
 
 	public Point[] Points;
 
@@ -25,28 +16,17 @@ public class Trajectory {
 	private const int FuturePoints = 5;
 	private const int Density = 10;
 
-	public Trajectory(Transform owner) {
-		Owner = owner;
+	public Trajectory() {
 		Inspect = false;
 		Width = 0.5f;
-		TargetSmoothing = 0.25f;
-		GaitSmoothing = 0.25f;
-		CorrectionSmoothing = 0.25f;
-		Initialise();
+		Initialise(Vector3.zero, Vector3.forward);
 	}
 
-	public void Initialise() {
-		TargetDirection = new Vector3(Owner.forward.x, 0f, Owner.forward.z);
-		TargetVelocity = Vector3.zero;
+	public void Initialise(Vector3 position, Vector3 direction) {
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<GetPointCount(); i++) {
-			Points[i] = new Point(Owner.position, TargetDirection);
+			Points[i] = new Point(position, direction);
 		}
-	}
-
-	public void UpdateTarget(Vector3 move, float turn) {
-		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn*60f, Vector3.up) * GetRoot().GetDirection(), TargetSmoothing);
-		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, TargetSmoothing);
 	}
 
 	public int GetPastPoints() {
@@ -97,7 +77,7 @@ public class Trajectory {
 		public float Stand, Walk, Jog, Crouch, Jump, Bump;
 
 		public Point(Vector3 position, Vector3 direction) {
-			SetPosition(position, true);
+			SetPosition(position, false);
 			SetDirection(direction);
 
 			Stand = 1f;
@@ -180,12 +160,6 @@ public class Trajectory {
 				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, Utility.Black);
 			}
 		}
-
-		//Target
-		Color transparentTargetDirection = new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f);
-		Color transparentTargetVelocity = new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f);
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, transparentTargetDirection);
-		UnityGL.DrawLine(GetRoot().GetPosition(), GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
 	}
 
 	#if UNITY_EDITOR
@@ -200,9 +174,6 @@ public class Trajectory {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Width = EditorGUILayout.FloatField("Width", Width);
-					TargetSmoothing = EditorGUILayout.Slider("Target Smoothing", TargetSmoothing, 0f, 1f);
-					GaitSmoothing = EditorGUILayout.Slider("Gait Smoothing", GaitSmoothing, 0f, 1f);
-					CorrectionSmoothing = EditorGUILayout.Slider("Correction Smoothing", CorrectionSmoothing, 0f, 1f);
 				}
 			}
 		}

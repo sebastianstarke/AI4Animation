@@ -4,6 +4,13 @@ public class BioAnimation : MonoBehaviour {
 
 	public bool Inspect = false;
 
+	public float TargetBlending = 0.25f;
+	public float GaitTransition = 0.25f;
+	public float TrajectoryCorrection = 0.75f;
+
+	public Vector3 TargetDirection;
+	public Vector3 TargetVelocity;
+
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
 
@@ -22,12 +29,14 @@ public class BioAnimation : MonoBehaviour {
 	void Reset() {
 		Controller = new Controller();
 		Character = new Character(transform);
-		Trajectory = new Trajectory(transform);
+		Trajectory = new Trajectory();
 		PFNN = new PFNN();
 	}
 
 	void Awake() {
-		Trajectory.Initialise();
+		TargetDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
+		TargetVelocity = Vector3.zero;
+		Trajectory.Initialise(transform.position, TargetDirection);
 		PFNN.Initialise();
 		Velocities = new Vector3[Joints.Length];
 	}
@@ -42,27 +51,28 @@ public class BioAnimation : MonoBehaviour {
 		}
 		
 		//Update Target Direction / Velocity
-		Trajectory.UpdateTarget(Controller.QueryMove(), Controller.QueryTurn());
+		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.GetRoot().GetDirection(), TargetBlending);
+		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 		//TODO: Update strafe etc.
 		
 		//Update Gait
-		if(Vector3.Magnitude(Trajectory.TargetVelocity) < 0.1f) {
-			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(Trajectory.TargetVelocity) / 0.1f, 0.0f, 1.0f);
-			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 0f, Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, 0f, Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), Trajectory.GaitSmoothing);
-			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, Trajectory.GaitSmoothing);
+		if(Vector3.Magnitude(TargetVelocity) < 0.1f) {
+			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f);
+			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, GaitTransition);
+			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 0f, GaitTransition);
+			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, 0f, GaitTransition);
+			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), GaitTransition);
+			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), GaitSmoothing);
+			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, GaitTransition);
 		} else {
-			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(Trajectory.TargetVelocity) / 0.1f, 0.0f, 1.0f);
-			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 1f-Controller.QueryJog(), Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, Controller.QueryJog(), Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), Trajectory.GaitSmoothing);
-			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), Trajectory.GaitSmoothing);
-			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, Trajectory.GaitSmoothing);
+			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f);
+			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, GaitTransition);
+			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 1f-Controller.QueryJog(), GaitTransition);
+			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, Controller.QueryJog(), GaitTransition);
+			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), GaitTransition);
+			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), GaitSmoothing);
+			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, GaitTransition);
 		}
 		//TODO: Update gait for jog, crouch, ...
 
@@ -94,10 +104,10 @@ public class BioAnimation : MonoBehaviour {
 			float rescale = 1f / (Trajectory.GetPointCount() - (Trajectory.GetRootPointIndex() + 1f));
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				vel_boost * rescale * Trajectory.TargetVelocity,
+				vel_boost * rescale * TargetVelocity,
 				scale_pos);
 				
-			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), Trajectory.TargetDirection, scale_dir));
+			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
 			Trajectory.Points[i].Stand = Trajectory.GetRoot().Stand;
 			Trajectory.Points[i].Walk = Trajectory.GetRoot().Walk;
@@ -196,7 +206,7 @@ public class BioAnimation : MonoBehaviour {
 				Utility.Interpolate(
 					Trajectory.Points[i].GetPosition(),
 					new Vector3(posX / UnitScale, 0f, posZ / UnitScale).RelativePositionFrom(newRoot),
-					1f - Trajectory.CorrectionSmoothing
+					TrajectoryCorrection
 					),
 					true
 				);
@@ -204,7 +214,7 @@ public class BioAnimation : MonoBehaviour {
 				Utility.Interpolate(
 					Trajectory.Points[i].GetDirection(),
 					new Vector3(dirX, 0f, dirZ).normalized.RelativeDirectionFrom(newRoot),
-					1f - Trajectory.CorrectionSmoothing
+					TrajectoryCorrection
 					)
 				);
 		}
@@ -267,6 +277,10 @@ public class BioAnimation : MonoBehaviour {
 
 	void OnRenderObject() {
 		Trajectory.Draw();
+		Color transparentTargetDirection = new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f);
+		Color transparentTargetVelocity = new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f);
+		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, transparentTargetDirection);
+		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
 		Character.Draw();
 		for(int i=0; i<Character.Bones.Length; i++) {
 			Character.Bone bone = Character.Bones[i];

@@ -165,6 +165,11 @@ public static class UnityGL {
 		DrawLine(pivot, end, tipWidth, 0f, color);
 	}
 
+	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {
+		material.SetPass(0);
+		Graphics.DrawMeshNow(Utility.GetPrimitiveMesh(PrimitiveType.Sphere), Matrix4x4.TRS(position, rotation, scale));
+	}
+
 	private static Camera GetCamera() {
 		if(Camera.current != null) {
 			return Camera.current;

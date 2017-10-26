@@ -181,8 +181,13 @@ public class Character {
 					UnityGL.DrawLine(bone.Transform.position, child.Transform.position, BoneSize, 0f, Color.cyan);
 				}
 			}
-			((Material)Resources.Load("Materials/Black", typeof(Material))).SetPass(0);
-			Graphics.DrawMeshNow(Utility.GetPrimitiveMesh(PrimitiveType.Sphere), Matrix4x4.TRS(bone.Transform.position, bone.Transform.rotation, BoneSize*Vector3.one));
+			UnityGL.DrawMesh(
+				Utility.GetPrimitiveMesh(PrimitiveType.Sphere),
+				bone.Transform.position,
+				bone.Transform.rotation,
+				BoneSize*Vector3.one,
+				(Material)Resources.Load("Materials/Black", typeof(Material))
+			);
 		}
 		for(int i=0; i<bone.Childs.Length; i++) {
 			Draw(bone.GetChild(this, i));
@@ -199,8 +204,8 @@ public class Character {
 			}
 
 			if(Inspect) {
-				BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
+					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
 						BuildHierarchy();
 					}
