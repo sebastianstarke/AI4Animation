@@ -445,13 +445,17 @@ public class BVHViewer : MonoBehaviour {
 
 	private void DrawCapture() {
 		Keyframe frame = CurrentKeyframe;
-		float step = 2f;
-		for(float i = 0f; i<=TotalTime; i+=step) {
+		float step = 1f;
+		for(int i=2; i<=TotalFrames; i++) {
+			Gizmos.color = Color.magenta;
+			Gizmos.DrawLine(GetKeyframe(i-1).Positions[0], GetKeyframe(i).Positions[0]);
+		}
+		for(float i=0f; i<=TotalTime; i+=step) {
 			ShowKeyframe(i);
 			Color boneColor = Color.Lerp(Color.red, Color.green, i/TotalTime);
-			boneColor.a = 0.25f;
+			boneColor.a = 1f/3f;
 			Color jointColor = Color.black;
-			jointColor.a = 0.25f;
+			jointColor.a = 1f/3f;
 			DrawSkeleton(transform, boneColor, jointColor);
 		}
 		ShowKeyframe(frame);

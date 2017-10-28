@@ -113,7 +113,7 @@ public static class UnityGL {
 	public static void Start() {
 		Initialise();
 		if(Drawing) {
-			Debug.Log("UnityGL has not been finished yet.");
+			Debug.Log("Drawing has not been finished yet.");
 		} else {
 			ViewPosition = GetCamera().transform.position;
 			ViewRotation = GetCamera().transform.rotation;
@@ -128,12 +128,13 @@ public static class UnityGL {
 		} else {
 			ViewPosition = Vector3.zero;
 			ViewRotation = Quaternion.identity;
-			Debug.Log("UnityGL has not been started yet.");
+			Debug.Log("Drawing has not been started yet.");
 		}
 	}
 
 	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.LINES);
@@ -144,6 +145,7 @@ public static class UnityGL {
 
 	public static void DrawLine(Vector3 start, Vector3 end, Color startColor, Color endColor) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.LINES);
@@ -155,6 +157,7 @@ public static class UnityGL {
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color startColor, Color endColor) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
@@ -172,6 +175,7 @@ public static class UnityGL {
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
@@ -188,6 +192,7 @@ public static class UnityGL {
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color startColor, Color endColor) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
@@ -205,6 +210,7 @@ public static class UnityGL {
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
@@ -221,6 +227,7 @@ public static class UnityGL {
 
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.TRIANGLES);
@@ -232,6 +239,7 @@ public static class UnityGL {
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.TRIANGLES);
@@ -245,6 +253,7 @@ public static class UnityGL {
 
 	public static void DrawSphere(Vector3 center, float radius, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.TRIANGLES);
@@ -265,6 +274,7 @@ public static class UnityGL {
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		if(tipPivot < 0f || tipPivot > 1f) {
@@ -278,6 +288,7 @@ public static class UnityGL {
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {
 		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
 		SetProgram(PROGRAM.NONE);
