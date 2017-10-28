@@ -27,6 +27,7 @@ public class BVHViewer_Editor : Editor {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 
 					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Target.UnitScale = EditorGUILayout.FloatField("Unit Scale", Target.UnitScale);
 						EditorGUILayout.BeginHorizontal();
 						EditorGUILayout.LabelField("Path", GUILayout.Width(30));
 						Target.Path = EditorGUILayout.TextField(Target.Path);

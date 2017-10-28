@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class BVHViewer : MonoBehaviour {
 
+	public float UnitScale = 10f;
 	public string Path = string.Empty;
 
 	private Transform[] Bones = new Transform[0];
@@ -20,8 +21,6 @@ public class BVHViewer : MonoBehaviour {
 	private bool Playing = false;
 
 	private bool ShowCapture = false;
-
-	private const float UnitScale = 10f;
 
 	public BVHViewer() {
 		EditorApplication.update += Update;
@@ -135,7 +134,7 @@ public class BVHViewer : MonoBehaviour {
 		//Build Keyframes
 		System.Array.Resize(ref Keyframes, TotalFrames);
 		for(int i=0; i<TotalFrames; i++) {
-			Keyframes[i] = new Keyframe(Bones, zero, channels, motions[i], i+1, i*FrameTime);
+			Keyframes[i] = new Keyframe(Bones, zero, channels, motions[i], i+1, i*FrameTime, UnitScale);
 		}
 
 		//Load First Keyframe
@@ -388,7 +387,7 @@ public class BVHViewer : MonoBehaviour {
 		public Vector3[] Positions;
 		public Quaternion[] Rotations;
 
-		public Keyframe(Transform[] bones, List<Transformation> zero, List<int[]> channels, float[] motion, int index, float timestamp) {
+		public Keyframe(Transform[] bones, List<Transformation> zero, List<int[]> channels, float[] motion, int index, float timestamp, float unitScale) {
 			Index = index;
 			Timestamp = timestamp;
 			Positions = new Vector3[bones.Length];
@@ -402,7 +401,7 @@ public class BVHViewer : MonoBehaviour {
 						GetAngleAxis(motion[channel+3], channels[i][4]) *
 						GetAngleAxis(motion[channel+4], channels[i][5]) *
 						GetAngleAxis(motion[channel+5], channels[i][6]);
-					bones[i].localPosition = position / UnitScale;
+					bones[i].localPosition = position / unitScale;
 					bones[i].localRotation = rotation;
 					channel += 6;
 				} else {
@@ -410,7 +409,7 @@ public class BVHViewer : MonoBehaviour {
 						GetAngleAxis(motion[channel+0], channels[i][1]) *
 						GetAngleAxis(motion[channel+1], channels[i][2]) *
 						GetAngleAxis(motion[channel+2], channels[i][3]);
-					bones[i].localPosition = zero[i].Position / UnitScale;
+					bones[i].localPosition = zero[i].Position / unitScale;
 					bones[i].localRotation = zero[i].Rotation * rotation;
 					channel += 3;
 				}
