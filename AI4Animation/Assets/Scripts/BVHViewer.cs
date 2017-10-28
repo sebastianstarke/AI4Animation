@@ -23,10 +23,10 @@ public class BVHViewer : MonoBehaviour {
 	private bool ShowCapture = false;
 
 	public BVHViewer() {
-		EditorApplication.update += Update;
+		EditorApplication.update += EditorUpdate;
 	}
 
-	public void Update() {
+	public void EditorUpdate() {
 		if(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) {
 			Unload();
 			return;

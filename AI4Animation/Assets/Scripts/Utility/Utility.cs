@@ -190,9 +190,9 @@ public static class Utility {
 
 	public static float GetHeight(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return hit.point.y;
@@ -203,9 +203,9 @@ public static class Utility {
 
 	public static float GetRise(float x, float z, LayerMask mask) {
 		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
+		bool intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.up, out hit, mask);
 		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+			intersection = Physics.Raycast(new Vector3(x,1f,z), Vector3.down, out hit, mask);
 		}
 		if(intersection) {
 			return Vector3.Angle(hit.normal, Vector3.up) / 90f;

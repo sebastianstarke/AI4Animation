@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEditor;
 
 public static class UnityGL {
 
@@ -154,8 +152,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
 
 		GL.Color(startColor);
         GL.Vertex(start+orthoStart);
@@ -171,8 +169,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);
@@ -187,8 +185,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
 
 		GL.Color(startColor);
         GL.Vertex(start+orthoStart);
@@ -204,8 +202,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);
@@ -233,8 +231,8 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius * (GetCamera().transform.rotation * CirclePoints[i]));
-			GL.Vertex(center + radius * (GetCamera().transform.rotation * CirclePoints[i+1]));
+			GL.Vertex(center + radius * (Camera.current.transform.rotation * CirclePoints[i]));
+			GL.Vertex(center + radius * (Camera.current.transform.rotation * CirclePoints[i+1]));
 		}
 	}
 
@@ -245,13 +243,11 @@ public static class UnityGL {
 		SetProgram(PROGRAM.TRIANGLES);
         GL.Color(color);
 		int index = 0;
-		for(int i=0; i<SphereResolution; i++){ // U-points
-			for(int j=0; j<SphereResolution; j++){ // V-points
-				// Output the first triangle of this grid square
+		for(int i=0; i<SphereResolution; i++) {
+			for(int j=0; j<SphereResolution; j++) {
 				GL.Vertex(center + radius*SpherePoints[index+0]);
 				GL.Vertex(center + radius*SpherePoints[index+2]);
 				GL.Vertex(center + radius*SpherePoints[index+1]);
-				// Output the other triangle of this grid square
 				GL.Vertex(center + radius*SpherePoints[index+3]);
 				GL.Vertex(center + radius*SpherePoints[index+1]);
 				GL.Vertex(center + radius*SpherePoints[index+2]);
