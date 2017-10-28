@@ -28,10 +28,8 @@ public class BVHViewer : MonoBehaviour {
 	}
 
 	public void Update() {
-		if(EditorApplication.isCompiling) {
+		if(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) {
 			Unload();
-		}
-		if(Application.isPlaying) {
 			return;
 		}
 		if(Playing) {
@@ -147,9 +145,10 @@ public class BVHViewer : MonoBehaviour {
 	}
 
 	public void Unload() {
-		if(Application.isPlaying) {
+		if(!Loaded) {
 			return;
 		}
+		
 		transform.name = "Root";
 		while(transform.childCount > 0) {
 			DestroyImmediate(transform.GetChild(0).gameObject);
