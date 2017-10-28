@@ -18,6 +18,9 @@ public static class UnityGL {
 
 	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
 
+	private static Vector3 ViewPosition = Vector3.zero;
+	private static Quaternion ViewRotation = Quaternion.identity;
+
 	private static void Initialise() {
 		if(!Initialised) {
 			CreateMaterial();
@@ -112,6 +115,8 @@ public static class UnityGL {
 		if(Drawing) {
 			Debug.Log("UnityGL has not been finished yet.");
 		} else {
+			ViewPosition = GetCamera().transform.position;
+			ViewRotation = GetCamera().transform.rotation;
 			Drawing = true;
 		}
 	}
@@ -121,6 +126,8 @@ public static class UnityGL {
 			SetProgram(PROGRAM.NONE);
 			Drawing = false;
 		} else {
+			ViewPosition = Vector3.zero;
+			ViewRotation = Quaternion.identity;
 			Debug.Log("UnityGL has not been started yet.");
 		}
 	}
@@ -152,8 +159,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
 		GL.Color(startColor);
         GL.Vertex(start+orthoStart);
@@ -169,8 +176,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);
@@ -185,8 +192,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
 		GL.Color(startColor);
         GL.Vertex(start+orthoStart);
@@ -202,8 +209,8 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.QUADS);
 		Vector3 dir = (end-start);
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - Camera.current.transform.position)) * dir).normalized;
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - Camera.current.transform.position)) * dir).normalized;
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);
@@ -231,8 +238,8 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius * (Camera.current.transform.rotation * CirclePoints[i]));
-			GL.Vertex(center + radius * (Camera.current.transform.rotation * CirclePoints[i+1]));
+			GL.Vertex(center + radius * (ViewRotation * CirclePoints[i]));
+			GL.Vertex(center + radius * (ViewRotation * CirclePoints[i+1]));
 		}
 	}
 
