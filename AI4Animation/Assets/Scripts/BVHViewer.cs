@@ -34,9 +34,9 @@ public class BVHViewer : MonoBehaviour {
 		}
 		if(Playing) {
 			//Debug.Log(Time.deltaTime);
-			PlayTime += Timescale*Mathf.Min(Time.deltaTime, 1f/30f);
-			if(PlayTime > TotalTime-FrameTime) {
-				PlayTime -= (TotalTime-FrameTime);
+			PlayTime += Timescale*Time.deltaTime;
+			if(PlayTime > TotalTime) {
+				PlayTime -= TotalTime;
 			}
 			ShowKeyframe(PlayTime);
 		}
@@ -148,7 +148,7 @@ public class BVHViewer : MonoBehaviour {
 		if(!Loaded) {
 			return;
 		}
-		
+
 		transform.name = "Root";
 		while(transform.childCount > 0) {
 			DestroyImmediate(transform.GetChild(0).gameObject);
@@ -288,7 +288,7 @@ public class BVHViewer : MonoBehaviour {
 	}
 
 	public Keyframe GetKeyframe(float time) {
-		if(time < 0f || time > TotalTime - FrameTime) {
+		if(time < 0f || time > TotalTime) {
 			Debug.Log("Please specify a time between 0 and " + TotalTime + ".");
 			return null;
 		}
