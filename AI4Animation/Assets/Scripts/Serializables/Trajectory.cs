@@ -21,13 +21,13 @@ public class Trajectory {
 		Width = 0.5f;
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point(Vector3.zero, Vector3.forward);
+			Points[i] = new Point();
 		}
 	}
 
 	public void Initialise(Vector3 position, Vector3 direction) {
 		for(int i=0; i<Points.Length; i++) {
-			Points[i].SetPosition(position, true);
+			Points[i].SetPosition(position);
 			Points[i].SetDirection(direction);
 			Points[i].Stand = 1f;
 			Points[i].Walk = 0f;
@@ -85,9 +85,9 @@ public class Trajectory {
 
 		public float Stand, Walk, Jog, Crouch, Jump, Bump;
 
-		public Point(Vector3 position, Vector3 direction) {
-			Position = position;
-			Direction = direction;
+		public Point() {
+			Position = Vector3.zero;
+			Direction = Vector3.forward;
 			Stand = 1f;
 			Walk = 0f;
 			Jog = 0f;
@@ -96,12 +96,10 @@ public class Trajectory {
 			Bump = 0f;
 		}
 
-		public void SetPosition(Vector3 position, bool recalculateHeight) {
+		public void SetPosition(Vector3 position) {
 			Position = position;
-			if(recalculateHeight) {
-				Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
-				Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
-			}
+			Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
 		}
 
 		public Vector3 GetPosition() {
@@ -137,6 +135,7 @@ public class Trajectory {
 	}
 
 	public void Draw() {
+		UnityGL.Start();
 		int step = Density;
 
 		//Connections
@@ -172,6 +171,7 @@ public class Trajectory {
 				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, Utility.Black);
 			}
 		}
+		UnityGL.Finish();
 	}
 
 	#if UNITY_EDITOR

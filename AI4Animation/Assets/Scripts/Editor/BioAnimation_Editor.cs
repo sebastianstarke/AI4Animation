@@ -28,7 +28,7 @@ public class BioAnimation_Editor : Editor {
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				if(GUILayout.Button("Animation")) {
+				if(GUILayout.Button("Bio Animation")) {
 					Target.Inspect = !Target.Inspect;
 				}
 

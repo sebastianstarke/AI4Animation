@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using UnityEditor;
 
 public static class UnityGL {
 
@@ -12,12 +14,19 @@ public static class UnityGL {
 	private static int SphereResolution = 10;
 	private static Vector3[] SpherePoints;
 
-	static void Initialise() {
+	private static bool Drawing = false;
+
+	private static PROGRAM Program = PROGRAM.NONE;
+
+	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
+
+	private static void Initialise() {
 		if(!Initialised) {
 			CreateMaterial();
 			CreateCircleData();
 			CreateSphereData();
 			Initialised = true;
+			Program = PROGRAM.NONE;
 		}
 	}
 
@@ -37,7 +46,7 @@ public static class UnityGL {
 	static void CreateCircleData() {
 		CirclePoints = new Vector3[CircleResolution];
 		for(int i=0; i<CircleResolution; i++) {
-			float angle = 2f * Mathf.PI * ((float)i-1f) / ((float)CircleResolution-2f);
+			float angle = 2f * Mathf.PI * (float)i / ((float)CircleResolution-1f);
 			CirclePoints[i] = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
 		}
 	}
@@ -73,70 +82,168 @@ public static class UnityGL {
 		return new Vector3(Mathf.Cos(u)*Mathf.Sin(v), Mathf.Cos(v), Mathf.Sin(u)*Mathf.Sin(v));
 	}
 
+	private static void SetProgram(PROGRAM program) {
+		if(Program != program) {
+			GL.End();
+			switch(program) {
+				case PROGRAM.NONE:
+				break;
+				case PROGRAM.LINES:
+				ColorMaterial.SetPass(0);
+				GL.Begin(GL.LINES);
+				break;
+				case PROGRAM.TRIANGLES:
+				ColorMaterial.SetPass(0);
+				GL.Begin(GL.TRIANGLES);
+				break;
+				case PROGRAM.TRIANGLE_STRIP:
+				ColorMaterial.SetPass(0);
+				GL.Begin(GL.TRIANGLE_STRIP);
+				break;
+				case PROGRAM.QUADS:
+				ColorMaterial.SetPass(0);
+				GL.Begin(GL.QUADS);
+				break;
+			}
+			Program = program;
+		}
+	}
+
+	public static void Start() {
+		Initialise();
+		if(Drawing) {
+			Debug.Log("UnityGL has not been finished yet.");
+		} else {
+			Drawing = true;
+		}
+	}
+
+	public static void Finish() {
+		if(Drawing) {
+			SetProgram(PROGRAM.NONE);
+			Drawing = false;
+		} else {
+			Debug.Log("UnityGL has not been started yet.");
+		}
+	}
+
+	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
+		GL.Vertex(start);
+		GL.Vertex(end);
+	}
+
+	public static void DrawLine(Vector3 start, Vector3 end, Color startColor, Color endColor) {
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.LINES);
+		GL.Color(startColor);
+		GL.Vertex(start);
+		GL.Color(endColor);
+		GL.Vertex(end);
+	}
+
+    public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color startColor, Color endColor) {
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.QUADS);
+		Vector3 dir = (end-start);
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+
+		GL.Color(startColor);
+        GL.Vertex(start+orthoStart);
+		GL.Vertex(start-orthoStart);
+		GL.Color(endColor);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(end+orthoEnd);
+    }
+
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
-       	Initialise();
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.QUADS);
+		Vector3 dir = (end-start);
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
 
-		ColorMaterial.SetPass(0);
+		GL.Color(color);
+        GL.Vertex(start+orthoStart);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(end+orthoEnd);
+    }
 
-		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = Quaternion.AngleAxis(90f, (start - GetCamera().transform.position).normalized) * dir;
-		Vector3 orthoEnd = Quaternion.AngleAxis(90f, (end - GetCamera().transform.position).normalized) * dir;
-		Vector3 a = start+startWidth/2f*orthoStart;
-		Vector3 b = start-startWidth/2f*orthoStart;
-		Vector3 c = end+endWidth/2f*orthoEnd;
-		Vector3 d = end-endWidth/2f*orthoEnd;
+    public static void DrawLine(Vector3 start, Vector3 end, float width, Color startColor, Color endColor) {
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.QUADS);
+		Vector3 dir = (end-start);
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
 
-        //GL.PushMatrix();
-        //GL.LoadProjectionMatrix(GetComponent<Camera>().projectionMatrix);
-        GL.Begin(GL.QUADS);
-        GL.Color(color);
-        GL.Vertex(a);
-		GL.Vertex(b);
-		GL.Vertex(d);
-		GL.Vertex(c);
-        GL.End();
-		//GL.PopMatrix();
+		GL.Color(startColor);
+        GL.Vertex(start+orthoStart);
+		GL.Vertex(start-orthoStart);
+		GL.Color(endColor);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(end+orthoEnd);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
-		DrawLine(start, end, width, width, color);
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.QUADS);
+		Vector3 dir = (end-start);
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - GetCamera().transform.position)) * dir).normalized;
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - GetCamera().transform.position)) * dir).normalized;
+
+		GL.Color(color);
+        GL.Vertex(start+orthoStart);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(end+orthoEnd);
     }
 
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
-       	Initialise();
-
-		ColorMaterial.SetPass(0);
-
-        GL.Begin(GL.TRIANGLE_STRIP);
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.TRIANGLES);
         GL.Color(color);
         GL.Vertex(a);
 		GL.Vertex(b);
 		GL.Vertex(c);
-        GL.End();
 	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
-		Initialise();
-
-		ColorMaterial.SetPass(0);
-
-        GL.Begin(GL.TRIANGLE_STRIP);
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.TRIANGLES);
         GL.Color(color);
-		for(int i=0; i<CircleResolution; i++) {
+		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
 			GL.Vertex(center + radius * (GetCamera().transform.rotation * CirclePoints[i]));
+			GL.Vertex(center + radius * (GetCamera().transform.rotation * CirclePoints[i+1]));
 		}
-        GL.End();
 	}
 
 	public static void DrawSphere(Vector3 center, float radius, Color color) {
-		Initialise();
-
-		ColorMaterial.SetPass(0);
-
-        GL.Begin(GL.TRIANGLE_STRIP);
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.TRIANGLES);
         GL.Color(color);
-
 		int index = 0;
 		for(int i=0; i<SphereResolution; i++){ // U-points
 			for(int j=0; j<SphereResolution; j++){ // V-points
@@ -151,11 +258,12 @@ public static class UnityGL {
 				index += 4;
 			}
 		}
-
-        GL.End();
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
+		if(!Drawing) {
+			return;
+		}
 		if(tipPivot < 0f || tipPivot > 1f) {
 			Debug.Log("The tip pivot must be specified between 0 and 1.");
 			return;
@@ -166,6 +274,10 @@ public static class UnityGL {
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {
+		if(!Drawing) {
+			return;
+		}
+		SetProgram(PROGRAM.NONE);
 		material.SetPass(0);
 		Graphics.DrawMeshNow(Utility.GetPrimitiveMesh(PrimitiveType.Sphere), Matrix4x4.TRS(position, rotation, scale));
 	}

@@ -178,7 +178,9 @@ public class Character {
 	}
 
 	public void Draw() {
+		UnityGL.Start();
 		Draw(FindBone(Owner));
+		UnityGL.Finish();
 	}
 
 	private void Draw(Bone bone) {
@@ -244,8 +246,12 @@ public class Character {
 		if(bone.GetTransform() == null) {
 			EditorGUILayout.LabelField("Bone information missing.");
 		} else {
-			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
-				bone.Expanded = !bone.Expanded;
+			if(bone.GetChildCount() > 0) {
+				if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
+					bone.Expanded = !bone.Expanded;
+				}
+			} else {
+				bone.Expanded = false;
 			}
 			EditorGUILayout.LabelField(bone.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
 			GUILayout.FlexibleSpace();

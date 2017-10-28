@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
+     <Compile Include="Assets\Scripts\BVHViewer.cs" />
      <Compile Include="Assets\Scripts\Serializables\Character.cs" />
      <Compile Include="Assets\Scripts\Serializables\Controller.cs" />
      <Compile Include="Assets\Scripts\Serializables\NetworkParameters.cs" />
