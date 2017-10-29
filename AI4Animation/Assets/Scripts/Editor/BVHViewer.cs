@@ -24,6 +24,9 @@ public class BVHViewer : EditorWindow {
 	public bool Playing = false;
 	public bool Preview = false;
 
+	public bool Trajectory = false;
+	public Vector3 Orientation;
+
 	public System.DateTime Timestamp;
 
 	[MenuItem ("Addons/BVH Viewer")]
@@ -53,6 +56,9 @@ public class BVHViewer : EditorWindow {
 	void Update() {
 		if(EditorApplication.isCompiling) {
 			Unload();
+		}
+		if(!Loaded) {
+			return;
 		}
 		if(Playing) {
 			PlayTime += (float)Utility.GetElapsedTime(Timestamp);
@@ -156,13 +162,14 @@ public class BVHViewer : EditorWindow {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Processing");
-
-					if(Utility.GUIButton("Export Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						ExportSkeleton(Character.GetRoot(), null);
-					}
-
 				}
 
+				if(Utility.GUIButton("Export Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					ExportSkeleton(Character.GetRoot(), null);
+				}
+
+				Trajectory = EditorGUILayout.Toggle("Trajectory", Trajectory);
+				Orientation = EditorGUILayout.Vector3Field("Orientation", Orientation);
 
 			}
 
@@ -191,6 +198,13 @@ public class BVHViewer : EditorWindow {
 				ShowFrame(frame);
 			}
 
+			if(Trajectory) {
+				Trajectory trajectory = ComputeTrajectory();
+				if(trajectory != null) {
+					trajectory.Draw();
+				}
+			}
+
 			Character.Draw();
 
 		}
@@ -217,6 +231,22 @@ public class BVHViewer : EditorWindow {
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			ExportSkeleton(bone.GetChild(Character, i), instance);
 		}
+	}
+
+	private Trajectory ComputeTrajectory() {
+		Trajectory trajectory = new Trajectory(Vector3.zero, Vector3.forward);
+		float step = 1f/60f;
+		for(int i=0; i<trajectory.Points.Length; i++) {
+			Trajectory.Point point = trajectory.Points[i];
+			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp - 1f + i*step, 0f, TotalTime);
+			Frame frame = GetFrame(timestamp, 60);
+			point.SetPosition(frame.Positions[0]);
+			Vector3 direction = frame.Rotations[0] * Quaternion.Euler(Orientation) * Vector3.forward;
+			direction.y = 0f;
+			direction = direction.normalized;
+			point.SetDirection(direction);
+		}
+		return trajectory;
 	}
 
 	public void Load(string path) {
@@ -328,6 +358,7 @@ public class BVHViewer : EditorWindow {
 		Loaded = false;
 		Playing = false;
 		Preview = false;
+		Trajectory = false;
 	}
 
 	public void Play() {
