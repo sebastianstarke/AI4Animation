@@ -161,7 +161,7 @@ public static class UnityGL {
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
-		Vector3 dir = (end-start);
+		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
@@ -179,7 +179,7 @@ public static class UnityGL {
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
-		Vector3 dir = (end-start);
+		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
@@ -196,7 +196,7 @@ public static class UnityGL {
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
-		Vector3 dir = (end-start);
+		Vector3 dir = end-start;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 
@@ -214,7 +214,7 @@ public static class UnityGL {
 			return;
 		}
 		SetProgram(PROGRAM.QUADS);
-		Vector3 dir = (end-start);
+		Vector3 dir = end-start;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
 

@@ -13,8 +13,8 @@ public class BVHViewer : EditorWindow {
 
 	public Character Character;
 
-	public Keyframe[] Keyframes = new Keyframe[0];
-	public Keyframe CurrentKeyframe = null;
+	public Frame[] Frames = new Frame[0];
+	public Frame CurrentFrame = null;
 
 	public int TotalFrames = 0;
 	public float TotalTime = 0f;
@@ -22,8 +22,7 @@ public class BVHViewer : EditorWindow {
 	public float PlayTime = 0f;
 	public bool Loaded = false;
 	public bool Playing = false;
-
-	public bool ShowCapture = false;
+	public bool Preview = false;
 
 	public System.DateTime Timestamp;
 
@@ -61,17 +60,166 @@ public class BVHViewer : EditorWindow {
 			if(PlayTime > TotalTime) {
 				PlayTime -= TotalTime;
 			}
-			ShowKeyframe(PlayTime);
+			ShowFrame(PlayTime);
 		}
 	}
 
 	void OnGUI() {
-		Inspect();
+		Utility.SetGUIColor(Utility.Grey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+
+				Utility.SetGUIColor(Utility.Orange);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.LabelField("Importer");
+				}
+
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					//Framerate = EditorGUILayout.FloatField("Framerate", Framerate);
+					UnitScale = EditorGUILayout.FloatField("Unit Scale", UnitScale);
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Path", GUILayout.Width(30));
+					Path = EditorGUILayout.TextField(Path);
+					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
+					if(GUILayout.Button("O", GUILayout.Width(20))) {
+						Path = EditorUtility.OpenFilePanel("BVH Viewer", Path == string.Empty ? Application.dataPath : Path.Substring(0, Path.LastIndexOf("/")), "bvh");
+						GUI.SetNextControlName("");
+						GUI.FocusControl("");
+					}
+					EditorGUILayout.EndHorizontal();
+				}
+				
+				EditorGUILayout.BeginHorizontal();
+				if(Utility.GUIButton("Load", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					Load(Path);
+				}
+				if(Utility.GUIButton("Unload", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					Unload();
+				}
+				EditorGUILayout.EndHorizontal();
+
+			}
+
+			if(!Loaded) {
+				Utility.SetGUIColor(Utility.Orange);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.LabelField("No animation loaded.");
+				}
+				return;
+			}
+
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+
+				Utility.SetGUIColor(Utility.Orange);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.LabelField("Viewer");
+				}
+
+				Character.Inspector();
+
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Total Frames: " + TotalFrames, GUILayout.Width(140f));
+				EditorGUILayout.LabelField("Total Time: " + TotalTime + "s", GUILayout.Width(140f));
+				EditorGUILayout.LabelField("Frame Time: " + FrameTime + "s" + " (" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(200f));
+				EditorGUILayout.LabelField("Preview", GUILayout.Width(50f));
+				Preview = EditorGUILayout.Toggle(Preview, GUILayout.Width(20f));
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.BeginHorizontal();
+				if(Playing) {
+					if(Utility.GUIButton("||", Color.grey, Color.white, TextAnchor.MiddleCenter, 20f, 20f)) {
+						Stop();
+					}
+				} else {
+					if(Utility.GUIButton("|>", Color.grey, Color.white, TextAnchor.MiddleCenter, 20f, 20f)) {
+						Play();
+					}
+				}
+				int newIndex = EditorGUILayout.IntSlider(CurrentFrame.Index, 1, TotalFrames, GUILayout.Width(470f));
+				if(newIndex != CurrentFrame.Index) {
+					Frame frame = GetFrame(newIndex);
+					PlayTime = frame.Timestamp;
+					ShowFrame(frame.Index);
+				}
+				EditorGUILayout.LabelField(CurrentFrame.Timestamp.ToString() + "s", GUILayout.Width(100f));
+				EditorGUILayout.EndHorizontal();
+
+			}
+
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+
+				Utility.SetGUIColor(Utility.Orange);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.LabelField("Processing");
+
+					if(Utility.GUIButton("Export Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+						ExportSkeleton();
+					}
+
+				}
+
+
+			}
+
+		}
 	}
 
 	void OnSceneGUI(SceneView view) {
 		if(Loaded) {
+
+			if(Preview) {
+				Frame frame = CurrentFrame;
+				float step = 1f;
+				UnityGL.Start();
+				for(int i=2; i<=TotalFrames; i++) {
+					UnityGL.DrawLine(GetFrame(i-1).Positions[0], GetFrame(i).Positions[0], Color.magenta);
+				}
+				UnityGL.Finish();
+				for(float i=0f; i<=TotalTime; i+=step) {
+					ShowFrame(i);
+					Color boneColor = Color.Lerp(Color.red, Color.green, i/TotalTime);
+					boneColor.a = 1f/3f;
+					Color jointColor = Color.black;
+					jointColor.a = 1f/3f;
+					DrawSimple(Character.GetRoot(), boneColor, jointColor);
+				}
+				ShowFrame(frame);
+			}
+
 			Character.Draw();
+
+		}
+	}
+
+	private void DrawSimple(Character.Bone bone, Color boneColor, Color jointColor) {;
+		Handles.color = boneColor;
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			Handles.DrawLine(bone.GetPosition(), bone.GetChild(Character, i).GetPosition());
+		}
+		Handles.color = jointColor;
+		Handles.SphereHandleCap(0, bone.GetPosition(), bone.GetRotation(), Character.BoneSize, EventType.repaint);
+		Handles.color = Color.white;
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			DrawSimple(bone.GetChild(Character, i), boneColor, jointColor);
+		}
+	}
+
+	private void ExportSkeleton() {
+		ExportSkeleton(Character.GetRoot(), null);
+	}
+
+	private void ExportSkeleton(Character.Bone bone, Transform parent) {
+		Transform instance = new GameObject(bone.GetName()).transform;
+		instance.SetParent(parent);
+		instance.position = bone.GetPosition();
+		instance.rotation = bone.GetRotation();
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			ExportSkeleton(bone.GetChild(Character, i), instance);
 		}
 	}
 
@@ -103,12 +251,12 @@ public class BVHViewer : EditorWindow {
 					break;
 				} else if(entries[entry].Contains("OFFSET")) {
 					zero.Add(new Transformation(
-						new Vector3(ReadFloat(entries[entry+1]), ReadFloat(entries[entry+2]), ReadFloat(entries[entry+3])), 
+						new Vector3(Utility.ReadFloat(entries[entry+1]), Utility.ReadFloat(entries[entry+2]), Utility.ReadFloat(entries[entry+3])), 
 						Quaternion.identity
 						));
 					break;
 				} else if(entries[entry].Contains("CHANNELS")) {
-					int dimensions = ReadInt(entries[entry+1]);
+					int dimensions = Utility.ReadInt(entries[entry+1]);
 					int[] channel = new int[dimensions+1];
 					channel[0] = dimensions;
 					for(int i=0; i<dimensions; i++) {
@@ -139,11 +287,11 @@ public class BVHViewer : EditorWindow {
 
 		//Skip frame count
 		index += 1;
-		TotalFrames = ReadInt(lines[index].Substring(8));
+		TotalFrames = Utility.ReadInt(lines[index].Substring(8));
 
 		//Read frame time
 		index += 1;
-		FrameTime = ReadFloat(lines[index].Substring(12));
+		FrameTime = Utility.ReadFloat(lines[index].Substring(12));
 
 		//Compute total time
 		TotalTime = TotalFrames * FrameTime;
@@ -152,17 +300,17 @@ public class BVHViewer : EditorWindow {
 		index += 1;
 		float[][] motions = new float[TotalFrames][];
 		for(int i=index; i<lines.Length; i++) {
-			motions[i-index] = ReadArray(lines[i]);
+			motions[i-index] = Utility.ReadArray(lines[i]);
 		}
 
-		//Build Keyframes
-		System.Array.Resize(ref Keyframes, TotalFrames);
+		//Build Frames
+		System.Array.Resize(ref Frames, TotalFrames);
 		for(int i=0; i<TotalFrames; i++) {
-			Keyframes[i] = new Keyframe(Character, zero, channels, motions[i], i+1, i*FrameTime, UnitScale);
+			Frames[i] = new Frame(Character, zero.ToArray(), channels.ToArray(), motions[i], i+1, i*FrameTime, UnitScale);
 		}
 
-		//Load First Keyframe
-		ShowKeyframe(1);
+		//Load First Frame
+		ShowFrame(1);
 
 		Loaded = true;
 	}
@@ -172,8 +320,8 @@ public class BVHViewer : EditorWindow {
 			return;
 		}
 		Character.Clear();
-		System.Array.Resize(ref Keyframes, 0);
-		CurrentKeyframe = null;
+		System.Array.Resize(ref Frames, 0);
+		CurrentFrame = null;
 
 		TotalFrames = 0;
 		TotalTime = 0f;
@@ -182,7 +330,7 @@ public class BVHViewer : EditorWindow {
 
 		Loaded = false;
 		Playing = false;
-		ShowCapture = false;
+		Preview = false;
 	}
 
 	public void Play() {
@@ -194,141 +342,54 @@ public class BVHViewer : EditorWindow {
 		Playing = false;
 	}
 
-	public void ShowKeyframe(Keyframe keyframe) {
-		if(keyframe == null) {
+	public void ShowFrame(Frame Frame) {
+		if(Frame == null) {
 			return;
 		}
-		if(CurrentKeyframe == keyframe) {
+		if(CurrentFrame == Frame) {
 			return;
 		}
-		CurrentKeyframe = keyframe;
+		CurrentFrame = Frame;
 		for(int i=0; i<Character.Bones.Length; i++) {
-			Character.Bones[i].SetPosition(CurrentKeyframe.Positions[i]);
-			Character.Bones[i].SetRotation(CurrentKeyframe.Rotations[i]);
+			Character.Bones[i].SetPosition(CurrentFrame.Positions[i]);
+			Character.Bones[i].SetRotation(CurrentFrame.Rotations[i]);
 		}
 		SceneView.RepaintAll();
 		Repaint();
 	}
 
-	public void ShowKeyframe(int index) {
-		ShowKeyframe(GetKeyframe(index));
+	public void ShowFrame(int index) {
+		ShowFrame(GetFrame(index));
 	}
 
-	public void ShowKeyframe(float time) {
-		ShowKeyframe(GetKeyframe(time));
+	public void ShowFrame(float time) {
+		ShowFrame(GetFrame(time));
 	}
 
-	public Keyframe GetKeyframe(int index) {
+	public Frame GetFrame(int index) {
 		if(index < 1 || index > TotalFrames) {
 			Debug.Log("Please specify an index between 1 and " + TotalFrames + ".");
 			return null;
 		}
-		return Keyframes[index-1];
+		return Frames[index-1];
 	}
 
-	public Keyframe GetKeyframe(float time) {
+	public Frame GetFrame(float time) {
 		if(time < 0f || time > TotalTime) {
 			Debug.Log("Please specify a time between 0 and " + TotalTime + ".");
 			return null;
 		}
-		return GetKeyframe(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, TotalFrames));
-	}
-
-	public int ReadInt(string value) {
-		value = FilterValueField(value);
-		return ParseInt(value);
-	}
-
-	public float ReadFloat(string value) {
-		value = FilterValueField(value);
-		return ParseFloat(value);
-	}
-
-	public float[] ReadArray(string value) {
-		value = FilterValueField(value);
-		if(value.StartsWith(" ")) {
-			value = value.Substring(1);
-		}
-		if(value.EndsWith(" ")) {
-			value = value.Substring(0, value.Length-1);
-		}
-		string[] values = value.Split(' ');
-		float[] array = new float[values.Length];
-		for(int i=0; i<array.Length; i++) {
-			array[i] = ParseFloat(values[i]);
-		}
-		return array;
-	}
-
-	public Vector3 ReadVector3(string value) {
-		value = FilterValueField(value);
-		string[] values = value.Split(' ');
-		float x = ParseFloat(values[0]);
-		float y = ParseFloat(values[1]);
-		float z = ParseFloat(values[2]);
-		return new Vector3(x,y,z);
-	}
-
-	public Vector4 ReadColor(string value) {
-		value = FilterValueField(value);
-		string[] values = value.Split(' ');
-		float r = ParseFloat(values[0]);
-		float g = ParseFloat(values[1]);
-		float b = ParseFloat(values[2]);
-		float a = ParseFloat(values[3]);
-		return new Color(r,g,b,a);
-	}
-
-	public string FilterValueField(string value) {
-		while(value.Contains("  ")) {
-			value = value.Replace("  "," ");
-		}
-		while(value.Contains("< ")) {
-			value = value.Replace("< ","<");
-		}
-		while(value.Contains(" >")) {
-			value = value.Replace(" >",">");
-		}
-		while(value.Contains(" .")) {
-			value = value.Replace(" ."," 0.");
-		}
-		while(value.Contains(". ")) {
-			value = value.Replace(". ",".0");
-		}
-		while(value.Contains("<.")) {
-			value = value.Replace("<.","<0.");
-		}
-		return value;
-	}
-
-	public int ParseInt(string value) {
-		int parsed = 0;
-		if(int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
-			return parsed;
-		} else {
-			Debug.Log("Error parsing " + value + "!");
-			return 0;
-		}
-	}
-
-	public float ParseFloat(string value) {
-		float parsed = 0f;
-		if(float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
-			return parsed;
-		} else {
-			Debug.Log("Error parsing " + value + "!");
-			return 0f;
-		}
+		return GetFrame(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, TotalFrames));
 	}
 
 	[System.Serializable]
-	public class Keyframe {
+	public class Frame {
 		public int Index;
 		public float Timestamp;
 		public Vector3[] Positions;
 		public Quaternion[] Rotations;
 
-		public Keyframe(Character Character, List<Transformation> zero, List<int[]> channels, float[] motion, int index, float timestamp, float unitScale) {
+		public Frame(Character Character, Transformation[] zeros, int[][] channels, float[] motion, int index, float timestamp, float unitScale) {
 			Index = index;
 			Timestamp = timestamp;
 			Positions = new Vector3[Character.Bones.Length];
@@ -350,8 +411,8 @@ public class BVHViewer : EditorWindow {
 						GetAngleAxis(motion[channel+0], channels[i][1]) *
 						GetAngleAxis(motion[channel+1], channels[i][2]) *
 						GetAngleAxis(motion[channel+2], channels[i][3]);
-					Character.Bones[i].SetPosition(Character.Bones[i].GetParent(Character).GetPosition() + Character.Bones[i].GetParent(Character).GetRotation() * zero[i].Position / unitScale);
-					Character.Bones[i].SetRotation(Character.Bones[i].GetParent(Character).GetRotation() * zero[i].Rotation * rotation);
+					Character.Bones[i].SetPosition(Character.Bones[i].GetParent(Character).GetPosition() + Character.Bones[i].GetParent(Character).GetRotation() * zeros[i].Position / unitScale);
+					Character.Bones[i].SetRotation(Character.Bones[i].GetParent(Character).GetRotation() * zeros[i].Rotation * rotation);
 					channel += 3;
 				}
 			}
@@ -375,72 +436,4 @@ public class BVHViewer : EditorWindow {
 		}
 	}
 
-	private void Inspect() {
-		Utility.SetGUIColor(Utility.Grey);
-		using(new EditorGUILayout.VerticalScope ("Box")) {
-			Utility.ResetGUIColor();
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					//Framerate = EditorGUILayout.FloatField("Framerate", Framerate);
-					UnitScale = EditorGUILayout.FloatField("Unit Scale", UnitScale);
-					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Path", GUILayout.Width(30));
-					Path = EditorGUILayout.TextField(Path);
-					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-					if(GUILayout.Button("O", GUILayout.Width(20))) {
-						Path = EditorUtility.OpenFilePanel("BVH Viewer", Path == string.Empty ? Application.dataPath : Path.Substring(0, Path.LastIndexOf("/")), "bvh");
-						GUI.SetNextControlName("");
-						GUI.FocusControl("");
-					}
-					if(GUILayout.Button("X", GUILayout.Width(20))) {
-						Unload();
-					}
-					EditorGUILayout.EndHorizontal();
-				}
-				
-				if(Utility.GUIButton("Import", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-					Load(Path);
-				}
-
-			}
-
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				if(Loaded) {
-					Character.Inspector();
-					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Total Frames: " + TotalFrames, GUILayout.Width(150f));
-					EditorGUILayout.LabelField("Total Time: " + TotalTime, GUILayout.Width(150f));
-					EditorGUILayout.LabelField("Frame Time: " + FrameTime + "(" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(300f));
-					EditorGUILayout.EndHorizontal();
-					//ShowCapture = EditorGUILayout.Toggle("Show Capture", ShowCapture);
-					EditorGUILayout.BeginHorizontal();
-					ControlKeyframe();
-					EditorGUILayout.LabelField(CurrentKeyframe.Timestamp.ToString() + "s", GUILayout.Width(100f));
-					EditorGUILayout.EndHorizontal();
-					if(Playing) {
-						if(Utility.GUIButton("Stop", Color.white, Color.grey, TextAnchor.MiddleCenter)) {
-							Stop();
-						}
-					} else {
-						if(Utility.GUIButton("Play", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-							Play();
-						}
-					}
-					
-				} else {
-					EditorGUILayout.LabelField("No animation loaded.");
-				}
-			}
-		}
-	}
-
-	private void ControlKeyframe() {
-		int newIndex = EditorGUILayout.IntSlider(CurrentKeyframe.Index, 1, TotalFrames, GUILayout.Width(500f));
-		if(newIndex != CurrentKeyframe.Index) {
-			Keyframe frame = GetKeyframe(newIndex);
-			PlayTime = frame.Timestamp;
-			ShowKeyframe(frame.Index);
-		}
-	}
 }

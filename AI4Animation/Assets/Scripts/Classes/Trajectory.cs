@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
-[System.Serializable]
 public class Trajectory {
 
 	public bool Inspect = false;
@@ -16,17 +12,12 @@ public class Trajectory {
 	private const int FuturePoints = 5;
 	private const int Density = 10;
 
-	public Trajectory() {
+	public Trajectory(Vector3 position, Vector3 direction) {
 		Inspect = false;
 		Width = 0.5f;
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point();
-		}
-	}
-
-	public void Initialise(Vector3 position, Vector3 direction) {
-		for(int i=0; i<Points.Length; i++) {
 			Points[i].SetPosition(position);
 			Points[i].SetDirection(direction);
 			Points[i].Stand = 1f;
@@ -78,10 +69,9 @@ public class Trajectory {
 		return Points[GetRootPointIndex()-1];
 	}
 
-	[System.Serializable]
 	public class Point {
-		[SerializeField] private Vector3 Position;
-		[SerializeField] private Vector3 Direction;
+		private Vector3 Position;
+		private Vector3 Direction;
 
 		public float Stand, Walk, Jog, Crouch, Jump, Bump;
 
@@ -173,36 +163,5 @@ public class Trajectory {
 		}
 		UnityGL.Finish();
 	}
-
-	#if UNITY_EDITOR
-	public void Inspector() {
-		Utility.SetGUIColor(Color.grey);
-		using(new GUILayout.VerticalScope ("Box")) {
-			Utility.ResetGUIColor();
-			if(GUILayout.Button("Trajectory")) {
-				Inspect = !Inspect;
-			}
-
-			if(Inspect) {
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Width = EditorGUILayout.FloatField("Width", Width);
-
-					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Point", GUILayout.Width(100f));
-					EditorGUILayout.LabelField("Position", GUILayout.Width(150f));
-					EditorGUILayout.LabelField("Direction", GUILayout.Width(150f));
-					EditorGUILayout.EndHorizontal();
-					for(int i=0; i<GetPointCount(); i++) {
-						EditorGUILayout.BeginHorizontal();
-						EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(100f));
-						EditorGUILayout.LabelField(Points[i].GetPosition().ToString(), GUILayout.Width(150f));
-						EditorGUILayout.LabelField(Points[i].GetDirection().ToString(), GUILayout.Width(150f));
-						EditorGUILayout.EndHorizontal();
-					}
-				}
-			}
-		}
-	}
-	#endif
 
 }

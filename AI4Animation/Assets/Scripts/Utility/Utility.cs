@@ -258,4 +258,72 @@ public static class Utility {
 		return clicked;
 	}
 
+	public static int ReadInt(string value) {
+		value = FilterValueField(value);
+		return ParseInt(value);
+	}
+
+	public static float ReadFloat(string value) {
+		value = FilterValueField(value);
+		return ParseFloat(value);
+	}
+
+	public static float[] ReadArray(string value) {
+		value = FilterValueField(value);
+		if(value.StartsWith(" ")) {
+			value = value.Substring(1);
+		}
+		if(value.EndsWith(" ")) {
+			value = value.Substring(0, value.Length-1);
+		}
+		string[] values = value.Split(' ');
+		float[] array = new float[values.Length];
+		for(int i=0; i<array.Length; i++) {
+			array[i] = ParseFloat(values[i]);
+		}
+		return array;
+	}
+
+	public static string FilterValueField(string value) {
+		while(value.Contains("  ")) {
+			value = value.Replace("  "," ");
+		}
+		while(value.Contains("< ")) {
+			value = value.Replace("< ","<");
+		}
+		while(value.Contains(" >")) {
+			value = value.Replace(" >",">");
+		}
+		while(value.Contains(" .")) {
+			value = value.Replace(" ."," 0.");
+		}
+		while(value.Contains(". ")) {
+			value = value.Replace(". ",".0");
+		}
+		while(value.Contains("<.")) {
+			value = value.Replace("<.","<0.");
+		}
+		return value;
+	}
+
+	public static int ParseInt(string value) {
+		int parsed = 0;
+		if(int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
+			return parsed;
+		} else {
+			Debug.Log("Error parsing " + value + "!");
+			return 0;
+		}
+	}
+
+	public static float ParseFloat(string value) {
+		float parsed = 0f;
+		if(float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
+			return parsed;
+		} else {
+			Debug.Log("Error parsing " + value + "!");
+			return 0f;
+		}
+	}
+
 }

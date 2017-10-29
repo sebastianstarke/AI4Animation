@@ -30,7 +30,6 @@ public class BioAnimation : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		Trajectory = new Trajectory();
 		PFNN = new PFNN();
 	}
 
@@ -38,7 +37,7 @@ public class BioAnimation : MonoBehaviour {
 		TargetDirection = GetRootDirection();
 		TargetVelocity = Vector3.zero;
 		Velocities = new Vector3[Joints.Length];
-		Trajectory.Initialise(GetRootPosition(), GetRootDirection());
+		Trajectory = new Trajectory(GetRootPosition(), GetRootDirection());
 		PFNN.Initialise();
 	}
 
@@ -288,23 +287,13 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		Color transparentTargetDirection = new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f);
-		Color transparentTargetVelocity = new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f);
-
-		if(!Application.isPlaying) {
-			if(Trajectory.GetRoot().GetPosition() != GetRootPosition() || Trajectory.GetRoot().GetDirection() != GetRootDirection()) {
-				Trajectory.Initialise(GetRootPosition(), GetRootDirection());
-			}
+		if(Application.isPlaying) {
 			UnityGL.Start();
-			UnityGL.DrawLine(GetRootPosition(), GetRootPosition() + GetRootDirection(), 0.05f, 0f, transparentTargetDirection);
+			UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
+			UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
 			UnityGL.Finish();
+			Trajectory.Draw();
 		}
-		Trajectory.Draw();
-
-		UnityGL.Start();
-		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetDirection, 0.05f, 0f, transparentTargetDirection);
-		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
-		UnityGL.Finish();
 
 		if(!Application.isPlaying) {
 			Character.ForwardKinematics(Root);

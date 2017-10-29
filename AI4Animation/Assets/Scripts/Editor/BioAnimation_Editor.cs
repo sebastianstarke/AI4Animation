@@ -16,7 +16,6 @@ public class BioAnimation_Editor : Editor {
 			Inspector();
 			Target.Controller.Inspector();
 			Target.Character.Inspector();
-			Target.Trajectory.Inspector();
 			Target.PFNN.Inspector();
 
 			if(GUI.changed) {

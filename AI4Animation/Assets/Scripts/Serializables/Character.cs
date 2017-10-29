@@ -12,6 +12,8 @@ public class Character {
 
 	public float BoneSize = 0.025f;
 
+	private Material Material;
+
 	public Character() {
 		Inspect = false;
 		BoneSize = 0.025f;
@@ -117,12 +119,12 @@ public class Character {
 		public bool Expanded = false;
 		public bool Draw = true;
 
-		[SerializeField] private string Name = "Empty";		
-		[SerializeField] private Vector3 Position = Vector3.zero;	
-		[SerializeField] private Quaternion Rotation = Quaternion.identity;
+		[SerializeField] private string Name = "Empty";
 		[SerializeField] private int Index = -1;
 		[SerializeField] private int Parent = -1;
 		[SerializeField] private int[] Childs = new int[0];
+		[SerializeField] private Vector3 Position = Vector3.zero;	
+		[SerializeField] private Quaternion Rotation = Quaternion.identity;
 
 		public Bone(string name, int index) {
 			Draw = true;
@@ -130,6 +132,8 @@ public class Character {
 			Index = index;
 			Parent = -1;
 			Childs = new int[0];
+			Position = Vector3.zero;
+			Rotation = Quaternion.identity;
 		}
 
 		public string GetName() {
@@ -227,12 +231,19 @@ public class Character {
 				bone.GetPosition(),
 				bone.GetRotation(),
 				BoneSize*Vector3.one,
-				(Material)Resources.Load("Materials/Black", typeof(Material))
+				GetMaterial()
 			);
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));
 		}
+	}
+
+	private Material GetMaterial() {
+		if(Material == null) {
+			Material = (Material)Resources.Load("Materials/Black", typeof(Material));
+		}
+		return Material;
 	}
 
 	#if UNITY_EDITOR
@@ -262,7 +273,7 @@ public class Character {
 					if(Bones.Length > 0) {
 						InspectHierarchy(GetRoot(), 0);
 					} else {
-						EditorGUILayout.LabelField("No character hierarchy defined.");
+						EditorGUILayout.LabelField("No bones available.");
 					}
 				}
 			}
