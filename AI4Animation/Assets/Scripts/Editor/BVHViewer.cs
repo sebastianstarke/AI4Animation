@@ -7,7 +7,6 @@ public class BVHViewer : EditorWindow {
 
 	private static EditorWindow Window;
 
-	//public float Framerate = 60f;
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
 
@@ -20,6 +19,7 @@ public class BVHViewer : EditorWindow {
 	public float TotalTime = 0f;
 	public float FrameTime = 0f;
 	public float PlayTime = 0f;
+	public int Framerate = 60;
 	public bool Loaded = false;
 	public bool Playing = false;
 	public bool Preview = false;
@@ -77,7 +77,6 @@ public class BVHViewer : EditorWindow {
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					//Framerate = EditorGUILayout.FloatField("Framerate", Framerate);
 					UnitScale = EditorGUILayout.FloatField("Unit Scale", UnitScale);
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Path", GUILayout.Width(30));
@@ -128,6 +127,7 @@ public class BVHViewer : EditorWindow {
 				EditorGUILayout.LabelField("Preview", GUILayout.Width(50f));
 				Preview = EditorGUILayout.Toggle(Preview, GUILayout.Width(20f));
 				EditorGUILayout.EndHorizontal();
+				Framerate = Mathf.Max(1, EditorGUILayout.IntField("Framerate", Framerate));
 
 				EditorGUILayout.BeginHorizontal();
 				if(Playing) {
@@ -158,7 +158,7 @@ public class BVHViewer : EditorWindow {
 					EditorGUILayout.LabelField("Processing");
 
 					if(Utility.GUIButton("Export Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						ExportSkeleton();
+						ExportSkeleton(Character.GetRoot(), null);
 					}
 
 				}
@@ -207,10 +207,6 @@ public class BVHViewer : EditorWindow {
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			DrawSimple(bone.GetChild(Character, i), boneColor, jointColor);
 		}
-	}
-
-	private void ExportSkeleton() {
-		ExportSkeleton(Character.GetRoot(), null);
 	}
 
 	private void ExportSkeleton(Character.Bone bone, Transform parent) {
@@ -327,6 +323,7 @@ public class BVHViewer : EditorWindow {
 		TotalTime = 0f;
 		FrameTime = 0f;
 		PlayTime = 0f;
+		Framerate = 60;
 
 		Loaded = false;
 		Playing = false;
@@ -363,7 +360,7 @@ public class BVHViewer : EditorWindow {
 	}
 
 	public void ShowFrame(float time) {
-		ShowFrame(GetFrame(time));
+		ShowFrame(GetFrame(time, Framerate));
 	}
 
 	public Frame GetFrame(int index) {
@@ -374,12 +371,14 @@ public class BVHViewer : EditorWindow {
 		return Frames[index-1];
 	}
 
-	public Frame GetFrame(float time) {
+	public Frame GetFrame(float time, float framerate) {
 		if(time < 0f || time > TotalTime) {
 			Debug.Log("Please specify a time between 0 and " + TotalTime + ".");
 			return null;
 		}
-		return GetFrame(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, TotalFrames));
+		float overflow = Mathf.Repeat(time, 1f/framerate);
+		time -= overflow;
+		return GetFrame(Mathf.Min(Mathf.FloorToInt(time / FrameTime) + 1, TotalFrames));
 	}
 
 	[System.Serializable]
