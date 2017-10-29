@@ -28,6 +28,14 @@ public class BioAnimation_Editor : Editor {
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
+
+				if(Target.Character.RebuildRequired(Target.Root)) {
+					EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
+					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+						Target.Character.BuildHierarchy(Target.Root);
+					}
+				}
+
 				if(GUILayout.Button("Bio Animation")) {
 					Target.Inspect = !Target.Inspect;
 				}

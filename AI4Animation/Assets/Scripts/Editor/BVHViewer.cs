@@ -1,39 +1,63 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
-public class BVHViewer : MonoBehaviour {
+public class BVHViewer : EditorWindow {
 
+	private static EditorWindow Window;
+
+	//public float Framerate = 60f;
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
 
-	private Transform[] Bones = new Transform[0];
-	private Keyframe[] Keyframes = new Keyframe[0];
-	private Keyframe CurrentKeyframe = null;
+	public Character Character;
 
-	private int TotalFrames = 0;
-	private float Timescale = 1f;
-	private float TotalTime = 0f;
-	private float FrameTime = 0f;
-	private float PlayTime = 0f;
-	private bool Loaded = false;
-	private bool Playing = false;
+	public Keyframe[] Keyframes = new Keyframe[0];
+	public Keyframe CurrentKeyframe = null;
 
-	private bool ShowCapture = false;
+	public int TotalFrames = 0;
+	public float TotalTime = 0f;
+	public float FrameTime = 0f;
+	public float PlayTime = 0f;
+	public bool Loaded = false;
+	public bool Playing = false;
 
-	public BVHViewer() {
-		EditorApplication.update += EditorUpdate;
+	public bool ShowCapture = false;
+
+	public System.DateTime Timestamp;
+
+	[MenuItem ("Addons/BVH Viewer")]
+	static void Init() {
+		Window = EditorWindow.GetWindow(typeof(BVHViewer));
+		
+		Vector2 size = new Vector2(600f, 400f);
+		Window.minSize = size;
+		Window.maxSize = size;
 	}
 
-	public void EditorUpdate() {
-		if(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) {
+	void Awake() {
+		Character = new Character();
+	}
+
+	void OnFocus() {
+		SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
+		SceneView.onSceneGUIDelegate += this.OnSceneGUI;
+
+		Timestamp = Utility.GetTimestamp();
+	}
+
+	void OnDestroy() {
+		SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
+	}
+
+	void Update() {
+		if(EditorApplication.isCompiling) {
 			Unload();
-			return;
 		}
 		if(Playing) {
-			//Debug.Log(Time.deltaTime);
-			PlayTime += Timescale*Time.deltaTime;
+			PlayTime += (float)Utility.GetElapsedTime(Timestamp);
+			Timestamp = Utility.GetTimestamp();
 			if(PlayTime > TotalTime) {
 				PlayTime -= TotalTime;
 			}
@@ -41,10 +65,17 @@ public class BVHViewer : MonoBehaviour {
 		}
 	}
 
-	public void Load(string path) {
-		if(Application.isPlaying) {
-			return;
+	void OnGUI() {
+		Inspect();
+	}
+
+	void OnSceneGUI(SceneView view) {
+		if(Loaded) {
+			Character.Draw();
 		}
+	}
+
+	public void Load(string path) {
 		Unload();
 
 		string[] lines = File.ReadAllLines(Path);
@@ -52,26 +83,20 @@ public class BVHViewer : MonoBehaviour {
 		int index = 0;
 
 		//Build Hierarchy
-		List<Transform> bones = new List<Transform>();
+		Character.Bone bone = null;
 		List<int[]> channels = new List<int[]>();
 		List<Transformation> zero = new List<Transformation>();
-		Transform current = transform;
 		for(index = 0; index<lines.Length; index++) {
 			if(lines[index] == "MOTION") {
 				break;
 			}
 			string[] entries = lines[index].Split(whitespace);
 			for(int entry=0; entry<entries.Length; entry++) {
-				//Debug.Log("Line " + index + " Entry " + entry + ": " + entries[entry]);
 				if(entries[entry].Contains("ROOT")) {
-					current.name = entries[entry+1];
-					bones.Add(transform);
+					bone = Character.AddBone(entries[entry+1], null);
 					break;
 				} else if(entries[entry].Contains("JOINT")) {
-					Transform t = new GameObject(entries[entry+1]).transform;
-					t.SetParent(current, false);
-					current = t;
-					bones.Add(t);
+					bone = Character.AddBone(entries[entry+1], bone);
 					break;
 				} else if(entries[entry].Contains("End")) {
 					index += 3;
@@ -104,14 +129,13 @@ public class BVHViewer : MonoBehaviour {
 					channels.Add(channel);
 					break;
 				} else if(entries[entry].Contains("}")) {
-					if(current != transform) {
-						current = current.parent;
+					if(bone != Character.GetRoot()) {
+						bone = bone.GetParent(Character);
 					}
 					break;
 				}
 			}
 		}
-		Bones = bones.ToArray();
 
 		//Skip frame count
 		index += 1;
@@ -134,7 +158,7 @@ public class BVHViewer : MonoBehaviour {
 		//Build Keyframes
 		System.Array.Resize(ref Keyframes, TotalFrames);
 		for(int i=0; i<TotalFrames; i++) {
-			Keyframes[i] = new Keyframe(Bones, zero, channels, motions[i], i+1, i*FrameTime, UnitScale);
+			Keyframes[i] = new Keyframe(Character, zero, channels, motions[i], i+1, i*FrameTime, UnitScale);
 		}
 
 		//Load First Keyframe
@@ -147,17 +171,11 @@ public class BVHViewer : MonoBehaviour {
 		if(!Loaded) {
 			return;
 		}
-
-		transform.name = "Root";
-		while(transform.childCount > 0) {
-			DestroyImmediate(transform.GetChild(0).gameObject);
-		}
-		System.Array.Resize(ref Bones, 0);
+		Character.Clear();
 		System.Array.Resize(ref Keyframes, 0);
 		CurrentKeyframe = null;
 
 		TotalFrames = 0;
-		Timescale = 1f;
 		TotalTime = 0f;
 		FrameTime = 0f;
 		PlayTime = 0f;
@@ -167,63 +185,8 @@ public class BVHViewer : MonoBehaviour {
 		ShowCapture = false;
 	}
 
-	public bool IsLoaded() {
-		return Loaded;
-	}
-
-	public bool IsPlaying() {
-		return Playing;
-	}
-
-	public Transform[] GetBones() {
-		return Bones;
-	}
-
-	public Keyframe[] GetKeyframes() {
-		return Keyframes;
-	}
-
-	public Keyframe GetCurrentKeyframe() {
-		return CurrentKeyframe;
-	}
-
-	public int GetTotalFrames() {
-		return TotalFrames;
-	}
-
-	public void SetTimescale(float value) {
-		Timescale = value;
-	}
-
-	public float GetTimescale() {
-		return Timescale;
-	}
-
-	public float GetTotalTime() {
-		return TotalTime;
-	}
-
-	public float GetFrameTime() {
-		return FrameTime;
-	}
-
-	public void SetPlayTime(float time) {
-		PlayTime = time;
-	}
-
-	public float GetPlayTime() {
-		return PlayTime;
-	}
-
-	public void DrawCapture(bool value) {
-		ShowCapture = value;
-	}
-
-	public bool IsDrawingCapture() {
-		return ShowCapture;
-	}
-
 	public void Play() {
+		Timestamp = Utility.GetTimestamp();
 		Playing = true;
 	}
 
@@ -239,43 +202,20 @@ public class BVHViewer : MonoBehaviour {
 			return;
 		}
 		CurrentKeyframe = keyframe;
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].position = CurrentKeyframe.Positions[i];
-			Bones[i].rotation = CurrentKeyframe.Rotations[i];
+		for(int i=0; i<Character.Bones.Length; i++) {
+			Character.Bones[i].SetPosition(CurrentKeyframe.Positions[i]);
+			Character.Bones[i].SetRotation(CurrentKeyframe.Rotations[i]);
 		}
+		SceneView.RepaintAll();
+		Repaint();
 	}
 
 	public void ShowKeyframe(int index) {
-		if(CurrentKeyframe != null) {
-			if(CurrentKeyframe.Index == index) {
-				return;
-			}
-		}
-		CurrentKeyframe = GetKeyframe(index);
-		if(CurrentKeyframe == null) {
-			return;
-		}
-		//PlayTime = CurrentKeyframe.Timestamp;
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].position = CurrentKeyframe.Positions[i];
-			Bones[i].rotation = CurrentKeyframe.Rotations[i];
-		}
+		ShowKeyframe(GetKeyframe(index));
 	}
 
 	public void ShowKeyframe(float time) {
-		if(CurrentKeyframe != null) {
-			if(CurrentKeyframe.Timestamp == time) {
-				return;
-			}
-		}
-		CurrentKeyframe = GetKeyframe(time);
-		if(CurrentKeyframe == null) {
-			return;
-		}
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].position = CurrentKeyframe.Positions[i];
-			Bones[i].rotation = CurrentKeyframe.Rotations[i];
-		}
+		ShowKeyframe(GetKeyframe(time));
 	}
 
 	public Keyframe GetKeyframe(int index) {
@@ -294,17 +234,17 @@ public class BVHViewer : MonoBehaviour {
 		return GetKeyframe(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, TotalFrames));
 	}
 
-	public static int ReadInt(string value) {
+	public int ReadInt(string value) {
 		value = FilterValueField(value);
 		return ParseInt(value);
 	}
 
-	public static float ReadFloat(string value) {
+	public float ReadFloat(string value) {
 		value = FilterValueField(value);
 		return ParseFloat(value);
 	}
 
-	public static float[] ReadArray(string value) {
+	public float[] ReadArray(string value) {
 		value = FilterValueField(value);
 		if(value.StartsWith(" ")) {
 			value = value.Substring(1);
@@ -320,7 +260,7 @@ public class BVHViewer : MonoBehaviour {
 		return array;
 	}
 
-	public static Vector3 ReadVector3(string value) {
+	public Vector3 ReadVector3(string value) {
 		value = FilterValueField(value);
 		string[] values = value.Split(' ');
 		float x = ParseFloat(values[0]);
@@ -329,7 +269,7 @@ public class BVHViewer : MonoBehaviour {
 		return new Vector3(x,y,z);
 	}
 
-	public static Vector4 ReadColor(string value) {
+	public Vector4 ReadColor(string value) {
 		value = FilterValueField(value);
 		string[] values = value.Split(' ');
 		float r = ParseFloat(values[0]);
@@ -339,7 +279,7 @@ public class BVHViewer : MonoBehaviour {
 		return new Color(r,g,b,a);
 	}
 
-	public static string FilterValueField(string value) {
+	public string FilterValueField(string value) {
 		while(value.Contains("  ")) {
 			value = value.Replace("  "," ");
 		}
@@ -361,7 +301,7 @@ public class BVHViewer : MonoBehaviour {
 		return value;
 	}
 
-	public static int ParseInt(string value) {
+	public int ParseInt(string value) {
 		int parsed = 0;
 		if(int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
 			return parsed;
@@ -371,7 +311,7 @@ public class BVHViewer : MonoBehaviour {
 		}
 	}
 
-	public static float ParseFloat(string value) {
+	public float ParseFloat(string value) {
 		float parsed = 0f;
 		if(float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
 			return parsed;
@@ -381,42 +321,43 @@ public class BVHViewer : MonoBehaviour {
 		}
 	}
 
+	[System.Serializable]
 	public class Keyframe {
 		public int Index;
 		public float Timestamp;
 		public Vector3[] Positions;
 		public Quaternion[] Rotations;
 
-		public Keyframe(Transform[] bones, List<Transformation> zero, List<int[]> channels, float[] motion, int index, float timestamp, float unitScale) {
+		public Keyframe(Character Character, List<Transformation> zero, List<int[]> channels, float[] motion, int index, float timestamp, float unitScale) {
 			Index = index;
 			Timestamp = timestamp;
-			Positions = new Vector3[bones.Length];
-			Rotations = new Quaternion[bones.Length];
+			Positions = new Vector3[Character.Bones.Length];
+			Rotations = new Quaternion[Character.Bones.Length];
 			//Forward Kinematics
 			int channel = 0;
-			for(int i=0; i<bones.Length; i++) {
+			for(int i=0; i<Character.Bones.Length; i++) {
 				if(i == 0) {
 					Vector3 position = new Vector3(motion[channel+0], motion[channel+1], motion[channel+2]);
 					Quaternion rotation =
 						GetAngleAxis(motion[channel+3], channels[i][4]) *
 						GetAngleAxis(motion[channel+4], channels[i][5]) *
 						GetAngleAxis(motion[channel+5], channels[i][6]);
-					bones[i].localPosition = position / unitScale;
-					bones[i].localRotation = rotation;
+					Character.Bones[i].SetPosition(position / unitScale);
+					Character.Bones[i].SetRotation(rotation);
 					channel += 6;
 				} else {
 					Quaternion rotation =
 						GetAngleAxis(motion[channel+0], channels[i][1]) *
 						GetAngleAxis(motion[channel+1], channels[i][2]) *
 						GetAngleAxis(motion[channel+2], channels[i][3]);
-					bones[i].localPosition = zero[i].Position / unitScale;
-					bones[i].localRotation = zero[i].Rotation * rotation;
+					Character.Bones[i].SetPosition(Character.Bones[i].GetParent(Character).GetPosition() + Character.Bones[i].GetParent(Character).GetRotation() * zero[i].Position / unitScale);
+					Character.Bones[i].SetRotation(Character.Bones[i].GetParent(Character).GetRotation() * zero[i].Rotation * rotation);
 					channel += 3;
 				}
 			}
-			for(int i=0; i<bones.Length; i++) {
-				Positions[i] = bones[i].position;
-				Rotations[i] = bones[i].rotation;
+			for(int i=0; i<Character.Bones.Length; i++) {
+				Positions[i] = Character.Bones[i].GetPosition();
+				Rotations[i] = Character.Bones[i].GetRotation();
 			}
 		}
 
@@ -434,43 +375,72 @@ public class BVHViewer : MonoBehaviour {
 		}
 	}
 
-	void OnDrawGizmos() {
-		if(Loaded) {
-			if(ShowCapture) {
-				DrawCapture();
+	private void Inspect() {
+		Utility.SetGUIColor(Utility.Grey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					//Framerate = EditorGUILayout.FloatField("Framerate", Framerate);
+					UnitScale = EditorGUILayout.FloatField("Unit Scale", UnitScale);
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Path", GUILayout.Width(30));
+					Path = EditorGUILayout.TextField(Path);
+					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
+					if(GUILayout.Button("O", GUILayout.Width(20))) {
+						Path = EditorUtility.OpenFilePanel("BVH Viewer", Path == string.Empty ? Application.dataPath : Path.Substring(0, Path.LastIndexOf("/")), "bvh");
+						GUI.SetNextControlName("");
+						GUI.FocusControl("");
+					}
+					if(GUILayout.Button("X", GUILayout.Width(20))) {
+						Unload();
+					}
+					EditorGUILayout.EndHorizontal();
+				}
+				
+				if(Utility.GUIButton("Import", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					Load(Path);
+				}
+
 			}
-			DrawSkeleton(transform, Color.cyan, Color.black);
+
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				if(Loaded) {
+					Character.Inspector();
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Total Frames: " + TotalFrames, GUILayout.Width(150f));
+					EditorGUILayout.LabelField("Total Time: " + TotalTime, GUILayout.Width(150f));
+					EditorGUILayout.LabelField("Frame Time: " + FrameTime + "(" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(300f));
+					EditorGUILayout.EndHorizontal();
+					//ShowCapture = EditorGUILayout.Toggle("Show Capture", ShowCapture);
+					EditorGUILayout.BeginHorizontal();
+					ControlKeyframe();
+					EditorGUILayout.LabelField(CurrentKeyframe.Timestamp.ToString() + "s", GUILayout.Width(100f));
+					EditorGUILayout.EndHorizontal();
+					if(Playing) {
+						if(Utility.GUIButton("Stop", Color.white, Color.grey, TextAnchor.MiddleCenter)) {
+							Stop();
+						}
+					} else {
+						if(Utility.GUIButton("Play", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+							Play();
+						}
+					}
+					
+				} else {
+					EditorGUILayout.LabelField("No animation loaded.");
+				}
+			}
 		}
 	}
 
-	private void DrawCapture() {
-		Keyframe frame = CurrentKeyframe;
-		float step = 1f;
-		for(int i=2; i<=TotalFrames; i++) {
-			Gizmos.color = Color.magenta;
-			Gizmos.DrawLine(GetKeyframe(i-1).Positions[0], GetKeyframe(i).Positions[0]);
-		}
-		for(float i=0f; i<=TotalTime; i+=step) {
-			ShowKeyframe(i);
-			Color boneColor = Color.Lerp(Color.red, Color.green, i/TotalTime);
-			boneColor.a = 1f/3f;
-			Color jointColor = Color.black;
-			jointColor.a = 1f/3f;
-			DrawSkeleton(transform, boneColor, jointColor);
-		}
-		ShowKeyframe(frame);
-	}
-
-	private void DrawSkeleton(Transform t, Color boneColor, Color jointColor) {
-		Gizmos.color = boneColor;
-		for(int i=0; i<t.childCount; i++) {
-			Gizmos.DrawLine(t.position, t.GetChild(i).position);
-		}
-		Gizmos.color = jointColor;
-		Gizmos.DrawSphere(t.position, 0.025f);
-		for(int i=0; i<t.childCount; i++) {
-			DrawSkeleton(t.GetChild(i), boneColor, jointColor);
+	private void ControlKeyframe() {
+		int newIndex = EditorGUILayout.IntSlider(CurrentKeyframe.Index, 1, TotalFrames, GUILayout.Width(500f));
+		if(newIndex != CurrentKeyframe.Index) {
+			Keyframe frame = GetKeyframe(newIndex);
+			PlayTime = frame.Timestamp;
+			ShowKeyframe(frame.Index);
 		}
 	}
-
 }

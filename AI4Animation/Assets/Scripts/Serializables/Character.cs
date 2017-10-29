@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,75 +6,109 @@ using UnityEditor;
 [System.Serializable]
 public class Character {
 
-	public Transform Owner = null;
-
 	public bool Inspect = false;
 
 	public Bone[] Bones = new Bone[0];
 
 	public float BoneSize = 0.025f;
 
-	public Character(Transform owner) {
-		Owner = owner;
+	public Character() {
 		Inspect = false;
-		BuildHierarchy();
 		BoneSize = 0.025f;
 	}
 
-	public void ForwardKinematics() {
-		
+	public void Clear() {
+		System.Array.Resize(ref Bones, 0);
+	}
+
+	public Bone GetRoot() {
+		if(Bones.Length == 0) {
+			Debug.Log("Character has not been assigned a root bone.");
+			return null;
+		}
+		return Bones[0];
+	}
+
+	public void ForwardKinematics(Transform root) {
+		int index = 0;
+		ForwardKinematics(root, ref index);
+		if(index != Bones.Length) {
+			Debug.Log("Forward kinematics did not finish properly because the number of transforms and bones did not match.");
+		}
+	}
+
+	private void ForwardKinematics(Transform transform, ref int index) {
+		if(index < Bones.Length) {
+			Bones[index].SetPosition(transform.position);
+			Bones[index].SetRotation(transform.rotation);
+			index += 1;
+			for(int i=0; i<transform.childCount; i++) {
+				ForwardKinematics(transform.GetChild(i), ref index);
+			}
+		}
 	}
 
 	public Bone FindBone(string name) {
 		return System.Array.Find(Bones, x => x.GetName() == name);
 	}
 
-	public Bone FindBone(Transform transform) {
-		return System.Array.Find(Bones, x => x.GetTransform() == transform);
+	public bool RebuildRequired(Transform root) {
+		bool error = false;
+		RebuildRequired(root, GetRoot(), ref error);
+		return error;
 	}
 
-	public bool RebuildRequired() {
-		for(int i=0; i<Bones.Length; i++) {
-			if(Bones[i].GetTransform() == null) {
-				return true;
-			}
-			if(Bones[i].GetTransform().childCount != Bones[i].GetChildCount()) {
-				return true;
-			} else {
-				for(int j=0; j<Bones[i].GetTransform().childCount; j++) {
-					if(Bones[i].GetTransform().GetChild(j) != Bones[i].GetChild(this, j).GetTransform()) {
-						return true;
-					}
-				}
-			}
+	private void RebuildRequired(Transform transform, Bone bone, ref bool error) {
+		if(error) {
+			return;
 		}
-		return false;
-	}
-
-	public void BuildHierarchy() {
-		List<Bone> bones = new List<Bone>();
-		BuildHierarchy(Owner, ref bones);
-		Bones = bones.ToArray();
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].SetParent(this, FindBone(Bones[i].GetTransform().parent));
-			for(int j=0; j<Bones[i].GetTransform().childCount; j++) {
-				Bones[i].AddChild(this, FindBone(Bones[i].GetTransform().GetChild(j)));
-			}
+		if(transform.name != bone.GetName() || transform.childCount != bone.GetChildCount()) {
+			error = true;
 		}
-	}
-
-	private void BuildHierarchy(Transform transform, ref List<Bone> bones) {
-		Bone bone = FindBone(transform);
-		if(bone == null) {
-			bone = new Bone(transform, bones.Count);
-		} else {
-			bone.SetIndex(bones.Count);
-			bone.RemoveParent();
-			bone.RemoveChilds();
-		}
-		bones.Add(bone);
 		for(int i=0; i<transform.childCount; i++) {
-			BuildHierarchy(transform.GetChild(i), ref bones);
+			RebuildRequired(transform.GetChild(i), bone.GetChild(this, i), ref error);
+		}
+	}
+
+	public void BuildHierarchy(Transform root) {
+		System.Array.Resize(ref Bones, 0);
+		BuildHierarchy(root, null);
+		//Print();
+	}
+
+	private void BuildHierarchy(Transform transform, Bone parent) {
+		Bone bone = AddBone(transform.name, parent);
+		for(int i=0; i<transform.childCount; i++) {
+			BuildHierarchy(transform.GetChild(i), bone);
+		}
+	}
+
+	public Bone AddBone(string name, Bone parent) {
+		Bone bone = new Bone(name, Bones.Length);
+		System.Array.Resize(ref Bones, Bones.Length+1);
+		Bones[Bones.Length-1] = bone;
+		if(parent != null) {
+			bone.SetParent(this, parent);
+			parent.AddChild(this, bone);
+		}
+		return bone;
+	}
+
+	public void Print() {
+		Print(GetRoot());
+	}
+
+	private void Print(Bone bone) {
+		string output = string.Empty;
+		output += "Name: " + bone.GetName() + " ";
+		output += "Parent: " + bone.GetParent(this) + " ";
+		output += "Childs: ";
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			output += bone.GetChild(this, i).GetName() + " ";
+		}
+		UnityEngine.Debug.Log(output);
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			Print(bone.GetChild(this, i));
 		}
 	}
 
@@ -83,26 +116,24 @@ public class Character {
 	public class Bone {
 		public bool Expanded = false;
 		public bool Draw = true;
-		
-		[SerializeField] private Transform Transform = null;	
+
+		[SerializeField] private string Name = "Empty";		
+		[SerializeField] private Vector3 Position = Vector3.zero;	
+		[SerializeField] private Quaternion Rotation = Quaternion.identity;
 		[SerializeField] private int Index = -1;
 		[SerializeField] private int Parent = -1;
 		[SerializeField] private int[] Childs = new int[0];
 
-		public Bone(Transform t, int index) {
+		public Bone(string name, int index) {
 			Draw = true;
-			Transform = t;
+			Name = name;
 			Index = index;
 			Parent = -1;
 			Childs = new int[0];
 		}
 
 		public string GetName() {
-			return Transform.name;
-		}
-
-		public Transform GetTransform() {
-			return Transform;
+			return Name;
 		}
 
 		public void SetIndex(int index) {
@@ -161,33 +192,33 @@ public class Character {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Transform.position = position;
+			Position = position;
 		}
 
 		public void SetRotation(Quaternion rotation) {
-			Transform.rotation = rotation;
+			Rotation = rotation;
 		}
 
 		public Vector3 GetPosition() {
-			return Transform.position;
+			return Position;
 		}
 
 		public Quaternion GetRotation() {
-			return Transform.rotation;
+			return Rotation;
 		}
 	}
 
 	public void Draw() {
 		UnityGL.Start();
-		Draw(FindBone(Owner));
+		Draw(GetRoot());
 		UnityGL.Finish();
 	}
 
 	private void Draw(Bone bone) {
-		if(bone.GetTransform() != null && bone.Draw) {
+		if(bone.Draw) {
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
-				if(child.GetTransform() != null && child.Draw) {
+				if(child.Draw) {
 					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan);
 				}
 			}
@@ -216,9 +247,6 @@ public class Character {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
-					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						BuildHierarchy();
-					}
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Expand All", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
 						for(int i=0; i<Bones.Length; i++) {
@@ -231,10 +259,11 @@ public class Character {
 						}
 					}
 					EditorGUILayout.EndHorizontal();
-					if(RebuildRequired()) {
-						EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
+					if(Bones.Length > 0) {
+						InspectHierarchy(GetRoot(), 0);
+					} else {
+						EditorGUILayout.LabelField("No character hierarchy defined.");
 					}
-					InspectHierarchy(FindBone(Owner), 0);
 				}
 			}
 		}
@@ -243,21 +272,17 @@ public class Character {
 	private void InspectHierarchy(Bone bone, int indent) {
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
-		if(bone.GetTransform() == null) {
-			EditorGUILayout.LabelField("Bone information missing.");
+		if(bone.GetChildCount() > 0) {
+			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
+				bone.Expanded = !bone.Expanded;
+			}
 		} else {
-			if(bone.GetChildCount() > 0) {
-				if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
-					bone.Expanded = !bone.Expanded;
-				}
-			} else {
-				bone.Expanded = false;
-			}
-			EditorGUILayout.LabelField(bone.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
-			GUILayout.FlexibleSpace();
-			if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, TextAnchor.MiddleLeft, 40f, 20f)) {
-				bone.Draw = !bone.Draw;
-			}
+			bone.Expanded = false;
+		}
+		EditorGUILayout.LabelField(bone.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
+		GUILayout.FlexibleSpace();
+		if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, TextAnchor.MiddleLeft, 40f, 20f)) {
+			bone.Draw = !bone.Draw;
 		}
 		EditorGUILayout.EndHorizontal();
 		if(bone.Expanded) {

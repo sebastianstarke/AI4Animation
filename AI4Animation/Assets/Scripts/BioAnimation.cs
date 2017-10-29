@@ -28,7 +28,8 @@ public class BioAnimation : MonoBehaviour {
 	void Reset() {
 		Root = transform;
 		Controller = new Controller();
-		Character = new Character(transform);
+		Character = new Character();
+		Character.BuildHierarchy(transform);
 		Trajectory = new Trajectory();
 		PFNN = new PFNN();
 	}
@@ -222,19 +223,15 @@ public class BioAnimation : MonoBehaviour {
 		CollisionChecks(Trajectory.GetRootPointIndex());
 		
 		//Compute Posture
-		//TODO: Create lookup table for forward kinematics mapping to non-hierarchical output neurons
-		//TODO: Do not override...done for now
+		//TODO: Create lookup table to map to character
 		Vector3[] positions = new Vector3[Joints.Length];
-		//Root.OverridePosition(newRoot.Position);
-		//Root.OverrideRotation(newRoot.Rotation);
+		//TODO: rotations
 		int opos = 8 + 4*Trajectory.GetRootSampleIndex() + Joints.Length*3*0;
 		int ovel = 8 + 4*Trajectory.GetRootSampleIndex() + Joints.Length*3*1;
 		for(int i=0; i<Joints.Length; i++) {			
 			Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
 			Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
 			positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
-			//Joints[i].OverridePosition(Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot));
-			//Joints[i].OverrideRotation(Quaternion.identity); //TODO: Compute mesh rotations
 			Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 		}
 		
@@ -244,6 +241,9 @@ public class BioAnimation : MonoBehaviour {
 		for(int i=0; i<Joints.Length; i++) {
 			Joints[i].position = positions[i];
 		}
+
+		//Map to Character
+		Character.ForwardKinematics(Root);
 
 		/* Update Phase */
 		Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -306,12 +306,15 @@ public class BioAnimation : MonoBehaviour {
 		UnityGL.DrawLine(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetPosition() + TargetVelocity, 0.05f, 0f, transparentTargetVelocity);
 		UnityGL.Finish();
 
+		if(!Application.isPlaying) {
+			Character.ForwardKinematics(Root);
+		}
 		Character.Draw();
 		
 		if(Application.isPlaying) {
 			UnityGL.Start();
 			for(int i=0; i<Joints.Length; i++) {
-				Character.Bone bone = Character.FindBone(Joints[i]);
+				Character.Bone bone = Character.FindBone(Joints[i].name);
 				if(bone != null) {
 					if(bone.Draw) {
 						UnityGL.DrawArrow(
