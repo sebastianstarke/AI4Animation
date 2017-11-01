@@ -16,7 +16,7 @@ public class Character {
 
 	public Character() {
 		Inspect = false;
-		BoneSize = 0.025f;
+		BoneSize = 0.05f;
 	}
 
 	public void Clear() {
@@ -47,6 +47,17 @@ public class Character {
 			for(int i=0; i<transform.childCount; i++) {
 				ForwardKinematics(transform.GetChild(i), ref index);
 			}
+		}
+	}
+
+	public void ForwardKinematics(Transformation[] transformations) {
+		if(Bones.Length != transformations.Length) {
+			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
+			return;
+		}
+		for(int i=0; i<Bones.Length; i++) {
+			Bones[i].SetPosition(transformations[i].Position);
+			Bones[i].SetRotation(transformations[i].Rotation);
 		}
 	}
 
@@ -86,6 +97,10 @@ public class Character {
 	}
 
 	public Bone AddBone(string name, Bone parent) {
+		if(FindBone(name) != null) {
+			Debug.Log("Bone has not been added because another bone with name " + name + " already exists.");
+			return null;
+		}
 		Bone bone = new Bone(name, Bones.Length);
 		System.Array.Resize(ref Bones, Bones.Length+1);
 		Bones[Bones.Length-1] = bone;
@@ -223,7 +238,7 @@ public class Character {
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
 				if(child.Draw) {
-					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan);
+					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
 			UnityGL.DrawMesh(
@@ -236,6 +251,27 @@ public class Character {
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));
+		}
+	}
+
+	public void DrawSimple() {
+		UnityGL.Start();
+		DrawSimple(GetRoot());
+		UnityGL.Finish();
+	}
+
+	private void DrawSimple(Bone bone) {
+		if(bone.Draw) {
+			for(int i=0; i<bone.GetChildCount(); i++) {
+				Bone child = bone.GetChild(this, i);
+				if(child.Draw) {
+					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), Color.grey);
+				}
+			}
+			UnityGL.DrawCircle(bone.GetPosition(), 0.01f, Color.black);
+		}
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			DrawSimple(bone.GetChild(this, i));
 		}
 	}
 

@@ -41,7 +41,7 @@ public static class UnityGL {
 		// Turn backface culling off
 		ColorMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 		// Turn off depth writes
-		ColorMaterial.SetInt("_ZWrite", 0);
+		ColorMaterial.SetInt("_ZWrite", 1);
     }
 
 	static void CreateCircleData() {
@@ -182,6 +182,20 @@ public static class UnityGL {
 		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
+
+		/*
+		Vector3 center = 0.5f*(end+start);
+		Vector3 ctoA = start+orthoStart-center;
+		Vector3 ctoB = start-orthoStart-center;
+		Vector3 ctoC = end-orthoEnd-center;
+		Vector3 ctoD = end+orthoEnd-center;
+
+		GL.Color(Color.black);
+        GL.Vertex(center+ctoA+0.01f*(start-ViewPosition).normalized);
+		GL.Vertex(center+ctoB+0.01f*(start-ViewPosition).normalized);
+		GL.Vertex(center+ctoC+0.01f*(end-ViewPosition).normalized);
+		GL.Vertex(center+ctoD+0.01f*(end-ViewPosition).normalized);
+		*/
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);

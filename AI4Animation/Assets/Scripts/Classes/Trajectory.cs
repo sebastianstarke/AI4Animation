@@ -12,7 +12,15 @@ public class Trajectory {
 	private const int FuturePoints = 5;
 	private const int Density = 10;
 
+	public Trajectory() {
+		Initialise(Vector3.zero, Vector3.forward);
+	}
+
 	public Trajectory(Vector3 position, Vector3 direction) {
+		Initialise(position, direction);
+	}
+
+	private void Initialise(Vector3 position, Vector3 direction) {
 		Inspect = false;
 		Width = 0.5f;
 		Points = new Point[GetPointCount()];

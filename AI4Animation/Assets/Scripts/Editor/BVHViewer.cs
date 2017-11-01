@@ -5,27 +5,26 @@ using System.IO;
 
 public class BVHViewer : EditorWindow {
 
-	private static EditorWindow Window;
+	public static EditorWindow Window;
 
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
 
-	public Character Character;
+	public bool Preview = false;
 
+	public bool Loaded = false;
+
+	public Character Character = null;
+	public Vector3 ForwardOrientation = Vector3.zero;
+	public float[] PhaseFunction = new float[0];
+	
 	public Frame[] Frames = new Frame[0];
 	public Frame CurrentFrame = null;
-
 	public int TotalFrames = 0;
 	public float TotalTime = 0f;
 	public float FrameTime = 0f;
 	public float PlayTime = 0f;
-	public int Framerate = 60;
-	public bool Loaded = false;
 	public bool Playing = false;
-	public bool Preview = false;
-
-	public bool Trajectory = false;
-	public Vector3 Orientation;
 
 	public System.DateTime Timestamp;
 
@@ -33,7 +32,7 @@ public class BVHViewer : EditorWindow {
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(BVHViewer));
 		
-		Vector2 size = new Vector2(600f, 400f);
+		Vector2 size = new Vector2(600f, 600f);
 		Window.minSize = size;
 		Window.maxSize = size;
 	}
@@ -66,7 +65,7 @@ public class BVHViewer : EditorWindow {
 			if(PlayTime > TotalTime) {
 				PlayTime -= TotalTime;
 			}
-			ShowFrame(PlayTime);
+			LoadFrame(PlayTime);
 		}
 	}
 
@@ -107,6 +106,18 @@ public class BVHViewer : EditorWindow {
 
 			}
 
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.SetGUIColor(Utility.Orange);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.LabelField("Settings");
+				}
+
+				Preview = EditorGUILayout.Toggle("Preview", Preview);
+				ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", ForwardOrientation);
+			}
+			
+
 			if(!Loaded) {
 				Utility.SetGUIColor(Utility.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -116,13 +127,9 @@ public class BVHViewer : EditorWindow {
 				return;
 			}
 
+			Utility.SetGUIColor(Utility.Orange);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
-
-				Utility.SetGUIColor(Utility.Orange);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField("Viewer");
-				}
+				Utility.ResetGUIColor();
 
 				Character.Inspector();
 
@@ -130,10 +137,7 @@ public class BVHViewer : EditorWindow {
 				EditorGUILayout.LabelField("Total Frames: " + TotalFrames, GUILayout.Width(140f));
 				EditorGUILayout.LabelField("Total Time: " + TotalTime + "s", GUILayout.Width(140f));
 				EditorGUILayout.LabelField("Frame Time: " + FrameTime + "s" + " (" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(200f));
-				EditorGUILayout.LabelField("Preview", GUILayout.Width(50f));
-				Preview = EditorGUILayout.Toggle(Preview, GUILayout.Width(20f));
 				EditorGUILayout.EndHorizontal();
-				Framerate = Mathf.Max(1, EditorGUILayout.IntField("Framerate", Framerate));
 
 				EditorGUILayout.BeginHorizontal();
 				if(Playing) {
@@ -149,27 +153,45 @@ public class BVHViewer : EditorWindow {
 				if(newIndex != CurrentFrame.Index) {
 					Frame frame = GetFrame(newIndex);
 					PlayTime = frame.Timestamp;
-					ShowFrame(frame.Index);
+					LoadFrame(frame.Index);
 				}
 				EditorGUILayout.LabelField(CurrentFrame.Timestamp.ToString() + "s", GUILayout.Width(100f));
 				EditorGUILayout.EndHorizontal();
 
-			}
+				DrawFunctions();
 
-			using(new EditorGUILayout.VerticalScope ("Box")) {
+				EditorGUILayout.BeginHorizontal();
+				if(Utility.GUIButton("Previous Keyframe", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					Frame prev = GetPreviousKeyframe(CurrentFrame);
+					if(prev != null) {
+						LoadFrame(prev);
+					}
+				}
+				if(Utility.GUIButton("Next Keyframe", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					Frame next = GetNextKeyframe(CurrentFrame);
+					if(next != null) {
+						LoadFrame(next);
+					}
+				}
+				EditorGUILayout.EndHorizontal();
 
-				Utility.SetGUIColor(Utility.Orange);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField("Processing");
+				CurrentFrame.SetKeyframe(EditorGUILayout.Toggle("Keyframe", CurrentFrame.IsKeyframe));
+
+				if(!CurrentFrame.IsKeyframe) {
+					EditorGUI.BeginDisabledGroup(true);
+					EditorGUILayout.Slider("Phase", CurrentFrame.Phase, 0f, 1f);
+					EditorGUI.EndDisabledGroup();
+				} else {
+					CurrentFrame.Interpolate(EditorGUILayout.Slider("Phase", CurrentFrame.Phase, 0f, 1f));
 				}
 
 				if(Utility.GUIButton("Export Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
 					ExportSkeleton(Character.GetRoot(), null);
 				}
 
-				Trajectory = EditorGUILayout.Toggle("Trajectory", Trajectory);
-				Orientation = EditorGUILayout.Vector3Field("Orientation", Orientation);
+				//if(Utility.GUIButton("Compute Foot Contacts", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					//ComputeFootContacts(); //TODO
+				//}
 
 			}
 
@@ -180,76 +202,29 @@ public class BVHViewer : EditorWindow {
 		if(Loaded) {
 
 			if(Preview) {
-				Frame frame = CurrentFrame;
 				float step = 1f;
+				Frame frame = CurrentFrame;
 				UnityGL.Start();
 				for(int i=2; i<=TotalFrames; i++) {
 					UnityGL.DrawLine(GetFrame(i-1).Positions[0], GetFrame(i).Positions[0], Color.magenta);
 				}
 				UnityGL.Finish();
 				for(float i=0f; i<=TotalTime; i+=step) {
-					ShowFrame(i);
-					Color boneColor = Color.Lerp(Color.red, Color.green, i/TotalTime);
-					boneColor.a = 1f/3f;
-					Color jointColor = Color.black;
-					jointColor.a = 1f/3f;
-					DrawSimple(Character.GetRoot(), boneColor, jointColor);
+					LoadFrame(i);
+					Character.DrawSimple();
 				}
-				ShowFrame(frame);
+				LoadFrame(frame);
 			}
 
-			if(Trajectory) {
-				Trajectory trajectory = ComputeTrajectory();
-				if(trajectory != null) {
-					trajectory.Draw();
-				}
-			}
+			GenerateTrajectory(CurrentFrame).Draw();
 
 			Character.Draw();
 
 		}
 	}
 
-	private void DrawSimple(Character.Bone bone, Color boneColor, Color jointColor) {;
-		Handles.color = boneColor;
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			Handles.DrawLine(bone.GetPosition(), bone.GetChild(Character, i).GetPosition());
-		}
-		Handles.color = jointColor;
-		Handles.SphereHandleCap(0, bone.GetPosition(), bone.GetRotation(), Character.BoneSize, EventType.repaint);
-		Handles.color = Color.white;
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			DrawSimple(bone.GetChild(Character, i), boneColor, jointColor);
-		}
-	}
 
-	private void ExportSkeleton(Character.Bone bone, Transform parent) {
-		Transform instance = new GameObject(bone.GetName()).transform;
-		instance.SetParent(parent);
-		instance.position = bone.GetPosition();
-		instance.rotation = bone.GetRotation();
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(bone.GetChild(Character, i), instance);
-		}
-	}
-
-	private Trajectory ComputeTrajectory() {
-		Trajectory trajectory = new Trajectory(Vector3.zero, Vector3.forward);
-		float step = 1f/60f;
-		for(int i=0; i<trajectory.Points.Length; i++) {
-			Trajectory.Point point = trajectory.Points[i];
-			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp - 1f + i*step, 0f, TotalTime);
-			Frame frame = GetFrame(timestamp, 60);
-			point.SetPosition(frame.Positions[0]);
-			Vector3 direction = frame.Rotations[0] * Quaternion.Euler(Orientation) * Vector3.forward;
-			direction.y = 0f;
-			direction = direction.normalized;
-			point.SetDirection(direction);
-		}
-		return trajectory;
-	}
-
-	public void Load(string path) {
+	private void Load(string path) {
 		Unload();
 
 		string[] lines = File.ReadAllLines(Path);
@@ -332,45 +307,40 @@ public class BVHViewer : EditorWindow {
 		//Build Frames
 		System.Array.Resize(ref Frames, TotalFrames);
 		for(int i=0; i<TotalFrames; i++) {
-			Frames[i] = new Frame(Character, zero.ToArray(), channels.ToArray(), motions[i], i+1, i*FrameTime, UnitScale);
+			Frames[i] = new Frame(this, zero.ToArray(), channels.ToArray(), motions[i], i+1, i*FrameTime, UnitScale);
 		}
 
 		//Load First Frame
-		ShowFrame(1);
+		LoadFrame(1);
 
 		Loaded = true;
 	}
 
-	public void Unload() {
+	private void Unload() {
 		if(!Loaded) {
 			return;
 		}
+		Loaded = false;
 		Character.Clear();
 		System.Array.Resize(ref Frames, 0);
 		CurrentFrame = null;
-
 		TotalFrames = 0;
 		TotalTime = 0f;
 		FrameTime = 0f;
 		PlayTime = 0f;
-		Framerate = 60;
-
-		Loaded = false;
 		Playing = false;
-		Preview = false;
-		Trajectory = false;
 	}
 
-	public void Play() {
+	private void Play() {
 		Timestamp = Utility.GetTimestamp();
 		Playing = true;
 	}
 
-	public void Stop() {
+	private void Stop() {
 		Playing = false;
 	}
 
-	public void ShowFrame(Frame Frame) {
+	private void LoadFrame(Frame Frame) {
 		if(Frame == null) {
 			return;
 		}
@@ -386,15 +356,15 @@ public class BVHViewer : EditorWindow {
 		Repaint();
 	}
 
-	public void ShowFrame(int index) {
-		ShowFrame(GetFrame(index));
+	private void LoadFrame(int index) {
+		LoadFrame(GetFrame(index));
 	}
 
-	public void ShowFrame(float time) {
-		ShowFrame(GetFrame(time, Framerate));
+	private void LoadFrame(float time) {
+		LoadFrame(GetFrame(time));
 	}
 
-	public Frame GetFrame(int index) {
+	private Frame GetFrame(int index) {
 		if(index < 1 || index > TotalFrames) {
 			Debug.Log("Please specify an index between 1 and " + TotalFrames + ".");
 			return null;
@@ -402,54 +372,235 @@ public class BVHViewer : EditorWindow {
 		return Frames[index-1];
 	}
 
-	public Frame GetFrame(float time, float framerate) {
+	private Frame GetFrame(float time) {
 		if(time < 0f || time > TotalTime) {
 			Debug.Log("Please specify a time between 0 and " + TotalTime + ".");
 			return null;
 		}
-		float overflow = Mathf.Repeat(time, 1f/framerate);
-		time -= overflow;
 		return GetFrame(Mathf.Min(Mathf.FloorToInt(time / FrameTime) + 1, TotalFrames));
+	}
+
+	/*
+	private Frame GetFirstKeyframe() {
+		for(int i=1; i<=TotalFrames; i++) {
+			if(GetFrame(i).IsKeyframe) {
+				return GetFrame(i);
+			}
+		}
+		return null;
+	}
+
+	private Frame GetLastKeyframe() {
+		for(int i=TotalFrames; i>=1; i--) {
+			if(GetFrame(i).IsKeyframe) {
+				return GetFrame(i);
+			}
+		}
+		return null;
+	}
+	*/
+
+	private Frame GetPreviousKeyframe(Frame frame) {
+		for(int i=frame.Index-1; i>=1; i--) {
+			if(GetFrame(i).IsKeyframe) {
+				return GetFrame(i);
+			}
+		}
+		return null;
+	}
+
+	private Frame GetNextKeyframe(Frame frame) {
+		for(int i=frame.Index+1; i<=TotalFrames; i++) {
+			if(GetFrame(i).IsKeyframe) {
+				return GetFrame(i);
+			}
+		}
+		return null;
+	}
+
+	private Trajectory GenerateTrajectory(Frame frame) {
+		Trajectory trajectory = new Trajectory();
+		//Past
+		int past = trajectory.GetPastPoints() * trajectory.GetDensity();
+		for(int i=0; i<past; i+=trajectory.GetDensity()) {
+			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/(float)past, 0f, TotalTime);
+			trajectory.Points[i].SetPosition(GetFrame(timestamp).Positions[0]);
+			Vector3 direction = GetFrame(timestamp).Rotations[0] * Quaternion.Euler(ForwardOrientation) * Vector3.forward;
+			direction.y = 0f;
+			direction = direction.normalized;
+			trajectory.Points[i].SetDirection(direction);
+		}
+		//Current
+		trajectory.Points[past].SetPosition(frame.Positions[0]);
+		Vector3 dir = frame.Rotations[0] * Quaternion.Euler(ForwardOrientation) * Vector3.forward;
+		dir.y = 0f;
+		dir = dir.normalized;
+		trajectory.Points[past].SetDirection(dir);
+		//Future
+		int future = trajectory.GetFuturePoints() * trajectory.GetDensity();
+		for(int i=trajectory.GetDensity(); i<=future; i+=trajectory.GetDensity()) {
+			float timestamp = Mathf.Clamp(frame.Timestamp + (float)i/(float)future, 0f, TotalTime);
+			trajectory.Points[past+i].SetPosition(GetFrame(timestamp).Positions[0]);
+			Vector3 direction = GetFrame(timestamp).Rotations[0] * Quaternion.Euler(ForwardOrientation) * Vector3.forward;
+			direction.y = 0f;
+			direction = direction.normalized;
+			trajectory.Points[past+i].SetDirection(direction);
+		}
+		return trajectory;
+	}
+
+	private void InterpolatePhase(Frame a, Frame b) {
+		if(a == null || b == null) {
+			Debug.Log("A given frame was null.");
+			return;
+		}
+		int dist = b.Index - a.Index - 1;
+		if(dist != 0) {
+			for(int i=a.Index+1; i<b.Index; i++) {
+				float rateA = (float)((float)GetFrame(i).Index-(float)a.Index)/(float)dist;
+				float rateB = (float)((float)b.Index-(float)GetFrame(i).Index)/(float)dist;
+				rateA = rateA * rateA + rateA;
+				rateB = rateB * rateB + rateB;
+				GetFrame(i).Phase = rateB/(rateA+rateB)*a.Phase + rateA/(rateA+rateB)*b.Phase;
+			}
+		}
+	}
+
+	private void InterpolateGaits(Frame a, Frame b) {
+		if(a == null || b == null) {
+			Debug.Log("A given frame was null.");
+			return;
+		}
+	}
+
+	private void DrawFunctions() {
+		float height = 50f;
+
+		EditorGUILayout.BeginVertical(GUILayout.Height(height));
+
+		Rect ctrl = EditorGUILayout.GetControlRect();
+		Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, height);
+		EditorGUI.DrawRect(rect, Color.black);
+
+		//All values between 0 and 1
+		Handles.color = Color.green;
+		for(int i=1; i<Frames.Length; i++) {
+			Vector3 prevPos = new Vector3((float)(i-1)/Frames.Length, Frames[i-1].Phase, 0);
+			Vector3 newPos = new Vector3((float)i/Frames.Length, Frames[i].Phase, 0f);
+			Handles.DrawLine(
+				new Vector3(rect.xMin + prevPos.x * rect.width, rect.yMax - prevPos.y * rect.height, 0f), 
+				new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f));
+		}
+		Handles.color = Color.red;
+		Handles.DrawLine(
+			new Vector3(rect.xMin + (float)CurrentFrame.Index/Frames.Length * rect.width, rect.yMax - 0f * rect.height, 0f), 
+			new Vector3(rect.xMin + (float)CurrentFrame.Index/Frames.Length * rect.width, rect.yMax - 1f * rect.height, 0f));
+
+		EditorGUILayout.EndVertical();
+	}
+
+	private void ExportSkeleton(Character.Bone bone, Transform parent) {
+		Transform instance = new GameObject(bone.GetName()).transform;
+		instance.SetParent(parent);
+		instance.position = bone.GetPosition();
+		instance.rotation = bone.GetRotation();
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			ExportSkeleton(bone.GetChild(Character, i), instance);
+		}
 	}
 
 	[System.Serializable]
 	public class Frame {
+		public BVHViewer Viewer;
+
 		public int Index;
 		public float Timestamp;
 		public Vector3[] Positions;
 		public Quaternion[] Rotations;
 
-		public Frame(Character Character, Transformation[] zeros, int[][] channels, float[] motion, int index, float timestamp, float unitScale) {
+		public bool IsKeyframe;
+		public float Phase;
+
+		public Frame(BVHViewer viewer, Transformation[] zeros, int[][] channels, float[] motion, int index, float timestamp, float unitScale) {
+			Viewer = viewer;
 			Index = index;
 			Timestamp = timestamp;
-			Positions = new Vector3[Character.Bones.Length];
-			Rotations = new Quaternion[Character.Bones.Length];
+			Positions = new Vector3[Viewer.Character.Bones.Length];
+			Rotations = new Quaternion[Viewer.Character.Bones.Length];
 			//Forward Kinematics
 			int channel = 0;
-			for(int i=0; i<Character.Bones.Length; i++) {
+			for(int i=0; i<Viewer.Character.Bones.Length; i++) {
 				if(i == 0) {
+					//Root
 					Vector3 position = new Vector3(motion[channel+0], motion[channel+1], motion[channel+2]);
 					Quaternion rotation =
 						GetAngleAxis(motion[channel+3], channels[i][4]) *
 						GetAngleAxis(motion[channel+4], channels[i][5]) *
 						GetAngleAxis(motion[channel+5], channels[i][6]);
-					Character.Bones[i].SetPosition(position / unitScale);
-					Character.Bones[i].SetRotation(rotation);
+					Viewer.Character.Bones[i].SetPosition(position / unitScale);
+					Viewer.Character.Bones[i].SetRotation(rotation);
 					channel += 6;
 				} else {
+					//Childs
 					Quaternion rotation =
 						GetAngleAxis(motion[channel+0], channels[i][1]) *
 						GetAngleAxis(motion[channel+1], channels[i][2]) *
 						GetAngleAxis(motion[channel+2], channels[i][3]);
-					Character.Bones[i].SetPosition(Character.Bones[i].GetParent(Character).GetPosition() + Character.Bones[i].GetParent(Character).GetRotation() * zeros[i].Position / unitScale);
-					Character.Bones[i].SetRotation(Character.Bones[i].GetParent(Character).GetRotation() * zeros[i].Rotation * rotation);
+					Viewer.Character.Bones[i].SetPosition(Viewer.Character.Bones[i].GetParent(Viewer.Character).GetPosition() + Viewer.Character.Bones[i].GetParent(Viewer.Character).GetRotation() * zeros[i].Position / unitScale);
+					Viewer.Character.Bones[i].SetRotation(Viewer.Character.Bones[i].GetParent(Viewer.Character).GetRotation() * zeros[i].Rotation * rotation);
 					channel += 3;
 				}
 			}
-			for(int i=0; i<Character.Bones.Length; i++) {
-				Positions[i] = Character.Bones[i].GetPosition();
-				Rotations[i] = Character.Bones[i].GetRotation();
+			for(int i=0; i<Viewer.Character.Bones.Length; i++) {
+				Positions[i] = Viewer.Character.Bones[i].GetPosition();
+				Rotations[i] = Viewer.Character.Bones[i].GetRotation();
 			}
+			
+			IsKeyframe = false;
+			Phase = 0f;
+		}
+
+		public void SetKeyframe(bool value) {
+			if(IsKeyframe == value) {
+				return;
+			}
+
+			IsKeyframe = value;
+
+			if(!IsKeyframe) {
+				Frame prev = Viewer.GetPreviousKeyframe(this);
+				if(prev == null) {
+					prev = Viewer.GetFrame(1);
+				}
+				Frame next = Viewer.GetNextKeyframe(this);
+				if(next == null) {
+					next = Viewer.GetFrame(Viewer.TotalFrames);
+				}
+
+				Viewer.InterpolatePhase(prev, next);
+			}
+		
+		}
+
+		public void Interpolate(float phase) {
+			if(Phase == phase) {
+				return;
+			}
+
+			Phase = phase;
+
+			Frame prev = Viewer.GetPreviousKeyframe(this);
+			if(prev == null) {
+				prev = Viewer.GetFrame(1);
+			}
+			Frame next = Viewer.GetNextKeyframe(this);
+			if(next == null) {
+				next = Viewer.GetFrame(Viewer.TotalFrames);
+			}
+
+			Viewer.InterpolatePhase(prev, this);
+			Viewer.InterpolatePhase(this, next);
+			
 		}
 
 		private Quaternion GetAngleAxis(float angle, int axis) {
