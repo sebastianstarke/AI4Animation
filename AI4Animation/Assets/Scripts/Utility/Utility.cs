@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public static class Utility {
 
+	public static Color White = Color.white;
 	public static Color Black = Color.black;
 	public static Color Red = Color.red;
 	public static Color Green = Color.green;
@@ -11,7 +12,12 @@ public static class Utility {
 	public static Color Magenta = Color.magenta;
 	public static Color Yellow = Color.yellow;
 	public static Color Grey = Color.grey;
+	public static Color LightGrey = new Color(0.75f, 0.75f, 0.75f, 1f);
+	public static Color DarkGrey = new Color(0.25f, 0.25f, 0.25f, 1f);
 	public static Color Orange = new Color(1f, 0.5f, 0f, 1f);
+	public static Color Brown = new Color(0.5f, 0.25f, 0f, 1f);
+	public static Color Mustard = new Color(1f, 0.75f, 0.25f, 1f);
+	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
 
 	private static Dictionary<PrimitiveType, Mesh> primitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
 
@@ -222,6 +228,18 @@ public static class Utility {
 		}
 	}
 
+	public static Color[] GetRainbowColors(int number) {
+		Color[] colors = new Color[number];
+		for(int i=0; i<number; i++) {
+			float frequency = 5f/number;
+			colors[i].r = Utility.Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].g = Utility.Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].b = Utility.Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].a = 1f;
+		}
+		return colors;
+	}
+
 	public static void Destroy(Object o) {
 		if(Application.isPlaying) {
 			GameObject.Destroy(o);
@@ -236,8 +254,15 @@ public static class Utility {
 
 	public static void ResetGUIColor() {
 		SetGUIColor(Color.white);
-	}	
+	}
 	
+	public static GUIStyle GetFontColor(Color color) {
+		GUIStyle style = new GUIStyle();
+		style.normal.textColor = color;
+		style.hover.textColor = color;
+		return style;
+	}
+
 	public static bool GUIButton(string label, Color backgroundColor, Color textColor, TextAnchor alignment) {
 		GUIStyle style = new GUIStyle("Button");
 		style.normal.textColor = textColor;
