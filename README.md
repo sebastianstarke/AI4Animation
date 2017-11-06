@@ -16,5 +16,8 @@ Development Status
 The code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano to generate the motion of the characters. Those can be imported during edit time and serialised inside Unity. The trajectory estimation module has been implemented which is required for generating the input for the network through user input, as shown below. It provides a smooth transition between past and future states, and rejects paths which would collide with obstacles. The output of the joint positions and velocities along with predicted trajectory information is then fed back to the character to update the posture.
 
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Trajectory.png" width="100%">
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Skeleton_1.png" width="100%">
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Skeleton_2.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo.png" width="100%">
+
+Data Preprocessing
+------------
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/BVH.png" width="100%">
