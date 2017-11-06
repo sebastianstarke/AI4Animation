@@ -2,13 +2,10 @@
 
 public static class UnityGL {
 
-	private static bool Initialised = false;
-
 	private static Material ColorMaterial;
-
+	private static Vector3[] IsocelesTrianglePoints;
 	private static int CircleResolution = 10;
 	private static Vector3[] CirclePoints;
-
 	private static int SphereResolution = 10;
 	private static Vector3[] SpherePoints;
 
@@ -21,17 +18,10 @@ public static class UnityGL {
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
 
-	private static void Initialise() {
-		if(!Initialised) {
-			CreateMaterial();
-			CreateCircleData();
-			CreateSphereData();
-			Initialised = true;
-			Program = PROGRAM.NONE;
-		}
-	}
-
     static void CreateMaterial() {
+		if(ColorMaterial != null) {
+			return;
+		}
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
 		ColorMaterial = new Material(colorShader);
 		ColorMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -44,11 +34,18 @@ public static class UnityGL {
 		ColorMaterial.SetInt("_ZWrite", 1);
     }
 
+	static void CreateIsocelesTriangleData() {
+		IsocelesTrianglePoints = new Vector3[3];
+		IsocelesTrianglePoints[0] = ViewRotation * new Vector3(-0.5f, 0.5f, 0f);
+		IsocelesTrianglePoints[1] = ViewRotation * new Vector3(0.5f, 0.5f, 0f);
+		IsocelesTrianglePoints[2] = ViewRotation * new Vector3(0f, -0.5f, 0f);
+	}
+
 	static void CreateCircleData() {
 		CirclePoints = new Vector3[CircleResolution];
 		for(int i=0; i<CircleResolution; i++) {
 			float angle = 2f * Mathf.PI * (float)i / ((float)CircleResolution-1f);
-			CirclePoints[i] = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+			CirclePoints[i] = ViewRotation * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
 		}
 	}
 
@@ -111,12 +108,15 @@ public static class UnityGL {
 	}
 
 	public static void Start() {
-		Initialise();
 		if(Drawing) {
 			Debug.Log("Drawing has not been finished yet.");
 		} else {
 			ViewPosition = GetCamera().transform.position;
 			ViewRotation = GetCamera().transform.rotation;
+			CreateMaterial();
+			CreateIsocelesTriangleData();
+			CreateCircleData();
+			CreateSphereData();
 			Drawing = true;
 		}
 	}
@@ -251,6 +251,18 @@ public static class UnityGL {
 		GL.Vertex(c);
 	}
 
+	public static void DrawIsocelesTriangle(Vector3 center, float radius, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		SetProgram(PROGRAM.TRIANGLES);
+        GL.Color(color);
+        GL.Vertex(center + radius*(IsocelesTrianglePoints[0]));
+		GL.Vertex(center + radius*(IsocelesTrianglePoints[1]));
+		GL.Vertex(center + radius*(IsocelesTrianglePoints[2]));
+	}
+
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
@@ -260,8 +272,8 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius * (ViewRotation * CirclePoints[i]));
-			GL.Vertex(center + radius * (ViewRotation * CirclePoints[i+1]));
+			GL.Vertex(center + radius * (CirclePoints[i]));
+			GL.Vertex(center + radius * (CirclePoints[i+1]));
 		}
 	}
 

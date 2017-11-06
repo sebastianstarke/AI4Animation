@@ -3,6 +3,8 @@ using UnityEditor;
 
 public class BVHViewer : EditorWindow {
 
+	public Vector2 Scroll = Vector2.zero;
+
 	public static EditorWindow Window;
 
 	public float UnitScale = 10f;
@@ -25,10 +27,7 @@ public class BVHViewer : EditorWindow {
 
 	void OnDestroy() {
 		SceneView.onSceneGUIDelegate -= this.OnSceneGUI;
-
-		if(Animation != null) {
-			Animation.Save();
-		}
+		Save();
 	}
 
 	void Update() {
@@ -42,11 +41,13 @@ public class BVHViewer : EditorWindow {
 	}
 
 	void OnGUI() {
+		Scroll = EditorGUILayout.BeginScrollView(Scroll);
+
 		Utility.SetGUIColor(Utility.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Utility.DarkGrey);
+			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -69,12 +70,12 @@ public class BVHViewer : EditorWindow {
 					}
 					EditorGUILayout.EndHorizontal();
 				}
-				if(Utility.GUIButton("Load", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+				if(Utility.GUIButton("Load", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter)) {
 					Load();
 				}
 			}
 
-			Utility.SetGUIColor(Utility.Teal);
+			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -84,104 +85,103 @@ public class BVHViewer : EditorWindow {
 					Load((BVHAnimation)EditorGUILayout.ObjectField("Animation", Animation, typeof(BVHAnimation), false));
 				}
 
-				if(Animation == null) {
-					return;
-				}
+				if(Animation != null) {
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Name", GUILayout.Width(150f));
+					string newName = EditorGUILayout.TextField(Animation.name);
+					if(newName != Animation.name) {
+						AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(Animation), newName);
+					}
+					EditorGUILayout.EndHorizontal();
+					Animation.ShowVelocities = EditorGUILayout.Toggle("Velocities", Animation.ShowVelocities);
 
-				EditorGUILayout.BeginHorizontal();
-				EditorGUILayout.LabelField("Name", GUILayout.Width(150f));
-				string newName = EditorGUILayout.TextField(Animation.name);
-				if(newName != Animation.name) {
-					AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(Animation), newName);
-				}
-				EditorGUILayout.EndHorizontal();
-
-				Animation.Character.Inspector();
-
-				EditorGUILayout.BeginHorizontal();
-				EditorGUILayout.LabelField("Frames: " + Animation.TotalFrames, GUILayout.Width(100f));
-				EditorGUILayout.LabelField("Time: " + Animation.TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
-				EditorGUILayout.LabelField("Time/Frame: " + Animation.FrameTime.ToString("F3") + "s" + " (" + (1f/Animation.FrameTime).ToString("F1") + "Hz)", GUILayout.Width(175f));
-				EditorGUILayout.LabelField("Preview:", GUILayout.Width(50f), GUILayout.Height(20f)); 
-				Animation.Preview = EditorGUILayout.Toggle(Animation.Preview, GUILayout.Width(20f), GUILayout.Height(20f));
-				EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
-				Animation.Timescale = EditorGUILayout.FloatField(Animation.Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
-				EditorGUILayout.EndHorizontal();
-
-				Utility.SetGUIColor(Utility.DarkGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
+					Animation.Character.Inspector();
 
 					EditorGUILayout.BeginHorizontal();
-					if(Animation.Playing) {
-						if(Utility.GUIButton("||", Color.red, Color.black, TextAnchor.MiddleCenter, 20f, 20f)) {
-							Animation.Stop();
-						}
-					} else {
-						if(Utility.GUIButton("|>", Color.green, Color.black, TextAnchor.MiddleCenter, 20f, 20f)) {
-							Animation.Play();
-						}
-					}
-					if(Utility.GUIButton("<", Color.grey, Color.white, TextAnchor.MiddleCenter, 20f, 20f)) {
-						Animation.LoadPreviousFrame();
-					}
-					if(Utility.GUIButton(">", Color.grey, Color.white, TextAnchor.MiddleCenter, 20f, 20f)) {
-						Animation.LoadNextFrame();
-					}
-					BVHAnimation.BVHFrame frame = Animation.GetFrame(EditorGUILayout.IntSlider(Animation.CurrentFrame.Index, 1, Animation.TotalFrames, GUILayout.Width(440f)));
-					if(Animation.CurrentFrame != frame) {
-						Animation.PlayTime = frame.Timestamp;
-						Animation.LoadFrame(frame);
-					}
-					EditorGUILayout.LabelField(Animation.CurrentFrame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
+					EditorGUILayout.LabelField("Frames: " + Animation.TotalFrames, GUILayout.Width(100f));
+					EditorGUILayout.LabelField("Time: " + Animation.TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
+					EditorGUILayout.LabelField("Time/Frame: " + Animation.FrameTime.ToString("F3") + "s" + " (" + (1f/Animation.FrameTime).ToString("F1") + "Hz)", GUILayout.Width(175f));
+					EditorGUILayout.LabelField("Preview:", GUILayout.Width(50f), GUILayout.Height(20f)); 
+					Animation.ShowPreview = EditorGUILayout.Toggle(Animation.ShowPreview, GUILayout.Width(20f), GUILayout.Height(20f));
+					EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
+					Animation.Timescale = EditorGUILayout.FloatField(Animation.Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
 					EditorGUILayout.EndHorizontal();
 
-				}
-
-				Animation.PhaseFunction.Inspector();
-
-				Animation.StyleFunction.Inspector();
-
-				Utility.SetGUIColor(Utility.LightGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-
-					Utility.SetGUIColor(Utility.Orange);
+					Utility.SetGUIColor(Utility.DarkGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-						EditorGUILayout.LabelField("Trajectory");
+
+						EditorGUILayout.BeginHorizontal();
+						if(Animation.Playing) {
+							if(Utility.GUIButton("||", Color.red, Color.black, TextAnchor.MiddleCenter, 20f, 20f)) {
+								Animation.Stop();
+							}
+						} else {
+							if(Utility.GUIButton("|>", Color.green, Color.black, TextAnchor.MiddleCenter, 20f, 20f)) {
+								Animation.Play();
+							}
+						}
+						if(Utility.GUIButton("<", Utility.Grey, Utility.White, TextAnchor.MiddleCenter, 20f, 20f)) {
+							Animation.LoadPreviousFrame();
+						}
+						if(Utility.GUIButton(">", Utility.Grey, Utility.White, TextAnchor.MiddleCenter, 20f, 20f)) {
+							Animation.LoadNextFrame();
+						}
+						BVHAnimation.BVHFrame frame = Animation.GetFrame(EditorGUILayout.IntSlider(Animation.CurrentFrame.Index, 1, Animation.TotalFrames, GUILayout.Width(440f)));
+						if(Animation.CurrentFrame != frame) {
+							Animation.PlayTime = frame.Timestamp;
+							Animation.LoadFrame(frame);
+						}
+						EditorGUILayout.LabelField(Animation.CurrentFrame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
+						EditorGUILayout.EndHorizontal();
+
 					}
 
-					Animation.ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", Animation.ForwardOrientation);
-				}
+					Animation.PhaseFunction.Inspector();
 
-				Utility.SetGUIColor(Utility.LightGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
+					Animation.StyleFunction.Inspector();
 
-					Utility.SetGUIColor(Utility.Orange);
+					Animation.Contacts.Inspector();
+
+					Utility.SetGUIColor(Utility.LightGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-						EditorGUILayout.LabelField("Export");
+
+						Utility.SetGUIColor(Utility.Orange);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Trajectory");
+						}
+
+						Animation.ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", Animation.ForwardOrientation);
 					}
 
-					if(Utility.GUIButton("Skeleton", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						Animation.ExportSkeleton(Animation.Character.GetRoot(), null);
-					}
+					Utility.SetGUIColor(Utility.LightGrey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
 
-					if(Utility.GUIButton("Data", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-						//Animation.ExportData(Animation.Character.GetRoot(), null);
+						Utility.SetGUIColor(Utility.Orange);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Export");
+						}
+
+						if(Utility.GUIButton("Skeleton", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter)) {
+							Animation.ExportSkeleton(Animation.Character.GetRoot(), null);
+						}
+
+						if(Utility.GUIButton("Data", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter)) {
+							//Animation.ExportData(Animation.Character.GetRoot(), null);
+						}
+						
 					}
-					
 				}
-
-				//if(Utility.GUIButton("Compute Foot Contacts", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
-					//ComputeFootContacts(); //TODO
-				//}
 
 			}
 
 		}
+
+		EditorGUILayout.EndScrollView();
 	}
 
 	void OnSceneGUI(SceneView view) {
@@ -202,8 +202,11 @@ public class BVHViewer : EditorWindow {
 	}
 
 	private void Save() {
-		AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+		if(Animation != null) {
+			EditorUtility.SetDirty(Animation);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
+		}
 	}
 
 }
