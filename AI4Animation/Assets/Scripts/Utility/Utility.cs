@@ -6,7 +6,9 @@ public static class Utility {
 	public static Color White = Color.white;
 	public static Color Black = Color.black;
 	public static Color Red = Color.red;
+	public static Color DarkRed = new Color(0.75f, 0f, 0f, 1f);
 	public static Color Green = Color.green;
+	public static Color DarkGreen = new Color(0f, 0.75f, 0f, 1f);
 	public static Color Blue = Color.blue;
 	public static Color Cyan = Color.cyan;
 	public static Color Magenta = Color.magenta;

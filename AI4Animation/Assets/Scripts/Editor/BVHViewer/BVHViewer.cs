@@ -3,9 +3,10 @@ using UnityEditor;
 
 public class BVHViewer : EditorWindow {
 
-	public Vector2 Scroll = Vector2.zero;
-
 	public static EditorWindow Window;
+	public static Vector2 Scroll;
+	public static System.DateTime Timestamp;
+	public static int RefreshRate = 30;
 
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
@@ -14,6 +15,8 @@ public class BVHViewer : EditorWindow {
 	[MenuItem ("Addons/BVH Viewer")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(BVHViewer));
+		Scroll = Vector3.zero;
+		Timestamp = Utility.GetTimestamp();
 	}
 
 	void OnFocus() {
@@ -37,14 +40,14 @@ public class BVHViewer : EditorWindow {
 
 		Animation.EditorUpdate();
 		SceneView.RepaintAll();
-		Repaint();
+
+		if(Utility.GetElapsedTime(Timestamp) > 1f/(float)RefreshRate) {
+			Repaint();
+			Timestamp = Utility.GetTimestamp();
+		}
 	}
 
 	void OnGUI() {
-		//if(Event.current.type != EventType.Repaint) {
-		//	return;
-		//}
-
 		Scroll = EditorGUILayout.BeginScrollView(Scroll);
 
 		Utility.SetGUIColor(Utility.Black);
@@ -59,6 +62,10 @@ public class BVHViewer : EditorWindow {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Importer");
+				}
+
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					RefreshRate = EditorGUILayout.IntField("Refresh Rate", RefreshRate);
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -98,6 +105,8 @@ public class BVHViewer : EditorWindow {
 		}
 
 		EditorGUILayout.EndScrollView();
+
+		Timestamp = Utility.GetTimestamp();
 	}
 
 	void OnSceneGUI(SceneView view) {
@@ -119,6 +128,7 @@ public class BVHViewer : EditorWindow {
 
 	private void Save() {
 		if(Animation != null) {
+			Animation.Stop();
 			EditorUtility.SetDirty(Animation);
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();

@@ -267,6 +267,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void Inspector() {
+		/*
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Name", GUILayout.Width(150f));
 		string newName = EditorGUILayout.TextField(name);
@@ -274,9 +275,13 @@ public class BVHAnimation : ScriptableObject {
 			AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(this), newName);
 		}
 		EditorGUILayout.EndHorizontal();
-		ShowVelocities = EditorGUILayout.Toggle("Velocities", ShowVelocities);
+		*/
 
 		Character.Inspector();
+		
+		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
+		ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
+		ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", ForwardOrientation);
 
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
@@ -323,21 +328,6 @@ public class BVHAnimation : ScriptableObject {
 		StyleFunction.Inspector();
 
 		Contacts.Inspector();
-
-		Utility.SetGUIColor(Utility.LightGrey);
-		using(new EditorGUILayout.VerticalScope ("Box")) {
-			Utility.ResetGUIColor();
-
-			Utility.SetGUIColor(Utility.Orange);
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				Utility.ResetGUIColor();
-				EditorGUILayout.LabelField("Trajectory");
-			}
-
-			ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
-
-			ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", ForwardOrientation);
-		}
 
 		Utility.SetGUIColor(Utility.LightGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -405,6 +395,7 @@ public class BVHAnimation : ScriptableObject {
 		public BVHAnimation Animation;
 
 		public bool[] Keys;
+		public float[] Phase;
 		
 		public Vector2 VariablesScroll;
 		public bool[] Variables;
@@ -417,11 +408,47 @@ public class BVHAnimation : ScriptableObject {
 		public BVHPhaseFunction(BVHAnimation animation) {
 			Animation = animation;
 			Keys = new bool[Animation.TotalFrames];
+			Keys[0] = true;
+			Keys[Animation.TotalFrames-1] = true;
+			Phase = new float[Animation.TotalFrames];
 			Variables = new bool[Animation.Character.Bones.Length];
 			Values = new float[Animation.TotalFrames];
 			SetSmoothing(0.1f);
 			SetAmplification(1f);
 			TimeWindow = Animation.TotalTime;
+		}
+
+		public void SetKey(BVHFrame frame, bool value) {
+			if(value) {
+				if(IsKey(frame)) {
+					return;
+				}
+				Keys[frame.Index-1] = true;
+				Phase[frame.Index-1] = 1f;
+				Interpolate(frame);
+			} else {
+				if(!IsKey(frame)) {
+					return;
+				}
+				Keys[frame.Index-1] = false;
+				Phase[frame.Index-1] = 0f;
+				Interpolate(frame);
+			}
+		}
+
+		public bool IsKey(BVHFrame frame) {
+			return Keys[frame.Index-1];
+		}
+
+		public void SetPhase(BVHFrame frame, float value) {
+			if(Phase[frame.Index-1] != value) {
+				Phase[frame.Index-1] = value;
+				Interpolate(frame);
+			}
+		}
+
+		public float GetPhase(BVHFrame frame) {
+			return Phase[frame.Index-1];
 		}
 
 		public void SetSmoothing(float smoothing) {
@@ -444,21 +471,11 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public BVHFrame GetFirstKey() {
-			for(int i=0; i<Keys.Length; i++) {
-				if(Keys[i]) {
-					return Animation.Frames[i];
-				}
-			}
-			return null;
+			return Animation.Frames[0];
 		}
 
 		public BVHFrame GetLastKey() {
-			for(int i=Keys.Length-1; i>=0; i--) {
-				if(Keys[i]) {
-					return Animation.Frames[i];
-				}
-			}
-			return null;
+			return Animation.Frames[Animation.TotalFrames-1];
 		}
 
 		public BVHFrame GetPreviousKey(BVHFrame frame) {
@@ -469,7 +486,7 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 			}
-			return null;
+			return GetFirstKey();
 		}
 
 		public BVHFrame GetNextKey(BVHFrame frame) {
@@ -480,15 +497,30 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 			}
-			return null;
+			return GetLastKey();
 		}
 
-		public void SetKey(BVHFrame frame, bool value) {
-			Keys[frame.Index-1] = value;
+		private void Interpolate(BVHFrame frame) {
+			if(IsKey(frame)) {
+				Interpolate(GetPreviousKey(frame), frame);
+				Interpolate(frame, GetNextKey(frame));
+			} else {
+				Interpolate(GetPreviousKey(frame), GetNextKey(frame));
+			}
 		}
 
-		public bool IsKey(BVHFrame frame) {
-			return Keys[frame.Index-1];
+		private void Interpolate(BVHFrame a, BVHFrame b) {
+			if(a == null || b == null) {
+				Debug.Log("A given frame was null.");
+				return;
+			}
+			int dist = b.Index - a.Index;
+			if(dist >= 2) {
+				for(int i=a.Index+1; i<b.Index; i++) {
+					float rate = (float)((float)i-(float)a.Index)/(float)dist;
+					Phase[i-1] = rate*Phase[b.Index-1];
+				}
+			}
 		}
 
 		public void Inspector() {
@@ -504,16 +536,26 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.LabelField("Phase Function");
 				}
 
-				SetKey(Animation.CurrentFrame, EditorGUILayout.Toggle("Key", IsKey(Animation.CurrentFrame)));
+				if(Animation.CurrentFrame != GetFirstKey() && Animation.CurrentFrame != GetLastKey()) {
+					if(IsKey(Animation.CurrentFrame)) {
+						if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, false);
+						}
+					} else {
+						if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, true);
+						}
+					}
+				}
 
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Bones.Length; i++) {
 					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkGreen, Utility.White)) {
 							ToggleVariable(i);
 						}
 					} else {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkRed, Utility.White)) {
 							ToggleVariable(i);
 						}
 					}
@@ -523,6 +565,14 @@ public class BVHAnimation : ScriptableObject {
 				SetSmoothing(EditorGUILayout.FloatField("Smoothing", Smoothing));
 				SetAmplification(EditorGUILayout.FloatField("Amplification", Amplification));
 				TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 2f*Animation.FrameTime, Animation.TotalTime);
+
+				if(IsKey(Animation.CurrentFrame)) {
+					SetPhase(Animation.CurrentFrame, EditorGUILayout.Slider("Phase", GetPhase(Animation.CurrentFrame), 0f, 1f));
+				} else {
+					EditorGUI.BeginDisabledGroup(true);
+					SetPhase(Animation.CurrentFrame, EditorGUILayout.Slider("Phase", GetPhase(Animation.CurrentFrame), 0f, 1f));
+					EditorGUI.EndDisabledGroup();
+				}
 
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, 25f, 50f)) {
@@ -550,42 +600,43 @@ public class BVHAnimation : ScriptableObject {
 				int end = Animation.GetFrame(endTime).Index;
 				int elements = end-start;
 
+				Vector3 prevPos = Vector3.zero;
+				Vector3 newPos = Vector3.zero;
+				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
+				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
 				for(int i=1; i<elements; i++) {
-					Vector3 prevPos = new Vector3((float)(i-1)/(elements-1), Values[i+start-1], 0f);
-					Vector3 newPos = new Vector3((float)(i)/(elements-1), Values[i+start], 0f);
-					UnityGL.DrawLine(
-						new Vector3(rect.xMin + prevPos.x * rect.width, rect.yMax - prevPos.y * rect.height, 0f), 
-						new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f),
-						Utility.Cyan);
+					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
+					prevPos.y = rect.yMax - Values[i+start-1] * rect.height;
+					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
+					newPos.y = rect.yMax - Values[i+start] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.Cyan);
 				}
 
 				BVHFrame A = GetFirstKey();
 				if(A != null) {
-					UnityGL.DrawLine(
-						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax, 0f), 
-						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
-						Utility.Magenta);
+					bottom.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+					UnityGL.DrawLine(bottom, top, Utility.Magenta);
 					BVHFrame B = GetNextKey(A);
 					while(A != B && B != null) {
-						UnityGL.DrawLine(
-							new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax, 0f), 
-							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
-							Utility.White);
-						UnityGL.DrawLine(
-							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax, 0f), 
-							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
-							Utility.Magenta);
+						prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+						prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
+						newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+						newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
+						UnityGL.DrawLine(prevPos, newPos, Utility.White);
+						bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+						top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+						UnityGL.DrawLine(bottom, top, Utility.Magenta);
 						A = B;
 						B = GetNextKey(A);
 					}
 				}
 
-				UnityGL.DrawLine(
-					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), 
-					Utility.Red);
-				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), 3f, Utility.DarkGrey);
-				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), 3f, Utility.DarkGrey);
+				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
+				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
+				UnityGL.DrawLine(top, bottom, Utility.Red);
+				UnityGL.DrawCircle(top, 3f, Utility.Green);
+				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
@@ -603,14 +654,11 @@ public class BVHAnimation : ScriptableObject {
 			float min = float.MaxValue;
 			float max = float.MinValue;
 			for(int i=0; i<Animation.TotalFrames; i++) {
-				float[] translationalVelocities = GenerateTranslationalVelocities(Animation.Frames[i], Smoothing);
-				float[] rotationalVelocities = GenerateRotationalVelocities(Animation.Frames[i], Smoothing);
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
-						Values[i] = Mathf.Max(Values[i], translationalVelocities[j] + Mathf.Deg2Rad*rotationalVelocities[j]);
+						Values[i] = Mathf.Max(Values[i], GenerateTranslationalVelocity(j, Animation.Frames[i], Smoothing) + Mathf.Deg2Rad*GenerateRotationalVelocity(j, Animation.Frames[i], Smoothing));
 					}
 				}
-				Values[i] = Mathf.Max(Values[i], 0f);
 				if(Values[i] < min) {
 					min = Values[i];
 				}
@@ -624,40 +672,34 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		public float[] GenerateTranslationalVelocities(BVHFrame frame, float smoothing) {
+		public float GenerateTranslationalVelocity(int index, BVHFrame frame, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, frame.Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, frame.Timestamp+smoothing/2f));
-			float[] velocities = new float[Animation.Character.Bones.Length];
-			for(int v=0; v<Animation.Character.Bones.Length; v++) {
-				for(int k=1; k<frames.Length; k++) {
-					velocities[v] += (frames[k].Positions[v] - frames[k-1].Positions[v]).magnitude / Animation.FrameTime;
-				}
-				velocities[v] /= frames.Length;
+			float velocity = 0f;
+			for(int k=1; k<frames.Length; k++) {
+				velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]).magnitude / Animation.FrameTime;
 			}
-			return velocities;
+			velocity /= frames.Length;
+			return velocity;
 		}
 
-		public float[] GenerateRotationalVelocities(BVHFrame frame, float smoothing) {
+		public float GenerateRotationalVelocity(int index, BVHFrame frame, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, frame.Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, frame.Timestamp+smoothing/2f));
-			float[] velocities = new float[Animation.Character.Bones.Length];
-			for(int v=0; v<Animation.Character.Bones.Length; v++) {
-				for(int k=1; k<frames.Length; k++) {
-					velocities[v] += Quaternion.Angle(frames[k-1].Rotations[v], frames[k].Rotations[v]) / Animation.FrameTime;
-				}
-				velocities[v] /= frames.Length;
+			float velocity = 0f;
+			for(int k=1; k<frames.Length; k++) {
+				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]) / Animation.FrameTime;
 			}
-			return velocities;
+			velocity /= frames.Length;
+			return velocity;
 		}
 
-		public float[] GenerateAccelerations(BVHFrame frame, float smoothing) {
+		public float GenerateAccelerations(int index, BVHFrame frame, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, frame.Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, frame.Timestamp+smoothing/2f));
-			float[] accelerations = new float[Animation.Character.Bones.Length];
-			for(int v=0; v<Animation.Character.Bones.Length; v++) {
-				for(int k=1; k<frames.Length; k++) {
-					accelerations[v] += (frames[k].Velocities[v] - frames[k-1].Velocities[v]).magnitude / Animation.FrameTime;
-				}
-				accelerations[v] /= frames.Length;
+			float acceleration = 0f;
+			for(int k=1; k<frames.Length; k++) {
+				acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude / Animation.FrameTime;
 			}
-			return accelerations;
+			acceleration /= frames.Length;
+			return acceleration;
 		}
 	}
 
@@ -668,7 +710,7 @@ public class BVHAnimation : ScriptableObject {
 		public enum STYLE {Custom, Biped, Quadruped, Count}
 		public STYLE Style = STYLE.Custom;
 
-		public bool[] Keys;
+		public bool[] KeyLabels;
 		public BVHStyle[] Styles;
 
 		public BVHStyleFunction(BVHAnimation animation) {
@@ -677,9 +719,9 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Reset() {
-			Keys = new bool[Animation.TotalFrames];
-			Keys[0] = true;
-			Keys[Animation.TotalFrames-1] = true;
+			KeyLabels = new bool[Animation.TotalFrames];
+			KeyLabels[0] = true;
+			KeyLabels[Animation.TotalFrames-1] = true;
 			Styles = new BVHStyle[0];
 		}
 
@@ -725,6 +767,26 @@ public class BVHAnimation : ScriptableObject {
 			System.Array.Resize(ref Styles, Styles.Length-1);
 		}
 
+		public void SetKey(BVHFrame frame, bool value) {
+			if(value) {
+				if(IsKey(frame)) {
+					return;
+				}
+				KeyLabels[frame.Index-1] = true;
+				Interpolate(frame);
+			} else {
+				if(!IsKey(frame)) {
+					return;
+				}
+				KeyLabels[frame.Index-1] = false;
+				Interpolate(frame);
+			}
+		}
+
+		public bool IsKey(BVHFrame frame) {
+			return KeyLabels[frame.Index-1];
+		}
+
 		public BVHFrame GetFirstKey() {
 			return Animation.Frames[0];
 		}
@@ -736,7 +798,7 @@ public class BVHAnimation : ScriptableObject {
 		public BVHFrame GetPreviousKey(BVHFrame frame) {
 			if(frame != null) {
 				for(int i=frame.Index-1; i>=1; i--) {
-					if(Keys[i-1]) {
+					if(KeyLabels[i-1]) {
 						return Animation.Frames[i-1];
 					}
 				}
@@ -747,25 +809,12 @@ public class BVHAnimation : ScriptableObject {
 		public BVHFrame GetNextKey(BVHFrame frame) {
 			if(frame != null) {
 				for(int i=frame.Index+1; i<=Animation.TotalFrames; i++) {
-					if(Keys[i-1]) {
+					if(KeyLabels[i-1]) {
 						return Animation.Frames[i-1];
 					}
 				}
 			}
 			return GetLastKey();
-		}
-
-		public void SetKey(BVHFrame frame, bool value) {
-			if(Keys[frame.Index-1] != value) {
-				Keys[frame.Index-1] = value;
-				for(int i=0; i<Styles.Length; i++) {
-					Interpolate(i, frame);
-				}
-			}
-		}
-
-		public bool IsKey(BVHFrame frame) {
-			return Keys[frame.Index-1];
 		}
 
 		public void SetValue(int dimension, BVHFrame frame, float value) {
@@ -781,10 +830,38 @@ public class BVHAnimation : ScriptableObject {
 
 		private void Interpolate(int dimension, BVHFrame frame) {
 			if(IsKey(frame)) {
-				Styles[dimension].Interpolate(GetPreviousKey(frame), frame);
-				Styles[dimension].Interpolate(frame, GetNextKey(frame));
+				Interpolate(Styles[dimension], GetPreviousKey(frame), frame);
+				Interpolate(Styles[dimension], frame, GetNextKey(frame));
 			} else {
-				Styles[dimension].Interpolate(GetPreviousKey(frame), GetNextKey(frame));
+				Interpolate(Styles[dimension], GetPreviousKey(frame), GetNextKey(frame));
+			}
+		}
+
+		private void Interpolate(BVHFrame frame) {
+			BVHFrame previous = GetPreviousKey(frame);
+			BVHFrame next = GetNextKey(frame);
+			for(int i=0; i<Styles.Length; i++) {
+				if(IsKey(frame)) {
+					Interpolate(Styles[i], previous, frame);
+					Interpolate(Styles[i], frame, next);
+				} else {
+					Interpolate(Styles[i], previous, next);
+				}
+			}
+		}
+
+		private void Interpolate(BVHStyle style, BVHFrame a, BVHFrame b) {
+			if(a == null || b == null) {
+				Debug.Log("A given frame was null.");
+				return;
+			}
+			int dist = b.Index - a.Index;
+			if(dist >= 2) {
+				for(int i=a.Index+1; i<b.Index; i++) {
+					float rateA = (float)((float)i-(float)a.Index)/(float)dist;
+					float rateB = (float)((float)b.Index-(float)i)/(float)dist;
+					style.Values[i-1] = rateB*style.Values[a.Index-1] + rateA*style.Values[b.Index-1];
+				}
 			}
 		}
 
@@ -801,20 +878,24 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.LabelField("Style Function");
 				}
 
-				if(Animation.CurrentFrame == GetFirstKey() || Animation.CurrentFrame == GetLastKey()) {
-					EditorGUI.BeginDisabledGroup(true);
-					SetKey(Animation.CurrentFrame, EditorGUILayout.Toggle("Key", IsKey(Animation.CurrentFrame)));
-					EditorGUI.EndDisabledGroup();
-				} else {
-					SetKey(Animation.CurrentFrame, EditorGUILayout.Toggle("Key", IsKey(Animation.CurrentFrame)));
-				}
-
 				string[] names = new string[(int)STYLE.Count];
 				for(int i=0; i<names.Length; i++) {
 					names[i] = ((STYLE)i).ToString();
 				}
 				SetStyle((STYLE)EditorGUILayout.Popup((int)Style, names));
 
+				if(Animation.CurrentFrame != GetFirstKey() && Animation.CurrentFrame != GetLastKey()) {
+					if(IsKey(Animation.CurrentFrame)) {
+						if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, false);
+						}
+					} else {
+						if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, true);
+						}
+					}
+				}
+				
 				for(int i=0; i<Styles.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
 					Styles[i].Name = EditorGUILayout.TextField(Styles[i].Name, GUILayout.Width(150f));
@@ -851,35 +932,35 @@ public class BVHAnimation : ScriptableObject {
 				EditorGUI.DrawRect(rect, Utility.Black);
 
 				Color[] colors = Utility.GetRainbowColors(Styles.Length);
-
 				BVHFrame A = GetFirstKey();
 				BVHFrame B = GetNextKey(A);
+				Vector3 prevPos = Vector3.zero;
+				Vector3 newPos = Vector3.zero;
+				Vector3 top = new Vector3(0f, rect.yMax, 0f);
+				Vector3 bottom = new Vector3(0f, rect.yMax - rect.height, 0f);
 				while(A != B) {
+					prevPos.x = rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width;
+					newPos.x = rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width;
 					for(int i=0; i<Styles.Length; i++) {
-						Vector3 prevPos = new Vector3((float)A.Index/Animation.TotalFrames, Styles[i].Values[A.Index-1], 0);
-						Vector3 newPos = new Vector3((float)B.Index/Animation.TotalFrames, Styles[i].Values[B.Index-1], 0f);
-						prevPos = new Vector3(rect.xMin + prevPos.x * rect.width, rect.yMax - prevPos.y * rect.height, 0f);
-						newPos = new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f);
+						prevPos.y = rect.yMax - Styles[i].Values[A.Index-1] * rect.height;
+						newPos.y = rect.yMax - Styles[i].Values[B.Index-1] * rect.height;
 						UnityGL.DrawLine(prevPos, newPos, colors[i]);
 					}
-					UnityGL.DrawLine(
-						new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-						new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
-						Utility.Magenta);
+					top.x = prevPos.x;
+					bottom.x = prevPos.x;
+					UnityGL.DrawLine(top, bottom, Utility.Magenta);
 					A = B;
 					B = GetNextKey(A);
 				}
-				UnityGL.DrawLine(
-					new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
-					Utility.Magenta);
+				top.x = newPos.x;
+				bottom.x = newPos.x;
+				UnityGL.DrawLine(top, bottom, Utility.Magenta);
 
-				UnityGL.DrawLine(
-					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
-					Utility.Red);
-				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 3f, Utility.DarkGrey);
-				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f), 3f, Utility.DarkGrey);
+				top.x = rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width;
+				bottom.x = rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width;
+				UnityGL.DrawLine(top, bottom, Utility.Red);
+				UnityGL.DrawCircle(top, 3f, Utility.Green);
+				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
@@ -902,21 +983,6 @@ public class BVHAnimation : ScriptableObject {
 		public BVHStyle(string name, int length) {
 			Name = name;
 			Values = new float[length];
-		}
-
-		public void Interpolate(BVHFrame a, BVHFrame b) {
-			if(a == null || b == null) {
-				Debug.Log("A given frame was null.");
-				return;
-			}
-			int dist = b.Index - a.Index;
-			if(dist >= 2) {
-				for(int i=a.Index+1; i<b.Index; i++) {
-					float rateA = (float)((float)i-(float)a.Index)/(float)dist;
-					float rateB = (float)((float)b.Index-(float)i)/(float)dist;
-					Values[i-1] = rateB*Values[a.Index-1] + rateA*Values[b.Index-1];
-				}
-			}
 		}
 	}
 
@@ -962,11 +1028,11 @@ public class BVHAnimation : ScriptableObject {
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Bones.Length; i++) {
 					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkGreen, Utility.White)) {
 							RemoveContact(i);
 						}
 					} else {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkRed, Utility.White)) {
 							AddContact(i);
 						}
 					}
