@@ -13,11 +13,15 @@ The algorithmic framework is shown below. In addition to the extended PFNN versi
 
 Development Status
 ------------
-The code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano to generate the motion of the characters. Those can be imported during edit time and serialised inside Unity. The trajectory estimation module has been implemented which is required for generating the input for the network through user input, as shown below. It provides a smooth transition between past and future states, and rejects paths which would collide with obstacles. The output of the joint positions and velocities along with predicted trajectory information is then fed back to the character to update the posture.
+The only required script component that is needed for the animation is called 'BioAnimation'. The code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano/TensorFlow to generate the character motion. The weights are supposed to be imported during edit time and are then serialised inside Unity. The trajectory estimation module handles the user input to control the character movements, and rejects paths which would collide with obstacles. The output of the joint positions, velocities, corrections etc. is then fed back to the character to update the posture.
 
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Trajectory.png" width="100%">
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo.png" width="100%">
+
+Demo
+------------
+To run the demo, simply start Unity and open the provided scene in the Assets folder. You then need to press the "Load Parameters" button in the attached 'BioAnimation' component, which can take a few seconds. When hitting play, the character can be controlled via W-A-S-D (move), Q-E (turn), LeftShift (run) and LeftCtrl (crouch). Jumping is handled automatically given the rise of the terrain.
 
 Data Preprocessing
 ------------
+A 'BVHViewer' editor window has been developed with the aim to do animation preprocessing of BVH files to generate the training data for the deep learning. This enables defining the phase function, style function, generating trajectories as well as all other relevant data right inside Unity.
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/BVH.png" width="100%">
