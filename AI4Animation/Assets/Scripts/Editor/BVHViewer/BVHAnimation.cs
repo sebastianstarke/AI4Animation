@@ -743,8 +743,8 @@ public class BVHAnimation : ScriptableObject {
 				Debug.Log("A given frame was null.");
 				return;
 			}
-			int dist = b.Index - a.Index - 1;
-			if(dist != 0) {
+			int dist = b.Index - a.Index;
+			if(dist >= 2) {
 				for(int i=a.Index+1; i<b.Index; i++) {
 					float rateA = (float)((float)i-(float)a.Index)/(float)dist;
 					float rateB = (float)((float)b.Index-(float)i)/(float)dist;
