@@ -30,7 +30,7 @@ public class BioAnimation_Editor : Editor {
 
 				if(Target.Character.RebuildRequired(Target.Root)) {
 					EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
-					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white)) {
 						Target.Character.BuildHierarchy(Target.Root);
 					}
 				}

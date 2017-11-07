@@ -10,6 +10,7 @@ public class BVHAnimation : ScriptableObject {
 
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
+	public bool ShowTrajectory = false;
 	
 	public BVHFrame[] Frames = new BVHFrame[0];
 	public BVHFrame CurrentFrame = null;
@@ -42,14 +43,15 @@ public class BVHAnimation : ScriptableObject {
 		PhaseFunction = new BVHPhaseFunction(this);
 		StyleFunction = new BVHStyleFunction(this);
 		Contacts = new BVHContacts(this);
-		if(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/MoCap.asset", typeof(BVHAnimation)) == null) {
-			AssetDatabase.CreateAsset(this , "Assets/Resources/BVH/MoCap.asset");
+		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
+		if(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/"+name+".asset", typeof(BVHAnimation)) == null) {
+			AssetDatabase.CreateAsset(this , "Assets/Resources/BVH/"+name+".asset");
 		} else {
 			int i = 1;
-			while(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/"+"MoCap ("+i+").asset", typeof(BVHAnimation)) != null) {
+			while(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/"+name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
 				i += 1;
 			}
-			AssetDatabase.CreateAsset(this, "Assets/Resources/BVH/"+"MoCap ("+i+").asset");
+			AssetDatabase.CreateAsset(this, "Assets/Resources/BVH/"+name+" ("+i+").asset");
 		}
 		return this;
 	}
@@ -222,43 +224,6 @@ public class BVHAnimation : ScriptableObject {
 		return frames.ToArray();
 	}
 
-	public void Draw() {
-		if(ShowPreview) {
-			float step = 1f;
-			BVHAnimation.BVHFrame frame = CurrentFrame;
-			UnityGL.Start();
-			for(int i=2; i<=TotalFrames; i++) {
-				UnityGL.DrawLine(GetFrame(i-1).Positions[0], GetFrame(i).Positions[0], Utility.Magenta);
-			}
-			UnityGL.Finish();
-			for(float i=0f; i<=TotalTime; i+=step) {
-				LoadFrame(i);
-				Character.DrawSimple();
-			}
-			LoadFrame(frame);
-		}
-
-		Contacts.Draw();
-
-		GenerateTrajectory(CurrentFrame).Draw();
-		
-		Character.Draw();
-		
-		if(ShowVelocities) {
-			UnityGL.Start();
-			for(int i=0; i<CurrentFrame.Velocities.Length; i++) {
-				UnityGL.DrawArrow(
-					CurrentFrame.Positions[i],
-					CurrentFrame.Positions[i] + CurrentFrame.Velocities[i],
-					0.75f,
-					0.0075f,
-					0.05f,
-					new Color(0f, 1f, 0f, 0.5f)
-				);				
-			}
-			UnityGL.Finish();
-		}
-	}
 
 	public void ExportSkeleton(Character.Bone bone, Transform parent) {
 		Transform instance = new GameObject(bone.GetName()).transform;
@@ -299,6 +264,140 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[past+i].SetDirection(direction);
 		}
 		return trajectory;
+	}
+
+	public void Inspector() {
+		EditorGUILayout.BeginHorizontal();
+		EditorGUILayout.LabelField("Name", GUILayout.Width(150f));
+		string newName = EditorGUILayout.TextField(name);
+		if(newName != name) {
+			AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(this), newName);
+		}
+		EditorGUILayout.EndHorizontal();
+		ShowVelocities = EditorGUILayout.Toggle("Velocities", ShowVelocities);
+
+		Character.Inspector();
+
+		EditorGUILayout.BeginHorizontal();
+		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
+		EditorGUILayout.LabelField("Time: " + TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
+		EditorGUILayout.LabelField("Time/Frame: " + FrameTime.ToString("F3") + "s" + " (" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(175f));
+		EditorGUILayout.LabelField("Preview:", GUILayout.Width(50f), GUILayout.Height(20f)); 
+		ShowPreview = EditorGUILayout.Toggle(ShowPreview, GUILayout.Width(20f), GUILayout.Height(20f));
+		EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
+		Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
+		EditorGUILayout.EndHorizontal();
+
+		Utility.SetGUIColor(Utility.DarkGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			EditorGUILayout.BeginHorizontal();
+			if(Playing) {
+				if(Utility.GUIButton("||", Color.red, Color.black, 20f, 20f)) {
+					Stop();
+				}
+			} else {
+				if(Utility.GUIButton("|>", Color.green, Color.black, 20f, 20f)) {
+					Play();
+				}
+			}
+			if(Utility.GUIButton("<", Utility.Grey, Utility.White, 20f, 20f)) {
+				LoadPreviousFrame();
+			}
+			if(Utility.GUIButton(">", Utility.Grey, Utility.White, 20f, 20f)) {
+				LoadNextFrame();
+			}
+			BVHAnimation.BVHFrame frame = GetFrame(EditorGUILayout.IntSlider(CurrentFrame.Index, 1, TotalFrames, GUILayout.Width(440f)));
+			if(CurrentFrame != frame) {
+				PlayTime = frame.Timestamp;
+				LoadFrame(frame);
+			}
+			EditorGUILayout.LabelField(CurrentFrame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
+			EditorGUILayout.EndHorizontal();
+
+		}
+
+		PhaseFunction.Inspector();
+
+		StyleFunction.Inspector();
+
+		Contacts.Inspector();
+
+		Utility.SetGUIColor(Utility.LightGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			Utility.SetGUIColor(Utility.Orange);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				EditorGUILayout.LabelField("Trajectory");
+			}
+
+			ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
+
+			ForwardOrientation = EditorGUILayout.Vector3Field("Forward Orientation", ForwardOrientation);
+		}
+
+		Utility.SetGUIColor(Utility.LightGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			Utility.SetGUIColor(Utility.Orange);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				EditorGUILayout.LabelField("Export");
+			}
+
+			if(Utility.GUIButton("Skeleton", Utility.DarkGrey, Utility.White)) {
+				ExportSkeleton(Character.GetRoot(), null);
+			}
+
+			if(Utility.GUIButton("Data", Utility.DarkGrey, Utility.White)) {
+				//Animation.ExportData(Animation.Character.GetRoot(), null);
+			}
+			
+		}
+	}
+
+	public void Draw() {
+		if(ShowPreview) {
+			float step = 1f;
+			BVHAnimation.BVHFrame frame = CurrentFrame;
+			UnityGL.Start();
+			for(int i=1; i<TotalFrames; i++) {
+				UnityGL.DrawLine(Frames[i-1].Positions[0], Frames[i].Positions[0], Utility.Magenta);
+			}
+			UnityGL.Finish();
+			for(float i=0f; i<=TotalTime; i+=step) {
+				LoadFrame(i);
+				Character.DrawSimple();
+			}
+			LoadFrame(frame);
+		}
+
+		Contacts.Draw();
+
+		if(ShowTrajectory) {
+			GenerateTrajectory(CurrentFrame).Draw();
+		}
+		
+		Character.Draw();
+		
+		if(ShowVelocities) {
+			UnityGL.Start();
+			for(int i=0; i<CurrentFrame.Velocities.Length; i++) {
+				UnityGL.DrawArrow(
+					CurrentFrame.Positions[i],
+					CurrentFrame.Positions[i] + CurrentFrame.Velocities[i],
+					0.75f,
+					0.0075f,
+					0.05f,
+					new Color(0f, 1f, 0f, 0.5f)
+				);				
+			}
+			UnityGL.Finish();
+		}
 	}
 
 	[System.Serializable]
@@ -399,11 +498,11 @@ public class BVHAnimation : ScriptableObject {
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Bones.Length; i++) {
 					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black, TextAnchor.MiddleCenter)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black)) {
 							ToggleVariable(i);
 						}
 					} else {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black, TextAnchor.MiddleCenter)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black)) {
 							ToggleVariable(i);
 						}
 					}
@@ -414,7 +513,7 @@ public class BVHAnimation : ScriptableObject {
 				TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 2f*Animation.FrameTime, Animation.TotalTime);
 
 				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter, 25f, 50f)) {
+				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, 25f, 50f)) {
 					Animation.LoadFrame(GetPreviousKey(Animation.CurrentFrame));
 				}
 
@@ -472,9 +571,11 @@ public class BVHAnimation : ScriptableObject {
 				Handles.DrawLine(
 					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), 
 					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f));
+				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), Vector3.forward, 3f);
+				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), Vector3.forward, 3f);
 				EditorGUILayout.EndVertical();
 
-				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter, 25f, 50f)) {
+				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
 					Animation.LoadFrame(GetNextKey(Animation.CurrentFrame));
 				}
 				EditorGUILayout.EndHorizontal();
@@ -546,22 +647,57 @@ public class BVHAnimation : ScriptableObject {
 	[System.Serializable]
 	public class BVHStyleFunction {
 		public BVHAnimation Animation;
+		
+		public enum STYLE {Biped, Quadruped, Custom, Count}
+		public STYLE Style = STYLE.Biped;
 
 		public bool[] Keys;
 		public BVHStyle[] Styles;
 
 		public BVHStyleFunction(BVHAnimation animation) {
 			Animation = animation;
+			Reset();
+		}
 
-			Keys = new bool[animation.TotalFrames];
+		public void Reset() {
+			Keys = new bool[Animation.TotalFrames];
 			Keys[0] = true;
-			Keys[animation.TotalFrames-1] = true;
+			Keys[Animation.TotalFrames-1] = true;
 			Styles = new BVHStyle[0];
 		}
 
-		public void AddStyle() {
+		public void SetStyle(STYLE style) {
+			if(Style != style) {
+				Style = style;
+				Reset();
+				switch(Style) {
+					case STYLE.Biped:
+					AddStyle("Idle");
+					AddStyle("Walk");
+					AddStyle("Run");
+					AddStyle("Crouch");
+					AddStyle("Jump");
+					AddStyle("Sit");
+					break;
+
+					case STYLE.Quadruped:
+					AddStyle("Idle");
+					AddStyle("Walk");
+					AddStyle("Run");
+					AddStyle("Crouch");
+					AddStyle("Jump");
+					AddStyle("Sit");
+					break;
+					
+					case STYLE.Custom:
+					break;
+				}
+			}
+		}
+
+		public void AddStyle(string name = "Style") {
 			System.Array.Resize(ref Styles, Styles.Length+1);
-			Styles[Styles.Length-1] = new BVHStyle("Style", Animation.TotalFrames);
+			Styles[Styles.Length-1] = new BVHStyle(name, Animation.TotalFrames);
 		}
 
 		public void RemoveStyle() {
@@ -653,6 +789,12 @@ public class BVHAnimation : ScriptableObject {
 					SetKey(Animation.CurrentFrame, EditorGUILayout.Toggle("Key", IsKey(Animation.CurrentFrame)));
 				}
 
+				string[] names = new string[(int)STYLE.Count];
+				for(int i=0; i<names.Length; i++) {
+					names[i] = ((STYLE)i).ToString();
+				}
+				SetStyle((STYLE)EditorGUILayout.Popup((int)Style, names));
+
 				for(int i=0; i<Styles.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
 					Styles[i].Name = EditorGUILayout.TextField(Styles[i].Name, GUILayout.Width(150f));
@@ -666,18 +808,19 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.EndHorizontal();
 				}
 				
+				if(Style == STYLE.Custom) {
+				EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Add Style", Utility.DarkGrey, Utility.White)) {
+						AddStyle();
+					}
+					if(Utility.GUIButton("Remove Style", Utility.DarkGrey, Utility.White)) {
+						RemoveStyle();
+					}
+					EditorGUILayout.EndHorizontal();
+				}
 
 				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("Add Style", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter)) {
-					AddStyle();
-				}
-				if(Utility.GUIButton("Remove Style", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter)) {
-					RemoveStyle();
-				}
-				EditorGUILayout.EndHorizontal();
-
-				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter, 25f, 50f)) {
+				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, 25f, 50f)) {
 					Animation.LoadFrame(GetPreviousKey(Animation.CurrentFrame));
 				}
 
@@ -716,10 +859,11 @@ public class BVHAnimation : ScriptableObject {
 				Handles.DrawLine(
 					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
 					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f));
-
+				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), Vector3.forward, 3f);
+				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f), Vector3.forward, 3f);
 				EditorGUILayout.EndVertical();
 
-				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, TextAnchor.MiddleCenter, 25f, 50f)) {
+				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
 					Animation.LoadFrame(GetNextKey(Animation.CurrentFrame));
 				}
 				EditorGUILayout.EndHorizontal();
@@ -796,11 +940,11 @@ public class BVHAnimation : ScriptableObject {
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Bones.Length; i++) {
 					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black, TextAnchor.MiddleCenter)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Green, Utility.Black)) {
 							RemoveContact(i);
 						}
 					} else {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black, TextAnchor.MiddleCenter)) {
+						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.Red, Utility.Black)) {
 							AddContact(i);
 						}
 					}

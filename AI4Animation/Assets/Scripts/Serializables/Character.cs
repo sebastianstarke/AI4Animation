@@ -295,12 +295,12 @@ public class Character {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Expand All", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					if(Utility.GUIButton("Expand All", Color.grey, Color.white)) {
 						for(int i=0; i<Bones.Length; i++) {
 							Bones[i].Expanded = true;
 						}
 					}
-					if(Utility.GUIButton("Collapse All", Color.grey, Color.white, TextAnchor.MiddleCenter)) {
+					if(Utility.GUIButton("Collapse All", Color.grey, Color.white)) {
 						for(int i=0; i<Bones.Length; i++) {
 							Bones[i].Expanded = false;
 						}
@@ -320,7 +320,7 @@ public class Character {
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
 		if(bone.GetChildCount() > 0) {
-			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, TextAnchor.MiddleLeft, 20f, 20f)) {
+			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, 20f, 20f)) {
 				bone.Expanded = !bone.Expanded;
 			}
 		} else {
@@ -328,7 +328,7 @@ public class Character {
 		}
 		EditorGUILayout.LabelField(bone.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
 		GUILayout.FlexibleSpace();
-		if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, TextAnchor.MiddleLeft, 40f, 20f)) {
+		if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, 40f, 20f)) {
 			bone.Draw = !bone.Draw;
 		}
 		EditorGUILayout.EndHorizontal();

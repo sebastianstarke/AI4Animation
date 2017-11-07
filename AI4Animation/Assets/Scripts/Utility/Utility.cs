@@ -263,20 +263,20 @@ public static class Utility {
 		return style;
 	}
 
-	public static bool GUIButton(string label, Color backgroundColor, Color textColor, TextAnchor alignment) {
+	public static bool GUIButton(string label, Color backgroundColor, Color textColor) {
 		GUIStyle style = new GUIStyle("Button");
 		style.normal.textColor = textColor;
-		style.alignment = alignment;
+		style.alignment = TextAnchor.MiddleCenter;
 		SetGUIColor(backgroundColor);
 		bool clicked = GUILayout.Button(label, style);
 		ResetGUIColor();
 		return clicked;
 	}
 
-	public static bool GUIButton(string label, Color backgroundColor, Color textColor, TextAnchor alignment, float width, float height) {
+	public static bool GUIButton(string label, Color backgroundColor, Color textColor, float width, float height) {
 		GUIStyle style = new GUIStyle("Button");
 		style.normal.textColor = textColor;
-		style.alignment = alignment;
+		style.alignment = TextAnchor.MiddleCenter;
 		SetGUIColor(backgroundColor);
 		bool clicked = GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
 		ResetGUIColor();
