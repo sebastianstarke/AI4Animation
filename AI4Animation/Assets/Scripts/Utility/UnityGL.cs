@@ -258,9 +258,9 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.TRIANGLES);
         GL.Color(color);
-        GL.Vertex(center + radius*(IsocelesTrianglePoints[0]));
-		GL.Vertex(center + radius*(IsocelesTrianglePoints[1]));
-		GL.Vertex(center + radius*(IsocelesTrianglePoints[2]));
+        GL.Vertex(center + radius*IsocelesTrianglePoints[0]);
+		GL.Vertex(center + radius*IsocelesTrianglePoints[1]);
+		GL.Vertex(center + radius*IsocelesTrianglePoints[2]);
 	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
@@ -272,8 +272,8 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius * (CirclePoints[i]));
-			GL.Vertex(center + radius * (CirclePoints[i+1]));
+			GL.Vertex(center + radius*CirclePoints[i]);
+			GL.Vertex(center + radius*CirclePoints[i+1]);
 		}
 	}
 

@@ -411,6 +411,7 @@ public class BVHAnimation : ScriptableObject {
 		
 		public float[] Values;
 		public float Smoothing;
+		public float Amplification;
 		public float TimeWindow;
 
 		public BVHPhaseFunction(BVHAnimation animation) {
@@ -419,12 +420,20 @@ public class BVHAnimation : ScriptableObject {
 			Variables = new bool[Animation.Character.Bones.Length];
 			Values = new float[Animation.TotalFrames];
 			SetSmoothing(0.1f);
+			SetAmplification(1f);
 			TimeWindow = Animation.TotalTime;
 		}
 
 		public void SetSmoothing(float smoothing) {
 			if(Smoothing != smoothing) {
 				Smoothing = smoothing;
+				ComputeFunction();
+			}
+		}
+
+		public void SetAmplification(float amplification) {
+			if(Amplification != amplification) {
+				Amplification = amplification;
 				ComputeFunction();
 			}
 		}
@@ -483,6 +492,8 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Inspector() {
+			UnityGL.Start();
+
 			Utility.SetGUIColor(Utility.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -510,6 +521,7 @@ public class BVHAnimation : ScriptableObject {
 				EditorGUILayout.EndScrollView();
 
 				SetSmoothing(EditorGUILayout.FloatField("Smoothing", Smoothing));
+				SetAmplification(EditorGUILayout.FloatField("Amplification", Amplification));
 				TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 2f*Animation.FrameTime, Animation.TotalTime);
 
 				EditorGUILayout.BeginHorizontal();
@@ -537,42 +549,44 @@ public class BVHAnimation : ScriptableObject {
 				int start = Animation.GetFrame(startTime).Index;
 				int end = Animation.GetFrame(endTime).Index;
 				int elements = end-start;
-				Handles.color = Utility.Cyan;
+
 				for(int i=1; i<elements; i++) {
 					Vector3 prevPos = new Vector3((float)(i-1)/(elements-1), Values[i+start-1], 0f);
 					Vector3 newPos = new Vector3((float)(i)/(elements-1), Values[i+start], 0f);
-					Handles.DrawLine(
+					UnityGL.DrawLine(
 						new Vector3(rect.xMin + prevPos.x * rect.width, rect.yMax - prevPos.y * rect.height, 0f), 
-						new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f));
+						new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f),
+						Utility.Cyan);
 				}
 
 				BVHFrame A = GetFirstKey();
 				if(A != null) {
-					Handles.color = Utility.Magenta;
-					Handles.DrawLine(
+					UnityGL.DrawLine(
 						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax, 0f), 
-						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f));
+						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
+						Utility.Magenta);
 					BVHFrame B = GetNextKey(A);
 					while(A != B && B != null) {
-						Handles.color = Utility.White;
-						Handles.DrawLine(
-						new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax, 0f), 
-						new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f));
-						Handles.color = Utility.Magenta;
-						Handles.DrawLine(
+						UnityGL.DrawLine(
+							new Vector3(rect.xMin + (float)(A.Index-start)/elements * rect.width, rect.yMax, 0f), 
+							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
+							Utility.White);
+						UnityGL.DrawLine(
 							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax, 0f), 
-							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f));
+							new Vector3(rect.xMin + (float)(B.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f),
+							Utility.Magenta);
 						A = B;
 						B = GetNextKey(A);
 					}
 				}
 
-				Handles.color = Utility.Red;
-				Handles.DrawLine(
+				UnityGL.DrawLine(
 					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f));
-				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), Vector3.forward, 3f);
-				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), Vector3.forward, 3f);
+					new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), 
+					Utility.Red);
+				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax, 0f), 3f, Utility.DarkGrey);
+				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width, rect.yMax - rect.height, 0f), 3f, Utility.DarkGrey);
+				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
 				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
@@ -580,6 +594,8 @@ public class BVHAnimation : ScriptableObject {
 				}
 				EditorGUILayout.EndHorizontal();
 			}
+
+			UnityGL.Finish();
 		}
 
 		private void ComputeFunction() {
@@ -604,6 +620,7 @@ public class BVHAnimation : ScriptableObject {
 			}
 			for(int i=0; i<Values.Length; i++) {
 				Values[i] = Utility.Normalise(Values[i], min, max, 0f, 1f);
+				Values[i] = (float)System.Math.Tanh((double)(Amplification*Values[i]));
 			}
 		}
 
@@ -648,8 +665,8 @@ public class BVHAnimation : ScriptableObject {
 	public class BVHStyleFunction {
 		public BVHAnimation Animation;
 		
-		public enum STYLE {Biped, Quadruped, Custom, Count}
-		public STYLE Style = STYLE.Biped;
+		public enum STYLE {Custom, Biped, Quadruped, Count}
+		public STYLE Style = STYLE.Custom;
 
 		public bool[] Keys;
 		public BVHStyle[] Styles;
@@ -671,6 +688,9 @@ public class BVHAnimation : ScriptableObject {
 				Style = style;
 				Reset();
 				switch(Style) {
+					case STYLE.Custom:
+					break;
+
 					case STYLE.Biped:
 					AddStyle("Idle");
 					AddStyle("Walk");
@@ -687,9 +707,7 @@ public class BVHAnimation : ScriptableObject {
 					AddStyle("Crouch");
 					AddStyle("Jump");
 					AddStyle("Sit");
-					break;
-					
-					case STYLE.Custom:
+					AddStyle("Lie");
 					break;
 				}
 			}
@@ -771,6 +789,8 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Inspector() {
+			UnityGL.Start();
+
 			Utility.SetGUIColor(Utility.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -836,31 +856,31 @@ public class BVHAnimation : ScriptableObject {
 				BVHFrame B = GetNextKey(A);
 				while(A != B) {
 					for(int i=0; i<Styles.Length; i++) {
-						Handles.color = colors[i];
 						Vector3 prevPos = new Vector3((float)A.Index/Animation.TotalFrames, Styles[i].Values[A.Index-1], 0);
 						Vector3 newPos = new Vector3((float)B.Index/Animation.TotalFrames, Styles[i].Values[B.Index-1], 0f);
 						prevPos = new Vector3(rect.xMin + prevPos.x * rect.width, rect.yMax - prevPos.y * rect.height, 0f);
 						newPos = new Vector3(rect.xMin + newPos.x * rect.width, rect.yMax - newPos.y * rect.height, 0f);
-						Handles.DrawLine(prevPos, newPos);
+						UnityGL.DrawLine(prevPos, newPos, colors[i]);
 					}
-					Handles.color = Utility.Magenta;
-					Handles.DrawLine(
-					new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f));
+					UnityGL.DrawLine(
+						new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
+						new Vector3(rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
+						Utility.Magenta);
 					A = B;
 					B = GetNextKey(A);
 				}
-				Handles.color = Utility.Magenta;
-				Handles.DrawLine(
-				new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-				new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f));
+				UnityGL.DrawLine(
+					new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
+					new Vector3(rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
+					Utility.Magenta);
 
-				Handles.color = Utility.Red;
-				Handles.DrawLine(
+				UnityGL.DrawLine(
 					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 
-					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f));
-				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), Vector3.forward, 3f);
-				Handles.DrawSolidDisc(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f), Vector3.forward, 3f);
+					new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f),
+					Utility.Red);
+				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax, 0f), 3f, Utility.DarkGrey);
+				UnityGL.DrawCircle(new Vector3(rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width, rect.yMax - rect.height, 0f), 3f, Utility.DarkGrey);
+				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
 				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
@@ -869,6 +889,8 @@ public class BVHAnimation : ScriptableObject {
 				EditorGUILayout.EndHorizontal();
 
 			}
+
+			UnityGL.Finish();
 		}
 	}
 

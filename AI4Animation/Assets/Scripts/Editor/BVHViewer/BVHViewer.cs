@@ -41,6 +41,10 @@ public class BVHViewer : EditorWindow {
 	}
 
 	void OnGUI() {
+		//if(Event.current.type != EventType.Repaint) {
+		//	return;
+		//}
+
 		Scroll = EditorGUILayout.BeginScrollView(Scroll);
 
 		Utility.SetGUIColor(Utility.Black);
