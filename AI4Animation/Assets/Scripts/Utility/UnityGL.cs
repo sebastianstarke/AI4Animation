@@ -22,6 +22,7 @@ public static class UnityGL {
 		if(ColorMaterial != null) {
 			return;
 		}
+		Resources.UnloadUnusedAssets();
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
 		ColorMaterial = new Material(colorShader);
 		ColorMaterial.hideFlags = HideFlags.HideAndDontSave;

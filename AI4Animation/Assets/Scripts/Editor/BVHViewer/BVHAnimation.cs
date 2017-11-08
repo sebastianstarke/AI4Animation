@@ -413,7 +413,7 @@ public class BVHAnimation : ScriptableObject {
 			Phase = new float[Animation.TotalFrames];
 			Variables = new bool[Animation.Character.Bones.Length];
 			Values = new float[Animation.TotalFrames];
-			SetSmoothing(0.1f);
+			SetSmoothing(0.25f);
 			SetAmplification(1f);
 			TimeWindow = Animation.TotalTime;
 		}
@@ -517,8 +517,9 @@ public class BVHAnimation : ScriptableObject {
 			int dist = b.Index - a.Index;
 			if(dist >= 2) {
 				for(int i=a.Index+1; i<b.Index; i++) {
-					float rate = (float)((float)i-(float)a.Index)/(float)dist;
-					Phase[i-1] = rate*Phase[b.Index-1];
+					float rateA = (float)((float)i-(float)a.Index)/(float)dist;
+					float rateB = (float)((float)b.Index-(float)i)/(float)dist;
+					Phase[i-1] = rateB*Mathf.Repeat(Phase[a.Index-1], 1f) + rateA*Phase[b.Index-1];
 				}
 			}
 		}
@@ -746,7 +747,7 @@ public class BVHAnimation : ScriptableObject {
 					AddStyle("Idle");
 					AddStyle("Walk");
 					AddStyle("Run");
-					AddStyle("Crouch");
+					AddStyle("Sprint");
 					AddStyle("Jump");
 					AddStyle("Sit");
 					AddStyle("Lie");
