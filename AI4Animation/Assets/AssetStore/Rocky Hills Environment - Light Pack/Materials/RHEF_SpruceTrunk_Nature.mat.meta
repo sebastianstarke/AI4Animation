@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: b6b55900a82122d4cac45581a7cd97db
+labels:
+- bark
+- cliff
+- dirt
+- grass
+- materials
+- pine
+- rockgrass
+- rocks
+- smalldetails
+- spruce
+- stones
+- tree
+- trunk
+timeCreated: 1493850546
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: materials
+  assetBundleVariant: 

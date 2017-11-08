@@ -44,14 +44,14 @@ public class BVHAnimation : ScriptableObject {
 		StyleFunction = new BVHStyleFunction(this);
 		Contacts = new BVHContacts(this);
 		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
-		if(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/"+name+".asset", typeof(BVHAnimation)) == null) {
-			AssetDatabase.CreateAsset(this , "Assets/Resources/BVH/"+name+".asset");
+		if(AssetDatabase.LoadAssetAtPath("Assets/Animation/BVH/"+name+".asset", typeof(BVHAnimation)) == null) {
+			AssetDatabase.CreateAsset(this , "Assets/Animation/BVH/"+name+".asset");
 		} else {
 			int i = 1;
-			while(AssetDatabase.LoadAssetAtPath("Assets/Resources/BVH/"+name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
+			while(AssetDatabase.LoadAssetAtPath("Assets/Animation/BVH/"+name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
 				i += 1;
 			}
-			AssetDatabase.CreateAsset(this, "Assets/Resources/BVH/"+name+" ("+i+").asset");
+			AssetDatabase.CreateAsset(this, "Assets/Animation/BVH/"+name+" ("+i+").asset");
 		}
 		return this;
 	}

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0a535cf27e7d7dd4d8857f6b49fbbea8
+labels:
+- cliff
+- dirt
+- grass
+- materials
+- rockgrass
+- rocks
+- smalldetails
+- stones
+timeCreated: 1493506088
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: materials
+  assetBundleVariant: 

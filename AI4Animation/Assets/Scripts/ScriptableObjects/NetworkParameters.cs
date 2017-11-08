@@ -8,10 +8,10 @@ public class NetworkParameters : ScriptableObject {
 	public FloatMatrix[] W0, W1, W2, b0, b1, b2;
 
 	public void Load(int xDim, int yDim, int hDim) {
-		Xmean = LoadWeights("Assets/Resources/PFNN/Xmean.bin", xDim, 1);
-		Xstd = LoadWeights("Assets/Resources/PFNN/Xstd.bin", xDim, 1);
-		Ymean = LoadWeights("Assets/Resources/PFNN/Ymean.bin", yDim, 1);
-		Ystd = LoadWeights("Assets/Resources/PFNN/Ystd.bin", yDim, 1);
+		Xmean = LoadWeights("Assets/Animation/PFNN/Xmean.bin", xDim, 1);
+		Xstd = LoadWeights("Assets/Animation/PFNN/Xstd.bin", xDim, 1);
+		Ymean = LoadWeights("Assets/Animation/PFNN/Ymean.bin", yDim, 1);
+		Ystd = LoadWeights("Assets/Animation/PFNN/Ystd.bin", yDim, 1);
 		
 		W0 = new FloatMatrix[50];
 		W1 = new FloatMatrix[50];
@@ -20,12 +20,12 @@ public class NetworkParameters : ScriptableObject {
 		b1 = new FloatMatrix[50];
 		b2 = new FloatMatrix[50];
 		for(int i=0; i<50; i++) {
-			W0[i] = LoadWeights("Assets/Resources/PFNN/W0_"+i.ToString("D3")+".bin", hDim, xDim);
-			W1[i] = LoadWeights("Assets/Resources/PFNN/W1_"+i.ToString("D3")+".bin", hDim, hDim);
-			W2[i] = LoadWeights("Assets/Resources/PFNN/W2_"+i.ToString("D3")+".bin", yDim, hDim);
-			b0[i] = LoadWeights("Assets/Resources/PFNN/b0_"+i.ToString("D3")+".bin", hDim, 1);
-			b1[i] = LoadWeights("Assets/Resources/PFNN/b1_"+i.ToString("D3")+".bin", hDim, 1);
-			b2[i] = LoadWeights("Assets/Resources/PFNN/b2_"+i.ToString("D3")+".bin", yDim, 1);
+			W0[i] = LoadWeights("Assets/Animation/PFNN/W0_"+i.ToString("D3")+".bin", hDim, xDim);
+			W1[i] = LoadWeights("Assets/Animation/PFNN/W1_"+i.ToString("D3")+".bin", hDim, hDim);
+			W2[i] = LoadWeights("Assets/Animation/PFNN/W2_"+i.ToString("D3")+".bin", yDim, hDim);
+			b0[i] = LoadWeights("Assets/Animation/PFNN/b0_"+i.ToString("D3")+".bin", hDim, 1);
+			b1[i] = LoadWeights("Assets/Animation/PFNN/b1_"+i.ToString("D3")+".bin", hDim, 1);
+			b2[i] = LoadWeights("Assets/Animation/PFNN/b2_"+i.ToString("D3")+".bin", yDim, 1);
 		}
 
 		/*
@@ -38,12 +38,12 @@ public class NetworkParameters : ScriptableObject {
 			b1 = new Matrix<float>[50];
 			b2 = new Matrix<float>[50];
 			for(int i=0; i<50; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Resources/PFNN/W0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Resources/PFNN/W1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Resources/PFNN/W2_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Resources/PFNN/b0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Resources/PFNN/b1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Resources/PFNN/b2_"+i.ToString("D3")+".bin");
+				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/PFNN/W0_"+i.ToString("D3")+".bin");
+				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/PFNN/W1_"+i.ToString("D3")+".bin");
+				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/PFNN/W2_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/PFNN/b0_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/PFNN/b1_"+i.ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/PFNN/b2_"+i.ToString("D3")+".bin");
 			}	
 			break;
 			
@@ -55,12 +55,12 @@ public class NetworkParameters : ScriptableObject {
 			b1 = new Matrix<float>[10];
 			b2 = new Matrix<float>[10];
 			for(int i=0; i<10; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Resources/PFNN/W0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Resources/PFNN/W1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Resources/PFNN/W2_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Resources/PFNN/b0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Resources/PFNN/b1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Resources/PFNN/b2_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/PFNN/W0_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/PFNN/W1_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/PFNN/W2_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/PFNN/b0_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/PFNN/b1_"+(i*5).ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/PFNN/b2_"+(i*5).ToString("D3")+".bin");
 			}	
 			break;
 
@@ -72,12 +72,12 @@ public class NetworkParameters : ScriptableObject {
 			b1 = new Matrix<float>[4];
 			b2 = new Matrix<float>[4];
 			for(int i=0; i<4; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Resources/PFNN/W0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Resources/PFNN/W1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Resources/PFNN/W2_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Resources/PFNN/b0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Resources/PFNN/b1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Resources/PFNN/b2_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/PFNN/W0_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/PFNN/W1_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/PFNN/W2_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/PFNN/b0_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/PFNN/b1_"+(i*12.5).ToString("D3")+".bin");
+				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/PFNN/b2_"+(i*12.5).ToString("D3")+".bin");
 			}	
 			break;
 		}

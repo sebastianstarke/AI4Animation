@@ -1,0 +1,129 @@
+fileFormatVersion: 2
+guid: 957c18644814403499a9e2c9f49e03ce
+timeCreated: 18446744011573954816
+ModelImporter:
+  serializedVersion: 21
+  fileIDToRecycleName:
+    100000: Banana_tree
+    100002: Big_sharp_leafs
+    100004: Fern
+    100006: //RootNode
+    100008: rect_double
+    100010: rect_simple
+    100012: rect_triple
+    100014: sqr_double
+    100016: sqr_simple
+    100018: sqr_triple
+    400000: Banana_tree
+    400002: Big_sharp_leafs
+    400004: Fern
+    400006: //RootNode
+    400008: rect_double
+    400010: rect_simple
+    400012: rect_triple
+    400014: sqr_double
+    400016: sqr_simple
+    400018: sqr_triple
+    2300000: Banana_tree
+    2300002: Big_sharp_leafs
+    2300004: Fern
+    2300006: rect_double
+    2300008: rect_simple
+    2300010: rect_triple
+    2300012: sqr_double
+    2300014: sqr_simple
+    2300016: sqr_triple
+    3300000: Banana_tree
+    3300002: Big_sharp_leafs
+    3300004: Fern
+    3300006: rect_double
+    3300008: rect_simple
+    3300010: rect_triple
+    3300012: sqr_double
+    3300014: sqr_simple
+    3300016: sqr_triple
+    4300000: Banana_tree
+    4300002: Big_sharp_leafs
+    4300004: Fern
+    4300006: rect_double
+    4300008: rect_simple
+    4300010: rect_triple
+    4300012: sqr_double
+    4300014: sqr_simple
+    4300016: sqr_triple
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
