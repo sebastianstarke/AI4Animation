@@ -536,18 +536,6 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.LabelField("Phase Function");
 				}
 
-				if(Animation.CurrentFrame != GetFirstKey() && Animation.CurrentFrame != GetLastKey()) {
-					if(IsKey(Animation.CurrentFrame)) {
-						if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
-							SetKey(Animation.CurrentFrame, false);
-						}
-					} else {
-						if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
-							SetKey(Animation.CurrentFrame, true);
-						}
-					}
-				}
-
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Bones.Length; i++) {
 					if(Variables[i]) {
@@ -561,6 +549,18 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 				EditorGUILayout.EndScrollView();
+
+				if(Animation.CurrentFrame != GetFirstKey() && Animation.CurrentFrame != GetLastKey()) {
+					if(IsKey(Animation.CurrentFrame)) {
+						if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, false);
+						}
+					} else {
+						if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
+							SetKey(Animation.CurrentFrame, true);
+						}
+					}
+				}
 
 				SetSmoothing(EditorGUILayout.FloatField("Smoothing", Smoothing));
 				SetAmplification(EditorGUILayout.FloatField("Amplification", Amplification));
