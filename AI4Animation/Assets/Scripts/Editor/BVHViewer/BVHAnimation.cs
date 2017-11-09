@@ -43,6 +43,7 @@ public class BVHAnimation : ScriptableObject {
 		PhaseFunction = new BVHPhaseFunction(this);
 		StyleFunction = new BVHStyleFunction(this);
 		Contacts = new BVHContacts(this);
+		//string folder = viewer.Path.Substring(0, viewer.Path.LastIndexOf("/")+1);
 		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
 		if(AssetDatabase.LoadAssetAtPath("Assets/Animation/"+name+".asset", typeof(BVHAnimation)) == null) {
 			AssetDatabase.CreateAsset(this , "Assets/Animation/"+name+".asset");
@@ -940,8 +941,8 @@ public class BVHAnimation : ScriptableObject {
 				Vector3 top = new Vector3(0f, rect.yMax, 0f);
 				Vector3 bottom = new Vector3(0f, rect.yMax - rect.height, 0f);
 				while(A != B) {
-					prevPos.x = rect.xMin + (float)A.Index/Animation.TotalFrames * rect.width;
-					newPos.x = rect.xMin + (float)B.Index/Animation.TotalFrames * rect.width;
+					prevPos.x = rect.xMin + (float)(A.Index-1)/(Animation.TotalFrames-1) * rect.width;
+					newPos.x = rect.xMin + (float)(B.Index-1)/(Animation.TotalFrames-1) * rect.width;
 					for(int i=0; i<Styles.Length; i++) {
 						prevPos.y = rect.yMax - Styles[i].Values[A.Index-1] * rect.height;
 						newPos.y = rect.yMax - Styles[i].Values[B.Index-1] * rect.height;
@@ -957,8 +958,8 @@ public class BVHAnimation : ScriptableObject {
 				bottom.x = newPos.x;
 				UnityGL.DrawLine(top, bottom, Utility.Magenta);
 
-				top.x = rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width;
-				bottom.x = rect.xMin + (float)Animation.CurrentFrame.Index/Animation.TotalFrames * rect.width;
+				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-1)/(Animation.TotalFrames-1) * rect.width;
+				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-1)/(Animation.TotalFrames-1) * rect.width;
 				UnityGL.DrawLine(top, bottom, Utility.Red);
 				UnityGL.DrawCircle(top, 3f, Utility.Green);
 				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
