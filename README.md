@@ -15,7 +15,8 @@ Development Status
 ------------
 The only required script component that is needed for the animation is called 'BioAnimation'. The code for the PFNN is implemented using MathNet.Numerics, and uses the externally trained weights from Theano/TensorFlow to generate the character motion. The weights are supposed to be imported during edit time and are then serialised inside Unity. The trajectory estimation module handles the user input to control the character movements, and rejects paths which would collide with obstacles. The output of the joint positions, velocities, corrections etc. is then fed back to the character to update the posture.
 
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo_1.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo_2.png" width="100%">
 
 Demo
 ------------
