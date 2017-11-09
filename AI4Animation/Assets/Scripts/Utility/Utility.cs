@@ -204,30 +204,47 @@ public static class Utility {
 		return end;
 	}
 
-	public static float GetHeight(float x, float z, LayerMask mask) {
-		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
-		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
+	public static float GetHeight(Vector3 origin, LayerMask mask) {
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		if(upHits.Length == 0 && downHits.Length == 0) {
+			return origin.y;
 		}
-		if(intersection) {
-			return hit.point.y;
-		} else {
-			return 0f;
+		float height = float.MinValue;
+		for(int i=0; i<downHits.Length; i++) {
+			if(downHits[i].point.y > height) {
+				height = downHits[i].point.y;
+			}
 		}
+		for(int i=0; i<upHits.Length; i++) {
+			if(upHits[i].point.y > height) {
+				height = upHits[i].point.y;
+			}
+		}
+		return height;
 	}
 
-	public static float GetRise(float x, float z, LayerMask mask) {
-		RaycastHit hit;
-		bool intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.up, out hit, mask);
-		if(!intersection) {
-			intersection = Physics.Raycast(new Vector3(x,0f,z), Vector3.down, out hit, mask);
-		}
-		if(intersection) {
-			return Vector3.Angle(hit.normal, Vector3.up) / 90f;
-		} else {
+	public static float GetRise(Vector3 origin, LayerMask mask) {
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		if(upHits.Length == 0 && downHits.Length == 0) {
 			return 0f;
 		}
+		Vector3 normal = Vector3.up;
+		float height = float.MinValue;
+		for(int i=0; i<downHits.Length; i++) {
+			if(downHits[i].point.y > height) {
+				height = downHits[i].point.y;
+				normal = downHits[i].normal;
+			}
+		}
+		for(int i=0; i<upHits.Length; i++) {
+			if(upHits[i].point.y > height) {
+				height = upHits[i].point.y;
+				normal = upHits[i].normal;
+			}
+		}
+		return Vector3.Angle(normal, Vector3.up) / 90f;
 	}
 
 	public static Color[] GetRainbowColors(int number) {

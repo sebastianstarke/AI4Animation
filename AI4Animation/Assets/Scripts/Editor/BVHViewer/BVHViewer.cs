@@ -44,6 +44,7 @@ public class BVHViewer : EditorWindow {
 		if(Utility.GetElapsedTime(Timestamp) > 1f/(float)RefreshRate) {
 			Repaint();
 			Timestamp = Utility.GetTimestamp();
+			System.GC.Collect();
 		}
 	}
 

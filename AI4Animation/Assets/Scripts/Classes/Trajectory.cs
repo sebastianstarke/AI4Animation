@@ -77,6 +77,40 @@ public class Trajectory {
 		return Points[GetRootPointIndex()-1];
 	}
 
+	/*
+	public void Postprocess() {
+		LayerMask mask = LayerMask.GetMask("Ground");
+		for(int i=0; i<GetPointCount(); i+=Density) {
+			Vector3 position = Points[i].GetPosition();
+			position.y = Utility.GetHeight(Points[i].GetPosition(), mask);
+			Points[i].SetPosition(position);
+		}
+		for(int i=Density; i<GetPointCount(); i+=Density) {
+			Vector3 A = Points[i-Density].GetPosition();
+			Vector3 B = Points[i].GetPosition();
+			float GK = B.y - A.y;
+			A.y = 0f;
+			B.y = 0f;
+			float AK = Vector3.Distance(A,B);
+			if(AK == 0f) {
+				Points[i].Jump = 0f;
+			} else {
+				Points[i].Jump = Mathf.Abs(Mathf.Sin(GK / AK));
+			}
+		}
+		for(int i=Density; i<=GetPointCount(); i+=Density) {
+			for(int j=i-Density+1; j<i; j++) {
+				Vector3 position = Points[j].GetPosition();
+				float rateA = (float)((float)j-(float)i)/(float)Density + 1f;
+				float rateB = (float)((float)i-(float)j)/(float)Density;
+				position.y = rateB*Points[i-Density].GetPosition().y + rateA*Points[i].GetPosition().y;
+				Points[j].SetPosition(position);
+				Points[j].Jump = rateB*Points[i-Density].Jump + rateA*Points[i].Jump;
+			}
+		}
+	}
+	*/
+
 	public class Point {
 		private Vector3 Position;
 		private Vector3 Direction;
@@ -96,8 +130,8 @@ public class Trajectory {
 
 		public void SetPosition(Vector3 position) {
 			Position = position;
-			Position.y = Utility.GetHeight(Position.x, Position.z, LayerMask.GetMask("Ground"));
-			Jump = Utility.GetRise(Position.x, Position.z, LayerMask.GetMask("Ground"));
+			Position.y = Utility.GetHeight(Position, LayerMask.GetMask("Ground"));
+			Jump = Utility.GetRise(Position, LayerMask.GetMask("Ground"));
 		}
 
 		public Vector3 GetPosition() {
@@ -127,7 +161,7 @@ public class Trajectory {
 		public Vector3 SampleSide(float distance) {
 			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Direction;
 			Vector3 proj = Position + distance * ortho.normalized;
-			proj.y = Utility.GetHeight(proj.x, proj.z, LayerMask.GetMask("Ground"));
+			proj.y = Utility.GetHeight(proj, LayerMask.GetMask("Ground"));
 			return proj;
 		}
 	}

@@ -121,6 +121,8 @@ public class BioAnimation : MonoBehaviour {
 			Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
 		}
 
+		//Trajectory.Postprocess();
+
 		//Post-Correct Trajectory
 		CollisionChecks(Trajectory.GetRootPointIndex()+1);
 
@@ -184,16 +186,22 @@ public class BioAnimation : MonoBehaviour {
 			Trajectory.Points[i].Bump = Trajectory.Points[i+1].Bump;
 		}
 
+		//Trajectory.Postprocess();
+
 		//Update Current Trajectory
 		float stand_amount = Mathf.Pow(1.0f-Trajectory.GetRoot().Stand, 0.25f);
 		Trajectory.GetRoot().SetPosition((stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativePositionFrom(currentRoot));
 		Trajectory.GetRoot().SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.GetRoot().GetDirection());
 		Transformation newRoot = new Transformation(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetRotation());
 
+		//Trajectory.Postprocess();
+
 		for(int i=Trajectory.GetRootPointIndex()+1; i<Trajectory.GetPointCount(); i++) {
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativeDirectionFrom(newRoot));
 		}
 		
+		//Trajectory.Postprocess();
+
 		//Update Future Trajectory
 		for(int i=Trajectory.GetRootPointIndex()+1; i<Trajectory.GetPointCount(); i++) {
 			int w = Trajectory.GetRootSampleIndex();
@@ -217,6 +225,8 @@ public class BioAnimation : MonoBehaviour {
 					)
 				);
 		}
+
+		//Trajectory.Postprocess();
 
 		//Post-Correct Trajectory
 		CollisionChecks(Trajectory.GetRootPointIndex());
