@@ -198,7 +198,11 @@ public class Trajectory {
 		//Positions
 		for(int i=0; i<GetPointCount(); i+=step) {
 			if(i % GetDensity() == 0) {
-				UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
+				if(i == GetRootPointIndex()) {
+					UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Magenta);
+				} else {
+					UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
+				}
 			} else {
 				UnityGL.DrawCircle(Points[i].GetPosition(), 0.005f, Utility.Black);
 			}
