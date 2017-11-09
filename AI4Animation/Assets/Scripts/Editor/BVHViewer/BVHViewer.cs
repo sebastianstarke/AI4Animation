@@ -49,8 +49,6 @@ public class BVHViewer : EditorWindow {
 	}
 
 	void OnGUI() {
-		Scroll = EditorGUILayout.BeginScrollView(Scroll);
-
 		Utility.SetGUIColor(Utility.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -98,15 +96,13 @@ public class BVHViewer : EditorWindow {
 				}
 
 				if(Animation != null) {
+					Scroll = EditorGUILayout.BeginScrollView(Scroll);
 					Animation.Inspector();
+					EditorGUILayout.EndScrollView();
 				}
 
 			}
-
 		}
-
-		EditorGUILayout.EndScrollView();
-
 		Timestamp = Utility.GetTimestamp();
 	}
 

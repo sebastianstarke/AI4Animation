@@ -10,7 +10,7 @@ public class BVHAnimation : ScriptableObject {
 
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
-	public bool ShowTrajectory = false;
+	public bool ShowTrajectory = true;
 	
 	public BVHFrame[] Frames = new BVHFrame[0];
 	public BVHFrame CurrentFrame = null;
