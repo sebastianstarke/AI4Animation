@@ -24,4 +24,4 @@ To run the demo, simply start Unity and open the provided scene in the Assets fo
 Data Preprocessing
 ------------
 A 'BVHViewer' editor window has been developed with the aim to do animation preprocessing of BVH files to generate the training data for the deep learning. This enables defining the phase function, style function, generating trajectories as well as all other relevant data right inside Unity.
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/BVH.png" width="100%">
+%<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/BVH.png" width="100%">
