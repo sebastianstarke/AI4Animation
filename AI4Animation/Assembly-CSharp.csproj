@@ -95,6 +95,14 @@
      <Compile Include="Assets\AssetStore\PostProcessing\PostProcessing\Runtime\Utils\MaterialFactory.cs" />
      <Compile Include="Assets\AssetStore\PostProcessing\PostProcessing\Runtime\Utils\ReflectionUtils.cs" />
      <Compile Include="Assets\AssetStore\PostProcessing\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\Displace.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\GerstnerDisplace.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\MeshContainer.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\PlanarReflection.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\SpecularLighting.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\Water.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\WaterBase.cs" />
+     <Compile Include="Assets\AssetStore\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Classes\Trajectory.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\NetworkParameters.cs" />
@@ -120,7 +128,7 @@
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
-     <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
+     <None Include="Assets\AssetStore\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeCompute.compute" />
@@ -135,7 +143,7 @@
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\EyeHistogram.compute" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
-     <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
+     <None Include="Assets\AssetStore\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\FXAA.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
@@ -144,9 +152,9 @@
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
-     <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
+     <None Include="Assets\AssetStore\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
-     <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Advanced.shader" />
+     <None Include="Assets\AssetStore\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
      <None Include="Assets\AssetStore\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
