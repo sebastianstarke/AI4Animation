@@ -9,6 +9,7 @@ public class BVHViewer : EditorWindow {
 	public static int RefreshRate = 30;
 	public static bool AutoFocus = true;
 	public static float FocusDistance = 2.5f;
+	public static float FocusAngle = 270f;
 
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
@@ -69,6 +70,7 @@ public class BVHViewer : EditorWindow {
 					RefreshRate = EditorGUILayout.IntField("Refresh Rate", RefreshRate);
 					AutoFocus = EditorGUILayout.Toggle("Auto Focus", AutoFocus);
 					FocusDistance = EditorGUILayout.FloatField("Focus Distance", FocusDistance);
+					FocusAngle = EditorGUILayout.Slider("Focus Angle", FocusAngle, 0f, 360f);
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -116,8 +118,10 @@ public class BVHViewer : EditorWindow {
 			if(AutoFocus) {
 				Vector3 position = Animation.CurrentFrame.Positions[0];
 				//Quaternion rotation = Animation.CurrentFrame.Rotations[0];
-				Quaternion rotation = Quaternion.identity;
-				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(Animation.ForwardOrientation) * rotation, FocusDistance);
+				Quaternion rotation = Animation.CurrentFrame.Rotations[0];
+				rotation.x = 0f;
+				rotation.z = 0f;
+				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.ForwardOrientation) * rotation, FocusDistance);
 			}
 		}
 	}
