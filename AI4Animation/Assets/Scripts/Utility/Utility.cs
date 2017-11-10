@@ -41,7 +41,7 @@ public static class Utility {
 	}
 
 	public static Mesh GetPrimitiveMesh(PrimitiveType type) {
-		if (!primitiveMeshes.ContainsKey(type)) {
+		if(!primitiveMeshes.ContainsKey(type)) {
 			CreatePrimitiveMesh(type);
 		}
 

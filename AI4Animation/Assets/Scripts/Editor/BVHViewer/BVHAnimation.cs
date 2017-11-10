@@ -614,23 +614,24 @@ public class BVHAnimation : ScriptableObject {
 					UnityGL.DrawLine(prevPos, newPos, Utility.Cyan);
 				}
 
-				BVHFrame A = GetFirstKey();
-				if(A != null) {
-					bottom.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-					top.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+				BVHFrame A = Animation.GetFrame(start);
+				bottom.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+				top.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+				UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				BVHFrame B = GetNextKey(A);
+				while(A != B) {
+					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
+					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.White);
+					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					UnityGL.DrawLine(bottom, top, Utility.Magenta);
-					BVHFrame B = GetNextKey(A);
-					while(A != B && B != null) {
-						prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-						prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
-						newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-						newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-						UnityGL.DrawLine(prevPos, newPos, Utility.White);
-						bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-						top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-						UnityGL.DrawLine(bottom, top, Utility.Magenta);
-						A = B;
-						B = GetNextKey(A);
+					A = B;
+					B = GetNextKey(A);
+					if(B.Index > end) {
+						break;
 					}
 				}
 

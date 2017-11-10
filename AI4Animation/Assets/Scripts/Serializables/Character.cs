@@ -241,6 +241,7 @@ public class Character {
 					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
+			/*
 			UnityGL.DrawMesh(
 				Utility.GetPrimitiveMesh(PrimitiveType.Sphere),
 				bone.GetPosition(),
@@ -248,6 +249,8 @@ public class Character {
 				BoneSize*Vector3.one,
 				GetMaterial()
 			);
+			*/
+			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));

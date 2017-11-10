@@ -11,6 +11,8 @@ public static class UnityGL {
 
 	private static bool Drawing = false;
 
+	private static bool Initialised = false;
+
 	private static PROGRAM Program = PROGRAM.NONE;
 
 	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
@@ -18,10 +20,12 @@ public static class UnityGL {
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
 
-    static void CreateMaterial() {
-		if(ColorMaterial != null) {
+	static void Initialise() {
+		if(Initialised) {
 			return;
 		}
+
+		//Create Material
 		Resources.UnloadUnusedAssets();
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
 		ColorMaterial = new Material(colorShader);
@@ -33,25 +37,36 @@ public static class UnityGL {
 		ColorMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 		// Turn off depth writes
 		ColorMaterial.SetInt("_ZWrite", 1);
-    }
 
-	static void CreateIsocelesTriangleData() {
+		//Create Triangle
 		IsocelesTrianglePoints = new Vector3[3];
+
+		//Create Circle
+		CirclePoints = new Vector3[CircleResolution];
+
+		//Create Sphere
+		SpherePoints = new Vector3[4 * SphereResolution * SphereResolution];
+
+		Initialised = true;
+	}
+
+	static void UpdateData() {
+		//Camera
+		ViewPosition = GetCamera().transform.position;
+		ViewRotation = GetCamera().transform.rotation;
+
+		//Triangle
 		IsocelesTrianglePoints[0] = ViewRotation * new Vector3(-0.5f, 0.5f, 0f);
 		IsocelesTrianglePoints[1] = ViewRotation * new Vector3(0.5f, 0.5f, 0f);
 		IsocelesTrianglePoints[2] = ViewRotation * new Vector3(0f, -0.5f, 0f);
-	}
 
-	static void CreateCircleData() {
-		CirclePoints = new Vector3[CircleResolution];
+		//Circle
 		for(int i=0; i<CircleResolution; i++) {
 			float angle = 2f * Mathf.PI * (float)i / ((float)CircleResolution-1f);
 			CirclePoints[i] = ViewRotation * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
 		}
-	}
 
-	static void CreateSphereData() {
-		SpherePoints = new Vector3[4 * SphereResolution * SphereResolution];
+		//Sphere
 		float startU=0;
 		float startV=0;
 		float endU=Mathf.PI*2;
@@ -112,12 +127,8 @@ public static class UnityGL {
 		if(Drawing) {
 			Debug.Log("Drawing has not been finished yet.");
 		} else {
-			ViewPosition = GetCamera().transform.position;
-			ViewRotation = GetCamera().transform.rotation;
-			CreateMaterial();
-			CreateIsocelesTriangleData();
-			CreateCircleData();
-			CreateSphereData();
+			Initialise();
+			UpdateData();
 			Drawing = true;
 		}
 	}
