@@ -7,11 +7,11 @@ public class NetworkParameters : ScriptableObject {
 	public FloatMatrix Xmean, Xstd, Ymean, Ystd;
 	public FloatMatrix[] W0, W1, W2, b0, b1, b2;
 
-	public void Load(int xDim, int yDim, int hDim) {
-		Xmean = LoadWeights("Assets/Animation/Human/Xmean.bin", xDim, 1);
-		Xstd = LoadWeights("Assets/Animation/Human/Xstd.bin", xDim, 1);
-		Ymean = LoadWeights("Assets/Animation/Human/Ymean.bin", yDim, 1);
-		Ystd = LoadWeights("Assets/Animation/Human/Ystd.bin", yDim, 1);
+	public bool Load(string folder, int xDim, int yDim, int hDim) {
+		Xmean = LoadWeights(folder+"/Xmean.bin", xDim, 1);
+		Xstd = LoadWeights(folder+"/Xstd.bin", xDim, 1);
+		Ymean = LoadWeights(folder+"/Ymean.bin", yDim, 1);
+		Ystd = LoadWeights(folder+"/Ystd.bin", yDim, 1);
 		
 		W0 = new FloatMatrix[50];
 		W1 = new FloatMatrix[50];
@@ -20,13 +20,23 @@ public class NetworkParameters : ScriptableObject {
 		b1 = new FloatMatrix[50];
 		b2 = new FloatMatrix[50];
 		for(int i=0; i<50; i++) {
-			W0[i] = LoadWeights("Assets/Animation/Human/W0_"+i.ToString("D3")+".bin", hDim, xDim);
-			W1[i] = LoadWeights("Assets/Animation/Human/W1_"+i.ToString("D3")+".bin", hDim, hDim);
-			W2[i] = LoadWeights("Assets/Animation/Human/W2_"+i.ToString("D3")+".bin", yDim, hDim);
-			b0[i] = LoadWeights("Assets/Animation/Human/b0_"+i.ToString("D3")+".bin", hDim, 1);
-			b1[i] = LoadWeights("Assets/Animation/Human/b1_"+i.ToString("D3")+".bin", hDim, 1);
-			b2[i] = LoadWeights("Assets/Animation/Human/b2_"+i.ToString("D3")+".bin", yDim, 1);
+			W0[i] = LoadWeights(folder+"/W0_"+i.ToString("D3")+".bin", hDim, xDim);
+			W1[i] = LoadWeights(folder+"/W1_"+i.ToString("D3")+".bin", hDim, hDim);
+			W2[i] = LoadWeights(folder+"/W2_"+i.ToString("D3")+".bin", yDim, hDim);
+			b0[i] = LoadWeights(folder+"/b0_"+i.ToString("D3")+".bin", hDim, 1);
+			b1[i] = LoadWeights(folder+"/b1_"+i.ToString("D3")+".bin", hDim, 1);
+			b2[i] = LoadWeights(folder+"/b2_"+i.ToString("D3")+".bin", yDim, 1);
 		}
+
+		if(Xmean == null || Xstd == null || Ymean == null || Ystd == null) {
+			return false;
+		}
+		for(int i=0; i<50; i++) {
+			if(W0[i] == null || W1[i] == null || W2[i] == null || b0[i] == null || b1[i] == null || b2[i] == null) {
+				return false;
+			}
+		}
+		return true;
 
 		/*
 		switch(Mode) {
@@ -95,6 +105,7 @@ public class NetworkParameters : ScriptableObject {
 			}
 		} catch (System.Exception e) {
         	Debug.Log(e.Message);
+			return null;
         }
 		return matrix;
 	}

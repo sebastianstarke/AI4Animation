@@ -13,6 +13,7 @@ public class PFNN {
 
 	//public MODE Mode = MODE.CONSTANT;
 
+	public string Folder = string.Empty;
 	public int XDim = 342;
 	public int YDim = 311;
 	public int HDim = 512;
@@ -98,7 +99,10 @@ public class PFNN {
 
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		Parameters.Load(XDim, YDim, HDim);
+		if(!Parameters.Load(Folder, XDim, YDim, HDim)) {
+			Parameters = null;
+			return;
+		}
 		if(Application.isPlaying) {
 			Initialise();
 		}
@@ -220,6 +224,7 @@ public class PFNN {
 
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Folder = EditorGUILayout.TextField("Folder", Folder);
 					XDim = EditorGUILayout.IntField("XDim", XDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
