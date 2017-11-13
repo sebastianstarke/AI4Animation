@@ -160,13 +160,15 @@ public class DogAnimation : MonoBehaviour {
 			}
 
 			//Update Current Trajectory
+			Vector3 translationalVelocity = new Vector3(PFNN.GetOutput(0), 0f, PFNN.GetOutput(1));
+			float angularVelocity = PFNN.GetOutput(2);
 			float stand_amount = Mathf.Pow(1.0f-Trajectory.GetRoot().Styles[0], 0.25f);
-			Trajectory.GetRoot().SetPosition((stand_amount * new Vector3(PFNN.GetOutput(0), 0f, PFNN.GetOutput(1))).RelativePositionFrom(currentRoot));
-			Trajectory.GetRoot().SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.GetRoot().GetDirection());
+			Trajectory.GetRoot().SetPosition((stand_amount * translationalVelocity).RelativePositionFrom(currentRoot));
+			Trajectory.GetRoot().SetDirection(Quaternion.AngleAxis(stand_amount * angularVelocity, Vector3.up) * Trajectory.GetRoot().GetDirection());
 			Transformation newRoot = new Transformation(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetRotation());
 
 			for(int i=Trajectory.GetRootPointIndex()+1; i<Trajectory.GetPointCount(); i++) {
-				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * new Vector3(PFNN.GetOutput(0), 0f, PFNN.GetOutput(1))).RelativeDirectionFrom(newRoot));
+				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * translationalVelocity).RelativeDirectionFrom(newRoot));
 			}
 
 			//Update Future Trajectory
@@ -263,6 +265,7 @@ public class DogAnimation : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		GUI.Box(Utility.GetGUIRect(0.45f, 0.05f, 0.1f, 0.05f), Phase.ToString());
 		for(int i=0; i<Trajectory.GetRoot().Styles.Length; i++) {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, 0.05f), Controller.Styles[i].Name);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, 0.05f), Trajectory.GetRoot().Styles[i], 0f, 1f);

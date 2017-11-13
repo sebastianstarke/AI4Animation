@@ -286,6 +286,7 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		GUI.Box(Utility.GetGUIRect(0.45f, 0.05f, 0.1f, 0.05f), Phase.ToString());
 		for(int i=0; i<Trajectory.GetRoot().Styles.Length; i++) {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, 0.05f), Controller.Styles[i].Name);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, 0.05f), Trajectory.GetRoot().Styles[i], 0f, 1f);
