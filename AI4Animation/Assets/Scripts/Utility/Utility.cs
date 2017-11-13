@@ -204,6 +204,11 @@ public static class Utility {
 		return end;
 	}
 
+	public static Vector3 ProjectGround(Vector3 position, LayerMask mask) {
+		position.y = GetHeight(position,mask);
+		return position;
+	}
+
 	public static float GetHeight(Vector3 origin, LayerMask mask) {
 		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
 		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
@@ -300,6 +305,10 @@ public static class Utility {
 		bool clicked = GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
 		ResetGUIColor();
 		return clicked;
+	}
+
+	public static Rect GetGUIRect(float x, float y, float width, float height) {
+		return new Rect(x*Screen.width, y*Screen.height, width*Screen.width, height*Screen.height);
 	}
 
 	public static int ReadInt(string value) {

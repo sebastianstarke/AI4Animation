@@ -37,7 +37,7 @@ public class BioAnimation : MonoBehaviour {
 		TargetDirection = GetRootDirection();
 		TargetVelocity = Vector3.zero;
 		Velocities = new Vector3[Joints.Length];
-		Trajectory = new Trajectory(GetRootPosition(), GetRootDirection());
+		Trajectory = new Trajectory(GetRootPosition(), GetRootDirection(), Controller.Styles.Length);
 		PFNN.Initialise();
 	}
 
@@ -57,24 +57,13 @@ public class BioAnimation : MonoBehaviour {
 		//TODO: Update strafe etc.
 		
 		//Update Gait
-		if(Vector3.Magnitude(TargetVelocity) < 0.1f) {
-			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f);
-			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, GaitTransition);
-			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 0f, GaitTransition);
-			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, 0f, GaitTransition);
-			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), GaitTransition);
-			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), GaitSmoothing);
-			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, GaitTransition);
-		} else {
-			float standAmount = 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f);
-			Trajectory.GetRoot().Stand = Utility.Interpolate(Trajectory.GetRoot().Stand, standAmount, GaitTransition);
-			Trajectory.GetRoot().Walk = Utility.Interpolate(Trajectory.GetRoot().Walk, 1f-Controller.QueryJog(), GaitTransition);
-			Trajectory.GetRoot().Jog = Utility.Interpolate(Trajectory.GetRoot().Jog, Controller.QueryJog(), GaitTransition);
-			Trajectory.GetRoot().Crouch = Utility.Interpolate(Trajectory.GetRoot().Crouch, Controller.QueryCrouch(), GaitTransition);
-			//Trajectory.GetRoot().Jump = Utility.Interpolate(Trajectory.GetRoot().Jump, Controller.QueryJump(), GaitSmoothing);
-			Trajectory.GetRoot().Bump = Utility.Interpolate(Trajectory.GetRoot().Bump, 0f, GaitTransition);
+		for(int i=0; i<Controller.Styles.Length; i++) {
+			Trajectory.GetRoot().Styles[i] = Utility.Interpolate(Trajectory.GetRoot().Styles[i], Controller.Styles[i].Query(), GaitTransition);
 		}
-		//TODO: Update gait for jog, crouch, ...
+		//FOR HUMAN ONLY
+		Trajectory.GetRoot().Styles[0] = Utility.Interpolate(Trajectory.GetRoot().Styles[0], 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f), GaitTransition);
+		Trajectory.GetRoot().Styles[1] = Mathf.Max(Trajectory.GetRoot().Styles[1] - Trajectory.GetRoot().Styles[2], 0f);
+		//
 
 		//Blend Trajectory Offset
 		/*
@@ -102,23 +91,22 @@ public class BioAnimation : MonoBehaviour {
 			float vel_boost = 1f;
 
 			float rescale = 1f / (Trajectory.GetPointCount() - (Trajectory.GetRootPointIndex() + 1f));
+
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
 				vel_boost * rescale * TargetVelocity,
 				scale_pos);
-				
+
 			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-			Trajectory.Points[i].Stand = Trajectory.GetRoot().Stand;
-			Trajectory.Points[i].Walk = Trajectory.GetRoot().Walk;
-			Trajectory.Points[i].Jog = Trajectory.GetRoot().Jog;
-			Trajectory.Points[i].Crouch = Trajectory.GetRoot().Crouch;
-			//Trajectory.Points[i].Jump = Trajectory.GetRoot().Jump;
-			Trajectory.Points[i].Bump = Trajectory.GetRoot().Bump;
+			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
+				Trajectory.Points[i].Styles[j] = Trajectory.GetRoot().Styles[j];
+			}
 		}
 		
 		for(int i=Trajectory.GetRootPointIndex()+1; i<Trajectory.GetPointCount(); i++) {
 			Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
+			//Trajectory.Points[i].Postprocess();
 		}
 
 		//Trajectory.Postprocess();
@@ -141,12 +129,12 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Trajectory Gaits
 		for (int i=0; i<Trajectory.GetSampleCount(); i++) {
-			PFNN.SetInput(Trajectory.GetSampleCount()*4 + i, Trajectory.GetSample(i).Stand);
-			PFNN.SetInput(Trajectory.GetSampleCount()*5 + i, Trajectory.GetSample(i).Walk);
-			PFNN.SetInput(Trajectory.GetSampleCount()*6 + i, Trajectory.GetSample(i).Jog);
-			PFNN.SetInput(Trajectory.GetSampleCount()*7 + i, Trajectory.GetSample(i).Crouch);
-			PFNN.SetInput(Trajectory.GetSampleCount()*8 + i, Trajectory.GetSample(i).Jump);
-			PFNN.SetInput(Trajectory.GetSampleCount()*9 + i, Trajectory.GetSample(i).Bump);
+			for(int j=0; j<Trajectory.GetSample(i).Styles.Length; j++) {
+				PFNN.SetInput(Trajectory.GetSampleCount()*(4+j) + i, Trajectory.GetSample(i).Styles[j]);
+			}
+			//FOR HUMAN ONLY
+			PFNN.SetInput(Trajectory.GetSampleCount()*8 + i, Trajectory.GetSample(i).Rise);
+			//
 		}
 
 		//Input Previous Bone Positions / Velocities
@@ -177,20 +165,19 @@ public class BioAnimation : MonoBehaviour {
 		//Update Past Trajectory
 		for(int i=0; i<Trajectory.GetRootPointIndex(); i++) {
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
+			//Trajectory.Points[i].Postprocess();
 			Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
-			Trajectory.Points[i].Stand = Trajectory.Points[i+1].Stand;
-			Trajectory.Points[i].Walk = Trajectory.Points[i+1].Walk;
-			Trajectory.Points[i].Jog = Trajectory.Points[i+1].Jog;
-			Trajectory.Points[i].Crouch = Trajectory.Points[i+1].Crouch;
-			//Trajectory.Points[i].Jump = Trajectory.Points[i+1].Jump;
-			Trajectory.Points[i].Bump = Trajectory.Points[i+1].Bump;
+			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
+				Trajectory.Points[i].Styles[j] = Trajectory.Points[i+1].Styles[j];
+			}
 		}
 
 		//Trajectory.Postprocess();
 
 		//Update Current Trajectory
-		float stand_amount = Mathf.Pow(1.0f-Trajectory.GetRoot().Stand, 0.25f);
+		float stand_amount = Mathf.Pow(1.0f-Trajectory.GetRoot().Styles[0], 0.25f);
 		Trajectory.GetRoot().SetPosition((stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativePositionFrom(currentRoot));
+		//Trajectory.GetRoot().Postprocess();
 		Trajectory.GetRoot().SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.GetRoot().GetDirection());
 		Transformation newRoot = new Transformation(Trajectory.GetRoot().GetPosition(), Trajectory.GetRoot().GetRotation());
 
@@ -198,6 +185,7 @@ public class BioAnimation : MonoBehaviour {
 
 		for(int i=Trajectory.GetRootPointIndex()+1; i<Trajectory.GetPointCount(); i++) {
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativeDirectionFrom(newRoot));
+			//Trajectory.Points[i].Postprocess();
 		}
 		
 		//Trajectory.Postprocess();
@@ -217,6 +205,7 @@ public class BioAnimation : MonoBehaviour {
 					TrajectoryCorrection
 					)
 				);
+			//Trajectory.Points[i].Postprocess();
 			Trajectory.Points[i].SetDirection(
 				Utility.Interpolate(
 					Trajectory.Points[i].GetDirection(),
@@ -294,6 +283,13 @@ public class BioAnimation : MonoBehaviour {
 
 	public Vector3 GetRootDirection() {
 		return new Vector3(Root.forward.x, 0f, Root.forward.z);
+	}
+
+	void OnGUI() {
+		for(int i=0; i<Trajectory.GetRoot().Styles.Length; i++) {
+			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, 0.05f), Controller.Styles[i].Name);
+			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, 0.05f), Trajectory.GetRoot().Styles[i], 0f, 1f);
+		}
 	}
 
 	void OnRenderObject() {

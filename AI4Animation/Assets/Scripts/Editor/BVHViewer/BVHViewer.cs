@@ -68,7 +68,7 @@ public class BVHViewer : EditorWindow {
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					RefreshRate = EditorGUILayout.IntField("Refresh Rate", RefreshRate);
-					AutoFocus = EditorGUILayout.Toggle("Auto Focus", AutoFocus);
+					SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", AutoFocus));
 					FocusDistance = EditorGUILayout.FloatField("Focus Distance", FocusDistance);
 					FocusAngle = EditorGUILayout.Slider("Focus Angle", FocusAngle, 0f, 360f);
 				}
@@ -121,7 +121,18 @@ public class BVHViewer : EditorWindow {
 				Quaternion rotation = Animation.CurrentFrame.Rotations[0];
 				rotation.x = 0f;
 				rotation.z = 0f;
-				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.ForwardOrientation) * rotation, FocusDistance);
+				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation, FocusDistance);
+			}
+		}
+	}
+
+	private void SetAutoFocus(bool value) {
+		if(AutoFocus != value) {
+			AutoFocus = value;
+			if(!AutoFocus) {
+				Vector3 position = Animation.CurrentFrame.Positions[0];
+				Quaternion rotation = Quaternion.identity;
+				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation, FocusDistance);
 			}
 		}
 	}

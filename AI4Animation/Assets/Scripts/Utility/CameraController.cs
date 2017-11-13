@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
 	public Transform Target;

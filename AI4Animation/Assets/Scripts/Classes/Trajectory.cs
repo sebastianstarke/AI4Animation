@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+//[System.Serializable]
 public class Trajectory {
 
 	public bool Inspect = false;
@@ -12,28 +13,22 @@ public class Trajectory {
 	private const int FuturePoints = 5;
 	private const int Density = 10;
 
-	public Trajectory() {
-		Initialise(Vector3.zero, Vector3.forward);
+	public Trajectory(int styles) {
+		Initialise(Vector3.zero, Vector3.forward, styles);
 	}
 
-	public Trajectory(Vector3 position, Vector3 direction) {
-		Initialise(position, direction);
+	public Trajectory(Vector3 position, Vector3 direction, int styles) {
+		Initialise(position, direction, styles);
 	}
 
-	private void Initialise(Vector3 position, Vector3 direction) {
+	private void Initialise(Vector3 position, Vector3 direction, int styles) {
 		Inspect = false;
 		Width = 0.5f;
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point();
+			Points[i] = new Point(styles);
 			Points[i].SetPosition(position);
 			Points[i].SetDirection(direction);
-			Points[i].Stand = 1f;
-			Points[i].Walk = 0f;
-			Points[i].Jog = 0f;
-			Points[i].Crouch = 0f;
-			Points[i].Jump = 0f;
-			Points[i].Bump = 0f;
 		}
 	}
 
@@ -111,27 +106,27 @@ public class Trajectory {
 	}
 	*/
 
+	//[System.Serializable]
 	public class Point {
 		private Vector3 Position;
 		private Vector3 Direction;
+		//private Vector3 LeftSample;
+		//private Vector3 RightSample;
+		public float Rise;
+		public float[] Styles;
 
-		public float Stand, Walk, Jog, Crouch, Jump, Bump;
-
-		public Point() {
+		public Point(int styles) {
 			Position = Vector3.zero;
 			Direction = Vector3.forward;
-			Stand = 1f;
-			Walk = 0f;
-			Jog = 0f;
-			Crouch = 0f;
-			Jump = 0f;
-			Bump = 0f;
+			//LeftSample = Vector3.zero;
+			//RightSample = Vector3.zero;
+			Rise = 0f;
+			Styles = new float[styles];
 		}
 
 		public void SetPosition(Vector3 position) {
 			Position = position;
-			Position.y = Utility.GetHeight(Position, LayerMask.GetMask("Ground"));
-			Jump = Utility.GetRise(Position, LayerMask.GetMask("Ground"));
+			Postprocess();
 		}
 
 		public Vector3 GetPosition() {
@@ -156,6 +151,12 @@ public class Trajectory {
 
 		public Quaternion GetRotation() {
 			return Quaternion.LookRotation(Direction, Vector3.up);
+		}
+
+		public void Postprocess() {
+			LayerMask mask = LayerMask.GetMask("Ground");
+			Position.y = Utility.GetHeight(Position, mask);
+			Rise = Utility.GetRise(Position, mask);
 		}
 
 		public Vector3 SampleSide(float distance) {
@@ -192,7 +193,7 @@ public class Trajectory {
 		//Rises
 		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
 		for(int i=0; i<GetPointCount(); i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Jump * Vector3.up, 0.025f, 0f, transparentRise);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Rise * Vector3.up, 0.025f, 0f, transparentRise);
 		}
 
 		//Positions

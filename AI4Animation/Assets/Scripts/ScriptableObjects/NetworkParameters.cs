@@ -8,10 +8,10 @@ public class NetworkParameters : ScriptableObject {
 	public FloatMatrix[] W0, W1, W2, b0, b1, b2;
 
 	public void Load(int xDim, int yDim, int hDim) {
-		Xmean = LoadWeights("Assets/Animation/Demo/Parameters/Xmean.bin", xDim, 1);
-		Xstd = LoadWeights("Assets/Animation/Demo/Parameters/Xstd.bin", xDim, 1);
-		Ymean = LoadWeights("Assets/Animation/Demo/Parameters/Ymean.bin", yDim, 1);
-		Ystd = LoadWeights("Assets/Animation/Demo/Parameters/Ystd.bin", yDim, 1);
+		Xmean = LoadWeights("Assets/Animation/Human/Xmean.bin", xDim, 1);
+		Xstd = LoadWeights("Assets/Animation/Human/Xstd.bin", xDim, 1);
+		Ymean = LoadWeights("Assets/Animation/Human/Ymean.bin", yDim, 1);
+		Ystd = LoadWeights("Assets/Animation/Human/Ystd.bin", yDim, 1);
 		
 		W0 = new FloatMatrix[50];
 		W1 = new FloatMatrix[50];
@@ -20,12 +20,12 @@ public class NetworkParameters : ScriptableObject {
 		b1 = new FloatMatrix[50];
 		b2 = new FloatMatrix[50];
 		for(int i=0; i<50; i++) {
-			W0[i] = LoadWeights("Assets/Animation/Demo/Parameters/W0_"+i.ToString("D3")+".bin", hDim, xDim);
-			W1[i] = LoadWeights("Assets/Animation/Demo/Parameters/W1_"+i.ToString("D3")+".bin", hDim, hDim);
-			W2[i] = LoadWeights("Assets/Animation/Demo/Parameters/W2_"+i.ToString("D3")+".bin", yDim, hDim);
-			b0[i] = LoadWeights("Assets/Animation/Demo/Parameters/b0_"+i.ToString("D3")+".bin", hDim, 1);
-			b1[i] = LoadWeights("Assets/Animation/Demo/Parameters/b1_"+i.ToString("D3")+".bin", hDim, 1);
-			b2[i] = LoadWeights("Assets/Animation/Demo/Parameters/b2_"+i.ToString("D3")+".bin", yDim, 1);
+			W0[i] = LoadWeights("Assets/Animation/Human/W0_"+i.ToString("D3")+".bin", hDim, xDim);
+			W1[i] = LoadWeights("Assets/Animation/Human/W1_"+i.ToString("D3")+".bin", hDim, hDim);
+			W2[i] = LoadWeights("Assets/Animation/Human/W2_"+i.ToString("D3")+".bin", yDim, hDim);
+			b0[i] = LoadWeights("Assets/Animation/Human/b0_"+i.ToString("D3")+".bin", hDim, 1);
+			b1[i] = LoadWeights("Assets/Animation/Human/b1_"+i.ToString("D3")+".bin", hDim, 1);
+			b2[i] = LoadWeights("Assets/Animation/Human/b2_"+i.ToString("D3")+".bin", yDim, 1);
 		}
 
 		/*
