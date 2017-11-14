@@ -4,9 +4,9 @@ public static class UnityGL {
 
 	private static Material ColorMaterial;
 	private static Vector3[] IsocelesTrianglePoints;
-	private static int CircleResolution = 10;
+	private static int CircleResolution = 30;
 	private static Vector3[] CirclePoints;
-	private static int SphereResolution = 10;
+	private static int SphereResolution = 30;
 	private static Vector3[] SpherePoints;
 
 	private static bool Drawing = false;

@@ -33,8 +33,6 @@ public class PFNN {
 
 	private const float M_PI = 3.14159265358979323846f;
 
-	//private bool[] Output;
-
 	public PFNN() {
 		
 	}
@@ -88,13 +86,6 @@ public class PFNN {
 		b0p = Matrix<float>.Build.Dense(HDim, 1);
 		b1p = Matrix<float>.Build.Dense(HDim, 1);
 		b2p = Matrix<float>.Build.Dense(YDim, 1);
-
-		/*
-		Output = new bool[YDim];
-		for(int i=0; i<YDim; i++) {
-			Output[i] = false;
-		}
-		*/
 	}
 
 	public void LoadParameters() {
@@ -113,8 +104,18 @@ public class PFNN {
 	}
 
 	public float GetOutput(int i) {
-		//Output[i] = true;
 		return Yp[i, 0];
+	}
+
+	public void Output() {
+		Debug.Log("====================INPUT====================");
+		for(int i=0; i<XDim; i++) {
+			Debug.Log(i + ": " + Xp[i, 0]);
+		}
+		Debug.Log("====================OUTPUT====================");
+		for(int i=0; i<YDim; i++) {
+			Debug.Log(i + ": " + Yp[i, 0]);
+		}
 	}
 
 	public Matrix<float> Predict(float phase) {
@@ -180,17 +181,6 @@ public class PFNN {
 		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
 
 		return Yp;
-	}
-
-	public void Finish() {
-		/*
-		for(int i=0; i<YDim; i++) {
-			if(Output[i] == false) {
-				Debug.Log("Output " + i + " not queried.");
-			}
-			Output[i] = false;
-		}
-		*/
 	}
 
 	private void ELU(ref Matrix<float> m) {

@@ -33,7 +33,7 @@ namespace UnityEngine.PostProcessing
 
         public bool isHdr
         {
-            get { return camera.hdr; }
+            get { return camera.allowHDR; }
         }
 
         public int width

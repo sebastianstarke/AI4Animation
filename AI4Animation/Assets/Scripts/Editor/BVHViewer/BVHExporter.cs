@@ -174,7 +174,8 @@ public class BVHExporter : EditorWindow {
 						//Position
 						line += FormatVector3(frame.Positions[k].RelativePositionTo(root));
 						//Velocity
-						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.25f).RelativeDirectionTo(root));
+						//line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.25f).RelativeDirectionTo(root));
+						line += FormatVector3(frame.Velocities[k].RelativePositionTo(root));
 					}
 					
 					//Trajectory data
@@ -193,7 +194,8 @@ public class BVHExporter : EditorWindow {
 					}
 
 					//Phase
-					line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
+					//line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
+					line += FormatValue(0.5f*Mathf.Sin(Animations[i].PhaseFunction.GetPhase(frame)*2f*Mathf.PI) + 0.5f);
 
 					//ADDITIONAL
 					//Get previous frame

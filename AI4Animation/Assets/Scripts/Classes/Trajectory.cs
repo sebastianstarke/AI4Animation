@@ -26,7 +26,7 @@ public class Trajectory {
 		Width = 0.5f;
 		Points = new Point[GetPointCount()];
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point(styles);
+			Points[i] = new Point(i, styles);
 			Points[i].SetPosition(position);
 			Points[i].SetDirection(direction);
 		}
@@ -45,7 +45,19 @@ public class Trajectory {
 	}
 
 	public Point GetSample(int index) {
-		return Points[index*Density];
+		return Points[Mathf.Clamp(index*Density, 0, GetPointCount()-1)];
+	}
+
+	public Point GetPreviousSample(int index) {
+		return GetSample(index / Density);
+	}
+
+	public Point GetNextSample(int index) {
+		if(index % Density == 0) {
+			return GetSample(index / Density);
+		} else {
+			return GetSample(index / Density + 1);
+		}
 	}
 
 	public int GetSampleCount() {
@@ -108,6 +120,7 @@ public class Trajectory {
 
 	//[System.Serializable]
 	public class Point {
+		private int Index;
 		private Vector3 Position;
 		private Vector3 Direction;
 		//private Vector3 LeftSample;
@@ -115,13 +128,18 @@ public class Trajectory {
 		public float Rise;
 		public float[] Styles;
 
-		public Point(int styles) {
+		public Point(int index, int styles) {
+			Index = index;
 			Position = Vector3.zero;
 			Direction = Vector3.forward;
 			//LeftSample = Vector3.zero;
 			//RightSample = Vector3.zero;
 			Rise = 0f;
 			Styles = new float[styles];
+		}
+
+		public int GetIndex() {
+			return Index;
 		}
 
 		public void SetPosition(Vector3 position) {
