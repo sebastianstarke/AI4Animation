@@ -7,7 +7,8 @@ public class BVHExporter : EditorWindow {
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
 
-	public int Files = 0;
+	public string Directory = string.Empty;
+	public bool[] Use = new bool[0];
 	public BVHAnimation[] Animations = new BVHAnimation[0];
 
 	private static string Separator = " ";
@@ -34,41 +35,60 @@ public class BVHExporter : EditorWindow {
 					EditorGUILayout.LabelField("Exporter");
 				}
 
-				Scroll = EditorGUILayout.BeginScrollView(Scroll);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					SetFiles(EditorGUILayout.IntField("Files", Files));
-					for(int i=0; i<Animations.Length; i++) {
-						if(Animations[i] == null) {
-							Utility.SetGUIColor(Utility.DarkRed);
-						} else {
-							Utility.SetGUIColor(Utility.DarkGreen);
-						}
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							Animations[i] = (BVHAnimation)EditorGUILayout.ObjectField((i+1).ToString(), Animations[i], typeof(BVHAnimation), true);
-						}
-					}
-				}
-
 				if(Utility.GUIButton("Export Labels", Utility.DarkGrey, Utility.White)) {
 					ExportLabels();
 				}
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+
+				Scroll = EditorGUILayout.BeginScrollView(Scroll);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Assets/", GUILayout.Width(45f));
+					SetDirectory(EditorGUILayout.TextField(Directory));
+					EditorGUILayout.EndHorizontal();
+					//SetFiles(EditorGUILayout.IntField("Files", Files));
+					for(int i=0; i<Animations.Length; i++) {
+						if(Use[i]) {
+							Utility.SetGUIColor(Utility.DarkGreen);
+						} else {
+							Utility.SetGUIColor(Utility.DarkRed);
+						}
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.BeginHorizontal();
+							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
+							Use[i] = EditorGUILayout.Toggle(Use[i], GUILayout.Width(20f));
+							Animations[i] = (BVHAnimation)EditorGUILayout.ObjectField(Animations[i], typeof(BVHAnimation), true);
+							EditorGUILayout.EndHorizontal();
+						}
+					}
+				}
+
 				EditorGUILayout.EndScrollView();
 			}
 		}
 	}
 
-	private void SetFiles(int files) {
-		files = Mathf.Max(files, 0);
-		if(Files != files) {
-			Files = files;
-			System.Array.Resize(ref Animations, files);
+	private void SetDirectory(string dir) {
+		if(Directory != dir) {
+			Directory = dir;
+			Animations = new BVHAnimation[0];
+			Use = new bool[0];
+			string path = "Assets/"+Directory;
+			if(AssetDatabase.IsValidFolder(path)) {
+				string[] elements = AssetDatabase.FindAssets("t:BVHAnimation", new string[1]{path});
+				Animations = new BVHAnimation[elements.Length];
+				Use = new bool[elements.Length];
+				for(int i=0; i<elements.Length; i++) {
+					Animations[i] = (BVHAnimation)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(elements[i]), typeof(BVHAnimation));
+					Use[i] = true;
+				}
+			}
 		}
 	}
-
+	
 	private void ExportLabels() {
 		if(Animations.Length == 0) {
 			Debug.Log("No animations specified.");
@@ -145,8 +165,9 @@ public class BVHExporter : EditorWindow {
 		}
 
 		StreamWriter data = File.CreateText(filename+".txt");
+		int sequence = 0;
 		for(int i=0; i<Animations.Length; i++) {
-			if(Animations[i] != null) {
+			if(Use[i]) {
 				//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
 				//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
 				//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
@@ -158,8 +179,9 @@ public class BVHExporter : EditorWindow {
 
 					//j = frame.Timestamp;
 
-					//File number
-					string line = (i+1) + Separator;
+					//Sequence number
+					sequence += 1;
+					string line = sequence + Separator;
 
 					//Frame index
 					line += frame.Index + Separator;

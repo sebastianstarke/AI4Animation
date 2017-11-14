@@ -150,7 +150,7 @@ public class BVHAnimation : ScriptableObject {
 		//Initialise Variables
 		TimeWindow = TotalTime;
 		SequenceStart = 1;
-		SequenceEnd = TotalFrames;
+		SequenceEnd = 1;
 
 		//Load First Frame
 		LoadFrame(1);
@@ -339,12 +339,6 @@ public class BVHAnimation : ScriptableObject {
 		SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));
 
-		TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 2f*FrameTime, TotalTime);
-		EditorGUILayout.BeginHorizontal();
-		SequenceStart = EditorGUILayout.IntSlider("Sequence Start", SequenceStart, 1, SequenceEnd);
-		SequenceEnd = EditorGUILayout.IntSlider("Sequence End", SequenceEnd, SequenceStart, TotalFrames);
-		EditorGUILayout.EndHorizontal();
-
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
 		EditorGUILayout.LabelField("Time: " + TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
@@ -384,11 +378,29 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.EndHorizontal();
 		}
 
+		Utility.SetGUIColor(Utility.DarkGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+			
+			EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.LabelField("Zoom", GUILayout.Width(67f));
+			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, TotalTime, GUILayout.Width(440f));
+			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
+			SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
+			EditorGUILayout.LabelField("End", GUILayout.Width(67f));
+			SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
+			EditorGUILayout.EndHorizontal();
+		}
+
+
 		PhaseFunction.Inspector();
 
 		StyleFunction.Inspector();
 
-		Contacts.Inspector();
+		//Contacts.Inspector();
 
 		Utility.SetGUIColor(Utility.LightGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -668,9 +680,11 @@ public class BVHAnimation : ScriptableObject {
 				}
 
 				BVHFrame A = Animation.GetFrame(start);
-				bottom.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-				top.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-				UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				if(A.Index == 1) {
+					bottom.x = rect.xMin;
+					top.x = rect.xMin;
+					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				}
 				BVHFrame B = GetNextKey(A);
 				while(A != B) {
 					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
@@ -791,6 +805,8 @@ public class BVHAnimation : ScriptableObject {
 					AddStyle("Jump");
 					AddStyle("Sit");
 					AddStyle("Lie");
+					AddStyle("Stand");
+					AddStyle("Sleep");
 					break;
 				}
 			}
@@ -994,9 +1010,30 @@ public class BVHAnimation : ScriptableObject {
 				
 				Color[] colors = Utility.GetRainbowColors(Styles.Length);
 				BVHFrame A = Animation.GetFrame(start);
-				bottom.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-				top.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-				UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				if(A.Index == 1) {
+					bottom.x = rect.xMin;
+					top.x = rect.xMin;
+					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				}
+				BVHFrame B = Animation.GetFrame(end);
+				for(int k=start; k<end; k++) {
+					A = Animation.GetFrame(k);
+					B = Animation.GetFrame(k+1);
+					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					for(int i=0; i<Styles.Length; i++) {
+						prevPos.y = rect.yMax - Styles[i].Values[A.Index-1] * rect.height;
+						newPos.y = rect.yMax - Styles[i].Values[B.Index-1] * rect.height;
+						UnityGL.DrawLine(prevPos, newPos, colors[i]);
+					}
+					if(IsKey(B)) {
+						bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+						top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+						UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					}
+				}
+				
+				/*
 				BVHFrame B = GetNextKey(A);
 				while(A != B) {
 					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
@@ -1015,6 +1052,7 @@ public class BVHAnimation : ScriptableObject {
 						break;
 					}
 				}
+				*/
 
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
