@@ -40,7 +40,7 @@ public class DogAnimation : MonoBehaviour {
 	}
 
 	void Start() {
-		Utility.SetFPS(60);
+		Utility.SetFPS(30);
 	}
 
 	void Update() {	
@@ -231,8 +231,7 @@ public class DogAnimation : MonoBehaviour {
 			Character.ForwardKinematics(Root);
 
 			/* Update Phase */
-			//Phase = Mathf.Repeat(PFNN.GetOutput(201) * 2f*Mathf.PI, 2f*Mathf.PI);
-			Phase = Mathf.Repeat(Phase + Time.deltaTime*2f*Mathf.PI, 2f*Mathf.PI);
+			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(201) * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
 	}
 
@@ -273,6 +272,7 @@ public class DogAnimation : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		GUI.Box(Utility.GetGUIRect(0.725f, 0.025f, 0.25f, 0.375f), "");
 		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.05f, 0.1f, 0.05f), Phase, 0f, 2f*Mathf.PI);
 		for(int i=0; i<Trajectory.GetRoot().Styles.Length; i++) {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, 0.05f), Controller.Styles[i].Name);

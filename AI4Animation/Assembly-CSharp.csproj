@@ -129,7 +129,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
-     <None Include="Assets\Animation\Research\NN\Indices.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
@@ -137,7 +136,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
-     <None Include="Assets\Animation\Research\NN\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />

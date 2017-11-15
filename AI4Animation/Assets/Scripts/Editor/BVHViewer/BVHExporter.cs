@@ -97,14 +97,14 @@ public class BVHExporter : EditorWindow {
 		
 		string name = "Labels";
 		string filename = string.Empty;
-		if(!File.Exists(Application.dataPath+"/Animation/"+name+".txt")) {
-			filename = Application.dataPath+"/Animation/"+name;
+		if(!File.Exists(Application.dataPath+"/Animation/Project/"+name+".txt")) {
+			filename = Application.dataPath+"/Animation/Project/"+name;
 		} else {
 			int i = 1;
-			while(File.Exists(Application.dataPath+"/Animation/"+name+" ("+i+").txt")) {
+			while(File.Exists(Application.dataPath+"/Animation/Project/"+name+" ("+i+").txt")) {
 				i += 1;
 			}
-			filename = Application.dataPath+"/Animation/"+name+" ("+i+")";
+			filename = Application.dataPath+"/Animation/Project/"+name+" ("+i+")";
 		}
 
 		StreamWriter labels = File.CreateText(filename+".txt");
@@ -154,20 +154,21 @@ public class BVHExporter : EditorWindow {
 		
 		string name = "Data";
 		string filename = string.Empty;
-		if(!File.Exists(Application.dataPath+"/Animation/"+name+".txt")) {
-			filename = Application.dataPath+"/Animation/"+name;
+		if(!File.Exists(Application.dataPath+"/Animation/Project/"+name+".txt")) {
+			filename = Application.dataPath+"/Animation/Project/"+name;
 		} else {
 			int i = 1;
-			while(File.Exists(Application.dataPath+"/Animation/"+name+" ("+i+").txt")) {
+			while(File.Exists(Application.dataPath+"/Animation/Project/"+name+" ("+i+").txt")) {
 				i += 1;
 			}
-			filename = Application.dataPath+"/Animation/"+name+" ("+i+")";
+			filename = Application.dataPath+"/Animation/Project/"+name+" ("+i+")";
 		}
 
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
+				sequence += 1;
 				//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
 				//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
 				//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
@@ -180,7 +181,6 @@ public class BVHExporter : EditorWindow {
 					//j = frame.Timestamp;
 
 					//Sequence number
-					sequence += 1;
 					string line = sequence + Separator;
 
 					//Frame index
@@ -196,8 +196,8 @@ public class BVHExporter : EditorWindow {
 						//Position
 						line += FormatVector3(frame.Positions[k].RelativePositionTo(root));
 						//Velocity
-						//line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.25f).RelativeDirectionTo(root));
-						line += FormatVector3(frame.Velocities[k].RelativePositionTo(root));
+						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.2f).RelativeDirectionTo(root));
+						//line += FormatVector3(frame.Velocities[k].RelativeDirectionTo(root));
 					}
 					
 					//Trajectory data
@@ -216,25 +216,27 @@ public class BVHExporter : EditorWindow {
 					}
 
 					//Phase
-					//line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
-					line += FormatValue(0.5f*Mathf.Sin(Animations[i].PhaseFunction.GetPhase(frame)*2f*Mathf.PI) + 0.5f);
+					line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
+					//line += FormatValue(0.5f*Mathf.Sin(Animations[i].PhaseFunction.GetPhase(frame)*2f*Mathf.PI) + 0.5f);
 
 					//ADDITIONAL
-					//Get previous frame
 					//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
 					BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
 					Vector3 position = Animations[i].GetRootPosition(frame);
 					Vector3 prevPosition = Animations[i].GetRootPosition(prevFrame);
 					Vector3 direction = Animations[i].GetRootDirection(frame);
 					Vector3 prevDirection = Animations[i].GetRootDirection(prevFrame);
-					//Offsets
+					//Translational root velocity
 					Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
 					line += FormatValue(translationOffset.x);
 					line += FormatValue(translationOffset.z);
+
+					//Angular root velocity
 					float rotationOffset = Vector3.Angle(prevDirection, direction);
 					line += FormatValue(rotationOffset);
-					float phaseChange = Animations[i].PhaseFunction.GetPhase(frame) - Animations[i].PhaseFunction.GetPhase(prevFrame);
-					line += FormatValue(phaseChange);
+
+					//Phase change
+					line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 
 					line = line.Remove(line.Length-1);
 					
@@ -246,6 +248,10 @@ public class BVHExporter : EditorWindow {
 			}
 		}
 		data.Close();
+	}
+
+	private float GetPhaseChange(float prev, float next) {
+		return Mathf.Repeat(((next-prev) + 1f), 1f);
 	}
 
 	private string FormatString(string value) {
