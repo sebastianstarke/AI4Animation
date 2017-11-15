@@ -773,7 +773,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Reset() {
-			Transition = 0f;
+			Transition = 0.25f;
 			Keys = new bool[Animation.TotalFrames];
 			Styles = new BVHStyle[0];
 		}

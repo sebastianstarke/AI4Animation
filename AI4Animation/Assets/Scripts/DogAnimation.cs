@@ -40,7 +40,7 @@ public class DogAnimation : MonoBehaviour {
 	}
 
 	void Start() {
-		Utility.SetFPS(30);
+		Utility.SetFPS(60);
 	}
 
 	void Update() {	
@@ -231,7 +231,8 @@ public class DogAnimation : MonoBehaviour {
 			Character.ForwardKinematics(Root);
 
 			/* Update Phase */
-			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(201) * 2f*Mathf.PI, 2f*Mathf.PI);
+			//Phase = Mathf.Repeat(Phase + PFNN.GetOutput(201) * 2f*Mathf.PI, 2f*Mathf.PI);
+			Phase = Mathf.Repeat(Phase + Time.deltaTime * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
 	}
 
