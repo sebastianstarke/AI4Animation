@@ -207,8 +207,8 @@ public class BVHExporter : EditorWindow {
 					}
 
 					for(int k=0; k<trajectory.GetSampleCount(); k++) {
-						line += FormatValue(trajectory.GetSample(k).SampleSide(-trajectory.Width/0.25f).y - root.Position.y);
-						line += FormatValue(trajectory.GetSample(k).SampleSide(trajectory.Width/0.25f).y - root.Position.y);
+						line += FormatValue(trajectory.GetSample(k).SampleSide(-trajectory.Width/2f).y - root.Position.y);
+						line += FormatValue(trajectory.GetSample(k).SampleSide(trajectory.Width/2f).y - root.Position.y);
 					}
 
 					for(int k=0; k<trajectory.GetSampleCount(); k++) {

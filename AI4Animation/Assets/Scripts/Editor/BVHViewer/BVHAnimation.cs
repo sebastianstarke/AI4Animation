@@ -924,14 +924,8 @@ public class BVHAnimation : ScriptableObject {
 				return;
 			}
 			//Get window
-			BVHFrame prev = GetPreviousKey(frame);
-			BVHFrame next = GetNextKey(frame);
-			float prevTS = prev == null ? 0f : prev.Timestamp;
-			float nextTS = next == null ? Animation.TotalTime : next.Timestamp;
-			float prevTime = Mathf.Abs(frame.Timestamp - prevTS);
-			float nextTime = Mathf.Abs(frame.Timestamp - nextTS);
-			float window = Mathf.Min(prevTime, nextTime, Transition);
-
+			float window = GetWindow(frame);
+			
 			//Interpolate
 			BVHFrame a = Animation.GetFrame(frame.Timestamp - 0.5f*window);
 			BVHFrame b = Animation.GetFrame(frame.Timestamp + 0.5f*window);
@@ -948,7 +942,18 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 		}
-		
+
+		public float GetWindow(BVHFrame frame) {
+			BVHFrame prev = GetPreviousKey(frame);
+			BVHFrame next = GetNextKey(frame);
+			float prevTS = prev == null ? 0f : prev.Timestamp;
+			float nextTS = next == null ? Animation.TotalTime : next.Timestamp;
+			float prevTime = Mathf.Abs(frame.Timestamp - prevTS);
+			float nextTime = Mathf.Abs(frame.Timestamp - nextTS);
+			float window = Mathf.Min(prevTime, nextTime, Transition);
+			return window;
+		}
+
 		public void Inspector() {
 			UnityGL.Start();
 
@@ -1072,8 +1077,10 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
 					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					for(int i=0; i<Styles.Length; i++) {
-						prevPos.y = rect.yMax - Styles[i].Values[A.Index-1] * rect.height;
-						newPos.y = rect.yMax - Styles[i].Values[B.Index-1] * rect.height;
+						float valueA = Styles[i].Flags[A.Index-1] ? 1f : 0f;
+						float valueB = Styles[i].Flags[A.Index-1] ? 1f : 0f;
+						prevPos.y = rect.yMax - valueA * rect.height;
+						newPos.y = rect.yMax - valueB * rect.height;
 						UnityGL.DrawLine(prevPos, newPos, colors[i]);
 					}
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
@@ -1087,23 +1094,33 @@ public class BVHAnimation : ScriptableObject {
 				}
 				*/
 				
-				BVHFrame B = Animation.GetFrame(end);
-				for(int k=start; k<end; k++) {
-					A = Animation.GetFrame(k);
-					B = Animation.GetFrame(k+1);
-					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					for(int i=0; i<Styles.Length; i++) {
-						prevPos.y = rect.yMax - Styles[i].Values[A.Index-1] * rect.height;
-						newPos.y = rect.yMax - Styles[i].Values[B.Index-1] * rect.height;
-						UnityGL.DrawLine(prevPos, newPos, colors[i]);
-					}
-					if(IsKey(B)) {
-						bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-						top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-						UnityGL.DrawLine(bottom, top, Utility.Magenta);
+				BVHFrame B = GetNextKey(A);
+				while(A != B && A != null && B != null) {
+					float window = GetWindow(B);
+					BVHFrame left = Animation.GetFrame(B.Timestamp - window/2f);
+					BVHFrame right = Animation.GetFrame(B.Timestamp + window/2f);
+					for(int f=left.Index; f<right.Index; f++) {
+						prevPos.x = rect.xMin + (float)(f-start)/elements * rect.width;
+						newPos.x = rect.xMin + (float)(f+1-start)/elements * rect.width;
+						for(int i=0; i<Styles.Length; i++) {
+							prevPos.y = rect.yMax - Styles[i].Values[f-1] * rect.height;
+							newPos.y = rect.yMax - Styles[i].Values[f] * rect.height;
+							UnityGL.DrawLine(prevPos, newPos, colors[i]);
+						}
 					}
 					
+					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					
+					A = B;
+					B = GetNextKey(A);
+					if(B == null) {
+						break;
+					}
+					if(B.Index > end) {
+						break;
+					}
 				}
 
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
