@@ -119,6 +119,8 @@ public class BVHExporter : EditorWindow {
 			labels.WriteLine(index + " " + "BoneVelocityX"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityY"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityZ"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneTranslationalVelocity"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationalVelocity"+i); index += 1;
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
@@ -177,6 +179,8 @@ public class BVHExporter : EditorWindow {
 				for(int j=startIndex; j<=endIndex; j++) {
 					//Get frame
 					BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
+					//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
+					BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
 
 					//j = frame.Timestamp;
 
@@ -190,42 +194,47 @@ public class BVHExporter : EditorWindow {
 					line += frame.Timestamp + Separator;
 
 					Trajectory trajectory = Animations[i].GenerateTrajectory(frame);
-					Transformation root = new Transformation(trajectory.GetRoot().GetPosition(), trajectory.GetRoot().GetRotation());
+					Transformation root = new Transformation(trajectory.Points[60].GetPosition(), trajectory.Points[60].GetRotation());
 					//Bone data
 					for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
 						//Position
 						line += FormatVector3(frame.Positions[k].RelativePositionTo(root));
+
 						//Velocity
-						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.2f).RelativeDirectionTo(root));
+						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.1f).RelativeDirectionTo(root));
+
+						//Translational velocity
+						line += FormatValue(frame.SmoothTranslationalVelocityValue(k, 0.1f));
+
+						//Rotational velocity
+						line += FormatValue(frame.SmoothRotationalVelocityValue(k, 0.1f));
 						//line += FormatVector3(frame.Velocities[k].RelativeDirectionTo(root));
 					}
 					
 					//Trajectory data
-					for(int k=0; k<trajectory.GetSampleCount(); k++) {
-						line += FormatVector3(trajectory.GetSample(k).GetPosition().RelativePositionTo(root));
-						line += FormatVector3(trajectory.GetSample(k).GetDirection().RelativeDirectionTo(root));
+					for(int k=0; k<12; k++) {
+						line += FormatVector3(trajectory.Points[k*10].GetPosition().RelativePositionTo(root));
+						line += FormatVector3(trajectory.Points[k*10].GetDirection().RelativeDirectionTo(root));
 					}
 
-					for(int k=0; k<trajectory.GetSampleCount(); k++) {
-						line += FormatValue(trajectory.GetSample(k).SampleSide(-trajectory.Width/2f).y - root.Position.y);
-						line += FormatValue(trajectory.GetSample(k).SampleSide(trajectory.Width/2f).y - root.Position.y);
+					for(int k=0; k<12; k++) {
+						line += FormatValue(trajectory.Points[k*10].GetRightSample().y - root.Position.y);
+						line += FormatValue(trajectory.Points[k*10].GetLeftSample().y - root.Position.y);
 					}
 
-					for(int k=0; k<trajectory.GetSampleCount(); k++) {
-						line += FormatArray(trajectory.GetSample(k).Styles);
+					for(int k=0; k<12; k++) {
+						line += FormatArray(trajectory.Points[k*10].Styles);
 					}
 
 					//Phase
 					line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
-					//line += FormatValue(0.5f*Mathf.Sin(Animations[i].PhaseFunction.GetPhase(frame)*2f*Mathf.PI) + 0.5f);
 
 					//ADDITIONAL
-					//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
-					BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
 					Vector3 position = Animations[i].GetRootPosition(frame);
 					Vector3 prevPosition = Animations[i].GetRootPosition(prevFrame);
 					Vector3 direction = Animations[i].GetRootDirection(frame);
 					Vector3 prevDirection = Animations[i].GetRootDirection(prevFrame);
+
 					//Translational root velocity
 					Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
 					line += FormatValue(translationOffset.x);
@@ -238,8 +247,8 @@ public class BVHExporter : EditorWindow {
 					//Phase change
 					line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 
+					//Postprocess
 					line = line.Remove(line.Length-1);
-					
 					line = line.Replace(",",".");
 
 					//Write

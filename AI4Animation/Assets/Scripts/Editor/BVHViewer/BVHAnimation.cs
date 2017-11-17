@@ -251,15 +251,10 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public Trajectory GenerateTrajectory(BVHFrame frame) {
-		//Vector3 direction = GetFrame(timestamp).Rotations[0] * Quaternion.Euler(Orientation + new Vector3(0f, sit, 0f)) * Vector3.forward;
-		//direction.y = 0f;
-		//direction = direction.normalized;
-		//DIRTY HACK INCOMING...
-
-		Trajectory trajectory = new Trajectory(StyleFunction.Styles.Length);
+		Trajectory trajectory = new Trajectory(111, StyleFunction.Styles.Length);
 		//Past
-		int past = trajectory.GetPastPoints() * trajectory.GetDensity();
-		for(int i=0; i<past; i+=trajectory.GetDensity()) {
+		int past = 60;
+		for(int i=0; i<past; i+=10) {
 			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/(float)past, 0f, TotalTime);
 			trajectory.Points[i].SetPosition(GetRootPosition(GetFrame(timestamp)));
 			trajectory.Points[i].SetDirection(GetRootDirection(GetFrame(timestamp)));
@@ -274,8 +269,8 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[past].Styles[k] = StyleFunction.Styles[k].Values[frame.Index-1];
 		}
 		//Future
-		int future = trajectory.GetFuturePoints() * trajectory.GetDensity();
-		for(int i=trajectory.GetDensity(); i<=future; i+=trajectory.GetDensity()) {
+		int future = 50;
+		for(int i=10; i<=future; i+=10) {
 			float timestamp = Mathf.Clamp(frame.Timestamp + (float)i/(float)future, 0f, TotalTime);
 			trajectory.Points[past+i].SetPosition(GetRootPosition(GetFrame(timestamp)));
 			trajectory.Points[past+i].SetDirection(GetRootDirection(GetFrame(timestamp)));
@@ -383,20 +378,12 @@ public class BVHAnimation : ScriptableObject {
 			Utility.ResetGUIColor();
 			
 			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Zoom", GUILayout.Width(67f));
-			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, TotalTime, GUILayout.Width(440f));
-			if(Utility.GUIButton("+1s", Utility.Grey, Utility.White, 50f, 20f)) {
-				LoadFrame(Mathf.Min(CurrentFrame.Timestamp + 1f, TotalTime));
-			}
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
-			SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
-			EditorGUILayout.LabelField("End", GUILayout.Width(67f));
-			SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
-			if(Utility.GUIButton("-1s", Utility.Grey, Utility.White, 50f, 20f)) {
+			if(Utility.GUIButton("-1s", Utility.Grey, Utility.White, 65, 20f)) {
 				LoadFrame(Mathf.Max(CurrentFrame.Timestamp - 1f, 0f));
+			}
+			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, TotalTime, GUILayout.Width(440f));
+			if(Utility.GUIButton("+1s", Utility.Grey, Utility.White, 65, 20f)) {
+				LoadFrame(Mathf.Min(CurrentFrame.Timestamp + 1f, TotalTime));
 			}
 			EditorGUILayout.EndHorizontal();
 		}
@@ -421,6 +408,13 @@ public class BVHAnimation : ScriptableObject {
 			if(Utility.GUIButton("Skeleton", Utility.DarkGrey, Utility.White)) {
 				ExportSkeleton(Character.GetRoot(), null);
 			}
+
+			EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
+			SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
+			EditorGUILayout.LabelField("End", GUILayout.Width(67f));
+			SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
+			EditorGUILayout.EndHorizontal();
 			
 		}
 	}
@@ -656,7 +650,7 @@ public class BVHAnimation : ScriptableObject {
 					startTime = 0f;
 				}
 				if(endTime > Animation.TotalTime) {
-					startTime -= (endTime-Animation.TotalTime);
+					startTime -= endTime-Animation.TotalTime;
 					endTime = Animation.TotalTime;
 				}
 				startTime = Mathf.Max(0f, startTime);
@@ -699,6 +693,18 @@ public class BVHAnimation : ScriptableObject {
 						break;
 					}
 				}
+
+				//Seconds labels
+				float timestamp = startTime;
+				while(timestamp <= endTime) {
+					float floor = Mathf.FloorToInt(timestamp);
+					if(floor >= startTime && floor <= endTime) {
+						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
+						UnityGL.DrawCircle(top, 1.5f, Utility.White);
+					}
+					timestamp += 1f;
+				}
+				//
 
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
@@ -966,11 +972,7 @@ public class BVHAnimation : ScriptableObject {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Style Function");
 				}
-
-				//if(Utility.GUIButton("RESET", Utility.Red, Utility.White)) {
-				//	Reset();
-				//}
-
+				
 				SetTransition(EditorGUILayout.FloatField("Transition", Transition));
 
 				string[] names = new string[(int)STYLE.Count];
@@ -1349,16 +1351,39 @@ public class BVHAnimation : ScriptableObject {
 				Positions[i] = Animation.Character.Bones[i].GetPosition();
 				Rotations[i] = Animation.Character.Bones[i].GetRotation();
 				if(Index > 1) {
-					Velocities[i] = (Positions[i] - Animation.GetFrame(Index-1).Positions[i]) / Animation.FrameTime;
+					//Velocities[i] = (Positions[i] - Animation.GetFrame(Index-1).Positions[i]) / Animation.FrameTime;
+					Velocities[i] = Positions[i] - Animation.GetFrame(Index-1).Positions[i];
 				}
 			}
+		}
+
+		public Vector3 TranslationalVelocityVector(int index) {
+			if(Index == 1) {
+				return Vector3.zero;
+			}
+			return Positions[index] - Animation.GetFrame(Index-1).Positions[index];
+		}
+
+		public float TranslationalVelocityValue(int index) {
+			if(Index == 1) {
+				return 0f;
+			}
+			return (Positions[index] - Animation.GetFrame(Index-1).Positions[index]).magnitude;
+		}
+
+		public float RotationalVelocityValue(int index) {
+			if(Index == 1) {
+				return 0f;
+			}
+			return Quaternion.Angle(Rotations[index], Animation.GetFrame(Index-1).Rotations[index]);
 		}
 
 		public Vector3 SmoothTranslationalVelocityVector(int index, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
 			for(int k=1; k<frames.Length; k++) {
-				velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]) / Animation.FrameTime;
+				//velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]) / Animation.FrameTime;
+				velocity += frames[k].Positions[index] - frames[k-1].Positions[index];
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -1366,33 +1391,38 @@ public class BVHAnimation : ScriptableObject {
 
 		public float SmoothTranslationalVelocityValue(int index, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			float velocity = 0f;
+			Vector3 velocity = Vector3.zero;
 			for(int k=1; k<frames.Length; k++) {
-				velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]).magnitude / Animation.FrameTime;
+				//velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]).magnitude / Animation.FrameTime;
+				velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]);
 			}
 			velocity /= frames.Length;
-			return velocity;
+			return velocity.magnitude;
 		}
 
 		public float SmoothRotationalVelocityValue(int index, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			float velocity = 0f;
 			for(int k=1; k<frames.Length; k++) {
-				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]) / Animation.FrameTime;
+				//velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]) / Animation.FrameTime;
+				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]);
 			}
 			velocity /= frames.Length;
 			return velocity;
 		}
 
+		/*
 		public float SmoothAccelerationValue(int index, float smoothing) {
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			float acceleration = 0f;
 			for(int k=1; k<frames.Length; k++) {
-				acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude / Animation.FrameTime;
+				//acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude / Animation.FrameTime;
+				acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude;
 			}
 			acceleration /= frames.Length;
 			return acceleration;
 		}
+		*/
 	}
 
 }

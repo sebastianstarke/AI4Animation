@@ -86,6 +86,7 @@ public class Character {
 	public void BuildHierarchy(Transform root) {
 		System.Array.Resize(ref Bones, 0);
 		BuildHierarchy(root, null);
+		//Debug.Log("Building hierarchy");
 		//Print();
 	}
 

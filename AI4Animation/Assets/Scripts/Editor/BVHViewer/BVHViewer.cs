@@ -7,9 +7,10 @@ public class BVHViewer : EditorWindow {
 	public static Vector2 Scroll;
 	public static System.DateTime Timestamp;
 	public static int RefreshRate = 30;
-	public static bool AutoFocus = true;
-	public static float FocusDistance = 2.5f;
-	public static float FocusAngle = 270f;
+	
+	public bool AutoFocus = true;
+	public float FocusDistance = 2.5f;
+	public float FocusAngle = 270f;
 
 	public float UnitScale = 10f;
 	public string Path = string.Empty;
@@ -117,11 +118,11 @@ public class BVHViewer : EditorWindow {
 			Animation.Draw();
 			if(AutoFocus) {
 				Vector3 position = Animation.CurrentFrame.Positions[0];
-				//Quaternion rotation = Animation.CurrentFrame.Rotations[0];
 				Quaternion rotation = Animation.CurrentFrame.Rotations[0];
 				rotation.x = 0f;
 				rotation.z = 0f;
-				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation, FocusDistance);
+				rotation = Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation;
+				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}
 	}
@@ -131,8 +132,8 @@ public class BVHViewer : EditorWindow {
 			AutoFocus = value;
 			if(!AutoFocus) {
 				Vector3 position = Animation.CurrentFrame.Positions[0];
-				Quaternion rotation = Quaternion.identity;
-				SceneView.lastActiveSceneView.LookAtDirect(position, Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation, FocusDistance);
+				Quaternion rotation = Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * Quaternion.identity;
+				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}
 	}
