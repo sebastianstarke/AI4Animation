@@ -29,4 +29,4 @@ A 'BVHViewer' editor window has been developed with the aim to do animation prep
 
 Copyright Information
 ------------
-This code implementation is only for research purposes and not for commercial use.
+This code implementation is only for research or education purposes, and not available for commercial use.
