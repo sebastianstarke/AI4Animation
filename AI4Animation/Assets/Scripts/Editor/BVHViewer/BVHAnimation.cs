@@ -315,6 +315,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public Vector3 GetRootDirection(BVHFrame frame) {
+		/*
 		//DIRTY HACK FOR SITTING...
 		int hipIndex = Character.FindBone("Hips").GetIndex();
 		int neckIndex = Character.FindBone("Neck").GetIndex();
@@ -322,6 +323,8 @@ public class BVHAnimation : ScriptableObject {
 		forward.y = 0f;
 		forward = forward.normalized;
 		return forward;
+		*/
+		return frame.Rotations[0] * Vector3.forward;
 	}
 
 	/*
