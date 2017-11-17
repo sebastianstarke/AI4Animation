@@ -13,8 +13,9 @@ public class DogAnimation : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public Trajectory Trajectory;
 	public PFNN PFNN;
+
+	private Trajectory Trajectory;
 
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
@@ -22,8 +23,7 @@ public class DogAnimation : MonoBehaviour {
 	private Vector3[] Velocities = new Vector3[0];
 	
 	//Trajectory for 60 Hz framerate
-	private const int Samples = 12;
-	private const int RootSampleIndex = 6;
+	private const int PointSamples = 12;
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
 
@@ -36,10 +36,11 @@ public class DogAnimation : MonoBehaviour {
 	}
 
 	void Awake() {
-		TargetDirection = GetRootDirection();
+		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
 		Velocities = new Vector3[Joints.Length];
-		Trajectory = new Trajectory(111, Controller.Styles.Length, GetRootPosition(), GetRootDirection());
+		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
+		Trajectory.Postprocess();
 		PFNN.Initialise();
 	}
 
@@ -95,7 +96,7 @@ public class DogAnimation : MonoBehaviour {
 			
 			//Input Trajectory Positions / Directions
 			int start = 0;
-			for(int i=0; i<Samples; i++) {
+			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().RelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().RelativeDirectionTo(currentRoot);
 				PFNN.SetInput(start + i*6 + 0, pos.x);
@@ -105,22 +106,22 @@ public class DogAnimation : MonoBehaviour {
 				PFNN.SetInput(start + i*6 + 4, dir.y);
 				PFNN.SetInput(start + i*6 + 5, dir.z);
 			}
-			start += 6*Samples;
+			start += 6*PointSamples;
 
 			//Input Trajectory Heights
-			for(int i=0; i<Samples; i++) {
+			for(int i=0; i<PointSamples; i++) {
 				PFNN.SetInput(start + i*2 + 0, GetSample(i).GetRightSample().y - currentRoot.Position.y);
 				PFNN.SetInput(start + i*2 + 1, GetSample(i).GetLeftSample().y - currentRoot.Position.y);
 			}
-			start += 2*Samples;
+			start += 2*PointSamples;
 
 			//Input Trajectory Gaits
-			for (int i=0; i<Samples; i++) {
+			for (int i=0; i<PointSamples; i++) {
 				for(int j=0; j<GetSample(i).Styles.Length; j++) {
 					PFNN.SetInput(start + (i*GetSample(i).Styles.Length) + j, GetSample(i).Styles[j]);
 				}
 			}
-			start += Controller.Styles.Length * Samples;
+			start += Controller.Styles.Length * PointSamples;
 
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
@@ -267,18 +268,10 @@ public class DogAnimation : MonoBehaviour {
 		}
 	}
 
-	public Vector3 GetRootPosition() {
-		return Root.position;
-	}
-
-	public Vector3 GetRootDirection() {
-		return new Vector3(Root.forward.x, 0f, Root.forward.z);
-	}
-
 	void OnGUI() {
 		float height = 0.05f;
+		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.1f, 0.1f, height), Phase, 0f, 2f*Mathf.PI);
 		GUI.Box(Utility.GetGUIRect(0.725f, 0.025f, 0.25f, Controller.Styles.Length*height), "");
-		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.05f, 0.1f, height), Phase, 0f, 2f*Mathf.PI);
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), Controller.Styles[i].Name);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);

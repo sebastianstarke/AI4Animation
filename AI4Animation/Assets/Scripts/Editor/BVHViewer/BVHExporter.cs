@@ -48,7 +48,6 @@ public class BVHExporter : EditorWindow {
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(45f));
 					SetDirectory(EditorGUILayout.TextField(Directory));
 					EditorGUILayout.EndHorizontal();
-					//SetFiles(EditorGUILayout.IntField("Files", Files));
 					for(int i=0; i<Animations.Length; i++) {
 						if(Use[i]) {
 							Utility.SetGUIColor(Utility.DarkGreen);
@@ -119,8 +118,6 @@ public class BVHExporter : EditorWindow {
 			labels.WriteLine(index + " " + "BoneVelocityX"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityY"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityZ"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneTranslationalVelocity"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationalVelocity"+i); index += 1;
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
@@ -193,8 +190,8 @@ public class BVHExporter : EditorWindow {
 					//Frame time
 					line += frame.Timestamp + Separator;
 
-					Trajectory trajectory = Animations[i].GenerateTrajectory(frame);
-					Transformation root = new Transformation(trajectory.Points[60].GetPosition(), trajectory.Points[60].GetRotation());
+					Trajectory trajectory = Animations[i].ExtractTrajectory(frame);
+					Transformation root = new Transformation(trajectory.Points[6].GetPosition(), trajectory.Points[6].GetRotation());
 					//Bone data
 					for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
 						//Position
@@ -202,28 +199,21 @@ public class BVHExporter : EditorWindow {
 
 						//Velocity
 						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.1f).RelativeDirectionTo(root));
-
-						//Translational velocity
-						line += FormatValue(frame.SmoothTranslationalVelocityValue(k, 0.1f));
-
-						//Rotational velocity
-						line += FormatValue(frame.SmoothRotationalVelocityValue(k, 0.1f));
-						//line += FormatVector3(frame.Velocities[k].RelativeDirectionTo(root));
 					}
 					
 					//Trajectory data
 					for(int k=0; k<12; k++) {
-						line += FormatVector3(trajectory.Points[k*10].GetPosition().RelativePositionTo(root));
-						line += FormatVector3(trajectory.Points[k*10].GetDirection().RelativeDirectionTo(root));
+						line += FormatVector3(trajectory.Points[k].GetPosition().RelativePositionTo(root));
+						line += FormatVector3(trajectory.Points[k].GetDirection().RelativeDirectionTo(root));
 					}
 
 					for(int k=0; k<12; k++) {
-						line += FormatValue(trajectory.Points[k*10].GetRightSample().y - root.Position.y);
-						line += FormatValue(trajectory.Points[k*10].GetLeftSample().y - root.Position.y);
+						line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
+						line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.Position.y);
 					}
 
 					for(int k=0; k<12; k++) {
-						line += FormatArray(trajectory.Points[k*10].Styles);
+						line += FormatArray(trajectory.Points[k].Styles);
 					}
 
 					//Phase

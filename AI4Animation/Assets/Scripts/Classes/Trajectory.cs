@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-//[System.Serializable]
+[System.Serializable]
 public class Trajectory {
 
 	public bool Inspect = false;
@@ -26,11 +26,26 @@ public class Trajectory {
 			Points[i] = new Point(i, styles);
 			Points[i].SetPosition(seedPosition);
 			Points[i].SetDirection(seedDirection);
+		}
+	}
+
+	public Trajectory(int size, int styles, Vector3[] positions, Vector3[] directions) {
+		Inspect = false;
+		Points = new Point[size];
+		for(int i=0; i<Points.Length; i++) {
+			Points[i] = new Point(i, styles);
+			Points[i].SetPosition(positions[i]);
+			Points[i].SetDirection(directions[i]);
+		}
+	}
+
+	public void Postprocess() {
+		for(int i=0; i<Points.Length; i++) {
 			Points[i].Postprocess();
 		}
 	}
 
-	//[System.Serializable]
+	[System.Serializable]
 	public class Point {
 		public int Index;
 		public Vector3 Position;

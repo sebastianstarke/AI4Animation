@@ -6,8 +6,9 @@ using System.IO;
 public class BVHAnimation : ScriptableObject {
 
 	public Character Character;
-	public Vector3 Offset = Vector3.zero;
-	public Vector3 Rotation = Vector3.zero;
+	public Trajectory Trajectory;
+	//public Vector3 Offset = Vector3.zero;
+	//public Vector3 Rotation = Vector3.zero;
 	public Vector3 Orientation = Vector3.zero;
 
 	public bool ShowPreview = false;
@@ -147,6 +148,9 @@ public class BVHAnimation : ScriptableObject {
 			Frames[i] = new BVHFrame(this, zero.ToArray(), channels.ToArray(), motions[i], i+1, i*FrameTime, unitScale);
 		}
 
+		//Create Trajectory
+		ComputeTrajectory();
+
 		//Initialise Variables
 		TimeWindow = TotalTime;
 		SequenceStart = 1;
@@ -178,21 +182,29 @@ public class BVHAnimation : ScriptableObject {
 		}
 	}
 
-	public void LoadFrame(BVHFrame Frame) {
-		if(Frame == null) {
+	public void LoadFrame(BVHFrame frame) {
+		if(frame == null) {
 			return;
 		}
-		if(CurrentFrame == Frame) {
+		if(CurrentFrame == frame) {
 			return;
 		}
-		CurrentFrame = Frame;
+		CurrentFrame = frame;
+		ForwardKinematics();
+	}
+
+	public void ReloadFrame() {
 		ForwardKinematics();
 	}
 
 	private void ForwardKinematics() {
 		for(int i=0; i<Character.Bones.Length; i++) {
-			Character.Bones[i].SetPosition(Offset + Quaternion.Euler(Rotation) * CurrentFrame.Positions[i]);
-			Character.Bones[i].SetRotation(Quaternion.Euler(Rotation) * CurrentFrame.Rotations[i]);
+			//Character.Bones[i].SetPosition(Offset + Quaternion.Euler(Rotation) * CurrentFrame.Positions[i]);
+			//Character.Bones[i].SetRotation(Quaternion.Euler(Rotation) * CurrentFrame.Rotations[i]);
+			//Vector3 position = CurrentFrame.Positions[i];
+			//position.x = -position.x;
+			Character.Bones[i].SetPosition(CurrentFrame.Positions[i]);
+			Character.Bones[i].SetRotation(CurrentFrame.Rotations[i]);
 		}
 	}
 
@@ -239,6 +251,14 @@ public class BVHAnimation : ScriptableObject {
 		return frames.ToArray();
 	}
 
+	public void ComputeTrajectory() {
+		Trajectory = new Trajectory(TotalFrames, 0);
+		for(int i=0; i<TotalFrames; i++) {
+			Trajectory.Points[i].Position = GetRootPosition(Frames[i]);
+			Trajectory.Points[i].Direction = GetRootDirection(Frames[i]);
+			Trajectory.Points[i].Postprocess();
+		}
+	}
 
 	public void ExportSkeleton(Character.Bone bone, Transform parent) {
 		Transform instance = new GameObject(bone.GetName()).transform;
@@ -250,32 +270,41 @@ public class BVHAnimation : ScriptableObject {
 		}
 	}
 
-	public Trajectory GenerateTrajectory(BVHFrame frame) {
-		Trajectory trajectory = new Trajectory(111, StyleFunction.Styles.Length);
+	public Trajectory ExtractTrajectory(BVHFrame frame) {
+		Trajectory trajectory = new Trajectory(12, StyleFunction.Styles.Length);
 		//Past
-		int past = 60;
-		for(int i=0; i<past; i+=10) {
-			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/(float)past, 0f, TotalTime);
-			trajectory.Points[i].SetPosition(GetRootPosition(GetFrame(timestamp)));
-			trajectory.Points[i].SetDirection(GetRootDirection(GetFrame(timestamp)));
-			for(int k=0; k<StyleFunction.Styles.Length; k++) {
-				trajectory.Points[i].Styles[k] = StyleFunction.Styles[k].Values[GetFrame(timestamp).Index-1];
+		for(int i=0; i<6; i++) {
+			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, TotalTime);
+			int index = GetFrame(timestamp).Index;
+			trajectory.Points[i].Index = Trajectory.Points[index-1].Index;
+			trajectory.Points[i].Position = Trajectory.Points[index-1].Position;
+			trajectory.Points[i].Direction = Trajectory.Points[index-1].Direction;
+			trajectory.Points[i].LeftSample = Trajectory.Points[index-1].LeftSample;
+			trajectory.Points[i].RightSample = Trajectory.Points[index-1].RightSample;
+			trajectory.Points[i].Rise = Trajectory.Points[index-1].Rise;
+			for(int j=0; j<StyleFunction.Styles.Length; j++) {
+				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
 		}
 		//Current
-		trajectory.Points[past].SetPosition(GetRootPosition(frame));
-		trajectory.Points[past].SetDirection(GetRootDirection(frame));
-		for(int k=0; k<StyleFunction.Styles.Length; k++) {
-			trajectory.Points[past].Styles[k] = StyleFunction.Styles[k].Values[frame.Index-1];
-		}
+		trajectory.Points[6].Index = Trajectory.Points[frame.Index-1].Index;
+		trajectory.Points[6].Position = Trajectory.Points[frame.Index-1].Position;
+		trajectory.Points[6].Direction = Trajectory.Points[frame.Index-1].Direction;
+		trajectory.Points[6].LeftSample = Trajectory.Points[frame.Index-1].LeftSample;
+		trajectory.Points[6].RightSample = Trajectory.Points[frame.Index-1].RightSample;
+		trajectory.Points[6].Rise = Trajectory.Points[frame.Index-1].Rise;
 		//Future
-		int future = 50;
-		for(int i=10; i<=future; i+=10) {
-			float timestamp = Mathf.Clamp(frame.Timestamp + (float)i/(float)future, 0f, TotalTime);
-			trajectory.Points[past+i].SetPosition(GetRootPosition(GetFrame(timestamp)));
-			trajectory.Points[past+i].SetDirection(GetRootDirection(GetFrame(timestamp)));
-			for(int k=0; k<StyleFunction.Styles.Length; k++) {
-				trajectory.Points[past+i].Styles[k] = StyleFunction.Styles[k].Values[GetFrame(timestamp).Index-1];
+		for(int i=7; i<12; i++) {
+			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, TotalTime);
+			int index = GetFrame(timestamp).Index;
+			trajectory.Points[i].Index = Trajectory.Points[index-1].Index;
+			trajectory.Points[i].Position = Trajectory.Points[index-1].Position;
+			trajectory.Points[i].Direction = Trajectory.Points[index-1].Direction;
+			trajectory.Points[i].LeftSample = Trajectory.Points[index-1].LeftSample;
+			trajectory.Points[i].RightSample = Trajectory.Points[index-1].RightSample;
+			trajectory.Points[i].Rise = Trajectory.Points[index-1].Rise;
+			for(int j=0; j<StyleFunction.Styles.Length; j++) {
+				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
 		}
 		return trajectory;
@@ -295,19 +324,21 @@ public class BVHAnimation : ScriptableObject {
 		return forward;
 	}
 
+	/*
 	private void SetOffset(Vector3 offset) {
 		if(Offset != offset) {
 			Offset = offset;
-			ForwardKinematics();
+			ReloadFrame();
 		}
 	}
 
 	private void SetRotation(Vector3 rotation) {
 		if(Rotation != rotation) {
 			Rotation = rotation;
-			ForwardKinematics();
+			ReloadFrame();
 		}
 	}
+	*/
 
 	private void SetOrientation(Vector3 orientation) {
 		if(Orientation != orientation) {
@@ -330,9 +361,12 @@ public class BVHAnimation : ScriptableObject {
 		
 		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
 		ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
-		SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
-		SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
+		//SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
+		//SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));
+		if(Utility.GUIButton("Compute Trajectory", Utility.DarkGreen, Utility.White)) {
+			ComputeTrajectory();
+		}
 
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
@@ -438,7 +472,9 @@ public class BVHAnimation : ScriptableObject {
 		Contacts.Draw();
 
 		if(ShowTrajectory) {
-			GenerateTrajectory(CurrentFrame).Draw();
+			Trajectory.Draw();
+		} else {
+			ExtractTrajectory(CurrentFrame).Draw();
 		}
 		
 		Character.Draw();
@@ -1072,29 +1108,6 @@ public class BVHAnimation : ScriptableObject {
 					top.x = rect.xMin;
 					UnityGL.DrawLine(bottom, top, Utility.Magenta);
 				}
-
-				/*
-				BVHFrame B = GetNextKey(A);
-				while(A != B) {
-					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					for(int i=0; i<Styles.Length; i++) {
-						float valueA = Styles[i].Flags[A.Index-1] ? 1f : 0f;
-						float valueB = Styles[i].Flags[A.Index-1] ? 1f : 0f;
-						prevPos.y = rect.yMax - valueA * rect.height;
-						newPos.y = rect.yMax - valueB * rect.height;
-						UnityGL.DrawLine(prevPos, newPos, colors[i]);
-					}
-					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					UnityGL.DrawLine(bottom, top, Utility.Magenta);
-					A = B;
-					B = GetNextKey(A);
-					if(B.Index > end) {
-						break;
-					}
-				}
-				*/
 				
 				BVHFrame B = GetNextKey(A);
 				while(A != B && A != null && B != null) {
@@ -1243,7 +1256,6 @@ public class BVHAnimation : ScriptableObject {
 			Variables[index] = false;
 		}
 
-		//TODO BETTER!
 		public void Draw() {
 			Color[] colors = Utility.GetRainbowColors(Contacts.Length);
 			UnityGL.Start();

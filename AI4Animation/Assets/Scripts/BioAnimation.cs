@@ -13,8 +13,9 @@ public class BioAnimation : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public Trajectory Trajectory;
 	public PFNN PFNN;
+
+	private Trajectory Trajectory;
 
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
@@ -25,7 +26,7 @@ public class BioAnimation : MonoBehaviour {
 	private float UnitScale = 100f;
 
 	//Trajectory for 60 Hz framerate
-	private const int Samples = 12;
+	private const int PointSamples = 12;
 	private const int RootSampleIndex = 6;
 	private const int RootPointIndex = 60;
 	private const int FuturePoints = 5;
@@ -41,10 +42,11 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void Awake() {
-		TargetDirection = GetRootDirection();
+		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
 		Velocities = new Vector3[Joints.Length];
-		Trajectory = new Trajectory(111, Controller.Styles.Length, GetRootPosition(), GetRootDirection());
+		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
+		Trajectory.Postprocess();
 		PFNN.Initialise();
 	}
 
@@ -60,14 +62,12 @@ public class BioAnimation : MonoBehaviour {
 		//Update Target Direction / Velocity
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
-
-		//TODO: Update strafe etc.
 		
 		//Update Gait
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), GaitTransition);
 		}
-		//FOR HUMAN ONLY
+		//For Human Only
 		Trajectory.Points[RootPointIndex].Styles[0] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[0], 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f), GaitTransition);
 		Trajectory.Points[RootPointIndex].Styles[1] = Mathf.Max(Trajectory.Points[RootPointIndex].Styles[1] - Trajectory.Points[RootPointIndex].Styles[2], 0f);
 		//
@@ -122,133 +122,132 @@ public class BioAnimation : MonoBehaviour {
 		//Post-Correct Trajectory
 		CollisionChecks(RootPointIndex+1);
 
-		//Calculate Root
-		Transformation currentRoot = new Transformation(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetRotation());
-
-		//Input Trajectory Positions / Directions
-		for(int i=0; i<Samples; i++) {
-			Vector3 pos = Trajectory.Points[i*PointDensity].GetPosition().RelativePositionTo(currentRoot);
-			Vector3 dir = Trajectory.Points[i*PointDensity].GetDirection().RelativeDirectionTo(currentRoot);
-			PFNN.SetInput(Samples*0 + i, UnitScale * pos.x);
-			PFNN.SetInput(Samples*1 + i, UnitScale * pos.z);
-			PFNN.SetInput(Samples*2 + i, dir.x);
-			PFNN.SetInput(Samples*3 + i, dir.z);
-		}
-
-		//Input Trajectory Gaits
-		for (int i=0; i<Samples; i++) {
-			for(int j=0; j<Trajectory.Points[i*PointDensity].Styles.Length; j++) {
-				PFNN.SetInput(Samples*(4+j) + i, Trajectory.Points[i*PointDensity].Styles[j]);
+		if(PFNN.Parameters != null) {
+			//Calculate Root
+			Transformation currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
+			Transformation previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
+				
+			//Input Trajectory Positions / Directions
+			for(int i=0; i<PointSamples; i++) {
+				Vector3 pos = Trajectory.Points[i*PointDensity].GetPosition().RelativePositionTo(currentRoot);
+				Vector3 dir = Trajectory.Points[i*PointDensity].GetDirection().RelativeDirectionTo(currentRoot);
+				PFNN.SetInput(PointSamples*0 + i, UnitScale * pos.x);
+				PFNN.SetInput(PointSamples*1 + i, UnitScale * pos.z);
+				PFNN.SetInput(PointSamples*2 + i, dir.x);
+				PFNN.SetInput(PointSamples*3 + i, dir.z);
 			}
-			//FOR HUMAN ONLY
-			PFNN.SetInput(Samples*8 + i, Trajectory.Points[i*PointDensity].Rise);
-			//
-		}
 
-		//Input Previous Bone Positions / Velocities
-		Transformation previousRoot = new Transformation(Trajectory.Points[RootPointIndex-1].GetPosition(), Trajectory.Points[RootPointIndex-1].GetRotation());
-		for(int i=0; i<Joints.Length; i++) {
-			int o = 10*Samples;
-			Vector3 pos = Joints[i].position.RelativePositionTo(previousRoot);
-			Vector3 vel = Velocities[i].RelativeDirectionTo(previousRoot);
-			PFNN.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
-			PFNN.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
-			PFNN.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
-			PFNN.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
-			PFNN.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
-			PFNN.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
-		}
-
-		//Input Trajectory Heights
-		for(int i=0; i<Samples; i++) {
-			int o = 10*Samples + Joints.Length*3*2;
-			PFNN.SetInput(o + Samples*0 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetRightSample().y - currentRoot.Position.y));
-			PFNN.SetInput(o + Samples*1 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetPosition().y - currentRoot.Position.y));
-			PFNN.SetInput(o + Samples*2 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetLeftSample().y - currentRoot.Position.y));
-		}
-
-		//Predict
-		PFNN.Predict(Phase);
-
-		//Update Past Trajectory
-		for(int i=0; i<RootPointIndex; i++) {
-			Trajectory.Points[i].Position = Trajectory.Points[i+1].Position;
-			Trajectory.Points[i].Direction = Trajectory.Points[i+1].Direction;
-			Trajectory.Points[i].RightSample = Trajectory.Points[i+1].RightSample;
-			Trajectory.Points[i].LeftSample = Trajectory.Points[i+1].LeftSample;
-			Trajectory.Points[i].Rise = Trajectory.Points[i+1].Rise;
-			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
-				Trajectory.Points[i].Styles[j] = Trajectory.Points[i+1].Styles[j];
+			//Input Trajectory Gaits
+			for (int i=0; i<PointSamples; i++) {
+				for(int j=0; j<Trajectory.Points[i*PointDensity].Styles.Length; j++) {
+					PFNN.SetInput(PointSamples*(4+j) + i, Trajectory.Points[i*PointDensity].Styles[j]);
+				}
+				//FOR HUMAN ONLY
+				PFNN.SetInput(PointSamples*8 + i, Trajectory.Points[i*PointDensity].Rise);
+				//
 			}
+
+			//Input Previous Bone Positions / Velocities
+			for(int i=0; i<Joints.Length; i++) {
+				int o = 10*PointSamples;
+				Vector3 pos = Joints[i].position.RelativePositionTo(previousRoot);
+				Vector3 vel = Velocities[i].RelativeDirectionTo(previousRoot);
+				PFNN.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
+				PFNN.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
+				PFNN.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
+				PFNN.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
+				PFNN.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
+				PFNN.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
+			}
+
+			//Input Trajectory Heights
+			for(int i=0; i<PointSamples; i++) {
+				int o = 10*PointSamples + Joints.Length*3*2;
+				PFNN.SetInput(o + PointSamples*0 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetRightSample().y - currentRoot.Position.y));
+				PFNN.SetInput(o + PointSamples*1 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetPosition().y - currentRoot.Position.y));
+				PFNN.SetInput(o + PointSamples*2 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetLeftSample().y - currentRoot.Position.y));
+			}
+
+			//Predict
+			PFNN.Predict(Phase);
+
+			//Update Past Trajectory
+			for(int i=0; i<RootPointIndex; i++) {
+				Trajectory.Points[i].Position = Trajectory.Points[i+1].Position;
+				Trajectory.Points[i].Direction = Trajectory.Points[i+1].Direction;
+				Trajectory.Points[i].RightSample = Trajectory.Points[i+1].RightSample;
+				Trajectory.Points[i].LeftSample = Trajectory.Points[i+1].LeftSample;
+				Trajectory.Points[i].Rise = Trajectory.Points[i+1].Rise;
+				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
+					Trajectory.Points[i].Styles[j] = Trajectory.Points[i+1].Styles[j];
+				}
+			}
+
+			//Update Current Trajectory
+			float stand_amount = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+			Trajectory.Points[RootPointIndex].SetPosition((stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativePositionFrom(currentRoot));
+			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
+			Trajectory.Points[RootPointIndex].Postprocess();
+			Transformation nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
+
+			//Update Future Trajectory
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativeDirectionFrom(nextRoot));
+			}
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				int w = RootSampleIndex;
+				float m = Mathf.Repeat(((float)i - (float)RootPointIndex) / (float)PointDensity, 1.0f);
+				float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w+1);
+				float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w+1);
+				float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w+1);
+				float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w+1);
+				Trajectory.Points[i].SetPosition(
+					Utility.Interpolate(
+						Trajectory.Points[i].GetPosition(),
+						new Vector3(posX / UnitScale, 0f, posZ / UnitScale).RelativePositionFrom(nextRoot),
+						TrajectoryCorrection
+						)
+					);
+				Trajectory.Points[i].SetDirection(
+					Utility.Interpolate(
+						Trajectory.Points[i].GetDirection(),
+						new Vector3(dirX, 0f, dirZ).normalized.RelativeDirectionFrom(nextRoot),
+						TrajectoryCorrection
+						)
+					);
+			}
+
+			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
+				Trajectory.Points[i].Postprocess();
+			}
+
+			//Post-Correct Trajectory
+			CollisionChecks(RootPointIndex);
+			
+			//Compute Posture
+			Vector3[] positions = new Vector3[Joints.Length];
+			int opos = 8 + 4*RootSampleIndex + Joints.Length*3*0;
+			int ovel = 8 + 4*RootSampleIndex + Joints.Length*3*1;
+			for(int i=0; i<Joints.Length; i++) {			
+				Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
+				Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
+				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
+				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
+			}
+			
+			//Update Posture
+			Root.position = nextRoot.Position;
+			Root.rotation = nextRoot.Rotation;
+			for(int i=0; i<Joints.Length; i++) {
+				Joints[i].position = positions[i];
+			}
+
+			//Map to Character
+			Character.ForwardKinematics(Root);
+
+			/* Update Phase */
+			Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
-
-		//Update Current Trajectory
-		float stand_amount = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
-		Trajectory.Points[RootPointIndex].SetPosition((stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativePositionFrom(currentRoot));
-		Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(stand_amount * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
-		Trajectory.Points[RootPointIndex].Postprocess();
-		Transformation newRoot = new Transformation(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetRotation());
-
-		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (stand_amount * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).RelativeDirectionFrom(newRoot));
-		}
-
-		//Update Future Trajectory
-		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-			int w = RootSampleIndex;
-			float m = Mathf.Repeat(((float)i - (float)RootPointIndex) / (float)PointDensity, 1.0f);
-			float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w+1);
-			float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w+1);
-			float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w+1);
-			float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w+1);
-			Trajectory.Points[i].SetPosition(
-				Utility.Interpolate(
-					Trajectory.Points[i].GetPosition(),
-					new Vector3(posX / UnitScale, 0f, posZ / UnitScale).RelativePositionFrom(newRoot),
-					TrajectoryCorrection
-					)
-				);
-			Trajectory.Points[i].SetDirection(
-				Utility.Interpolate(
-					Trajectory.Points[i].GetDirection(),
-					new Vector3(dirX, 0f, dirZ).normalized.RelativeDirectionFrom(newRoot),
-					TrajectoryCorrection
-					)
-				);
-		}
-
-		for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
-			Trajectory.Points[i].Postprocess();
-		}
-
-		//Post-Correct Trajectory
-		CollisionChecks(RootPointIndex);
-		
-		//Compute Posture
-		//TODO: Create lookup table to map to character
-		Vector3[] positions = new Vector3[Joints.Length];
-		//TODO: rotations
-		int opos = 8 + 4*RootSampleIndex + Joints.Length*3*0;
-		int ovel = 8 + 4*RootSampleIndex + Joints.Length*3*1;
-		for(int i=0; i<Joints.Length; i++) {			
-			Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
-			Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
-			positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
-			Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
-		}
-		
-		//Update Posture
-		Root.position = newRoot.Position;
-		Root.rotation = newRoot.Rotation;
-		for(int i=0; i<Joints.Length; i++) {
-			Joints[i].position = positions[i];
-		}
-
-		//Map to Character
-		Character.ForwardKinematics(Root);
-
-		/* Update Phase */
-		Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
 	}
 
 
@@ -314,21 +313,16 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
-	public Vector3 GetRootPosition() {
-		return Root.position;
-	}
-
-	public Vector3 GetRootDirection() {
-		return new Vector3(Root.forward.x, 0f, Root.forward.z);
-	}
-
 	void OnGUI() {
-		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.05f, 0.1f, 0.05f), Phase, 0f, 2f*Mathf.PI);
-		for(int i=0; i<Trajectory.Points[RootPointIndex].Styles.Length; i++) {
-			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, 0.05f), Controller.Styles[i].Name);
-			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, 0.05f), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
+		float height = 0.05f;
+		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.1f, 0.1f, height), Phase, 0f, 2f*Mathf.PI);
+		GUI.Box(Utility.GetGUIRect(0.725f, 0.025f, 0.25f, Controller.Styles.Length*height), "");
+		for(int i=0; i<Controller.Styles.Length; i++) {
+			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), Controller.Styles[i].Name);
+			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
 	}
+
 
 	void OnRenderObject() {
 		if(Application.isPlaying) {
