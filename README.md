@@ -9,9 +9,9 @@ Description
 ------------
 This project explores the opportunities of deep learning and evolutionary computation for character animation as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura.
 
-It extends the recent work using PFNN (Phase-Functioned Neural Networks) for character control (https://www.youtube.com/watch?v=Ul0Gilv5wvY), and aims learning task-specific motion manifolds as well as creating representations for different geometries. The development is done using Unity3D, and the implementation is made available for character animation research and games development during my Ph.D. progress.
+It extends the recent work using PFNN (Phase-Functioned Neural Networks) for character control (Video: https://www.youtube.com/watch?v=Ul0Gilv5wvY, Paper: http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf), and aims learning task-specific motion manifolds as well as creating representations for different geometries. The development is done using Unity3D, and the implementation is made available for character animation research and games development during my Ph.D. progress.
 
-The algorithmic framework is shown below. In addition to the extended PFNN version which utilises multiple phase modules, a memetic evolutionary algorithm for generic inverse kinematics (BioIK: https://github.com/sebastianstarke/BioIK AssetStore: https://www.assetstore.unity3d.com/en/#!/content/67819 Video: https://www.youtube.com/watch?v=ik45v4WRZKI) is used for animation post-processing and motion editing.
+The algorithmic framework is shown below. In addition to the extended PFNN version which utilises multiple phase modules, a memetic evolutionary algorithm for generic inverse kinematics (BioIK Asset: https://github.com/sebastianstarke/BioIK AssetStore: https://www.assetstore.unity3d.com/en/#!/content/67819 Video: https://www.youtube.com/watch?v=ik45v4WRZKI) is used for animation post-processing and motion editing.
 
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Cycle.png" width="100%">
 
