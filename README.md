@@ -1,6 +1,10 @@
 AI4Animation
 ======================================================
 
+Copyright Information
+------------
+This code implementation is only for research or education purposes, and not available for commercial use.
+
 Description
 ------------
 This project explores the opportunities of deep learning and evolutionary computation for character animation as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura.
@@ -26,7 +30,3 @@ Data Preprocessing
 ------------
 A 'BVHViewer' editor window has been developed with the aim to do animation preprocessing of BVH files to generate the training data for the deep learning. This enables defining the phase function, style function, generating trajectories as well as all other relevant data right inside Unity.
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/BVH.png" width="100%">
-
-Copyright Information
-------------
-This code implementation is only for research or education purposes, and not available for commercial use.
