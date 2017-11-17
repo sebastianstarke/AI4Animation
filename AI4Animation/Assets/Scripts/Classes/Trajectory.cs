@@ -64,7 +64,6 @@ public class Trajectory {
 
 		public void SetPosition(Vector3 position) {
 			Position = position;
-			//Postprocess();
 		}
 
 		public Vector3 GetPosition() {
@@ -99,10 +98,8 @@ public class Trajectory {
 		}
 	}
 
-	public void Draw() {
+	public void Draw(int step=1) {
 		UnityGL.Start();
-		int step = 10;
-
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
 			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Utility.Black);

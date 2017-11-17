@@ -172,25 +172,25 @@ public class DogAnimation : MonoBehaviour {
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				//ROOT	1		2		3		4		5
 				//.x....x.......x.......x.......x.......x
-				//Debug.Log("Index: " + index + " Prev Index: " + prevIndex + " Prev Factor: " + prevFactor + " Prev Sample: " + prevSampleIndex + " Next Index: " + nextIndex + " Next Factor: " + nextFactor + " Next Sample: " + nextSampleIndex);
-
 				int index = i;
-				float factor = (float)(GetNextSample(index).GetIndex() - index) / (float)PointDensity;
 				int prevSampleIndex = GetPreviousSample(index).GetIndex() / PointDensity;
+				int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
+				float factor = (float)(i % PointDensity) / PointDensity;
+
 				float prevPosX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
 				float prevPosZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
 				float prevDirX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
 				float prevDirZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
 
-				float nextPosX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
-				float nextPosZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
-				float nextDirX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
-				float nextDirZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
+				float nextPosX = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 0);
+				float nextPosZ = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 1);
+				float nextDirX = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 2);
+				float nextDirZ = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 3);
 
-				float posX = factor * prevPosX + (1f - factor) * nextPosX;
-				float posZ = factor * prevPosZ + (1f - factor) * nextPosZ;
-				float dirX = factor * prevDirX + (1f - factor) * nextDirX;
-				float dirZ = factor * prevDirZ + (1f - factor) * nextDirZ;
+				float posX = (1f - factor) * prevPosX + factor * nextPosX;
+				float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
+				float dirX = (1f - factor) * prevDirX + factor * nextDirX;
+				float dirZ = (1f - factor) * prevDirZ + factor * nextDirZ;
 
 				Trajectory.Points[i].SetPosition(
 					Utility.Interpolate(
@@ -291,7 +291,7 @@ public class DogAnimation : MonoBehaviour {
 			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
 			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
 			UnityGL.Finish();
-			Trajectory.Draw();
+			Trajectory.Draw(10);
 		}
 		
 		if(!Application.isPlaying) {

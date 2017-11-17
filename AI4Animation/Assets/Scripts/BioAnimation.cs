@@ -249,8 +249,6 @@ public class BioAnimation : MonoBehaviour {
 
 		/* Update Phase */
 		Phase = Mathf.Repeat(Phase + (stand_amount * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
-
-		//PFNN.Finish();
 	}
 
 
@@ -338,7 +336,7 @@ public class BioAnimation : MonoBehaviour {
 			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
 			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
 			UnityGL.Finish();
-			Trajectory.Draw();
+			Trajectory.Draw(10);
 		}
 
 		if(!Application.isPlaying) {
