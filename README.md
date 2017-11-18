@@ -3,7 +3,7 @@ AI4Animation
 
 Copyright Information
 ------------
-This code implementation is only for research or education purposes, and (especially the learned data) not available for commercial use. For scientific use, please reference this repository together with the PFNN paper below. In any case, I would ask you to contact me if you intend to seriously use this code.
+This code implementation is only for research or education purposes, and (especially the learned data) not available for commercial use. For scientific use, please reference this repository together with the PFNN paper below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
 
 Description
 ------------
