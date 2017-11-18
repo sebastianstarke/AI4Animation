@@ -35,7 +35,7 @@ public class BioAnimation_Editor : Editor {
 					}
 				}
 
-				if(GUILayout.Button("Bio Animation")) {
+				if(GUILayout.Button("Dog Animation")) {
 					Target.Inspect = !Target.Inspect;
 				}
 

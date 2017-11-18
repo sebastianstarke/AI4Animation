@@ -11,9 +11,11 @@ public class BVHAnimation : ScriptableObject {
 	//public Vector3 Rotation = Vector3.zero;
 	public Vector3 Orientation = Vector3.zero;
 
+	public bool Mirror = false;
+
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
-	public bool ShowTrajectory = true;
+	public bool ShowTrajectory = false;
 	
 	public BVHFrame[] Frames = new BVHFrame[0];
 	public BVHFrame CurrentFrame = null;
@@ -203,8 +205,14 @@ public class BVHAnimation : ScriptableObject {
 			//Character.Bones[i].SetRotation(Quaternion.Euler(Rotation) * CurrentFrame.Rotations[i]);
 			//Vector3 position = CurrentFrame.Positions[i];
 			//position.x = -position.x;
-			Character.Bones[i].SetPosition(CurrentFrame.Positions[i]);
-			Character.Bones[i].SetRotation(CurrentFrame.Rotations[i]);
+			Vector3 position = CurrentFrame.Positions[i];
+			Quaternion rotation = CurrentFrame.Rotations[i];
+			if(Mirror) {
+				position.z = -position.z;
+				//rotation.x = -rotation.x;
+			}
+			Character.Bones[i].SetPosition(position);
+			Character.Bones[i].SetRotation(rotation);
 		}
 	}
 
@@ -315,16 +323,16 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public Vector3 GetRootDirection(BVHFrame frame) {
-		/*
-		//DIRTY HACK FOR SITTING...
+		
+		//DIRTY HACK FOR STUPID DOG...
 		int hipIndex = Character.FindBone("Hips").GetIndex();
 		int neckIndex = Character.FindBone("Neck").GetIndex();
 		Vector3 forward = frame.Positions[neckIndex] - frame.Positions[hipIndex];
 		forward.y = 0f;
 		forward = forward.normalized;
 		return forward;
-		*/
-		return frame.Rotations[0] * Vector3.forward;
+		
+		//return frame.Rotations[0] * Vector3.forward;
 	}
 
 	/*
@@ -342,6 +350,13 @@ public class BVHAnimation : ScriptableObject {
 		}
 	}
 	*/
+
+	private void SetMirror(bool mirror) {
+		if(Mirror != mirror) {
+			Mirror = mirror;
+			ReloadFrame();
+		}
+	}
 
 	private void SetOrientation(Vector3 orientation) {
 		if(Orientation != orientation) {
@@ -364,6 +379,7 @@ public class BVHAnimation : ScriptableObject {
 		
 		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
 		ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
+		SetMirror(EditorGUILayout.Toggle("Mirror", Mirror));
 		//SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
 		//SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));

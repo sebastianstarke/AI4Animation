@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(DogAnimation))]
-public class DogAnimation_Editor : Editor {
+[CustomEditor(typeof(DemoAnimation))]
+public class DemoAnimation_Editor : Editor {
 
-		public DogAnimation Target;
+		public DemoAnimation Target;
 
 		void Awake() {
-			Target = (DogAnimation)target;
+			Target = (DemoAnimation)target;
 		}
 
 		public override void OnInspectorGUI() {
@@ -35,7 +35,7 @@ public class DogAnimation_Editor : Editor {
 					}
 				}
 
-				if(GUILayout.Button("Dog Animation")) {
+				if(GUILayout.Button("Bio Animation")) {
 					Target.Inspect = !Target.Inspect;
 				}
 
