@@ -67,6 +67,9 @@ public class BioAnimation : MonoBehaviour {
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
 			float vel_boost = 1f;
+			if(Input.GetKey(KeyCode.C)) {
+				vel_boost *= 4f;
+			}
 			
 			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
@@ -218,7 +221,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int i=0; i<Joints.Length; i++) {			
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*6 + 0), PFNN.GetOutput(start + i*6 + 1), PFNN.GetOutput(start + i*6 + 2));
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*6 + 3), PFNN.GetOutput(start + i*6 + 4), PFNN.GetOutput(start + i*6 + 5));
-				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity/60f, position, 0.5f).RelativePositionFrom(currentRoot);
+				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity / 60f, position, 0.5f).RelativePositionFrom(currentRoot);
 				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 			}
 			start += Joints.Length * 6;
@@ -300,7 +303,7 @@ public class BioAnimation : MonoBehaviour {
 					if(bone.Draw) {
 						UnityGL.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + Velocities[i],
+							Joints[i].position + 60f*Velocities[i],
 							0.75f,
 							0.0075f,
 							0.05f,
