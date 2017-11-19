@@ -11,8 +11,6 @@ public class BVHAnimation : ScriptableObject {
 	//public Vector3 Rotation = Vector3.zero;
 	public Vector3 Orientation = Vector3.zero;
 
-	public bool Mirror = false;
-
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
@@ -53,14 +51,14 @@ public class BVHAnimation : ScriptableObject {
 		Contacts = new BVHContacts(this);
 		//string folder = viewer.Path.Substring(0, viewer.Path.LastIndexOf("/")+1);
 		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
-		if(AssetDatabase.LoadAssetAtPath("Assets/Animation/Project/"+name+".asset", typeof(BVHAnimation)) == null) {
-			AssetDatabase.CreateAsset(this , "Assets/Animation/Project/"+name+".asset");
+		if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+name+".asset", typeof(BVHAnimation)) == null) {
+			AssetDatabase.CreateAsset(this , "Assets/Project/"+name+".asset");
 		} else {
 			int i = 1;
-			while(AssetDatabase.LoadAssetAtPath("Assets/Animation/Project/"+name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
+			while(AssetDatabase.LoadAssetAtPath("Assets/Project/"+name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
 				i += 1;
 			}
-			AssetDatabase.CreateAsset(this, "Assets/Animation/Project/"+name+" ("+i+").asset");
+			AssetDatabase.CreateAsset(this, "Assets/Project/"+name+" ("+i+").asset");
 		}
 		return this;
 	}
@@ -192,28 +190,6 @@ public class BVHAnimation : ScriptableObject {
 			return;
 		}
 		CurrentFrame = frame;
-		ForwardKinematics();
-	}
-
-	public void ReloadFrame() {
-		ForwardKinematics();
-	}
-
-	private void ForwardKinematics() {
-		for(int i=0; i<Character.Bones.Length; i++) {
-			//Character.Bones[i].SetPosition(Offset + Quaternion.Euler(Rotation) * CurrentFrame.Positions[i]);
-			//Character.Bones[i].SetRotation(Quaternion.Euler(Rotation) * CurrentFrame.Rotations[i]);
-			//Vector3 position = CurrentFrame.Positions[i];
-			//position.x = -position.x;
-			Vector3 position = CurrentFrame.Positions[i];
-			Quaternion rotation = CurrentFrame.Rotations[i];
-			if(Mirror) {
-				position.z = -position.z;
-				//rotation.x = -rotation.x;
-			}
-			Character.Bones[i].SetPosition(position);
-			Character.Bones[i].SetRotation(rotation);
-		}
 	}
 
 	public void LoadFrame(int index) {
@@ -261,21 +237,49 @@ public class BVHAnimation : ScriptableObject {
 
 	public void ComputeTrajectory() {
 		Trajectory = new Trajectory(TotalFrames, 0);
+		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<TotalFrames; i++) {
-			Trajectory.Points[i].Position = GetRootPosition(Frames[i]);
-			Trajectory.Points[i].Direction = GetRootDirection(Frames[i]);
+			Vector3 rootPos = Utility.ProjectGround(Frames[i].Positions[0], mask);
+			int hipIndex = Character.FindBone("Hips").GetIndex();
+			int neckIndex = Character.FindBone("Neck").GetIndex();
+			Vector3 rootDir = Frames[i].Positions[neckIndex] - Frames[i].Positions[hipIndex];
+			rootDir.y = 0f;
+			rootDir = rootDir.normalized;
+			//frame.Rotations[0] * Vector3.forward;
+			Trajectory.Points[i].Position = rootPos;
+			Trajectory.Points[i].Direction = rootDir;
 			Trajectory.Points[i].Postprocess();
 		}
 	}
 
-	public void ExportSkeleton(Character.Bone bone, Transform parent) {
-		Transform instance = new GameObject(bone.GetName()).transform;
-		instance.SetParent(parent);
-		instance.position = bone.GetPosition();
-		instance.rotation = bone.GetRotation();
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(bone.GetChild(Character, i), instance);
+	public Vector3[] ExtractPositions(BVHFrame frame) {
+		Vector3[] positions = new Vector3[frame.Positions.Length];
+		for(int i=0; i<frame.Positions.Length; i++) {
+			positions[i] = frame.Positions[i];
 		}
+		return positions;
+	}
+
+	public Quaternion[] ExtractRotations(BVHFrame frame) {
+		Quaternion[] rotations = new Quaternion[frame.Rotations.Length];
+		for(int i=0; i<frame.Rotations.Length; i++) {
+			rotations[i] = frame.Rotations[i];
+		}
+		return rotations;
+	}
+
+	public Vector3[] ExtractVelocities(BVHFrame frame, float smoothing=0f) {
+		Vector3[] velocities = new Vector3[frame.Velocities.Length];
+		if(smoothing == 0f) {
+			for(int i=0; i<frame.Velocities.Length; i++) {
+				velocities[i] = frame.Velocities[i];
+			}
+		} else {
+			for(int i=0; i<frame.Velocities.Length; i++) {
+				velocities[i] = frame.SmoothTranslationalVelocityVector(i, smoothing);
+			}
+		}
+		return velocities;
 	}
 
 	public Trajectory ExtractTrajectory(BVHFrame frame) {
@@ -315,24 +319,8 @@ public class BVHAnimation : ScriptableObject {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
 		}
+
 		return trajectory;
-	}
-
-	public Vector3 GetRootPosition(BVHFrame frame) {
-		return Utility.ProjectGround(frame.Positions[0], LayerMask.GetMask("Ground"));
-	}
-
-	public Vector3 GetRootDirection(BVHFrame frame) {
-		
-		//DIRTY HACK FOR STUPID DOG...
-		int hipIndex = Character.FindBone("Hips").GetIndex();
-		int neckIndex = Character.FindBone("Neck").GetIndex();
-		Vector3 forward = frame.Positions[neckIndex] - frame.Positions[hipIndex];
-		forward.y = 0f;
-		forward = forward.normalized;
-		return forward;
-		
-		//return frame.Rotations[0] * Vector3.forward;
 	}
 
 	/*
@@ -351,16 +339,10 @@ public class BVHAnimation : ScriptableObject {
 	}
 	*/
 
-	private void SetMirror(bool mirror) {
-		if(Mirror != mirror) {
-			Mirror = mirror;
-			ReloadFrame();
-		}
-	}
-
 	private void SetOrientation(Vector3 orientation) {
 		if(Orientation != orientation) {
 			Orientation = orientation;
+			ComputeTrajectory();
 		}
 	}
 
@@ -377,15 +359,45 @@ public class BVHAnimation : ScriptableObject {
 
 		Character.Inspector();
 		
+		if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
+			ExportSkeleton(Character, Character.GetRoot(), null);
+		}
+
 		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
 		ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
-		SetMirror(EditorGUILayout.Toggle("Mirror", Mirror));
 		//SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
 		//SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));
 		if(Utility.GUIButton("Compute Trajectory", Utility.DarkGreen, Utility.White)) {
 			ComputeTrajectory();
 		}
+
+		for(int i=0; i<TotalFrames; i++) {
+			if(StyleFunction.Styles[2].Flags[i] && StyleFunction.Styles[1].Flags[i]) {
+				EditorGUILayout.LabelField("Active at " + i);
+				break;
+			}
+		}
+
+		/*
+		if(Utility.GUIButton("Remove Run", Utility.DarkGreen, Utility.White)) {
+			System.Collections.Generic.List<BVHStyle> styles = new System.Collections.Generic.List<BVHStyle>(StyleFunction.Styles);
+			styles.Remove(styles.Find(x => x.Name == "Run"));
+			StyleFunction.Styles = styles.ToArray();
+		}
+		
+		bool fix = false;
+		for(int i=0; i<TotalFrames; i++) {
+			bool flag = false;
+			for(int j=0; j<StyleFunction.Styles.Length; j++) {
+				flag = flag || StyleFunction.Styles[j].Flags[i];
+			}
+			if(!flag) {
+				EditorGUILayout.LabelField("Undefined style at frame " + (i+1));
+				break;
+			}
+		}
+		*/
 
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
@@ -395,6 +407,13 @@ public class BVHAnimation : ScriptableObject {
 		ShowPreview = EditorGUILayout.Toggle(ShowPreview, GUILayout.Width(20f), GUILayout.Height(20f));
 		EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 		Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
+		SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
+		EditorGUILayout.LabelField("End", GUILayout.Width(67f));
+		SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
 		EditorGUILayout.EndHorizontal();
 
 		Utility.SetGUIColor(Utility.DarkGrey);
@@ -447,45 +466,36 @@ public class BVHAnimation : ScriptableObject {
 		StyleFunction.Inspector();
 
 		//Contacts.Inspector();
+		
+	}
 
-		Utility.SetGUIColor(Utility.LightGrey);
-		using(new EditorGUILayout.VerticalScope ("Box")) {
-			Utility.ResetGUIColor();
-
-			Utility.SetGUIColor(Utility.Orange);
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				Utility.ResetGUIColor();
-				EditorGUILayout.LabelField("Export");
-			}
-
-			if(Utility.GUIButton("Skeleton", Utility.DarkGrey, Utility.White)) {
-				ExportSkeleton(Character.GetRoot(), null);
-			}
-
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
-			SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
-			EditorGUILayout.LabelField("End", GUILayout.Width(67f));
-			SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
-			EditorGUILayout.EndHorizontal();
-			
+	private void ExportSkeleton(Character character, Character.Bone bone, Transform parent) {
+		Transform instance = new GameObject(bone.GetName()).transform;
+		instance.SetParent(parent);
+		instance.position = bone.GetPosition();
+		instance.rotation = bone.GetRotation();
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			ExportSkeleton(character, bone.GetChild(character, i), instance);
 		}
 	}
 
 	public void Draw() {
 		if(ShowPreview) {
 			float step = 1f;
-			BVHAnimation.BVHFrame frame = CurrentFrame;
 			UnityGL.Start();
 			for(int i=1; i<TotalFrames; i++) {
 				UnityGL.DrawLine(Frames[i-1].Positions[0], Frames[i].Positions[0], Utility.Magenta);
 			}
 			UnityGL.Finish();
 			for(float i=0f; i<=TotalTime; i+=step) {
-				LoadFrame(i);
+				Vector3[] pos = ExtractPositions(GetFrame(i));
+				Quaternion[] rot = ExtractRotations(GetFrame(i));
+				for(int j=0; j<Character.Bones.Length; j++) {
+					Character.Bones[j].SetPosition(pos[j]);
+					Character.Bones[j].SetRotation(rot[j]);
+				}
 				Character.DrawSimple();
 			}
-			LoadFrame(frame);
 		}
 
 		Contacts.Draw();
@@ -494,16 +504,24 @@ public class BVHAnimation : ScriptableObject {
 			Trajectory.Draw();
 		} else {
 			ExtractTrajectory(CurrentFrame).Draw();
+			//Trajectory.Draw(GetFrame(Mathf.Max(0f, CurrentFrame.Timestamp-1f)).Index-1, GetFrame(Mathf.Min(TotalTime, CurrentFrame.Timestamp+1f)).Index-1, 10);
 		}
 		
+		Vector3[] positions = ExtractPositions(CurrentFrame);
+		Quaternion[] rotations = ExtractRotations(CurrentFrame);
+		Vector3[] velocities = ExtractVelocities(CurrentFrame, 0.1f);
+		for(int i=0; i<Character.Bones.Length; i++) {
+			Character.Bones[i].SetPosition(positions[i]);
+			Character.Bones[i].SetRotation(rotations[i]);
+		}
 		Character.Draw();
 		
 		if(ShowVelocities) {
 			UnityGL.Start();
-			for(int i=0; i<CurrentFrame.Velocities.Length; i++) {
+			for(int i=0; i<Character.Bones.Length; i++) {
 				UnityGL.DrawArrow(
-					CurrentFrame.Positions[i],
-					CurrentFrame.Positions[i] + CurrentFrame.Velocities[i],
+					positions[i],
+					positions[i] + velocities[i]/FrameTime,
 					0.75f,
 					0.0075f,
 					0.05f,
@@ -859,7 +877,6 @@ public class BVHAnimation : ScriptableObject {
 					case STYLE.Quadruped:
 					AddStyle("Idle");
 					AddStyle("Walk");
-					AddStyle("Run");
 					AddStyle("Sprint");
 					AddStyle("Jump");
 					AddStyle("Sit");
@@ -1314,10 +1331,6 @@ public class BVHAnimation : ScriptableObject {
 		public Vector3 GetPosition(BVHFrame frame) {
 			return frame.Positions[Index];
 		}
-
-		public Quaternion GetRotation(BVHFrame frame) {
-			return frame.Rotations[Index];
-		}
 	}
 
 	[System.Serializable]
@@ -1386,27 +1399,6 @@ public class BVHAnimation : ScriptableObject {
 					Velocities[i] = Positions[i] - Animation.GetFrame(Index-1).Positions[i];
 				}
 			}
-		}
-
-		public Vector3 TranslationalVelocityVector(int index) {
-			if(Index == 1) {
-				return Vector3.zero;
-			}
-			return Positions[index] - Animation.GetFrame(Index-1).Positions[index];
-		}
-
-		public float TranslationalVelocityValue(int index) {
-			if(Index == 1) {
-				return 0f;
-			}
-			return (Positions[index] - Animation.GetFrame(Index-1).Positions[index]).magnitude;
-		}
-
-		public float RotationalVelocityValue(int index) {
-			if(Index == 1) {
-				return 0f;
-			}
-			return Quaternion.Angle(Rotations[index], Animation.GetFrame(Index-1).Rotations[index]);
 		}
 
 		public Vector3 SmoothTranslationalVelocityVector(int index, float smoothing) {

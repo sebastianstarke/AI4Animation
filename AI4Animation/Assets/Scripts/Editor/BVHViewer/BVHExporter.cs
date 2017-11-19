@@ -35,6 +35,10 @@ public class BVHExporter : EditorWindow {
 					EditorGUILayout.LabelField("Exporter");
 				}
 
+				if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
+					ExportSkeleton(Animations[0].Character, Animations[0].Character.GetRoot(), null);
+				}
+
 				if(Utility.GUIButton("Export Labels", Utility.DarkGrey, Utility.White)) {
 					ExportLabels();
 				}
@@ -46,8 +50,10 @@ public class BVHExporter : EditorWindow {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(45f));
-					SetDirectory(EditorGUILayout.TextField(Directory));
+					LoadDirectory(EditorGUILayout.TextField(Directory));
 					EditorGUILayout.EndHorizontal();
+
+					//DefineMirroring();
 					for(int i=0; i<Animations.Length; i++) {
 						if(Use[i]) {
 							Utility.SetGUIColor(Utility.DarkGreen);
@@ -60,9 +66,11 @@ public class BVHExporter : EditorWindow {
 							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
 							Use[i] = EditorGUILayout.Toggle(Use[i], GUILayout.Width(20f));
 							Animations[i] = (BVHAnimation)EditorGUILayout.ObjectField(Animations[i], typeof(BVHAnimation), true);
+							//EditorGUILayout.LabelField("Styles", Animations[i].StyleFunction.Styles.Length.ToString());
 							EditorGUILayout.EndHorizontal();
 						}
 					}
+					
 				}
 
 				EditorGUILayout.EndScrollView();
@@ -70,7 +78,7 @@ public class BVHExporter : EditorWindow {
 		}
 	}
 
-	private void SetDirectory(string dir) {
+	private void LoadDirectory(string dir) {
 		if(Directory != dir) {
 			Directory = dir;
 			Animations = new BVHAnimation[0];
@@ -87,7 +95,17 @@ public class BVHExporter : EditorWindow {
 			}
 		}
 	}
-	
+
+	private void ExportSkeleton(Character character, Character.Bone bone, Transform parent) {
+		Transform instance = new GameObject(bone.GetName()).transform;
+		instance.SetParent(parent);
+		instance.position = bone.GetPosition();
+		instance.rotation = bone.GetRotation();
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			ExportSkeleton(character, bone.GetChild(character, i), instance);
+		}
+	}
+
 	private void ExportLabels() {
 		if(Animations.Length == 0) {
 			Debug.Log("No animations specified.");
@@ -96,14 +114,14 @@ public class BVHExporter : EditorWindow {
 		
 		string name = "Labels";
 		string filename = string.Empty;
-		if(!File.Exists(Application.dataPath+"/Animation/Project/"+name+".txt")) {
-			filename = Application.dataPath+"/Animation/Project/"+name;
+		if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
+			filename = Application.dataPath+"/Project/"+name;
 		} else {
 			int i = 1;
-			while(File.Exists(Application.dataPath+"/Animation/Project/"+name+" ("+i+").txt")) {
+			while(File.Exists(Application.dataPath+"/Project/"+name+" ("+i+").txt")) {
 				i += 1;
 			}
-			filename = Application.dataPath+"/Animation/Project/"+name+" ("+i+")";
+			filename = Application.dataPath+"/Project/"+name+" ("+i+")";
 		}
 
 		StreamWriter labels = File.CreateText(filename+".txt");
@@ -153,14 +171,14 @@ public class BVHExporter : EditorWindow {
 		
 		string name = "Data";
 		string filename = string.Empty;
-		if(!File.Exists(Application.dataPath+"/Animation/Project/"+name+".txt")) {
-			filename = Application.dataPath+"/Animation/Project/"+name;
+		if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
+			filename = Application.dataPath+"/Project/"+name;
 		} else {
 			int i = 1;
-			while(File.Exists(Application.dataPath+"/Animation/Project/"+name+" ("+i+").txt")) {
+			while(File.Exists(Application.dataPath+"/Project/"+name+" ("+i+").txt")) {
 				i += 1;
 			}
-			filename = Application.dataPath+"/Animation/Project/"+name+" ("+i+")";
+			filename = Application.dataPath+"/Project/"+name+" ("+i+")";
 		}
 
 		StreamWriter data = File.CreateText(filename+".txt");
@@ -190,15 +208,25 @@ public class BVHExporter : EditorWindow {
 					//Frame time
 					line += frame.Timestamp + Separator;
 
+					//Extract data
+					Vector3[] positions = Animations[i].ExtractPositions(frame);
+					//Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirror);
+					Vector3[] velocities = Animations[i].ExtractVelocities(frame, 0.1f);
 					Trajectory trajectory = Animations[i].ExtractTrajectory(frame);
-					Transformation root = new Transformation(trajectory.Points[6].GetPosition(), trajectory.Points[6].GetRotation());
+					Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame);
+
+					Transformation root = trajectory.Points[6].GetTransformation();
+
 					//Bone data
 					for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
 						//Position
-						line += FormatVector3(frame.Positions[k].RelativePositionTo(root));
+						line += FormatVector3(positions[k].RelativePositionTo(root));
+
+						//Rotation
+						//TODO (Not yet required)
 
 						//Velocity
-						line += FormatVector3(frame.SmoothTranslationalVelocityVector(k, 0.1f).RelativeDirectionTo(root));
+						line += FormatVector3(velocities[k].RelativeDirectionTo(root));
 					}
 					
 					//Trajectory data
@@ -208,8 +236,8 @@ public class BVHExporter : EditorWindow {
 					}
 
 					for(int k=0; k<12; k++) {
-						line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
 						line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.Position.y);
+						line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
 					}
 
 					for(int k=0; k<12; k++) {
@@ -220,10 +248,10 @@ public class BVHExporter : EditorWindow {
 					line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
 
 					//ADDITIONAL
-					Vector3 position = Animations[i].GetRootPosition(frame);
-					Vector3 prevPosition = Animations[i].GetRootPosition(prevFrame);
-					Vector3 direction = Animations[i].GetRootDirection(frame);
-					Vector3 prevDirection = Animations[i].GetRootDirection(prevFrame);
+					Vector3 position = trajectory.Points[6].GetPosition();
+					Vector3 direction = trajectory.Points[6].GetDirection();
+					Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
+					Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
 
 					//Translational root velocity
 					Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
@@ -231,7 +259,7 @@ public class BVHExporter : EditorWindow {
 					line += FormatValue(translationOffset.z);
 
 					//Angular root velocity
-					float rotationOffset = Vector3.Angle(prevDirection, direction);
+					float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 					line += FormatValue(rotationOffset);
 
 					//Phase change

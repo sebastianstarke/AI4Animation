@@ -5,7 +5,7 @@ public class BioAnimation : MonoBehaviour {
 	public bool Inspect = false;
 
 	public float TargetBlending = 0.25f;
-	public float GaitTransition = 0.25f;
+	public float StyleTransition = 0.25f;
 	public float TrajectoryCorrection = 0.75f;
 
 	public Transform Root;
@@ -53,10 +53,15 @@ public class BioAnimation : MonoBehaviour {
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 		
-		//Update Gait
+		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
-			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), GaitTransition);
+			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
 		}
+		//Only for current project
+		if(Controller.Styles[2].Query() == 1f) {
+			Trajectory.Points[RootPointIndex].Styles[1] = 1f - Trajectory.Points[RootPointIndex].Styles[2];
+		}
+		//
 
 		//Predict Future Trajectory
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
@@ -67,9 +72,6 @@ public class BioAnimation : MonoBehaviour {
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
 			float vel_boost = 1f;
-			if(Input.GetKey(KeyCode.C)) {
-				vel_boost *= 4f;
-			}
 			
 			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
@@ -90,6 +92,17 @@ public class BioAnimation : MonoBehaviour {
 
 		for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
 			Trajectory.Points[i].Postprocess();
+		}
+		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+			Trajectory.Point prev = GetPreviousSample(i);
+			Trajectory.Point next = GetNextSample(i);
+			float factor = (float)(i % PointDensity) / PointDensity;
+
+			Trajectory.Points[i].Position = (1f-factor)*prev.Position + factor*next.Position;
+			Trajectory.Points[i].Direction = (1f-factor)*prev.Direction + factor*next.Direction;
+			Trajectory.Points[i].LeftSample = (1f-factor)*prev.LeftSample + factor*next.LeftSample;
+			Trajectory.Points[i].RightSample = (1f-factor)*prev.RightSample + factor*next.RightSample;
+			Trajectory.Points[i].Rise = (1f-factor)*prev.Rise + factor*next.Rise;
 		}
 
 		if(PFNN.Parameters != null) {
@@ -118,7 +131,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 			start += 2*PointSamples;
 
-			//Input Trajectory Gaits
+			//Input Trajectory Styles
 			for (int i=0; i<PointSamples; i++) {
 				for(int j=0; j<GetSample(i).Styles.Length; j++) {
 					PFNN.SetInput(start + (i*GetSample(i).Styles.Length) + j, GetSample(i).Styles[j]);
@@ -159,10 +172,12 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 translationalVelocity = new Vector3(PFNN.GetOutput(end+0), 0f, PFNN.GetOutput(end+1));
 			float angularVelocity = PFNN.GetOutput(end+2);
 			float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+			/*/
 			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[5], 0.25f));
 			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[6], 0.25f));
 			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[7], 0.25f));
 			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[8], 0.25f));
+			*/
 			Trajectory.Points[RootPointIndex].SetPosition((rest * translationalVelocity).RelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
@@ -215,13 +230,24 @@ public class BioAnimation : MonoBehaviour {
 			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				Trajectory.Point prev = GetPreviousSample(i);
+				Trajectory.Point next = GetNextSample(i);
+				float factor = (float)(i % PointDensity) / PointDensity;
+
+				Trajectory.Points[i].Position = (1f-factor)*prev.Position + factor*next.Position;
+				Trajectory.Points[i].Direction = (1f-factor)*prev.Direction + factor*next.Direction;
+				Trajectory.Points[i].LeftSample = (1f-factor)*prev.LeftSample + factor*next.LeftSample;
+				Trajectory.Points[i].RightSample = (1f-factor)*prev.RightSample + factor*next.RightSample;
+				Trajectory.Points[i].Rise = (1f-factor)*prev.Rise + factor*next.Rise;
+			}
 
 			//Compute Posture
 			Vector3[] positions = new Vector3[Joints.Length];
 			for(int i=0; i<Joints.Length; i++) {			
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*6 + 0), PFNN.GetOutput(start + i*6 + 1), PFNN.GetOutput(start + i*6 + 2));
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*6 + 3), PFNN.GetOutput(start + i*6 + 4), PFNN.GetOutput(start + i*6 + 5));
-				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity / 60f, position, 0.5f).RelativePositionFrom(currentRoot);
+				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
 				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 			}
 			start += Joints.Length * 6;
@@ -303,7 +329,7 @@ public class BioAnimation : MonoBehaviour {
 					if(bone.Draw) {
 						UnityGL.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + 60f*Velocities[i],
+							Joints[i].position + Velocities[i]/Time.deltaTime,
 							0.75f,
 							0.0075f,
 							0.05f,

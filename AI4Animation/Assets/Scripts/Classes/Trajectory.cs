@@ -147,4 +147,40 @@ public class Trajectory {
 		UnityGL.Finish();
 	}
 
+	/*
+	public void Draw(int start, int end, int step=1) {
+		UnityGL.Start();
+		//Connections
+		for(int i=start; i<=end-step; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Utility.Black);
+		}
+
+		//Projections
+		for(int i=start; i<=end; i+=step) {
+			Vector3 right = Points[i].GetRightSample();
+			Vector3 left = Points[i].GetLeftSample();
+			UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
+			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
+		}
+
+		//Directions
+		Color transparentDirection = new Color(Utility.Orange.r, Utility.Orange.g, Utility.Orange.b, 0.75f);
+		for(int i=start; i<=end; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
+		}
+
+		//Rises
+		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
+		for(int i=start; i<=end; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Rise * Vector3.up, 0.025f, 0f, transparentRise);
+		}
+
+		//Positions
+		for(int i=start; i<=end; i+=step) {
+			UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
+		}
+		UnityGL.Finish();
+	}
+	*/
+
 }

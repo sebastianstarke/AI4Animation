@@ -379,4 +379,157 @@ public static class Utility {
 		}
 	}
 
+	public static int ComputeMin(int[] values) {
+		if(values.Length == 0) {
+			return 0;
+		}
+		int min = int.MaxValue;
+		for(int i=0; i<values.Length; i++) {
+			min = Mathf.Min(min, values[i]);
+		}
+		return min;
+	}
+
+	public static float ComputeMin(float[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float min = float.MaxValue;
+		for(int i=0; i<values.Length; i++) {
+			min = Mathf.Min(min, values[i]);
+		}
+		return min;
+	}
+
+	public static double ComputeMin(double[] values) {
+		if(values.Length == 0) {
+			return 0.0;
+		}
+		double min = double.MaxValue;
+		for(int i=0; i<values.Length; i++) {
+			min = System.Math.Min(min, values[i]);
+		}
+		return min;
+	}
+
+	public static int ComputeMax(int[] values) {
+		if(values.Length == 0) {
+			return 0;
+		}
+		int max = int.MinValue;
+		for(int i=0; i<values.Length; i++) {
+			max = Mathf.Max(max, values[i]);
+		}
+		return max;
+	}
+
+	public static float ComputeMax(float[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float max = float.MinValue;
+		for(int i=0; i<values.Length; i++) {
+			max = Mathf.Max(max, values[i]);
+		}
+		return max;
+	}
+
+	public static double ComputeMax(double[] values) {
+		if(values.Length == 0) {
+			return 0.0;
+		}
+		double max = double.MinValue;
+		for(int i=0; i<values.Length; i++) {
+			max = System.Math.Max(max, values[i]);
+		}
+		return max;
+	}
+
+	public static float ComputeMean(int[] values) {
+		if(values.Length == 0) {
+			return 0;
+		}
+		float mean = 0f;
+		float args = 0f;
+		for(int i=0; i<values.Length; i++) {
+			mean += values[i];
+			args += 1f;
+		}
+		mean /= args;
+		return mean;
+	}
+
+	public static float ComputeMean(float[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float mean = 0f;
+		float args = 0f;
+		for(int i=0; i<values.Length; i++) {
+			mean += values[i];
+			args += 1f;
+		}
+		mean /= args;
+		return mean;
+	}
+
+	public static double ComputeMean(double[] values) {
+		if(values.Length == 0) {
+			return 0.0;
+		}
+		double mean = 0.0;
+		double args = 0.0;
+		for(int i=0; i<values.Length; i++) {
+			mean += values[i];
+			args += 1.0;
+		}
+		mean /= args;
+		return mean;
+	}
+
+	public static float ComputeSigma(int[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float variance = 0f;
+		float mean = ComputeMean(values);
+		float args = 0f;
+		for(int i=0; i<values.Length; i++) {
+			variance += Mathf.Pow(values[i] - mean, 2f);
+			args += 1f;
+		}
+		variance /= args;
+		return Mathf.Sqrt(variance);
+	}
+
+	public static float ComputeSigma(float[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float variance = 0f;
+		float mean = ComputeMean(values);
+		float args = 0f;
+		for(int i=0; i<values.Length; i++) {
+			variance += Mathf.Pow(values[i] - mean, 2f);
+			args += 1f;
+		}
+		variance /= args;
+		return Mathf.Sqrt(variance);
+	}
+
+	public static double ComputeSigma(double[] values) {
+		if(values.Length == 0) {
+			return 0.0;
+		}
+		double variance = 0.0;
+		double mean = ComputeMean(values);
+		double args = 1.0;
+		for(int i=0; i<values.Length; i++) {
+			variance += System.Math.Pow(values[i] - mean, 2.0);
+			args += 1.0;
+		}
+		variance /= args;
+		return System.Math.Sqrt(variance);
+	}
+
 }

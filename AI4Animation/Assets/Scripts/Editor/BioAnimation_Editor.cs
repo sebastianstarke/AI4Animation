@@ -42,7 +42,7 @@ public class BioAnimation_Editor : Editor {
 				if(Target.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
-						Target.GaitTransition = EditorGUILayout.Slider("Gait Transition", Target.GaitTransition, 0f, 1f);
+						Target.StyleTransition = EditorGUILayout.Slider("Style Transition", Target.StyleTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
 						EditorGUI.BeginDisabledGroup(true);
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
