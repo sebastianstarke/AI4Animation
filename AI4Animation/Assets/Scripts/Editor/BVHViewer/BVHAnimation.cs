@@ -830,13 +830,6 @@ public class BVHAnimation : ScriptableObject {
 			if(VelocitySmoothing != value) {
 				VelocitySmoothing = value;
 				ComputeValues();
-				if(Animation.ShowMirrored) {
-					Animation.PhaseFunction.VelocitySmoothing = VelocitySmoothing;
-					Animation.PhaseFunction.ComputeValues();
-				} else {
-					Animation.MirroredPhaseFunction.VelocitySmoothing = VelocitySmoothing;
-					Animation.MirroredPhaseFunction.ComputeValues();
-				}
 			}
 		}
 
@@ -845,13 +838,6 @@ public class BVHAnimation : ScriptableObject {
 			if(VelocityThreshold != value) {
 				VelocityThreshold = value;
 				ComputeValues();
-				if(Animation.ShowMirrored) {
-					Animation.PhaseFunction.VelocityThreshold = VelocityThreshold;
-					Animation.PhaseFunction.ComputeValues();
-				} else {
-					Animation.MirroredPhaseFunction.VelocityThreshold = VelocityThreshold;
-					Animation.MirroredPhaseFunction.ComputeValues();
-				}
 			}
 		}
 
@@ -860,13 +846,6 @@ public class BVHAnimation : ScriptableObject {
 			if(HeightThreshold != value) {
 				HeightThreshold = value;
 				ComputeValues();
-				if(Animation.ShowMirrored) {
-					Animation.PhaseFunction.HeightThreshold = HeightThreshold;
-					Animation.PhaseFunction.ComputeValues();
-				} else {
-					Animation.MirroredPhaseFunction.HeightThreshold = HeightThreshold;
-					Animation.MirroredPhaseFunction.ComputeValues();
-				}
 			}
 		}
 
@@ -1814,28 +1793,62 @@ public class BVHAnimation : ScriptableObject {
 			}
 
 			//Label phase
+			for(int i=0; i<Function.Keys.Length; i++) {
+				Function.Keys[i] = false;
+				Function.Phase[i] = 0f;
+			}
+
+			//Fill non-idle intervals with frequency minima
 			for(int k=0; k<Intervals.Length; k++) {
-				for(int i=Intervals[k].Start; i<=Intervals[k].End; i++) {
-					float leftGradient = ComputeGradient(i, -1); //Function.Cycle[Mathf.Max(0, i-1)] - Function.Cycle[i];
-					float rightGradient = ComputeGradient(i, 1); //Function.Cycle[Mathf.Min(Function.Cycle.Length-1, i+1)] - Function.Cycle[i];
-					if(
-						leftGradient >= 0f && rightGradient >= 0f &&
-						leftGradient <= GradientCutoff && rightGradient <= GradientCutoff &&
-						!(leftGradient == 0f && rightGradient == 0f)
-						//||
-						//(leftGradient > UpperGradient && rightGradient > UpperGradient)
-						) {
-						Function.SetKey(Animation.Frames[i], true);
-					} else {
-						Function.SetKey(Animation.Frames[i], false);
+				if(avgVelocities[k] > 0f) {
+					for(int i=Intervals[k].Start; i<=Intervals[k].End; i++) {
+						float leftGradient = ComputeGradient(i, -1); //Function.Cycle[Mathf.Max(0, i-1)] - Function.Cycle[i];
+						float rightGradient = ComputeGradient(i, 1); //Function.Cycle[Mathf.Min(Function.Cycle.Length-1, i+1)] - Function.Cycle[i];
+						if(
+							leftGradient >= 0f && rightGradient >= 0f &&
+							leftGradient <= GradientCutoff && rightGradient <= GradientCutoff &&
+							!(leftGradient == 0f && rightGradient == 0f)
+							//||
+							//(leftGradient > UpperGradient && rightGradient > UpperGradient)
+							) {
+							Function.Keys[i] = true;
+						}
 					}
+				}
+			}
+
+			//Fill idle intervals with 1s intervals
+			for(int k=0; k<Intervals.Length; k++) {
+				if(avgVelocities[k] == 0f) {
+					float start = Animation.Frames[Intervals[k].Start].Timestamp;
+					float end = Animation.Frames[Intervals[k].End].Timestamp;
+					BVHFrame prev = Function.GetPreviousKey(Animation.Frames[Intervals[k].Start]);
+					BVHFrame next = Function.GetNextKey(Animation.Frames[Intervals[k].End]);
+					if(prev != null) {
+						start = prev.Timestamp;
+					}
+					if(next != null) {
+						end = next.Timestamp;
+					}
+					float frequency = Mathf.Round(end-start) / (end-start);
+					float timestamp = start + frequency;
+					while(timestamp <= end-frequency && frequency > 0f) {
+						Function.Keys[Animation.GetFrame(Mathf.Round(timestamp)).Index-1] = true;
+						timestamp += frequency;
+					}
+				}
+			}
+
+			for(int i=0; i<Function.Keys.Length; i++) {
+				if(Function.Keys[i]) {
+					Function.SetPhase(Animation.Frames[i], 1f);
 				}
 			}
 
 			BVHFrame first = Animation.Frames[0];
 			BVHFrame next1 = Function.GetNextKey(first);
 			BVHFrame next2 = Function.GetNextKey(next1);
-			Function.SetKey(first, true);
+			Function.Keys[0] = true;
 			float xFirst = next1.Timestamp - first.Timestamp;
 			float mFirst = next2.Timestamp - next1.Timestamp;
 			Function.SetPhase(first, Mathf.Clamp(1f - xFirst / mFirst, 0f, 1f));
@@ -1843,7 +1856,7 @@ public class BVHAnimation : ScriptableObject {
 			BVHFrame last = Animation.Frames[Animation.TotalFrames-1];
 			BVHFrame previous1 = Function.GetPreviousKey(last);
 			BVHFrame previous2 = Function.GetPreviousKey(previous1);
-			Function.SetKey(last, true);
+			Function.Keys[Animation.TotalFrames-1] = true;
 			float xLast = last.Timestamp - previous1.Timestamp;
 			float mLast = previous1.Timestamp - previous2.Timestamp;
 			Function.SetPhase(last, Mathf.Clamp(xLast / mLast, 0f, 1f));
