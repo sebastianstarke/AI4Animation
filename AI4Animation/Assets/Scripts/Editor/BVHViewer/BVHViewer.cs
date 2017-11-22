@@ -10,9 +10,8 @@ public class BVHViewer : EditorWindow {
 	
 	public bool AutoFocus = true;
 	public float FocusDistance = 2.5f;
-	public float FocusAngle = 270f;
+	public float FocusAngle = 180f;
 
-	public float UnitScale = 10f;
 	public string Path = string.Empty;
 	public BVHAnimation Animation = null;
 
@@ -75,9 +74,8 @@ public class BVHViewer : EditorWindow {
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					UnitScale = EditorGUILayout.FloatField("Unit Scale", UnitScale);
 					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Path", GUILayout.Width(30));
+					EditorGUILayout.LabelField("Path", GUILayout.Width(50));
 					Path = EditorGUILayout.TextField(Path);
 					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
 					if(GUILayout.Button("O", GUILayout.Width(20))) {
@@ -117,11 +115,11 @@ public class BVHViewer : EditorWindow {
 		if(Animation != null) {
 			Animation.Draw();
 			if(AutoFocus) {
-				Vector3 position = Animation.CurrentFrame.Positions[0];
-				Quaternion rotation = Animation.CurrentFrame.Rotations[0];
+				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.Positions[0].MirrorX() : Animation.CurrentFrame.Positions[0];
+				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.Rotations[0].MirrorX() : Animation.CurrentFrame.Rotations[0];
 				rotation.x = 0f;
 				rotation.z = 0f;
-				rotation = Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * rotation;
+				rotation = Quaternion.Euler(0f, FocusAngle, 0f) * rotation;
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}
@@ -131,8 +129,8 @@ public class BVHViewer : EditorWindow {
 		if(AutoFocus != value) {
 			AutoFocus = value;
 			if(!AutoFocus) {
-				Vector3 position = Animation.CurrentFrame.Positions[0];
-				Quaternion rotation = Quaternion.Euler(0f, FocusAngle, 0f) * Quaternion.Euler(Animation.Orientation) * Quaternion.identity;
+				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.Positions[0].MirrorX() : Animation.CurrentFrame.Positions[0];
+				Quaternion rotation = Quaternion.Euler(0f, FocusAngle, 0f);
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}

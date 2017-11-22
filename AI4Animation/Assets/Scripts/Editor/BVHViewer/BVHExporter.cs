@@ -35,10 +35,6 @@ public class BVHExporter : EditorWindow {
 					EditorGUILayout.LabelField("Exporter");
 				}
 
-				if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
-					ExportSkeleton(Animations[0].Character, Animations[0].Character.GetRoot(), null);
-				}
-
 				if(Utility.GUIButton("Export Labels", Utility.DarkGrey, Utility.White)) {
 					ExportLabels();
 				}
@@ -96,16 +92,6 @@ public class BVHExporter : EditorWindow {
 		}
 	}
 
-	private void ExportSkeleton(Character character, Character.Bone bone, Transform parent) {
-		Transform instance = new GameObject(bone.GetName()).transform;
-		instance.SetParent(parent);
-		instance.position = bone.GetPosition();
-		instance.rotation = bone.GetRotation();
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(character, bone.GetChild(character, i), instance);
-		}
-	}
-
 	private void ExportLabels() {
 		if(Animations.Length == 0) {
 			Debug.Log("No animations specified.");
@@ -159,6 +145,7 @@ public class BVHExporter : EditorWindow {
 		labels.WriteLine(index + " " + "RootTranslationalVelocityZ"); index += 1;
 		labels.WriteLine(index + " " + "RootAngularVelocity"); index += 1;
 		labels.WriteLine(index + " " + "PhaseChange"); index += 1;
+		
 		labels.Close();
 	}
 
@@ -183,98 +170,105 @@ public class BVHExporter : EditorWindow {
 
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
+		WriteAnimations(ref data, ref sequence, false);
+		WriteAnimations(ref data, ref sequence, true);
+		data.Close();
+	}
+
+	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
-				sequence += 1;
-				//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
-				//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
-				//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
-				int startIndex = Animations[i].SequenceStart;
-				int endIndex = Animations[i].SequenceEnd;
-				for(int j=startIndex; j<=endIndex; j++) {
-					//Get frame
-					BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
-					//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
-					BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
+				for(int s=0; s<Animations[i].Sequences.Length; s++) {
+					sequence += 1;
+					//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
+					//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
+					//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
+					int startIndex = Animations[i].Sequences[s].Start;
+					int endIndex = Animations[i].Sequences[s].End;
+					for(int j=startIndex; j<=endIndex; j++) {
+						//Get frame
+						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
+						//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
+						BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
 
-					//j = frame.Timestamp;
+						//j = frame.Timestamp;
 
-					//Sequence number
-					string line = sequence + Separator;
+						//Sequence number
+						string line = sequence + Separator;
 
-					//Frame index
-					line += frame.Index + Separator;
+						//Frame index
+						line += frame.Index + Separator;
 
-					//Frame time
-					line += frame.Timestamp + Separator;
+						//Frame time
+						line += frame.Timestamp + Separator;
 
-					//Extract data
-					Vector3[] positions = Animations[i].ExtractPositions(frame);
-					//Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirror);
-					Vector3[] velocities = Animations[i].ExtractVelocities(frame, 0.1f);
-					Trajectory trajectory = Animations[i].ExtractTrajectory(frame);
-					Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame);
+						//Extract data
+						Vector3[] positions = Animations[i].ExtractPositions(frame, mirrored);
+						//Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirror);
+						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
+						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 
-					Transformation root = trajectory.Points[6].GetTransformation();
+						Transformation root = trajectory.Points[6].GetTransformation();
 
-					//Bone data
-					for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
-						//Position
-						line += FormatVector3(positions[k].RelativePositionTo(root));
+						//Bone data
+						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
+							//Position
+							line += FormatVector3(positions[k].RelativePositionTo(root));
 
-						//Rotation
-						//TODO (Not yet required)
+							//Rotation
+							//TODO (Not yet required)
 
-						//Velocity
-						line += FormatVector3(velocities[k].RelativeDirectionTo(root));
+							//Velocity
+							line += FormatVector3(velocities[k].RelativeDirectionTo(root));
+						}
+						
+						//Trajectory data
+						for(int k=0; k<12; k++) {
+							line += FormatVector3(trajectory.Points[k].GetPosition().RelativePositionTo(root));
+							line += FormatVector3(trajectory.Points[k].GetDirection().RelativeDirectionTo(root));
+						}
+
+						for(int k=0; k<12; k++) {
+							line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.Position.y);
+							line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
+						}
+
+						for(int k=0; k<12; k++) {
+							line += FormatArray(trajectory.Points[k].Styles);
+						}
+
+						//Phase
+						line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
+
+						//ADDITIONAL
+						Vector3 position = trajectory.Points[6].GetPosition();
+						Vector3 direction = trajectory.Points[6].GetDirection();
+						Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
+						Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
+
+						//Translational root velocity
+						Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
+						line += FormatValue(translationOffset.x);
+						line += FormatValue(translationOffset.z);
+
+						//Angular root velocity
+						float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
+						line += FormatValue(rotationOffset);
+
+						//Phase change
+						line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
+
+						//Postprocess
+						line = line.Remove(line.Length-1);
+						line = line.Replace(",",".");
+
+						//Write
+						data.WriteLine(line);
 					}
-					
-					//Trajectory data
-					for(int k=0; k<12; k++) {
-						line += FormatVector3(trajectory.Points[k].GetPosition().RelativePositionTo(root));
-						line += FormatVector3(trajectory.Points[k].GetDirection().RelativeDirectionTo(root));
-					}
-
-					for(int k=0; k<12; k++) {
-						line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.Position.y);
-						line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
-					}
-
-					for(int k=0; k<12; k++) {
-						line += FormatArray(trajectory.Points[k].Styles);
-					}
-
-					//Phase
-					line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
-
-					//ADDITIONAL
-					Vector3 position = trajectory.Points[6].GetPosition();
-					Vector3 direction = trajectory.Points[6].GetDirection();
-					Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
-					Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
-
-					//Translational root velocity
-					Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
-					line += FormatValue(translationOffset.x);
-					line += FormatValue(translationOffset.z);
-
-					//Angular root velocity
-					float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
-					line += FormatValue(rotationOffset);
-
-					//Phase change
-					line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
-
-					//Postprocess
-					line = line.Remove(line.Length-1);
-					line = line.Replace(",",".");
-
-					//Write
-					data.WriteLine(line);
 				}
 			}
 		}
-		data.Close();
 	}
 
 	private float GetPhaseChange(float prev, float next) {
@@ -293,6 +287,15 @@ public class BVHExporter : EditorWindow {
 		string format = string.Empty;
 		for(int i=0; i<array.Length; i++) {
 			format += array[i].ToString(Accuracy) + Separator;
+		}
+		return format;
+	}
+
+	private string FormatArray(bool[] array) {
+		string format = string.Empty;
+		for(int i=0; i<array.Length; i++) {
+			float value = array[i] ? 1f : 0f;
+			format += value.ToString(Accuracy) + Separator;
 		}
 		return format;
 	}

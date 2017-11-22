@@ -5,32 +5,36 @@ using System.IO;
 
 public class BVHAnimation : ScriptableObject {
 
+	public BVHData Data;
 	public Character Character;
-	public Trajectory Trajectory;
-	//public Vector3 Offset = Vector3.zero;
-	//public Vector3 Rotation = Vector3.zero;
+	public int[] Symmetry;
+	
+	public float UnitScale = 100f;
+	public Vector3 PositionOffset = Vector3.zero;
+	public Vector3 RotationOffset = Vector3.zero;
 	public Vector3 Orientation = Vector3.zero;
+	
+	public BVHFrame[] Frames = new BVHFrame[0];
+	public Trajectory Trajectory;
+	public BVHPhaseFunction PhaseFunction;
+	public BVHPhaseFunction MirroredPhaseFunction;
+	public BVHStyleFunction StyleFunction;
 
+	public BVHSequence[] Sequences = new BVHSequence[0];
+
+	public bool ShowMirrored = false;
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
-	
-	public BVHFrame[] Frames = new BVHFrame[0];
+
 	public BVHFrame CurrentFrame = null;
 	public int TotalFrames = 0;
 	public float TotalTime = 0f;
 	public float FrameTime = 0f;
 	public float PlayTime = 0f;
 	public bool Playing = false;
-
-	public BVHPhaseFunction PhaseFunction;
-	public BVHStyleFunction StyleFunction;
-	public BVHContacts Contacts;
-
 	public float Timescale = 1f;
 	public float TimeWindow = 0f;
-	public int SequenceStart = 0;
-	public int SequenceEnd = 0;
 	public System.DateTime Timestamp;
 
 	public void EditorUpdate() {
@@ -42,14 +46,17 @@ public class BVHAnimation : ScriptableObject {
 			LoadFrame(PlayTime);
 		}
 		Timestamp = Utility.GetTimestamp();
+
+		PhaseFunction.EditorUpdate();
+		MirroredPhaseFunction.EditorUpdate();
 	}
 
 	public BVHAnimation Create(BVHViewer viewer) {
-		Load(viewer.Path, viewer.UnitScale);
+		Load(viewer.Path);
 		PhaseFunction = new BVHPhaseFunction(this);
+		MirroredPhaseFunction = new BVHPhaseFunction(this);
 		StyleFunction = new BVHStyleFunction(this);
-		Contacts = new BVHContacts(this);
-		//string folder = viewer.Path.Substring(0, viewer.Path.LastIndexOf("/")+1);
+		Sequences = new BVHSequence[0];
 		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
 		if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+name+".asset", typeof(BVHAnimation)) == null) {
 			AssetDatabase.CreateAsset(this , "Assets/Project/"+name+".asset");
@@ -63,16 +70,18 @@ public class BVHAnimation : ScriptableObject {
 		return this;
 	}
 
-	private void Load(string path, float unitScale) {
+	private void Load(string path) {
 		string[] lines = File.ReadAllLines(path);
 		char[] whitespace = new char[] {' '};
 		int index = 0;
 
 		//Build Hierarchy
+		Data = new BVHData();
 		Character = new Character();
 		Character.Bone bone = null;
-		List<int[]> channels = new List<int[]>();
-		List<Transformation> zero = new List<Transformation>();
+		string name = string.Empty;
+		Vector3 offset = Vector3.zero;
+		int[] channels = null;
 		for(index = 0; index<lines.Length; index++) {
 			if(lines[index] == "MOTION") {
 				break;
@@ -80,40 +89,39 @@ public class BVHAnimation : ScriptableObject {
 			string[] entries = lines[index].Split(whitespace);
 			for(int entry=0; entry<entries.Length; entry++) {
 				if(entries[entry].Contains("ROOT")) {
-					bone = Character.AddBone(entries[entry+1], null);
+					name = entries[entry+1];
+					bone = Character.AddBone(name, null);
 					break;
 				} else if(entries[entry].Contains("JOINT")) {
-					bone = Character.AddBone(entries[entry+1], bone);
+					name = entries[entry+1];
+					bone = Character.AddBone(name, bone);
 					break;
 				} else if(entries[entry].Contains("End")) {
 					index += 3;
 					break;
 				} else if(entries[entry].Contains("OFFSET")) {
-					zero.Add(new Transformation(
-						new Vector3(Utility.ReadFloat(entries[entry+1]), Utility.ReadFloat(entries[entry+2]), Utility.ReadFloat(entries[entry+3])), 
-						Quaternion.identity
-						));
+					offset.x = Utility.ReadFloat(entries[entry+1]);
+					offset.y = Utility.ReadFloat(entries[entry+2]);
+					offset.z = Utility.ReadFloat(entries[entry+3]);
 					break;
 				} else if(entries[entry].Contains("CHANNELS")) {
-					int dimensions = Utility.ReadInt(entries[entry+1]);
-					int[] channel = new int[dimensions+1];
-					channel[0] = dimensions;
-					for(int i=0; i<dimensions; i++) {
+					channels = new int[Utility.ReadInt(entries[entry+1])];
+					for(int i=0; i<channels.Length; i++) {
 						if(entries[entry+2+i] == "Xposition") {
-							channel[1+i] = 1;
+							channels[i] = 1;
 						} else if(entries[entry+2+i] == "Yposition") {
-							channel[1+i] = 2;
+							channels[i] = 2;
 						} else if(entries[entry+2+i] == "Zposition") {
-							channel[1+i] = 3;
+							channels[i] = 3;
 						} else if(entries[entry+2+i] == "Xrotation") {
-							channel[1+i] = 4;
+							channels[i] = 4;
 						} else if(entries[entry+2+i] == "Yrotation") {
-							channel[1+i] = 5;
+							channels[i] = 5;
 						} else if(entries[entry+2+i] == "Zrotation") {
-							channel[1+i] = 6;
+							channels[i] = 6;
 						}
 					}
-					channels.Add(channel);
+					Data.AddBone(name, offset, channels);
 					break;
 				} else if(entries[entry].Contains("}")) {
 					if(bone != Character.GetRoot()) {
@@ -137,24 +145,29 @@ public class BVHAnimation : ScriptableObject {
 
 		//Read motions
 		index += 1;
-		float[][] motions = new float[TotalFrames][];
 		for(int i=index; i<lines.Length; i++) {
-			motions[i-index] = Utility.ReadArray(lines[i]);
+			Data.AddMotion(Utility.ReadArray(lines[i]));
 		}
 
-		//Build Frames
+		//Resize Frames
 		System.Array.Resize(ref Frames, TotalFrames);
 		for(int i=0; i<TotalFrames; i++) {
-			Frames[i] = new BVHFrame(this, zero.ToArray(), channels.ToArray(), motions[i], i+1, i*FrameTime, unitScale);
+			Frames[i] = new BVHFrame(this, i+1, i*FrameTime);
 		}
 
-		//Create Trajectory
-		ComputeTrajectory();
+		//Create Symmetry Table
+		Symmetry = new int[Character.Bones.Length];
+		for(int i=0; i<Symmetry.Length; i++) {
+			Symmetry[i] = i;
+		}
 
 		//Initialise Variables
 		TimeWindow = TotalTime;
-		SequenceStart = 1;
-		SequenceEnd = 1;
+
+		//Generate
+		ComputeSymmetry();
+		ComputeFrames();
+		ComputeTrajectory();
 
 		//Load First Frame
 		LoadFrame(1);
@@ -235,54 +248,79 @@ public class BVHAnimation : ScriptableObject {
 		return frames.ToArray();
 	}
 
+	public void ComputeSymmetry() {
+		for(int i=0; i<Character.Bones.Length; i++) {
+			string name = Character.Bones[i].GetName();
+			if(name.Contains("Left")) {
+				Character.Bone bone = Character.FindBone("Right"+name.Substring(4));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.GetIndex();
+				}
+			} else if(name.Contains("Right")) {
+				Character.Bone bone = Character.FindBone("Left"+name.Substring(5));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.GetIndex();
+				}
+			} else {
+				Symmetry[i] = i;
+			}
+		}
+	}
+
+	public void ComputeFrames() {
+		for(int i=0; i<Frames.Length; i++) {
+			Frames[i].Generate();
+		}
+	}
+
 	public void ComputeTrajectory() {
 		Trajectory = new Trajectory(TotalFrames, 0);
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<TotalFrames; i++) {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].Positions[0], mask);
+			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
+			
 			int hipIndex = Character.FindBone("Hips").GetIndex();
 			int neckIndex = Character.FindBone("Neck").GetIndex();
 			Vector3 rootDir = Frames[i].Positions[neckIndex] - Frames[i].Positions[hipIndex];
 			rootDir.y = 0f;
 			rootDir = rootDir.normalized;
-			//frame.Rotations[0] * Vector3.forward;
+			
 			Trajectory.Points[i].Position = rootPos;
 			Trajectory.Points[i].Direction = rootDir;
 			Trajectory.Points[i].Postprocess();
 		}
 	}
 
-	public Vector3[] ExtractPositions(BVHFrame frame) {
-		Vector3[] positions = new Vector3[frame.Positions.Length];
-		for(int i=0; i<frame.Positions.Length; i++) {
-			positions[i] = frame.Positions[i];
+	public Vector3[] ExtractPositions(BVHFrame frame, bool mirrored) {
+		Vector3[] positions = new Vector3[Character.Bones.Length];
+		for(int i=0; i<positions.Length; i++) {
+			positions[i] = mirrored ? frame.Positions[Symmetry[i]].MirrorX() : frame.Positions[i];
 		}
 		return positions;
 	}
 
-	public Quaternion[] ExtractRotations(BVHFrame frame) {
-		Quaternion[] rotations = new Quaternion[frame.Rotations.Length];
-		for(int i=0; i<frame.Rotations.Length; i++) {
-			rotations[i] = frame.Rotations[i];
+	public Quaternion[] ExtractRotations(BVHFrame frame, bool mirrored) {
+		Quaternion[] rotations = new Quaternion[Character.Bones.Length];
+		for(int i=0; i<rotations.Length; i++) {
+			rotations[i] = mirrored ? frame.Rotations[Symmetry[i]].MirrorX() : frame.Rotations[i];
 		}
 		return rotations;
 	}
 
-	public Vector3[] ExtractVelocities(BVHFrame frame, float smoothing=0f) {
-		Vector3[] velocities = new Vector3[frame.Velocities.Length];
-		if(smoothing == 0f) {
-			for(int i=0; i<frame.Velocities.Length; i++) {
-				velocities[i] = frame.Velocities[i];
-			}
-		} else {
-			for(int i=0; i<frame.Velocities.Length; i++) {
-				velocities[i] = frame.SmoothTranslationalVelocityVector(i, smoothing);
-			}
+	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing=0f) {
+		Vector3[] velocities = new Vector3[Character.Bones.Length];
+		for(int i=0; i<velocities.Length; i++) {
+			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).MirrorX() : frame.ComputeVelocity(i, smoothing);
 		}
 		return velocities;
 	}
 
-	public Trajectory ExtractTrajectory(BVHFrame frame) {
+	public Trajectory ExtractTrajectory(BVHFrame frame, bool mirrored) {
 		Trajectory trajectory = new Trajectory(12, StyleFunction.Styles.Length);
 		//Past
 		for(int i=0; i<6; i++) {
@@ -320,100 +358,86 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
+		if(mirrored) {
+			for(int i=0; i<12; i++) {
+				trajectory.Points[i].Position = trajectory.Points[i].Position.MirrorX();
+				trajectory.Points[i].Direction = trajectory.Points[i].Direction.MirrorX();
+				trajectory.Points[i].LeftSample = trajectory.Points[i].LeftSample.MirrorX();
+				trajectory.Points[i].RightSample = trajectory.Points[i].RightSample.MirrorX();
+			}
+		}
+
 		return trajectory;
 	}
 
-	/*
-	private void SetOffset(Vector3 offset) {
-		if(Offset != offset) {
-			Offset = offset;
-			ReloadFrame();
+	private void SetUnitScale(float unitScale) {
+		if(UnitScale != unitScale) {
+			UnitScale = unitScale;
+			ComputeFrames();
+			ComputeTrajectory();
 		}
 	}
 
-	private void SetRotation(Vector3 rotation) {
-		if(Rotation != rotation) {
-			Rotation = rotation;
-			ReloadFrame();
+	private void SetPositionOffset(Vector3 value) {
+		if(PositionOffset != value) {
+			PositionOffset = value;
+			ComputeFrames();
+			ComputeTrajectory();
 		}
 	}
-	*/
+
+	private void SetRotationOffset(Vector3 value) {
+		if(RotationOffset != value) {
+			RotationOffset = value;
+			ComputeFrames();
+			ComputeTrajectory();
+		}
+	}
 
 	private void SetOrientation(Vector3 orientation) {
 		if(Orientation != orientation) {
 			Orientation = orientation;
+			ComputeFrames();
 			ComputeTrajectory();
 		}
 	}
 
+	private void AddSequence() {
+		System.Array.Resize(ref Sequences, Sequences.Length+1);
+		Sequences[Sequences.Length-1] = new BVHSequence();
+	}
+
+	private void RemoveSequence() {
+		if(Sequences.Length > 0) {
+			System.Array.Resize(ref Sequences, Sequences.Length-1);
+		}
+	}
+
 	public void Inspector() {
-		/*
-		EditorGUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField("Name", GUILayout.Width(150f));
-		string newName = EditorGUILayout.TextField(name);
-		if(newName != name) {
-			AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(this), newName);
-		}
-		EditorGUILayout.EndHorizontal();
-		*/
-
 		Character.Inspector();
-		
-		if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
-			ExportSkeleton(Character, Character.GetRoot(), null);
-		}
 
-		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
-		ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", ShowTrajectory);
-		//SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
-		//SetRotation(EditorGUILayout.Vector3Field("Rotation", Rotation));
+		EditorGUILayout.BeginHorizontal();
+		EditorGUILayout.LabelField("Show Mirrored", GUILayout.Width(100f));
+		ShowMirrored = EditorGUILayout.Toggle(ShowMirrored, GUILayout.Width(40));
+		EditorGUILayout.LabelField("Show Velocities", GUILayout.Width(100f));
+		ShowVelocities = EditorGUILayout.Toggle(ShowVelocities, GUILayout.Width(40));
+		EditorGUILayout.LabelField("Show Trajectory", GUILayout.Width(100f));
+		ShowTrajectory = EditorGUILayout.Toggle(ShowTrajectory, GUILayout.Width(40));
+		EditorGUILayout.LabelField("Show Preview", GUILayout.Width(100f));
+		ShowPreview = EditorGUILayout.Toggle(ShowPreview, GUILayout.Width(40));
+		EditorGUILayout.EndHorizontal();
+
+		SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
+		SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
+		SetRotationOffset(EditorGUILayout.Vector3Field("Rotation Offset", RotationOffset));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));
-		if(Utility.GUIButton("Compute Trajectory", Utility.DarkGreen, Utility.White)) {
-			ComputeTrajectory();
-		}
-
-		for(int i=0; i<TotalFrames; i++) {
-			if(StyleFunction.Styles[2].Flags[i] && StyleFunction.Styles[1].Flags[i]) {
-				EditorGUILayout.LabelField("Active at " + i);
-				break;
-			}
-		}
-
-		/*
-		if(Utility.GUIButton("Remove Run", Utility.DarkGreen, Utility.White)) {
-			System.Collections.Generic.List<BVHStyle> styles = new System.Collections.Generic.List<BVHStyle>(StyleFunction.Styles);
-			styles.Remove(styles.Find(x => x.Name == "Run"));
-			StyleFunction.Styles = styles.ToArray();
-		}
-		
-		bool fix = false;
-		for(int i=0; i<TotalFrames; i++) {
-			bool flag = false;
-			for(int j=0; j<StyleFunction.Styles.Length; j++) {
-				flag = flag || StyleFunction.Styles[j].Flags[i];
-			}
-			if(!flag) {
-				EditorGUILayout.LabelField("Undefined style at frame " + (i+1));
-				break;
-			}
-		}
-		*/
 
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
 		EditorGUILayout.LabelField("Time: " + TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
 		EditorGUILayout.LabelField("Time/Frame: " + FrameTime.ToString("F3") + "s" + " (" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(175f));
-		EditorGUILayout.LabelField("Preview:", GUILayout.Width(50f), GUILayout.Height(20f)); 
-		ShowPreview = EditorGUILayout.Toggle(ShowPreview, GUILayout.Width(20f), GUILayout.Height(20f));
 		EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 		Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
-		EditorGUILayout.EndHorizontal();
-
-		EditorGUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
-		SequenceStart = EditorGUILayout.IntSlider(SequenceStart, 1, SequenceEnd, GUILayout.Width(182f));
-		EditorGUILayout.LabelField("End", GUILayout.Width(67f));
-		SequenceEnd = EditorGUILayout.IntSlider(SequenceEnd, SequenceStart, TotalFrames, GUILayout.Width(182f));
 		EditorGUILayout.EndHorizontal();
 
 		Utility.SetGUIColor(Utility.DarkGrey);
@@ -460,22 +484,68 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.EndHorizontal();
 		}
 
-
-		PhaseFunction.Inspector();
+		if(ShowMirrored) {
+			MirroredPhaseFunction.Inspector();
+		} else {
+			PhaseFunction.Inspector();
+		}
 
 		StyleFunction.Inspector();
 
-		//Contacts.Inspector();
-		
+		if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
+			ExportSkeleton(Character.GetRoot(), null);
+		}
+
+		Utility.SetGUIColor(Utility.DarkGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			for(int i=0; i<Sequences.Length; i++) {
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
+				Sequences[i].Start = EditorGUILayout.IntSlider(Sequences[i].Start, 1, TotalFrames, GUILayout.Width(182f));
+				EditorGUILayout.LabelField("End", GUILayout.Width(67f));
+				Sequences[i].End = EditorGUILayout.IntSlider(Sequences[i].End, 1, TotalFrames, GUILayout.Width(182f));
+				EditorGUILayout.EndHorizontal();
+			}
+
+			if(Utility.GUIButton("Add Sequence", Utility.DarkGrey, Utility.White)) {
+				AddSequence();
+			}
+			if(Utility.GUIButton("Remove Sequence", Utility.DarkGrey, Utility.White)) {
+				RemoveSequence();
+			}
+		}
+
+		Utility.SetGUIColor(Utility.DarkGrey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+			if(Utility.GUIButton("Compute Symmetry", Utility.DarkGrey, Utility.White)) {
+				ComputeSymmetry();
+			}
+			string[] names = new string[Character.Bones.Length];
+			for(int i=0; i<Character.Bones.Length; i++) {
+				names[i] = Character.Bones[i].GetName();
+			}
+			for(int i=0; i<Character.Bones.Length; i++) {
+				EditorGUILayout.BeginHorizontal();
+				EditorGUI.BeginDisabledGroup(true);
+				EditorGUILayout.TextField(names[i]);
+				EditorGUI.EndDisabledGroup();
+				Symmetry[i] = EditorGUILayout.Popup(Symmetry[i], names);
+				EditorGUILayout.EndHorizontal();
+			}
+		}
+
 	}
 
-	private void ExportSkeleton(Character character, Character.Bone bone, Transform parent) {
+	private void ExportSkeleton(Character.Bone bone, Transform parent) {
 		Transform instance = new GameObject(bone.GetName()).transform;
 		instance.SetParent(parent);
 		instance.position = bone.GetPosition();
 		instance.rotation = bone.GetRotation();
 		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(character, bone.GetChild(character, i), instance);
+			ExportSkeleton(bone.GetChild(Character, i), instance);
 		}
 	}
 
@@ -488,8 +558,8 @@ public class BVHAnimation : ScriptableObject {
 			}
 			UnityGL.Finish();
 			for(float i=0f; i<=TotalTime; i+=step) {
-				Vector3[] pos = ExtractPositions(GetFrame(i));
-				Quaternion[] rot = ExtractRotations(GetFrame(i));
+				Vector3[] pos = ExtractPositions(GetFrame(i), ShowMirrored);
+				Quaternion[] rot = ExtractRotations(GetFrame(i), ShowMirrored);
 				for(int j=0; j<Character.Bones.Length; j++) {
 					Character.Bones[j].SetPosition(pos[j]);
 					Character.Bones[j].SetRotation(rot[j]);
@@ -498,18 +568,14 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		Contacts.Draw();
-
 		if(ShowTrajectory) {
 			Trajectory.Draw();
 		} else {
-			ExtractTrajectory(CurrentFrame).Draw();
-			//Trajectory.Draw(GetFrame(Mathf.Max(0f, CurrentFrame.Timestamp-1f)).Index-1, GetFrame(Mathf.Min(TotalTime, CurrentFrame.Timestamp+1f)).Index-1, 10);
+			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
 		
-		Vector3[] positions = ExtractPositions(CurrentFrame);
-		Quaternion[] rotations = ExtractRotations(CurrentFrame);
-		Vector3[] velocities = ExtractVelocities(CurrentFrame, 0.1f);
+		Vector3[] positions = ExtractPositions(CurrentFrame, ShowMirrored);
+		Quaternion[] rotations = ExtractRotations(CurrentFrame, ShowMirrored);
 		for(int i=0; i<Character.Bones.Length; i++) {
 			Character.Bones[i].SetPosition(positions[i]);
 			Character.Bones[i].SetRotation(rotations[i]);
@@ -517,6 +583,7 @@ public class BVHAnimation : ScriptableObject {
 		Character.Draw();
 		
 		if(ShowVelocities) {
+			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.1f);
 			UnityGL.Start();
 			for(int i=0; i<Character.Bones.Length; i++) {
 				UnityGL.DrawArrow(
@@ -533,31 +600,196 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	[System.Serializable]
+	public class BVHSequence {
+		public int Start;
+		public int End;
+		public BVHSequence() {
+			Start = 1;
+			End = 1;
+		}
+	}
+
+	[System.Serializable]
+	public class BVHData {
+		public Bone[] Bones;
+		public Motion[] Motions;
+
+		public BVHData() {
+			Bones = new Bone[0];
+			Motions = new Motion[0];
+		}
+
+		public void AddBone(string name, Vector3 offset, int[] channels) {
+			System.Array.Resize(ref Bones, Bones.Length+1);
+			Bones[Bones.Length-1] = new Bone(name, offset, channels);
+		}
+
+		public void AddMotion(float[] values) {
+			System.Array.Resize(ref Motions, Motions.Length+1);
+			Motions[Motions.Length-1] = new Motion(values);
+		}
+
+		[System.Serializable]
+		public class Bone {
+			public string Name;
+			public Vector3 Offset;
+			public int[] Channels;
+			public Bone(string name, Vector3 offset, int[] channels) {
+				Name = name;
+				Offset = offset;
+				Channels = channels;
+			}
+		}
+
+		[System.Serializable]
+		public class Motion {
+			public float[] Values;
+			public Motion(float[] values) {
+				Values = values;
+			}
+		}
+	}
+
+	[System.Serializable]
+	public class BVHFrame {
+		public BVHAnimation Animation;
+
+		public int Index;
+		public float Timestamp;
+
+		public Vector3[] LocalPositions;
+		public Quaternion[] LocalRotations;
+		public Vector3[] Positions;
+		public Quaternion[] Rotations;
+
+		public BVHFrame(BVHAnimation animation, int index, float timestamp) {
+			Animation = animation;
+			Index = index;
+			Timestamp = timestamp;
+			
+			LocalPositions = new Vector3[Animation.Character.Bones.Length];
+			LocalRotations = new Quaternion[Animation.Character.Bones.Length];
+			Positions = new Vector3[Animation.Character.Bones.Length];
+			Rotations = new Quaternion[Animation.Character.Bones.Length];
+		}
+
+		public void Generate() {
+			int channel;
+
+			//Original
+			channel = 0;
+			for(int i=0; i<Animation.Character.Bones.Length; i++) {
+				BVHData.Bone info = Animation.Data.Bones[i];
+				BVHData.Motion motion = Animation.Data.Motions[Index-1];
+				Vector3 position = Vector3.zero;
+				Quaternion rotation = Quaternion.identity;
+				for(int j=0; j<info.Channels.Length; j++) {
+					if(info.Channels[j] == 1) {
+						position.x = motion.Values[channel]; channel += 1;
+					}
+					if(info.Channels[j] == 2) {
+						position.y = motion.Values[channel]; channel += 1;
+					}
+					if(info.Channels[j] == 3) {
+						position.z = motion.Values[channel]; channel += 1;
+					}
+					if(info.Channels[j] == 4) {
+						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.right); channel += 1;
+					}
+					if(info.Channels[j] == 5) {
+						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.up); channel += 1;
+					}
+					if(info.Channels[j] == 6) {
+						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.forward); channel += 1;
+					}
+				}
+				LocalPositions[i] = (i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : info.Offset / Animation.UnitScale);
+				LocalRotations[i] = i == 0 ? Quaternion.Euler(Animation.RotationOffset) * Quaternion.Euler(Animation.Orientation) * rotation : rotation;
+
+				Character.Bone bone = Animation.Character.Bones[i];
+				Character.Bone parent = bone.GetParent(Animation.Character);
+
+				Vector3 parentPosition = parent == null ? Vector3.zero : parent.GetPosition();
+				Quaternion parentRotation = parent == null ? Quaternion.identity : parent.GetRotation();
+
+				bone.SetPosition(parentPosition + parentRotation * LocalPositions[i]);
+				bone.SetRotation(parentRotation * LocalRotations[i]);
+			}
+			for(int i=0; i<Animation.Character.Bones.Length; i++) {
+				Positions[i] = Animation.Character.Bones[i].GetPosition();
+				Rotations[i] = Animation.Character.Bones[i].GetRotation();
+			}
+		}
+
+		public Vector3 ComputeVelocity(int index, float smoothing) {
+			if(smoothing == 0f) {
+				return Positions[index] - Animation.GetFrame(Mathf.Max(1, Index-1)).Positions[index];
+			}
+			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
+			Vector3 velocity = Vector3.zero;
+			for(int k=1; k<frames.Length; k++) {
+				velocity += frames[k].Positions[index] - frames[k-1].Positions[index];
+			}
+			velocity /= frames.Length;
+			return velocity;
+		}
+	
+		public float ComputeTranslationalVelocity(int index, float smoothing) {
+			return ComputeVelocity(index, smoothing).magnitude;
+		}
+
+		public float ComputeRotationalVelocity(int index, float smoothing) {
+			if(smoothing == 0f) {
+				return Quaternion.Angle(Animation.GetFrame(Mathf.Max(1, Index-1)).Rotations[index], Rotations[index]);
+			}
+			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
+			float velocity = 0f;
+			for(int k=1; k<frames.Length; k++) {
+				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]);
+			}
+			velocity /= frames.Length;
+			return velocity;
+		}
+	}
+
+	[System.Serializable]
 	public class BVHPhaseFunction {
 		public BVHAnimation Animation;
 
 		public bool[] Keys;
 		public float[] Phase;
+		public float[] Cycle;
 		
 		public Vector2 VariablesScroll;
 		public bool[] Variables;
-		
-		public float[] Values;
-		public float Smoothing;
-		public float Amplification;
+		public float VelocitySmoothing;
+		public float VelocityThreshold;
+		public float HeightThreshold;
+
+		public float[] Velocities;
+		public float[] NormalisedVelocities;
+
+		public float[] Heights;
+
+		private BVHEvolution Optimiser;
+		private bool Optimising;
 
 		public BVHPhaseFunction(BVHAnimation animation) {
 			Animation = animation;
 			Keys = new bool[Animation.TotalFrames];
 			Phase = new float[Animation.TotalFrames];
+			Cycle = new float[Animation.TotalFrames];
 			Keys[0] = true;
 			Keys[Animation.TotalFrames-1] = true;
 			Phase[0] = 0f;
 			Phase[Animation.TotalFrames-1] = 1f;
 			Variables = new bool[Animation.Character.Bones.Length];
-			Values = new float[Animation.TotalFrames];
-			SetSmoothing(0.25f);
-			SetAmplification(1f);
+			Velocities = new float[Animation.TotalFrames];
+			NormalisedVelocities = new float[Animation.TotalFrames];
+			Heights = new float[Animation.TotalFrames];
+			//SetVelocitySmoothing(0.25f);
+			//SetVelocityThreshold(0.5f);
+			//SetHeightThreshold(0.1f);
 		}
 
 		public void SetKey(BVHFrame frame, bool value) {
@@ -593,23 +825,65 @@ public class BVHAnimation : ScriptableObject {
 			return Phase[frame.Index-1];
 		}
 
-		public void SetSmoothing(float smoothing) {
-			if(Smoothing != smoothing) {
-				Smoothing = smoothing;
+		public void SetVelocitySmoothing(float value) {
+			value = Mathf.Max(0f, value);
+			if(VelocitySmoothing != value) {
+				VelocitySmoothing = value;
 				ComputeValues();
+				if(Animation.ShowMirrored) {
+					Animation.PhaseFunction.VelocitySmoothing = VelocitySmoothing;
+					Animation.PhaseFunction.ComputeValues();
+				} else {
+					Animation.MirroredPhaseFunction.VelocitySmoothing = VelocitySmoothing;
+					Animation.MirroredPhaseFunction.ComputeValues();
+				}
 			}
 		}
 
-		public void SetAmplification(float amplification) {
-			if(Amplification != amplification) {
-				Amplification = amplification;
+		public void SetVelocityThreshold(float value) {
+			value = Mathf.Max(0f, value);
+			if(VelocityThreshold != value) {
+				VelocityThreshold = value;
 				ComputeValues();
+				if(Animation.ShowMirrored) {
+					Animation.PhaseFunction.VelocityThreshold = VelocityThreshold;
+					Animation.PhaseFunction.ComputeValues();
+				} else {
+					Animation.MirroredPhaseFunction.VelocityThreshold = VelocityThreshold;
+					Animation.MirroredPhaseFunction.ComputeValues();
+				}
+			}
+		}
+
+		public void SetHeightThreshold(float value) {
+			value = Mathf.Max(0f, value);
+			if(HeightThreshold != value) {
+				HeightThreshold = value;
+				ComputeValues();
+				if(Animation.ShowMirrored) {
+					Animation.PhaseFunction.HeightThreshold = HeightThreshold;
+					Animation.PhaseFunction.ComputeValues();
+				} else {
+					Animation.MirroredPhaseFunction.HeightThreshold = HeightThreshold;
+					Animation.MirroredPhaseFunction.ComputeValues();
+				}
 			}
 		}
 
 		public void ToggleVariable(int index) {
 			Variables[index] = !Variables[index];
 			ComputeValues();
+			if(Animation.ShowMirrored) {
+				for(int i=0; i<Animation.PhaseFunction.Variables.Length; i++) {
+					Animation.PhaseFunction.Variables[Animation.Symmetry[index]] = Variables[index];
+				}
+				Animation.PhaseFunction.ComputeValues();
+			} else {
+				for(int i=0; i<Animation.MirroredPhaseFunction.Variables.Length; i++) {
+					Animation.MirroredPhaseFunction.Variables[Animation.Symmetry[index]] = Variables[index];
+				}
+				Animation.MirroredPhaseFunction.ComputeValues();
+			}
 		}
 
 		public BVHFrame GetPreviousKey(BVHFrame frame) {
@@ -658,6 +932,71 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
+		private void ComputeValues() {
+			float min, max;
+
+			Velocities = new float[Animation.TotalFrames];
+			NormalisedVelocities = new float[Animation.TotalFrames];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<Animation.TotalFrames; i++) {
+				for(int j=0; j<Animation.Character.Bones.Length; j++) {
+					if(Variables[j]) {
+						float boneVelocity = Animation.Frames[i].ComputeTranslationalVelocity(j, VelocitySmoothing) / Animation.FrameTime;
+						Velocities[i] = Mathf.Max(0f, Velocities[i], boneVelocity);
+						if(Velocities[i] < VelocityThreshold || Heights[i] < HeightThreshold) {
+							Velocities[i] = 0f;
+						}
+					}
+				}
+				if(Velocities[i] < min) {
+					min = Velocities[i];
+				}
+				if(Velocities[i] > max) {
+					max = Velocities[i];
+				}
+			}
+			for(int i=0; i<Velocities.Length; i++) {
+				NormalisedVelocities[i] = Utility.Normalise(Velocities[i], min, max, 0f, 1f);
+			}
+
+			Heights = new float[Animation.TotalFrames];
+			LayerMask mask = LayerMask.GetMask("Ground");
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<Animation.TotalFrames; i++) {
+				for(int j=0; j<Animation.Character.Bones.Length; j++) {
+					if(Variables[j]) {
+						float offset = Mathf.Max(0f, Animation.Frames[i].Positions[j].y - Utility.ProjectGround(Animation.Frames[i].Positions[j], mask).y);
+						Heights[i] = Mathf.Max(Heights[i], offset);
+					}
+				}
+				if(Heights[i] < min) {
+					min = Heights[i];
+				}
+				if(Heights[i] > max) {
+					max = Heights[i];
+				}
+			}
+			for(int i=0; i<Heights.Length; i++) {
+				Heights[i] = Utility.Normalise(Heights[i], min, max, 0f, 1f);
+			}
+		}
+
+		public void EditorUpdate() {
+			if(Optimising) {
+				if(Cycle == null) {
+					Cycle = new float[Animation.TotalFrames];
+				} else if(Cycle.Length != Animation.TotalFrames) {
+					Cycle = new float[Animation.TotalFrames];
+				}
+				if(Optimiser == null) {
+					Optimiser = new BVHEvolution(Animation, this);
+				}
+				Optimiser.Optimise();
+			}
+		}
+
 		public void Inspector() {
 			UnityGL.Start();
 
@@ -669,6 +1008,42 @@ public class BVHAnimation : ScriptableObject {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Phase Function");
+				}
+
+				Utility.SetGUIColor(Utility.Grey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					if(Optimising) {
+						if(Utility.GUIButton("Stop Optimisation", Utility.LightGrey, Utility.Black)) {
+							Optimising = !Optimising;
+						}
+					} else {
+						if(Utility.GUIButton("Start Optimisation", Utility.DarkGrey, Utility.White)) {
+							Optimising = !Optimising;
+						}
+					}
+					if(Optimiser != null) {
+						EditorGUILayout.BeginHorizontal();
+						EditorGUILayout.LabelField("Fitness: " + Optimiser.GetFitness());
+						if(Utility.GUIButton("Restart", Utility.DarkGrey, Utility.White)) {
+							Optimiser.Initialise();
+						}
+						EditorGUILayout.EndHorizontal();
+
+						Optimiser.RecombinationRate = EditorGUILayout.Slider("Recombination Rate", Optimiser.RecombinationRate, 0f, 1f);
+						Optimiser.MutationRate = EditorGUILayout.Slider("Mutation Rate", Optimiser.MutationRate, 0f, 1f);
+						Optimiser.MutationStrength = EditorGUILayout.Slider("Mutation Strength", Optimiser.MutationStrength, 0f, 1f);
+
+						Optimiser.SetAmplitude(EditorGUILayout.Slider("Amplitude", Optimiser.Amplitude, 0, BVHEvolution.AMPLITUDE));
+						Optimiser.SetFrequency(EditorGUILayout.Slider("Frequency", Optimiser.Frequency, 0f, BVHEvolution.FREQUENCY));
+						Optimiser.SetShift(EditorGUILayout.Slider("Shift", Optimiser.Shift, 0, BVHEvolution.SHIFT));
+						Optimiser.SetOffset(EditorGUILayout.Slider("Offset", Optimiser.Offset, 0, BVHEvolution.OFFSET));
+						Optimiser.SetSlope(EditorGUILayout.Slider("Slope", Optimiser.Slope, 0, BVHEvolution.SLOPE));
+						Optimiser.SetGradientCutoff(EditorGUILayout.Slider("Gradient Cutoff", Optimiser.GradientCutoff, 0f, BVHEvolution.GRADIENTCUTOFF));
+						Optimiser.SetWindow(EditorGUILayout.Slider("Window", Optimiser.Window, 0f, BVHEvolution.WINDOW));
+					} else {
+						EditorGUILayout.LabelField("No optimiser available.");
+					}
 				}
 
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
@@ -695,8 +1070,9 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
-				SetSmoothing(EditorGUILayout.FloatField("Smoothing", Smoothing));
-				SetAmplification(EditorGUILayout.FloatField("Amplification", Amplification));
+				SetVelocitySmoothing(EditorGUILayout.FloatField("Velocity Smoothing", VelocitySmoothing));
+				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
+				SetHeightThreshold(EditorGUILayout.FloatField("Height Threshold", HeightThreshold));
 
 				if(IsKey(Animation.CurrentFrame)) {
 					SetPhase(Animation.CurrentFrame, EditorGUILayout.Slider("Phase", GetPhase(Animation.CurrentFrame), 0f, 1f));
@@ -736,14 +1112,39 @@ public class BVHAnimation : ScriptableObject {
 				Vector3 newPos = Vector3.zero;
 				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
 				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
+				//Velocities
 				for(int i=1; i<elements; i++) {
 					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-					prevPos.y = rect.yMax - Values[i+start-1] * rect.height;
+					prevPos.y = rect.yMax - NormalisedVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-					newPos.y = rect.yMax - Values[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.Cyan);
+					newPos.y = rect.yMax - NormalisedVelocities[i+start] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.Green);
 				}
+				//Heights
+				/*
+				for(int i=1; i<elements; i++) {
+					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
+					prevPos.y = rect.yMax - Heights[i+start-1] * rect.height;
+					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
+					newPos.y = rect.yMax - Heights[i+start] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.Red);
+				}
+				*/
+				
+				//Cycle
+				/*
+				Color transparentWhite = Utility.Yellow;
+				transparentWhite.a = 1f;
+				for(int i=1; i<elements; i++) {
+					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
+					prevPos.y = rect.yMax - Cycle[i+start-1] * rect.height;
+					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
+					newPos.y = rect.yMax - Cycle[i+start] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, transparentWhite);
+				}
+				*/
 
+				//Phase
 				BVHFrame A = Animation.GetFrame(start);
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
@@ -767,7 +1168,7 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
-				//Seconds labels
+				//Seconds
 				float timestamp = startTime;
 				while(timestamp <= endTime) {
 					float floor = Mathf.FloorToInt(timestamp);
@@ -779,25 +1180,29 @@ public class BVHAnimation : ScriptableObject {
 				}
 				//
 
+				//Sequences
+				for(int i=0; i<Animation.Sequences.Length; i++) {
+					top.x = rect.xMin + (float)(Animation.Sequences[i].Start-start)/elements * rect.width;
+					bottom.x = rect.xMin + (float)(Animation.Sequences[i].Start-start)/elements * rect.width;
+					Vector3 a = top;
+					Vector3 b = bottom;
+					top.x = rect.xMin + (float)(Animation.Sequences[i].End-start)/elements * rect.width;
+					bottom.x = rect.xMin + (float)(Animation.Sequences[i].End-start)/elements * rect.width;
+					Vector3 c = top;
+					Vector3 d = bottom;
+
+					Color yellow = Utility.Yellow;
+					yellow.a = 0.25f;
+					UnityGL.DrawTriangle(a, b, c, yellow);
+					UnityGL.DrawTriangle(d, b, c, yellow);
+				}
+
+				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				UnityGL.DrawLine(top, bottom, Utility.Red);
 				UnityGL.DrawCircle(top, 3f, Utility.Green);
 				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
-
-				top.x = rect.xMin + (float)(Animation.SequenceStart-start)/elements * rect.width;
-				bottom.x = rect.xMin + (float)(Animation.SequenceStart-start)/elements * rect.width;
-				Vector3 a = top;
-				Vector3 b = bottom;
-				top.x = rect.xMin + (float)(Animation.SequenceEnd-start)/elements * rect.width;
-				bottom.x = rect.xMin + (float)(Animation.SequenceEnd-start)/elements * rect.width;
-				Vector3 c = top;
-				Vector3 d = bottom;
-
-				Color yellow = Utility.Yellow;
-				yellow.a = 0.25f;
-				UnityGL.DrawTriangle(a, b, c, yellow);
-				UnityGL.DrawTriangle(d, b, c, yellow);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
@@ -809,29 +1214,6 @@ public class BVHAnimation : ScriptableObject {
 			}
 
 			UnityGL.Finish();
-		}
-
-		private void ComputeValues() {
-			Values = new float[Animation.TotalFrames];
-			float min = float.MaxValue;
-			float max = float.MinValue;
-			for(int i=0; i<Animation.TotalFrames; i++) {
-				for(int j=0; j<Animation.Character.Bones.Length; j++) {
-					if(Variables[j]) {
-						Values[i] = Mathf.Max(Values[i], Animation.Frames[i].SmoothTranslationalVelocityValue(j, Smoothing) + Mathf.Deg2Rad*Animation.Frames[i].SmoothRotationalVelocityValue(j, Smoothing));
-					}
-				}
-				if(Values[i] < min) {
-					min = Values[i];
-				}
-				if(Values[i] > max) {
-					max = Values[i];
-				}
-			}
-			for(int i=0; i<Values.Length; i++) {
-				Values[i] = Utility.Normalise(Values[i], min, max, 0f, 1f);
-				Values[i] = (float)System.Math.Tanh((double)(Amplification*Values[i]));
-			}
 		}
 	}
 
@@ -1044,6 +1426,26 @@ public class BVHAnimation : ScriptableObject {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Style Function");
 				}
+
+				/*
+				BVHAnimation copy = (BVHAnimation)EditorGUILayout.ObjectField("Animation", null, typeof(BVHAnimation), true);
+				if(copy != null) {
+					BVHStyleFunction function = copy.StyleFunction;
+
+					SetStyle(function.Style);
+					SetTransition(function.Transition);
+					for(int i=0; i<Animation.TotalFrames; i++) {
+						Keys[i] = function.Keys[i];
+					}
+					for(int i=0; i<Styles.Length; i++) {
+						Styles[i].Name = function.Styles[i].Name;
+						for(int j=0; j<Animation.TotalFrames; j++) {
+							Styles[i].Flags[j] = function.Styles[i].Flags[j];
+							Styles[i].Values[j] = function.Styles[i].Values[j];
+						}
+					}
+				}
+				*/
 				
 				SetTransition(EditorGUILayout.FloatField("Transition", Transition));
 
@@ -1174,25 +1576,41 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
+				//Seconds
+				float timestamp = startTime;
+				while(timestamp <= endTime) {
+					float floor = Mathf.FloorToInt(timestamp);
+					if(floor >= startTime && floor <= endTime) {
+						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
+						UnityGL.DrawCircle(top, 1.5f, Utility.White);
+					}
+					timestamp += 1f;
+				}
+				//
+
+				//Sequences
+				for(int i=0; i<Animation.Sequences.Length; i++) {
+					top.x = rect.xMin + (float)(Animation.Sequences[i].Start-start)/elements * rect.width;
+					bottom.x = rect.xMin + (float)(Animation.Sequences[i].Start-start)/elements * rect.width;
+					Vector3 a = top;
+					Vector3 b = bottom;
+					top.x = rect.xMin + (float)(Animation.Sequences[i].End-start)/elements * rect.width;
+					bottom.x = rect.xMin + (float)(Animation.Sequences[i].End-start)/elements * rect.width;
+					Vector3 c = top;
+					Vector3 d = bottom;
+
+					Color yellow = Utility.Yellow;
+					yellow.a = 0.25f;
+					UnityGL.DrawTriangle(a, b, c, yellow);
+					UnityGL.DrawTriangle(d, b, c, yellow);
+				}
+
+				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				UnityGL.DrawLine(top, bottom, Utility.Red);
 				UnityGL.DrawCircle(top, 3f, Utility.Green);
 				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
-
-				top.x = rect.xMin + (float)(Animation.SequenceStart-start)/elements * rect.width;
-				bottom.x = rect.xMin + (float)(Animation.SequenceStart-start)/elements * rect.width;
-				Vector3 a = top;
-				Vector3 b = bottom;
-				top.x = rect.xMin + (float)(Animation.SequenceEnd-start)/elements * rect.width;
-				bottom.x = rect.xMin + (float)(Animation.SequenceEnd-start)/elements * rect.width;
-				Vector3 c = top;
-				Vector3 d = bottom;
-
-				Color yellow = Utility.Yellow;
-				yellow.a = 0.25f;
-				UnityGL.DrawTriangle(a, b, c, yellow);
-				UnityGL.DrawTriangle(d, b, c, yellow);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
@@ -1221,231 +1639,449 @@ public class BVHAnimation : ScriptableObject {
 		}
 	}
 
-	[System.Serializable]
-	public class BVHContacts {
-		public BVHAnimation Animation;
-
-		public float VelocityThreshold;
-
-		public Vector2 VariablesScroll;
-		public bool[] Variables;
-
-		public BVHContact[] Contacts;
-
-		public BVHContacts(BVHAnimation animation) {
-			Animation = animation;
-			Variables = new bool[Animation.Character.Bones.Length];
-			Contacts = new BVHContact[0];
-		}
-
-		public void AssignVelocityThreshold(float velocityThreshold) {
-			if(VelocityThreshold != velocityThreshold) {
-				VelocityThreshold = velocityThreshold;
-				for(int i=0; i<Contacts.Length; i++) {
-					Contacts[i].ComputeLabels(VelocityThreshold);
-				}
-			}
-		}
-
-		public void Inspector() {
-			Utility.SetGUIColor(Utility.LightGrey);
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				Utility.ResetGUIColor();
-
-				Utility.SetGUIColor(Utility.Orange);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField("Contacts");
-				}
-
-				AssignVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
-
-				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
-				for(int i=0; i<Animation.Character.Bones.Length; i++) {
-					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkGreen, Utility.White)) {
-							RemoveContact(i);
-						}
-					} else {
-						if(Utility.GUIButton(Animation.Character.Bones[i].GetName(), Utility.DarkRed, Utility.White)) {
-							AddContact(i);
-						}
-					}
-				}
-				EditorGUILayout.EndScrollView();
-
-			}
-		}
-
-		public void AddContact(int index) {
-			System.Array.Resize(ref Contacts, Contacts.Length+1);
-			Contacts[Contacts.Length-1] = new BVHContact(Animation, index);
-			Contacts[Contacts.Length-1].ComputeLabels(VelocityThreshold);
-			Variables[index] = true;
-		}
-
-		public void RemoveContact(int index) {
-			for(int i=index; i<Contacts.Length-1; i++) {
-				Contacts[i] = Contacts[i+1];
-			}
-			System.Array.Resize(ref Contacts, Contacts.Length-1);
-			Variables[index] = false;
-		}
-
-		public void Draw() {
-			Color[] colors = Utility.GetRainbowColors(Contacts.Length);
-			UnityGL.Start();
-			for(int i=0; i<Contacts.Length; i++) {
-				for(int j=0; j<Contacts[i].Labels.Length; j++) {
-					if(Contacts[i].Labels[j]) {
-						UnityGL.DrawIsocelesTriangle(Contacts[i].GetPosition(Animation.Frames[j]), 0.005f, colors[i]);
-					}
-				}
-			}
-			UnityGL.Finish();
-		}
-	}
-
-	[System.Serializable]
-	public class BVHContact {
-		public BVHAnimation Animation;
-		public bool[] Labels;
-		public int Index;
-
-		public BVHContact(BVHAnimation animation, int index) {
-			Animation = animation;
-			Labels = new bool[Animation.TotalFrames];
-			Index = index;
-		}
-
-		public void ComputeLabels(float velocityThreshold) {
-			for(int i=0; i<Labels.Length; i++) {
-				Labels[i] = Animation.Frames[i].Velocities[Index].magnitude <= velocityThreshold;
-			}
-		}
-
-		public bool GetContact(BVHFrame frame) {
-			return Labels[frame.Index-1];
-		}
-
-		public Vector3 GetPosition(BVHFrame frame) {
-			return frame.Positions[Index];
-		}
-	}
-
-	[System.Serializable]
-	public class BVHFrame {
-		public BVHAnimation Animation;
-
-		public int Index;
-		public float Timestamp;
-		public Vector3[] Positions;
-		public Quaternion[] Rotations;
-		public Vector3[] Velocities;
+	public class BVHEvolution {
+		public static float AMPLITUDE = 10f;
+		public static float FREQUENCY = 2.5f;
+		public static float SHIFT = Mathf.PI;
+		public static float OFFSET = 10f;
+		public static float SLOPE = 10f;
+		public static float GRADIENTCUTOFF = 0.25f;
+		public static float WINDOW = 10f;
 		
-		public BVHFrame(BVHAnimation animation, Transformation[] zeros, int[][] channels, float[] motion, int index, float timestamp, float unitScale) {
+		public BVHAnimation Animation;
+		public BVHPhaseFunction Function;
+
+		public Population[] Populations;
+
+		public float[] LowerBounds;
+		public float[] UpperBounds;
+
+		public float RecombinationRate = 0.9f;
+		public float MutationRate = 0.25f;
+		public float MutationStrength = 0.1f;
+
+		public float Amplitude = AMPLITUDE;
+		public float Frequency = FREQUENCY;
+		public float Shift = SHIFT;
+		public float Offset = OFFSET;
+		public float Slope = SLOPE;
+		public float GradientCutoff = GRADIENTCUTOFF;
+
+		public float Window = 1f;
+		public Interval[] Intervals;
+
+		public BVHEvolution(BVHAnimation animation, BVHPhaseFunction function) {
 			Animation = animation;
-			Index = index;
-			Timestamp = timestamp;
-			Positions = new Vector3[Animation.Character.Bones.Length];
-			Rotations = new Quaternion[Animation.Character.Bones.Length];
-			Velocities = new Vector3[Animation.Character.Bones.Length];
-			
-			//Forward Kinematics
-			int channel = 0;
-			for(int i=0; i<Animation.Character.Bones.Length; i++) {
-				if(i == 0) {
-					//Root
-					Vector3 position = new Vector3(motion[channel+0], motion[channel+1], motion[channel+2]);
-					Quaternion rotation = Quaternion.identity;
-					for(int j=0; j<3; j++) {
-						if(channels[i][4+j] == 4) {
-							rotation *= Quaternion.AngleAxis(motion[channel+3+j], Vector3.right);
-						}
-						if(channels[i][4+j] == 5) {
-							rotation *= Quaternion.AngleAxis(motion[channel+3+j], Vector3.up);
-						}
-						if(channels[i][4+j] == 6) {
-							rotation *= Quaternion.AngleAxis(motion[channel+3+j], Vector3.forward);
+			Function = function;
+
+			LowerBounds = new float[5];
+			UpperBounds = new float[5];
+			LowerBounds[0] = -Amplitude;
+			UpperBounds[0] = Amplitude;
+			LowerBounds[1] = -Frequency;
+			UpperBounds[1] = Frequency;
+			LowerBounds[2] = -Shift;
+			UpperBounds[2] = Shift;
+			LowerBounds[3] = -Offset;
+			UpperBounds[3] = Offset;
+			LowerBounds[4] = -Slope;
+			UpperBounds[4] = Slope;
+
+			Initialise();
+		}
+
+		public void SetAmplitude(float value) {
+			Amplitude = value;
+			LowerBounds[0] = -value;
+			UpperBounds[0] = value;
+		}
+
+		public void SetFrequency(float value) {
+			Frequency = value;
+			LowerBounds[1] = 0f;
+			UpperBounds[1] = value;
+		}
+
+		public void SetShift(float value) {
+			Shift = value;
+			LowerBounds[2] = -value;
+			UpperBounds[2] = value;
+		}
+
+		public void SetOffset(float value) {
+			Offset = value;
+			LowerBounds[3] = -value;
+			UpperBounds[3] = value;
+		}
+
+		public void SetSlope(float value) {
+			Slope = value;
+			LowerBounds[4] = -value;
+			UpperBounds[4] = value;
+		}
+
+		public void SetGradientCutoff(float value) {
+			if(GradientCutoff != value) {
+				GradientCutoff = value;
+				Assign();
+			}
+		}
+
+		public void SetWindow(float value) {
+			if(Window != value) {
+				Window = value;
+				Initialise();
+			}
+		}
+
+		public void Initialise() {
+			Intervals = new Interval[Mathf.FloorToInt(Animation.TotalTime / Window) + 1];
+			for(int i=0; i<Intervals.Length; i++) {
+				int start = Animation.GetFrame(i*Window).Index-1;
+				int end = Animation.GetFrame(Mathf.Min(Animation.TotalTime, (i+1)*Window)).Index-2;
+				if(end == Animation.TotalFrames-2) {
+					end += 1;
+				}
+				Intervals[i] = new Interval(start, end);
+			}
+
+			Populations = new Population[Intervals.Length];
+			for(int i=0; i<Populations.Length; i++) {
+				Populations[i] = new Population(this, 50, 5);
+			}
+			for(int i=0; i<Populations.Length; i++) {
+				Populations[i].Initialise(Intervals[i]);
+			}
+
+			Assign();
+		}
+
+		public void Optimise() {
+			for(int i=0; i<Populations.Length; i++) {
+				Populations[i].Evolve(Intervals[i]);
+			}
+			Assign();
+		}
+
+		
+		public void Assign() {
+			//Compute average velocities
+			float[] avgVelocities = new float[Intervals.Length];
+			for(int i=0; i<Intervals.Length; i++) {
+				avgVelocities[i] = 0f;
+				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
+					avgVelocities[i] += Function.Velocities[j];
+				}
+				avgVelocities[i] /= Intervals[i].Length;
+			}
+
+			//Compute average values
+			float avgA = 0f;
+			float avgF = 0f;
+			float avgS = 0f;
+			float avgO = 0f;
+			int elements = 0;
+			for(int i=0; i<Intervals.Length; i++) {
+				if(avgVelocities[i] > 0f) {
+					avgA += Populations[i].GetWinner().Genes[0];
+					avgF += Populations[i].GetWinner().Genes[1];
+					avgS += Populations[i].GetWinner().Genes[2];
+					avgO += Populations[i].GetWinner().Genes[3];
+					elements += 1;
+				}
+			}
+			if(elements != 0) {
+				avgA /= elements;
+				avgF /= elements;
+				avgS /= elements;
+				avgO /= elements;
+			}
+
+			//Compute cycle
+			for(int i=0; i<Populations.Length; i++) {
+				Individual winner = Populations[i].GetWinner();
+				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
+					Function.Cycle[j] = Populations[i].LinSin(
+						avgVelocities[i] > 0f ? winner.Genes[0] : avgA, 
+						avgVelocities[i] > 0f ? winner.Genes[1] : avgF, 
+						avgVelocities[i] > 0f ? winner.Genes[2] : avgS, 
+						avgVelocities[i] > 0f ? winner.Genes[3] : avgO, 
+						j,
+						avgVelocities[i] > 0f ? winner.Genes[4] : 0f,
+						j-Intervals[i].Start
+					);
+				}
+			}
+
+			//Label phase
+			for(int k=0; k<Intervals.Length; k++) {
+				for(int i=Intervals[k].Start; i<=Intervals[k].End; i++) {
+					float leftGradient = ComputeGradient(i, -1); //Function.Cycle[Mathf.Max(0, i-1)] - Function.Cycle[i];
+					float rightGradient = ComputeGradient(i, 1); //Function.Cycle[Mathf.Min(Function.Cycle.Length-1, i+1)] - Function.Cycle[i];
+					if(
+						leftGradient >= 0f && rightGradient >= 0f &&
+						leftGradient <= GradientCutoff && rightGradient <= GradientCutoff &&
+						!(leftGradient == 0f && rightGradient == 0f)
+						//||
+						//(leftGradient > UpperGradient && rightGradient > UpperGradient)
+						) {
+						Function.SetKey(Animation.Frames[i], true);
+					} else {
+						Function.SetKey(Animation.Frames[i], false);
+					}
+				}
+			}
+
+			BVHFrame first = Animation.Frames[0];
+			BVHFrame next1 = Function.GetNextKey(first);
+			BVHFrame next2 = Function.GetNextKey(next1);
+			Function.SetKey(first, true);
+			float xFirst = next1.Timestamp - first.Timestamp;
+			float mFirst = next2.Timestamp - next1.Timestamp;
+			Function.SetPhase(first, Mathf.Clamp(1f - xFirst / mFirst, 0f, 1f));
+
+			BVHFrame last = Animation.Frames[Animation.TotalFrames-1];
+			BVHFrame previous1 = Function.GetPreviousKey(last);
+			BVHFrame previous2 = Function.GetPreviousKey(previous1);
+			Function.SetKey(last, true);
+			float xLast = last.Timestamp - previous1.Timestamp;
+			float mLast = previous1.Timestamp - previous2.Timestamp;
+			Function.SetPhase(last, Mathf.Clamp(xLast / mLast, 0f, 1f));
+		}
+
+		private float ComputeGradient(int index, int offset) {
+			if(offset == 0) {
+				return 0f;
+			} else {
+				float gradient = 0f;
+				if(offset > 0) {
+					for(int i=1; i<=offset; i++) {
+						gradient += Function.Cycle[Mathf.Min(Function.Cycle.Length-1, index+i)] - Function.Cycle[index];
+					}
+				}
+				if(offset < 0) {
+					for(int i=-1; i>=offset; i--) {
+						gradient += Function.Cycle[Mathf.Max(0, index+i)] - Function.Cycle[index];
+					}
+				}
+				return gradient / Mathf.Abs(offset);
+			}
+		}
+
+
+		public float GetFitness() {
+			float fitness = 0f;
+			for(int i=0; i<Populations.Length; i++) {
+				fitness += Populations[i].GetFitness();
+			}
+			return fitness / Populations.Length;
+		}
+
+		public class Population {
+			public BVHEvolution Evolution;
+			public Individual[] Individuals;
+			public int Size;
+			public int Dimensionality;
+
+			public Population(BVHEvolution evolution, int size, int dimensionality) {
+				Evolution = evolution;
+				Size = size;
+				Dimensionality = dimensionality;
+			}
+
+			public void Initialise(Interval interval) {
+				//Create individuals
+				Individuals = new Individual[Size];
+				for(int i=0; i<Individuals.Length; i++) {
+					Individuals[i] = new Individual(Dimensionality);
+				}
+
+				//Initialise randomly
+				for(int i=0; i<Individuals.Length; i++) {
+					Reroll(Individuals[i]);
+				}
+
+				//Evaluate fitness
+				for(int i=0; i<Individuals.Length; i++) {
+					Evaluate(Individuals[i], interval);
+				}
+
+				//Sort
+				SortByFitness(Individuals);
+			}
+
+			public void Evolve(Interval interval) {
+				//Create offspring
+				Individual[] offspring = new Individual[Individuals.Length];
+				for(int i=0; i<offspring.Length; i++) {
+					offspring[i] = new Individual(Dimensionality);
+				}
+
+				//Copy elite
+				Copy(Individuals[0], offspring[0]);
+
+				//Evolve offspring
+				for(int i=1; i<offspring.Length; i++) {
+					Recombine(Select(Individuals), Select(Individuals), offspring[i]);
+					Mutate(offspring[i]);
+				}
+
+				//Constraints
+				for(int i=0; i<offspring.Length; i++) {
+					Constrain(offspring[i]);
+				}
+
+				//Evaluate fitness
+				for(int i=0; i<offspring.Length; i++) {
+					Evaluate(offspring[i], interval);
+				}
+
+				//Sort
+				SortByFitness(offspring);
+
+				//Form new population
+				Individuals = offspring;
+
+				//Assign
+				//Assign();
+			}
+
+			//0 = Amplitude, 1 = Frequency, 2 = Shift, 3 = Offset
+			public float LinSin(float amplitude, float frequency, float shift, float offset, int frame, float slope, int x) {
+				return amplitude * Mathf.Sin(frequency * frame * Evolution.Animation.FrameTime * 2f * Mathf.PI - shift) + offset + slope * x * Evolution.Animation.FrameTime;
+			}
+
+			public float GetAverageFitness() {
+				float fitness = 0f;
+				for(int i=0; i<Individuals.Length; i++) {
+					fitness += Individuals[i].Fitness;
+				}
+				fitness /= Individuals.Length;
+				return fitness;
+			}
+
+			public Individual GetWinner() {
+				return Individuals[0];
+			}
+
+			public float GetFitness() {
+				return GetWinner().Fitness;
+			}
+
+			private void Copy(Individual from, Individual to) {
+				for(int i=0; i<from.Genes.Length; i++) {
+					to.Genes[i] = from.Genes[i];
+				}
+			}
+
+			private void Reroll(Individual individual) {
+				for(int i=0; i<individual.Genes.Length; i++) {
+					individual.Genes[i] = Random.Range(Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
+				}
+			}
+
+			private void Recombine(Individual parentA, Individual parentB, Individual offspring) {
+				if(Random.value < Evolution.RecombinationRate) {
+					for(int i=0; i<offspring.Genes.Length; i++) {
+						if(Random.value < 0.5f) {
+							offspring.Genes[i] = parentA.Genes[i];
+						} else {
+							offspring.Genes[i] = parentB.Genes[i];
 						}
 					}
-					Animation.Character.Bones[i].SetPosition(position / unitScale);
-					Animation.Character.Bones[i].SetRotation(rotation);
-					channel += 6;
 				} else {
-					//Childs
-					Quaternion rotation = Quaternion.identity;
-					for(int j=0; j<3; j++) {
-						if(channels[i][1+j] == 4) {
-							rotation *= Quaternion.AngleAxis(motion[channel+j], Vector3.right);
-						}
-						if(channels[i][1+j] == 5) {
-							rotation *= Quaternion.AngleAxis(motion[channel+j], Vector3.up);
-						}
-						if(channels[i][1+j] == 6) {
-							rotation *= Quaternion.AngleAxis(motion[channel+j], Vector3.forward);
-						}
+					Reroll(offspring);
+				}
+			}
+
+			private void Mutate(Individual individual) {
+				for(int i=0; i<individual.Genes.Length; i++) {
+					if(Random.value <= Evolution.MutationRate) {
+						float span = Evolution.UpperBounds[i] - Evolution.LowerBounds[i];
+						individual.Genes[i] += Random.Range(-Evolution.MutationStrength*span, Evolution.MutationStrength*span);
 					}
-					Animation.Character.Bones[i].SetPosition(Animation.Character.Bones[i].GetParent(Animation.Character).GetPosition() + Animation.Character.Bones[i].GetParent(Animation.Character).GetRotation() * zeros[i].Position / unitScale);
-					Animation.Character.Bones[i].SetRotation(Animation.Character.Bones[i].GetParent(Animation.Character).GetRotation() * zeros[i].Rotation * rotation);
-					channel += 3;
+				}	
+			}
+
+			private void Constrain(Individual indivdiual) {
+				for(int i=0; i<indivdiual.Genes.Length; i++) {
+					indivdiual.Genes[i] = Mathf.Clamp(indivdiual.Genes[i], Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
 				}
 			}
-			for(int i=0; i<Animation.Character.Bones.Length; i++) {
-				Positions[i] = Animation.Character.Bones[i].GetPosition();
-				Rotations[i] = Animation.Character.Bones[i].GetRotation();
-				if(Index > 1) {
-					//Velocities[i] = (Positions[i] - Animation.GetFrame(Index-1).Positions[i]) / Animation.FrameTime;
-					Velocities[i] = Positions[i] - Animation.GetFrame(Index-1).Positions[i];
+
+			//Rank-based selection of an individual
+			private Individual Select(Individual[] pool) {
+				double[] probabilities = new double[pool.Length];
+				double rankSum = (double)(pool.Length*(pool.Length+1)) / 2.0;
+				for(int i=0; i<pool.Length; i++) {
+					probabilities[i] = (double)(pool.Length-i)/rankSum;
 				}
+				return pool[GetRandomWeightedIndex(probabilities, pool.Length)];
+			}
+			
+			//Returns a random index with respect to the probability weights
+			private int GetRandomWeightedIndex(double[] probabilities, int count) {
+				double weightSum = 0.0;
+				for(int i=0; i<count; i++) {
+					weightSum += probabilities[i];
+				}
+				double rVal = Random.value * weightSum;
+				for(int i=0; i<count; i++) {
+					rVal -= probabilities[i];
+					if(rVal <= 0.0) {
+						return i;
+					}
+				}
+				return count-1;
+			}
+
+			//Sorts all individuals starting with best (lowest) fitness
+			private void SortByFitness(Individual[] individuals) {
+				System.Array.Sort(individuals,
+					delegate(Individual a, Individual b) {
+						return a.Fitness.CompareTo(b.Fitness);
+					}
+				);
+			}
+
+			//Multi-Objective RMSE
+			private void Evaluate(Individual individual, Interval interval) {
+				float fitness = 0f;
+				for(int i=interval.Start; i<=interval.End; i++) {
+					float y = Evolution.Function.Velocities[i];
+					float x = LinSin(individual.Genes[0], individual.Genes[1], individual.Genes[2], individual.Genes[3], i, individual.Genes[4], i-interval.Start);
+					float error = y - x;
+
+					//error *= Evolution.Function.Velocities[i];
+					float sqrError = error*error;
+					fitness += sqrError;
+				}
+				fitness /= interval.Length;
+				fitness = Mathf.Sqrt(fitness);
+				individual.Fitness = fitness;
 			}
 		}
 
-		public Vector3 SmoothTranslationalVelocityVector(int index, float smoothing) {
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			Vector3 velocity = Vector3.zero;
-			for(int k=1; k<frames.Length; k++) {
-				//velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]) / Animation.FrameTime;
-				velocity += frames[k].Positions[index] - frames[k-1].Positions[index];
+		public class Individual {
+			public float[] Genes;
+			public float Fitness;
+
+			public Individual(int dimensionality) {
+				Genes = new float[dimensionality];
 			}
-			velocity /= frames.Length;
-			return velocity;
 		}
 
-		public float SmoothTranslationalVelocityValue(int index, float smoothing) {
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			Vector3 velocity = Vector3.zero;
-			for(int k=1; k<frames.Length; k++) {
-				//velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]).magnitude / Animation.FrameTime;
-				velocity += (frames[k].Positions[index] - frames[k-1].Positions[index]);
+		public class Interval {
+			public int Start;
+			public int End;
+			public int Length;
+			public Interval(int start, int end) {
+				Start = start;
+				End = end;
+				Length = end-start+1;
 			}
-			velocity /= frames.Length;
-			return velocity.magnitude;
 		}
 
-		public float SmoothRotationalVelocityValue(int index, float smoothing) {
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			float velocity = 0f;
-			for(int k=1; k<frames.Length; k++) {
-				//velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]) / Animation.FrameTime;
-				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]);
-			}
-			velocity /= frames.Length;
-			return velocity;
-		}
-
-		/*
-		public float SmoothAccelerationValue(int index, float smoothing) {
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			float acceleration = 0f;
-			for(int k=1; k<frames.Length; k++) {
-				//acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude / Animation.FrameTime;
-				acceleration += (frames[k].Velocities[index] - frames[k-1].Velocities[index]).magnitude;
-			}
-			acceleration /= frames.Length;
-			return acceleration;
-		}
-		*/
 	}
 
 }

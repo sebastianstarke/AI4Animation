@@ -16,7 +16,7 @@ public class Character {
 
 	public Character() {
 		Inspect = false;
-		BoneSize = 0.05f;
+		BoneSize = 0.025f;
 	}
 
 	public void Clear() {

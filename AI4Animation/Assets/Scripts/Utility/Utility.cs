@@ -196,6 +196,17 @@ public static class Utility {
 		return Quaternion.Inverse(to.Rotation) * quaternion;
 	}
 
+	public static Vector3 MirrorX(this Vector3 vector) {
+		vector.x *= -1f;
+		return vector;
+	}
+
+	public static Quaternion MirrorX(this Quaternion quaternion) {
+		quaternion.x *= -1f;
+		quaternion.w *= -1f;
+		return quaternion;
+	}
+
 	public static Vector3 ProjectCollision(Vector3 start, Vector3 end, LayerMask mask) {
 		RaycastHit hit;
 		if(Physics.Raycast(start, end-start, out hit, Vector3.Magnitude(end-start), mask)) {
