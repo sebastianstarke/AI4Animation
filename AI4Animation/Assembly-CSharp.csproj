@@ -136,6 +136,8 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
+     <None Include="Assets\Project\Data.txt" />
+     <None Include="Assets\Project\Weights\19-11-2017\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />
@@ -158,7 +160,9 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
+     <None Include="Assets\Project\Weights\19-11-2017\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
+     <None Include="Assets\Project\Weights\Automatic_RightFootOnly\Labels.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

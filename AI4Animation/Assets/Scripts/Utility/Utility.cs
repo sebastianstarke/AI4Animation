@@ -76,6 +76,19 @@ public static class Utility {
 		}
 	}
 
+	//0 = Amplitude, 1 = Frequency, 2 = Shift, 3 = Offset, 4 = Slope, 5 = time
+	public static float LinSin(float a, float f, float s, float o, float m, float t) {
+		return a * Mathf.Sin(f * (t * 2f * Mathf.PI) - s) + o + m * t;
+	}
+
+	public static float LinSin1(float a, float f, float s, float o, float m, float t) {
+		return a * f * Mathf.Cos(f * (t * 2f * Mathf.PI) - s) + m;
+	}
+
+	public static float LinSin2(float a, float f, float s, float o, float m, float t) {
+		return a * f * f * -Mathf.Sin(f * (t * 2f * Mathf.PI) - s);
+	}
+
 	public static Vector3 TransformPosition(Transform frame, Vector3 position) {
 		return frame.position + frame.rotation * position;
 	}

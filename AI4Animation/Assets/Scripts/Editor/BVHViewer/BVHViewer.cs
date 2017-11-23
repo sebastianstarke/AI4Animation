@@ -119,7 +119,7 @@ public class BVHViewer : EditorWindow {
 				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.Rotations[0].MirrorX() : Animation.CurrentFrame.Rotations[0];
 				rotation.x = 0f;
 				rotation.z = 0f;
-				rotation = Quaternion.Euler(0f, FocusAngle, 0f) * rotation;
+				rotation = Quaternion.Euler(0f, Animation.ShowMirrored ? Mathf.Repeat(FocusAngle + 180f, 360f) : FocusAngle, 0f) * rotation;
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}
@@ -130,7 +130,7 @@ public class BVHViewer : EditorWindow {
 			AutoFocus = value;
 			if(!AutoFocus) {
 				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.Positions[0].MirrorX() : Animation.CurrentFrame.Positions[0];
-				Quaternion rotation = Quaternion.Euler(0f, FocusAngle, 0f);
+				Quaternion rotation = Quaternion.Euler(0f, Mathf.Repeat(FocusAngle + 180f, 360f), 0f);
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}
