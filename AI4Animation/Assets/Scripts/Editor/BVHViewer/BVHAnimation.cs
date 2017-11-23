@@ -55,7 +55,7 @@ public class BVHAnimation : ScriptableObject {
 		Load(viewer.Path);
 		PhaseFunction = new BVHPhaseFunction(this);
 		MirroredPhaseFunction = new BVHPhaseFunction(this);
-		PhaseFunction.SetVelocitySmoothing(0.1f);
+		PhaseFunction.SetVelocitySmoothing(0.0f);
 		PhaseFunction.SetVelocityThreshold(0.1f);
 		PhaseFunction.SetHeightThreshold(0.1f);
 		StyleFunction = new BVHStyleFunction(this);
