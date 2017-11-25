@@ -764,8 +764,8 @@ public class BVHAnimation : ScriptableObject {
 			}
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
-			for(int k=1; k<frames.Length; k++) {
-				velocity += frames[k].Positions[index] - frames[k-1].Positions[index];
+			for(int i=1; i<frames.Length; i++) {
+				velocity += frames[i].Positions[index] - frames[i-1].Positions[index];
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -781,8 +781,8 @@ public class BVHAnimation : ScriptableObject {
 			}
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			float velocity = 0f;
-			for(int k=1; k<frames.Length; k++) {
-				velocity += Quaternion.Angle(frames[k-1].Rotations[index], frames[k].Rotations[index]);
+			for(int i=1; i<frames.Length; i++) {
+				velocity += Quaternion.Angle(frames[i-1].Rotations[index], frames[i].Rotations[index]);
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -797,7 +797,8 @@ public class BVHAnimation : ScriptableObject {
 		public float[] Phase;
 		public float[] Cycle;
 		public float[] NormalisedCycle;
-		
+		public bool ShowCycle;
+
 		public Vector2 VariablesScroll;
 		public bool[] Variables;
 		public float VelocitySmoothing;
@@ -975,7 +976,6 @@ public class BVHAnimation : ScriptableObject {
 				Heights[i] = 0f;
 				Velocities[i] = 0f;
 				NormalisedVelocities[i] = 0f;
-
 			}
 			float min, max;
 			
@@ -1007,10 +1007,10 @@ public class BVHAnimation : ScriptableObject {
 					if(Variables[j]) {
 						float boneVelocity = Animation.Frames[i].ComputeTranslationalVelocity(j, VelocitySmoothing) / Animation.FrameTime;
 						Velocities[i] = Mathf.Max(0f, Velocities[i], boneVelocity);
-						if(Velocities[i] < VelocityThreshold || Heights[i] < HeightThreshold) {
-							Velocities[i] = 0f;
-						}
 					}
+				}
+				if(Velocities[i] < VelocityThreshold || Heights[i] < HeightThreshold) {
+					Velocities[i] = 0f;
 				}
 				if(Velocities[i] < min) {
 					min = Velocities[i];
@@ -1064,19 +1064,28 @@ public class BVHAnimation : ScriptableObject {
 						}
 					}
 					if(Optimiser != null) {
-						EditorGUILayout.BeginHorizontal();
-						EditorGUILayout.LabelField("Fitness: " + Optimiser.GetFitness());
-						if(Utility.GUIButton("Restart", Utility.DarkGrey, Utility.White)) {
+						if(Utility.GUIButton("Restart", Utility.Brown, Utility.White)) {
 							Optimiser.Initialise();
 						}
+						EditorGUILayout.BeginHorizontal();
+						EditorGUILayout.LabelField("Fitness: " + Optimiser.GetFitness(), GUILayout.Width(150f));
+						float[] configuration = Optimiser.GetPeakConfiguration();
+						EditorGUILayout.LabelField("Peak: " + configuration[0] + " | " + configuration[1] + " | " + configuration[2] + " | " + configuration[3] + " | " + configuration[4]);
+						EditorGUILayout.EndHorizontal();
+						EditorGUILayout.BeginHorizontal();
+						EditorGUILayout.LabelField("Exploration", GUILayout.Width(100f));
+						GUILayout.FlexibleSpace();
+						Optimiser.Behaviour = EditorGUILayout.Slider(Optimiser.Behaviour, 0f, 1f);
+						GUILayout.FlexibleSpace();
+						EditorGUILayout.LabelField("Exploitation", GUILayout.Width(100f));
 						EditorGUILayout.EndHorizontal();
 						Optimiser.SetAmplitude(EditorGUILayout.Slider("Amplitude", Optimiser.Amplitude, 0, BVHEvolution.AMPLITUDE));
 						Optimiser.SetFrequency(EditorGUILayout.Slider("Frequency", Optimiser.Frequency, 0f, BVHEvolution.FREQUENCY));
 						Optimiser.SetShift(EditorGUILayout.Slider("Shift", Optimiser.Shift, 0, BVHEvolution.SHIFT));
 						Optimiser.SetOffset(EditorGUILayout.Slider("Offset", Optimiser.Offset, 0, BVHEvolution.OFFSET));
 						Optimiser.SetSlope(EditorGUILayout.Slider("Slope", Optimiser.Slope, 0, BVHEvolution.SLOPE));
-						Optimiser.SetGradientCutoff(EditorGUILayout.Slider("Gradient Cutoff", Optimiser.GradientCutoff, 0f, BVHEvolution.GRADIENTCUTOFF));
 						Optimiser.SetWindow(EditorGUILayout.Slider("Window", Optimiser.Window, 0.1f, BVHEvolution.WINDOW));
+						Optimiser.Blending = EditorGUILayout.Slider("Blending", Optimiser.Blending, 0f, 1f);
 					} else {
 						EditorGUILayout.LabelField("No optimiser available.");
 					}
@@ -1107,6 +1116,8 @@ public class BVHAnimation : ScriptableObject {
 					SetPhase(Animation.CurrentFrame, EditorGUILayout.Slider("Phase", GetPhase(Animation.CurrentFrame), 0f, 1f));
 					EditorGUI.EndDisabledGroup();
 				}
+
+				ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
 
 				if(IsKey(Animation.CurrentFrame)) {
 					if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
@@ -1161,6 +1172,7 @@ public class BVHAnimation : ScriptableObject {
 				Vector3 newPos = Vector3.zero;
 				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
 				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
+
 				//Velocities
 				for(int i=1; i<elements; i++) {
 					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
@@ -1191,15 +1203,15 @@ public class BVHAnimation : ScriptableObject {
 				*/
 				
 				//Cycle
-				/*
-				for(int i=1; i<elements; i++) {
-					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-					prevPos.y = rect.yMax - NormalisedCycle[i+start-1] * rect.height;
-					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-					newPos.y = rect.yMax - NormalisedCycle[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.Yellow);
+				if(ShowCycle) {
+					for(int i=1; i<elements; i++) {
+						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
+						prevPos.y = rect.yMax - NormalisedCycle[i+start-1] * rect.height;
+						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
+						newPos.y = rect.yMax - NormalisedCycle[i+start] * rect.height;
+						UnityGL.DrawLine(prevPos, newPos, Utility.Yellow);
+					}
 				}
-				*/				
 
 				//Phase
 				BVHFrame A = Animation.GetFrame(start);
@@ -1231,7 +1243,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						UnityGL.DrawCircle(top, 2.5f, Utility.White);
+						UnityGL.DrawCircle(top, 5f, Utility.White);
 					}
 					timestamp += 1f;
 				}
@@ -1619,7 +1631,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						UnityGL.DrawCircle(top, 2.5f, Utility.White);
+						UnityGL.DrawCircle(top, 5f, Utility.White);
 					}
 					timestamp += 1f;
 				}
@@ -1677,13 +1689,12 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public class BVHEvolution {
-		public static float AMPLITUDE = 10f;
+		public static float AMPLITUDE = 5f;
 		public static float FREQUENCY = 5f;
 		public static float SHIFT = Mathf.PI;
 		public static float OFFSET = 10f;
-		public static float SLOPE = 10f;
-		public static float GRADIENTCUTOFF = 0.25f;
-		public static float WINDOW = 10f;
+		public static float SLOPE = 5f;
+		public static float WINDOW = 5f;
 		
 		public BVHAnimation Animation;
 		public BVHPhaseFunction Function;
@@ -1698,10 +1709,11 @@ public class BVHAnimation : ScriptableObject {
 		public float Shift = SHIFT;
 		public float Offset = OFFSET;
 		public float Slope = SLOPE;
-		public float GradientCutoff = GRADIENTCUTOFF;
+
+		public float Behaviour = 1f;
 
 		public float Window = 1f;
-		public Interval[] Intervals;
+		public float Blending = 0.5f;
 
 		public BVHEvolution(BVHAnimation animation, BVHPhaseFunction function) {
 			Animation = animation;
@@ -1709,16 +1721,12 @@ public class BVHAnimation : ScriptableObject {
 
 			LowerBounds = new float[5];
 			UpperBounds = new float[5];
-			LowerBounds[0] = -Amplitude;
-			UpperBounds[0] = Amplitude;
-			LowerBounds[1] = -Frequency;
-			UpperBounds[1] = Frequency;
-			LowerBounds[2] = -Shift;
-			UpperBounds[2] = Shift;
-			LowerBounds[3] = -Offset;
-			UpperBounds[3] = Offset;
-			LowerBounds[4] = -Slope;
-			UpperBounds[4] = Slope;
+
+			SetAmplitude(Amplitude);
+			SetFrequency(Frequency);
+			SetShift(Shift);
+			SetOffset(Offset);
+			SetSlope(Slope);
 
 			Initialise();
 		}
@@ -1753,13 +1761,6 @@ public class BVHAnimation : ScriptableObject {
 			UpperBounds[4] = value;
 		}
 
-		public void SetGradientCutoff(float value) {
-			if(GradientCutoff != value) {
-				GradientCutoff = value;
-				Assign();
-			}
-		}
-
 		public void SetWindow(float value) {
 			if(Window != value) {
 				Window = value;
@@ -1768,22 +1769,19 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Initialise() {
-			Intervals = new Interval[Mathf.FloorToInt(Animation.TotalTime / Window) + 1];
-			for(int i=0; i<Intervals.Length; i++) {
+			Interval[] intervals = new Interval[Mathf.FloorToInt(Animation.TotalTime / Window) + 1];
+			for(int i=0; i<intervals.Length; i++) {
 				int start = Animation.GetFrame(i*Window).Index-1;
 				int end = Animation.GetFrame(Mathf.Min(Animation.TotalTime, (i+1)*Window)).Index-2;
 				if(end == Animation.TotalFrames-2) {
 					end += 1;
 				}
-				Intervals[i] = new Interval(start, end);
+				intervals[i] = new Interval(start, end);
 			}
 
-			Populations = new Population[Intervals.Length];
+			Populations = new Population[intervals.Length];
 			for(int i=0; i<Populations.Length; i++) {
-				Populations[i] = new Population(this, 50, 5);
-			}
-			for(int i=0; i<Populations.Length; i++) {
-				Populations[i].Initialise(Intervals[i]);
+				Populations[i] = new Population(this, 50, 5, intervals[i]);
 			}
 
 			Assign();
@@ -1791,7 +1789,7 @@ public class BVHAnimation : ScriptableObject {
 
 		public void Optimise() {
 			for(int i=0; i<Populations.Length; i++) {
-				Populations[i].Evolve(Intervals[i]);
+				Populations[i].Evolve(IsActive(i), Populations[Mathf.Max(0, i-1)], Populations[Mathf.Min(Populations.Length-1, i+1)]);
 			}
 			Assign();
 		}
@@ -1805,102 +1803,49 @@ public class BVHAnimation : ScriptableObject {
 				Function.NormalisedCycle[i] = 0f;
 			}
 
-			//Compute average velocities
-			float[] avgVelocities = new float[Intervals.Length];
-			for(int i=0; i<Intervals.Length; i++) {
-				avgVelocities[i] = 0f;
-				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
-					avgVelocities[i] += Function.Velocities[j];
-				}
-				avgVelocities[i] /= Intervals[i].Length;
-			}
-
-			//Compute average values
-			float avgA = 0f;
-			float avgF = 0f;
-			float avgS = 0f;
-			float avgO = 0f;
-			int elements = 0;
-			for(int i=0; i<Intervals.Length; i++) {
-				if(avgVelocities[i] > 0f) {
-					avgA += Populations[i].GetWinner().Genes[0];
-					avgF += Populations[i].GetWinner().Genes[1];
-					avgS += Populations[i].GetWinner().Genes[2];
-					avgO += Populations[i].GetWinner().Genes[3];
-					elements += 1;
-				}
-			}
-			if(elements != 0) {
-				avgA /= elements;
-				avgF /= elements;
-				avgS /= elements;
-				avgO /= elements;
-			}
-
 			//Compute cycle
 			float min = float.MaxValue;
 			float max = float.MinValue;
 			for(int i=0; i<Populations.Length; i++) {
-				Individual winner = Populations[i].GetWinner();
-				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
-					Function.Cycle[j] = Utility.LinSin(
-						avgVelocities[i] > 0f ? winner.Genes[0] : avgA, 
-						avgVelocities[i] > 0f ? winner.Genes[1] : avgF, 
-						avgVelocities[i] > 0f ? winner.Genes[2] : avgS, 
-						avgVelocities[i] > 0f ? winner.Genes[3] : avgO, 
-						avgVelocities[i] > 0f ? winner.Genes[4] : 0f,
-						(j-Intervals[i].Start)*Animation.FrameTime
-					);
+				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
+					Function.Cycle[j] = InterpolateValue(i, j);
 					min = Mathf.Min(min, Function.Cycle[j]);
 					max = Mathf.Max(max, Function.Cycle[j]);
 				}
 			}
-			for(int i=0; i<Function.NormalisedCycle.Length; i++) {
-				Function.NormalisedCycle[i] = Utility.Normalise(Function.Cycle[i], min, max, 0f, 1f);
+			for(int i=0; i<Populations.Length; i++) {
+				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
+					Function.NormalisedCycle[j] = Utility.Normalise(Function.Cycle[j], min, max, 0f, 1f);
+				}
 			}
-
-			//Label phase
 
 			//Fill with frequency negative turning points
-			for(int k=0; k<Intervals.Length; k++) {
-				if(avgVelocities[k] > 0f) {
-					Individual winner = Populations[k].GetWinner();
-					for(int i=Intervals[k].Start; i<=Intervals[k].End; i++) {
-						int pivot = i-Intervals[k].Start;
-						int left = Mathf.Max(0, pivot-1);
-						int right = Mathf.Min(Intervals[k].End-1, pivot+1);
-						float prevGradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], left*Animation.FrameTime);
-						float nextGradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], right*Animation.FrameTime);
-						float gradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], pivot*Animation.FrameTime);
-						if(prevGradient > gradient && nextGradient > gradient) {
-							Function.Keys[i] = true;
-						}
+			for(int i=0; i<Populations.Length; i++) {
+				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
+					float val = InterpolateValue(i, j);
+					float prevVal = InterpolateValue(i, j-1);
+					float nextVal = InterpolateValue(i, j+1);
+					float grad = InterpolateGradient(i, j);
+					float prevGrad = InterpolateGradient(i, j-1);
+					float nextGrad = InterpolateGradient(i, j+1);
+					float momentum = InterpolateMomentum(i, j);
+					float prevMomentum = InterpolateMomentum(i, j-1);
+					float nextMomentum = InterpolateMomentum(i, j+1);
+					if(
+						prevGrad >= grad && 
+						nextGrad >= grad && 
+						prevVal != val &&
+						nextVal != val &&
+						prevMomentum >= 0f &&
+						nextMomentum >= 0f &&
+						momentum >= 0f
+						) {
+						Function.Keys[j] = true;
 					}
 				}
 			}
 
-			//Fill idle intervals with 1s intervals
-			for(int k=0; k<Intervals.Length; k++) {
-				if(avgVelocities[k] == 0f) {
-					float start = Animation.Frames[Intervals[k].Start].Timestamp;
-					float end = Animation.Frames[Intervals[k].End].Timestamp;
-					BVHFrame prev = Function.GetPreviousKey(Animation.Frames[Intervals[k].Start]);
-					BVHFrame next = Function.GetNextKey(Animation.Frames[Intervals[k].End]);
-					if(prev != null) {
-						start = prev.Timestamp;
-					}
-					if(next != null) {
-						end = next.Timestamp;
-					}
-					float frequency = Mathf.Round(end-start) / (end-start);
-					float timestamp = start + frequency;
-					while(timestamp <= end && frequency > 0f) {
-						Function.Keys[Animation.GetFrame(Mathf.Clamp(Mathf.Round(timestamp), 0f, Animation.TotalTime)).Index-1] = true;
-						timestamp += frequency;
-					}
-				}
-			}
-
+			//Compute phase
 			for(int i=0; i<Function.Keys.Length; i++) {
 				if(Function.Keys[i]) {
 					Function.SetPhase(Animation.Frames[i], i == 0 ? 0f : 1f);
@@ -1908,25 +1853,83 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		private float ComputeGradient(int index, int offset) {
-			if(offset == 0) {
-				return 0f;
-			} else {
-				float gradient = 0f;
-				if(offset > 0) {
-					for(int i=1; i<=offset; i++) {
-						gradient += Function.Cycle[Mathf.Min(Function.Cycle.Length-1, index+i)] - Function.Cycle[index];
-					}
-				}
-				if(offset < 0) {
-					for(int i=-1; i>=offset; i--) {
-						gradient += Function.Cycle[Mathf.Max(0, index+i)] - Function.Cycle[index];
-					}
-				}
-				return gradient / Mathf.Abs(offset);
+		public bool IsActive(int interval) {
+			float velocity = 0f;
+			for(int i=Populations[interval].Interval.Start; i<=Populations[interval].Interval.End; i++) {
+				velocity += Function.Velocities[i];
+				velocity += Function == Animation.PhaseFunction ? Animation.MirroredPhaseFunction.Velocities[i] : Animation.PhaseFunction.Velocities[i];
 			}
+			return velocity / Populations[interval].Interval.Length > 0f;
 		}
 
+		public float InterpolateValue(int interval, int frame) {
+			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
+			Population current = Populations[interval];
+			float value = current.Phenotype(current.GetWinner().Genes, frame);
+			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
+			float threshold = 0.5f * (1f - Blending);
+			if(pivot < -threshold) {
+				int index = Mathf.Max(0, interval-1);
+				Population previous = Populations[index];
+				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
+				float prevValue = previous.Phenotype(previous.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * prevValue;
+			}
+			if(pivot > threshold) {
+				int index = Mathf.Min(Populations.Length-1, interval+1);
+				Population next = Populations[index];
+				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
+				float nextValue = next.Phenotype(next.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * nextValue;
+			}
+			return value;
+		}
+
+		public float InterpolateGradient(int interval, int frame) {
+			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
+			Population current = Populations[interval];
+			float value = current.Phenotype1(current.GetWinner().Genes, frame);
+			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
+			float threshold = 0.5f * (1f - Blending);
+			if(pivot < -threshold) {
+				int index = Mathf.Max(0, interval-1);
+				Population previous = Populations[index];
+				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
+				float prevValue = previous.Phenotype1(previous.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * prevValue;
+			}
+			if(pivot > threshold) {
+				int index = Mathf.Min(Populations.Length-1, interval+1);
+				Population next = Populations[index];
+				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
+				float nextValue = next.Phenotype1(next.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * nextValue;
+			}
+			return value;
+		}
+
+		public float InterpolateMomentum(int interval, int frame) {
+			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
+			Population current = Populations[interval];
+			float value = current.Phenotype3(current.GetWinner().Genes, frame);
+			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
+			float threshold = 0.5f * (1f - Blending);
+			if(pivot < -threshold) {
+				int index = Mathf.Max(0, interval-1);
+				Population previous = Populations[index];
+				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
+				float prevValue = previous.Phenotype3(previous.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * prevValue;
+			}
+			if(pivot > threshold) {
+				int index = Mathf.Min(Populations.Length-1, interval+1);
+				Population next = Populations[index];
+				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
+				float nextValue = next.Phenotype3(next.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * nextValue;
+			}
+			return value;
+		}
 
 		public float GetFitness() {
 			float fitness = 0f;
@@ -1936,22 +1939,36 @@ public class BVHAnimation : ScriptableObject {
 			return fitness / Populations.Length;
 		}
 
+		public float[] GetPeakConfiguration() {
+			float[] configuration = new float[5];
+			for(int i=0; i<5; i++) {
+				configuration[i] = float.MinValue;
+			}
+			for(int i=0; i<Populations.Length; i++) {
+				for(int j=0; j<5; j++) {
+					configuration[j] = Mathf.Max(configuration[j], Mathf.Abs(Populations[i].GetWinner().Genes[j]));
+				}
+			}
+			return configuration;
+		}
+
 		public class Population {
+			public BVHEvolution Evolution;
 			public int Size;
 			public int Dimensionality;
-			public BVHEvolution Evolution;
+			public Interval Interval;
+
 			public Individual[] Individuals;
 			public Individual[] Offspring;
 			public float[] RankProbabilities;
 			public float RankProbabilitySum;
 
-			public Population(BVHEvolution evolution, int size, int dimensionality) {
+			public Population(BVHEvolution evolution, int size, int dimensionality, Interval interval) {
 				Evolution = evolution;
 				Size = size;
 				Dimensionality = dimensionality;
-			}
+				Interval = interval;
 
-			public void Initialise(Interval interval) {
 				//Create individuals
 				Individuals = new Individual[Size];
 				Offspring = new Individual[Size];
@@ -1977,7 +1994,7 @@ public class BVHAnimation : ScriptableObject {
 
 				//Evaluate fitness
 				for(int i=0; i<Size; i++) {
-					Evaluate(Individuals[i], interval);
+					Individuals[i].Fitness = ComputeFitness(Individuals[i].Genes);
 				}
 
 				//Sort
@@ -1987,69 +2004,98 @@ public class BVHAnimation : ScriptableObject {
 				AssignExtinctions(Individuals);
 			}
 
-			public void Evolve(Interval interval) {
-				//Copy elite
-				Copy(Individuals[0], Offspring[0]);
+			public void Evolve(bool active, Population previous, Population next) {
+				if(active) {
+					//Copy elite
+					Copy(Individuals[0], Offspring[0]);
 
-				//Remaining individuals
-				for(int o=1; o<Size; o++) {
-					Individual offspring = Offspring[o];
-					Individual parentA = Select(Individuals);
-					Individual parentB = Select(Individuals);
-					Individual prototype = Select(Individuals);
+					//Memetic exploitation
+					Exploit(Offspring[0]);
 
-					float mutationRate = GetMutationProbability(parentA, parentB);
-					float mutationStrength = GetMutationStrength(parentA, parentB);
+					//Remaining individuals
+					for(int o=1; o<Size; o++) {
+						Individual offspring = Offspring[o];
+						if(Random.value <= Evolution.Behaviour) {
+							Individual parentA = Select(Individuals);
+							Individual parentB = Select(Individuals);
+							while(parentB == parentA) {
+								parentB = Select(Individuals);
+							}
+							Individual prototype = Select(Individuals);
+							while(prototype == parentA || prototype == parentB) {
+								prototype = Select(Individuals);
+							}
 
-					for(int i=0; i<Dimensionality; i++) {
-						float weight;
+							float mutationRate = GetMutationProbability(parentA, parentB);
+							float mutationStrength = GetMutationStrength(parentA, parentB);
 
-						//Recombination
-						weight = Random.value;
-						float momentum = Random.value * parentA.Momentum[i] + Random.value * parentB.Momentum[i];
-						if(Random.value < 0.5f) {
-							offspring.Genes[i] = parentA.Genes[i] + momentum;
+							for(int i=0; i<Dimensionality; i++) {
+								float weight;
+
+								//Recombination
+								weight = Random.value;
+								float momentum = Random.value * parentA.Momentum[i] + Random.value * parentB.Momentum[i];
+								if(Random.value < 0.5f) {
+									offspring.Genes[i] = parentA.Genes[i] + momentum;
+								} else {
+									offspring.Genes[i] = parentB.Genes[i] + momentum;
+								}
+
+								//Store
+								float gene = offspring.Genes[i];
+
+								//Mutation
+								if(Random.value <= mutationRate) {
+									float span = Evolution.UpperBounds[i] - Evolution.LowerBounds[i];
+									offspring.Genes[i] += Random.Range(-mutationStrength*span, mutationStrength*span);
+								}
+								
+								//Adoption
+								weight = Random.value;
+								offspring.Genes[i] += 
+									weight * Random.value * (0.5f * (parentA.Genes[i] + parentB.Genes[i]) - offspring.Genes[i])
+									+ (1f-weight) * Random.value * (prototype.Genes[i] - offspring.Genes[i]);
+
+								//Constrain
+								offspring.Genes[i] = Mathf.Clamp(offspring.Genes[i], Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
+
+								//Momentum
+								offspring.Momentum[i] = Random.value * momentum + (offspring.Genes[i] - gene);
+							}
 						} else {
-							offspring.Genes[i] = parentB.Genes[i] + momentum;
+							Reroll(offspring);
 						}
-
-						//Store
-						float gene = offspring.Genes[i];
-
-						//Mutation
-						if(Random.value <= mutationRate) {
-							float span = Evolution.UpperBounds[i] - Evolution.LowerBounds[i];
-							offspring.Genes[i] += Random.Range(-mutationStrength*span, mutationStrength*span);
-						}
-						
-						//Adoption
-						weight = Random.value;
-						offspring.Genes[i] += 
-							weight * Random.value * (0.5f * (parentA.Genes[i] + parentB.Genes[i]) - offspring.Genes[i])
-							+ (1f-weight) * Random.value * (prototype.Genes[i] - offspring.Genes[i]);
-
-						//Constrain
-						offspring.Genes[i] = Mathf.Clamp(offspring.Genes[i], Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
-
-						//Momentum
-						offspring.Momentum[i] = Random.value * momentum + (offspring.Genes[i] - gene);
 					}
-				}
 
-				//Evaluate fitness
-				for(int i=0; i<Size; i++) {
-					Evaluate(Offspring[i], interval);
-				}
+					//Evaluate fitness
+					for(int i=0; i<Size; i++) {
+						Offspring[i].Fitness = ComputeFitness(Offspring[i].Genes);
+					}
 
-				//Sort
-				SortByFitness(Offspring);
+					//Sort
+					SortByFitness(Offspring);
 
-				//Evaluate extinctions
-				AssignExtinctions(Offspring);
+					//Evaluate extinctions
+					AssignExtinctions(Offspring);
 
-				//Form new population
-				for(int i=0; i<Size; i++) {
-					Copy(Offspring[i], Individuals[i]);
+					//Form new population
+					for(int i=0; i<Size; i++) {
+						Copy(Offspring[i], Individuals[i]);
+					}
+				} else {
+					//Postprocess
+					for(int i=0; i<Size; i++) {
+						Individuals[i].Genes[0] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[0]);
+						Individuals[i].Genes[1] = 1f;
+						Individuals[i].Genes[2] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[2]);
+						Individuals[i].Genes[3] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[3]);
+						Individuals[i].Genes[4] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[4]);
+						for(int j=0; j<5; j++) {
+							Individuals[i].Momentum[j] = 0f;
+						}
+						Individuals[i].Fitness = 0f;
+						Individuals[i].Extinction = 0f;
+					}
 				}
 			}
 
@@ -2063,15 +2109,6 @@ public class BVHAnimation : ScriptableObject {
 			//Returns the mutation strength from two parents
 			private float GetMutationStrength(Individual parentA, Individual parentB) {
 				return 0.5f * (parentA.Extinction + parentB.Extinction);
-			}
-
-			public float GetAverageFitness() {
-				float fitness = 0f;
-				for(int i=0; i<Size; i++) {
-					fitness += Individuals[i].Fitness;
-				}
-				fitness /= Size;
-				return fitness;
 			}
 
 			public Individual GetWinner() {
@@ -2097,6 +2134,37 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 
+			private void Exploit(Individual individual) {
+				float fitness = ComputeFitness(individual.Genes);
+				for(int i=0; i<Dimensionality; i++) {
+					float gene = individual.Genes[i];
+
+					float span = Evolution.UpperBounds[i] - Evolution.LowerBounds[i];
+
+					float incGene = Mathf.Clamp(gene + Random.value*individual.Fitness*span, Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
+					individual.Genes[i] = incGene;
+					float incFitness = ComputeFitness(individual.Genes);
+
+					float decGene = Mathf.Clamp(gene - Random.value*individual.Fitness*span, Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
+					individual.Genes[i] = decGene;
+					float decFitness = ComputeFitness(individual.Genes);
+
+					individual.Genes[i] = gene;
+
+					if(incFitness < fitness) {
+						individual.Genes[i] = incGene;
+						individual.Momentum[i] = incGene - gene;
+						fitness = incFitness;
+					}
+
+					if(decFitness < fitness) {
+						individual.Genes[i] = decGene;
+						individual.Momentum[i] = decGene - gene;
+						fitness = decFitness;
+					}
+				}
+			}
+
 			//Rank-based selection of an individual
 			private Individual Select(Individual[] pool) {
 				double rVal = Random.value * RankProbabilitySum;
@@ -2119,21 +2187,63 @@ public class BVHAnimation : ScriptableObject {
 			}
 
 			//Multi-Objective RMSE
-			private void Evaluate(Individual individual, Interval interval) {
+			private float ComputeFitness(float[] genes) {
 				float fitness = 0f;
-				for(int i=interval.Start; i<=interval.End; i++) {
+				for(int i=Interval.Start; i<=Interval.End; i++) {
 					float y1 = Evolution.Function.Velocities[i];
 					float y2 = Evolution.Function == Evolution.Animation.PhaseFunction ? Evolution.Animation.MirroredPhaseFunction.Velocities[i] : Evolution.Animation.PhaseFunction.Velocities[i];
-					float x = Utility.LinSin(individual.Genes[0], individual.Genes[1], individual.Genes[2], individual.Genes[3], individual.Genes[4], (i-interval.Start)*Evolution.Animation.FrameTime);
-					float error = (y1-x)*(y1-x) + (-y2-x)*(-y2-x);
-
-					//error *= Evolution.Function.Velocities[i];
+					float x = Phenotype(genes, i);
+					float error = (y1-x) + (-y2-x);
 					float sqrError = error*error;
 					fitness += sqrError;
 				}
-				fitness /= interval.Length;
+				fitness /= Interval.Length;
 				fitness = Mathf.Sqrt(fitness);
-				individual.Fitness = fitness;
+				return fitness;
+			}
+			
+			public float Phenotype(float[] genes, int frame) {
+				return Utility.LinSin(
+					genes[0], 
+					genes[1], 
+					genes[2], 
+					genes[3] - (float)(frame-Interval.Start)*genes[4]*Evolution.Animation.FrameTime, 
+					genes[4], 
+					frame*Evolution.Animation.FrameTime
+					);
+			}
+
+			public float Phenotype1(float[] genes, int frame) {
+				return Utility.LinSin1(
+					genes[0], 
+					genes[1], 
+					genes[2], 
+					genes[3] - (float)(frame-Interval.Start)*genes[4]*Evolution.Animation.FrameTime, 
+					genes[4], 
+					frame*Evolution.Animation.FrameTime
+					);
+			}
+
+			public float Phenotype2(float[] genes, int frame) {
+				return Utility.LinSin2(
+					genes[0], 
+					genes[1], 
+					genes[2], 
+					genes[3] - (float)(frame-Interval.Start)*genes[4]*Evolution.Animation.FrameTime, 
+					genes[4], 
+					frame*Evolution.Animation.FrameTime
+					);
+			}
+
+			public float Phenotype3(float[] genes, int frame) {
+				return Utility.LinSin3(
+					genes[0], 
+					genes[1], 
+					genes[2], 
+					genes[3] - (float)(frame-Interval.Start)*genes[4]*Evolution.Animation.FrameTime, 
+					genes[4], 
+					frame*Evolution.Animation.FrameTime
+					);
 			}
 
 			//Compute extinction values
@@ -2172,469 +2282,3 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 }
-
-	/*
-	public class BVHEvolution {
-		public static float AMPLITUDE = 10f;
-		public static float FREQUENCY = 5f;
-		public static float SHIFT = Mathf.PI;
-		public static float OFFSET = 10f;
-		public static float SLOPE = 10f;
-		public static float GRADIENTCUTOFF = 0.25f;
-		public static float WINDOW = 10f;
-		
-		public BVHAnimation Animation;
-		public BVHPhaseFunction Function;
-
-		public Population[] Populations;
-
-		public float[] LowerBounds;
-		public float[] UpperBounds;
-
-		public float RecombinationRate = 0.9f;
-		public float MutationRate = 0.25f;
-		public float MutationStrength = 0.1f;
-
-		public float Amplitude = AMPLITUDE;
-		public float Frequency = FREQUENCY/2f;
-		public float Shift = SHIFT;
-		public float Offset = OFFSET;
-		public float Slope = SLOPE;
-		public float GradientCutoff = GRADIENTCUTOFF;
-
-		public float Window = 1f;
-		public Interval[] Intervals;
-
-		public BVHEvolution(BVHAnimation animation, BVHPhaseFunction function) {
-			Animation = animation;
-			Function = function;
-
-			LowerBounds = new float[5];
-			UpperBounds = new float[5];
-			LowerBounds[0] = -Amplitude;
-			UpperBounds[0] = Amplitude;
-			LowerBounds[1] = -Frequency;
-			UpperBounds[1] = Frequency;
-			LowerBounds[2] = -Shift;
-			UpperBounds[2] = Shift;
-			LowerBounds[3] = -Offset;
-			UpperBounds[3] = Offset;
-			LowerBounds[4] = -Slope;
-			UpperBounds[4] = Slope;
-
-			Initialise();
-		}
-
-		public void SetAmplitude(float value) {
-			Amplitude = value;
-			LowerBounds[0] = -value;
-			UpperBounds[0] = value;
-		}
-
-		public void SetFrequency(float value) {
-			Frequency = value;
-			LowerBounds[1] = 0f;
-			UpperBounds[1] = value;
-		}
-
-		public void SetShift(float value) {
-			Shift = value;
-			LowerBounds[2] = -value;
-			UpperBounds[2] = value;
-		}
-
-		public void SetOffset(float value) {
-			Offset = value;
-			LowerBounds[3] = -value;
-			UpperBounds[3] = value;
-		}
-
-		public void SetSlope(float value) {
-			Slope = value;
-			LowerBounds[4] = -value;
-			UpperBounds[4] = value;
-		}
-
-		public void SetGradientCutoff(float value) {
-			if(GradientCutoff != value) {
-				GradientCutoff = value;
-				Assign();
-			}
-		}
-
-		public void SetWindow(float value) {
-			if(Window != value) {
-				Window = value;
-				Initialise();
-			}
-		}
-
-		public void Initialise() {
-			Intervals = new Interval[Mathf.FloorToInt(Animation.TotalTime / Window) + 1];
-			for(int i=0; i<Intervals.Length; i++) {
-				int start = Animation.GetFrame(i*Window).Index-1;
-				int end = Animation.GetFrame(Mathf.Min(Animation.TotalTime, (i+1)*Window)).Index-2;
-				if(end == Animation.TotalFrames-2) {
-					end += 1;
-				}
-				Intervals[i] = new Interval(start, end);
-			}
-
-			Populations = new Population[Intervals.Length];
-			for(int i=0; i<Populations.Length; i++) {
-				Populations[i] = new Population(this, 50, 5);
-			}
-			for(int i=0; i<Populations.Length; i++) {
-				Populations[i].Initialise(Intervals[i]);
-			}
-
-			Assign();
-		}
-
-		public void Optimise() {
-			for(int i=0; i<Populations.Length; i++) {
-				Populations[i].Evolve(Intervals[i]);
-			}
-			Assign();
-		}
-
-		
-		public void Assign() {
-			for(int i=0; i<Animation.TotalFrames; i++) {
-				Function.Keys[i] = false;
-				Function.Phase[i] = 0f;
-				Function.Cycle[i] = 0f;
-				Function.NormalisedCycle[i] = 0f;
-			}
-
-			//Compute average velocities
-			float[] avgVelocities = new float[Intervals.Length];
-			for(int i=0; i<Intervals.Length; i++) {
-				avgVelocities[i] = 0f;
-				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
-					avgVelocities[i] += Function.Velocities[j];
-				}
-				avgVelocities[i] /= Intervals[i].Length;
-			}
-
-			//Compute average values
-			float avgA = 0f;
-			float avgF = 0f;
-			float avgS = 0f;
-			float avgO = 0f;
-			int elements = 0;
-			for(int i=0; i<Intervals.Length; i++) {
-				if(avgVelocities[i] > 0f) {
-					avgA += Populations[i].GetWinner().Genes[0];
-					avgF += Populations[i].GetWinner().Genes[1];
-					avgS += Populations[i].GetWinner().Genes[2];
-					avgO += Populations[i].GetWinner().Genes[3];
-					elements += 1;
-				}
-			}
-			if(elements != 0) {
-				avgA /= elements;
-				avgF /= elements;
-				avgS /= elements;
-				avgO /= elements;
-			}
-
-			//Compute cycle
-			float min = float.MaxValue;
-			float max = float.MinValue;
-			for(int i=0; i<Populations.Length; i++) {
-				Individual winner = Populations[i].GetWinner();
-				for(int j=Intervals[i].Start; j<=Intervals[i].End; j++) {
-					Function.Cycle[j] = Utility.LinSin(
-						avgVelocities[i] > 0f ? winner.Genes[0] : avgA, 
-						avgVelocities[i] > 0f ? winner.Genes[1] : avgF, 
-						avgVelocities[i] > 0f ? winner.Genes[2] : avgS, 
-						avgVelocities[i] > 0f ? winner.Genes[3] : avgO, 
-						avgVelocities[i] > 0f ? winner.Genes[4] : 0f,
-						(j-Intervals[i].Start)*Animation.FrameTime
-					);
-					min = Mathf.Min(min, Function.Cycle[j]);
-					max = Mathf.Max(max, Function.Cycle[j]);
-				}
-			}
-			for(int i=0; i<Function.NormalisedCycle.Length; i++) {
-				Function.NormalisedCycle[i] = Utility.Normalise(Function.Cycle[i], min, max, 0f, 1f);
-			}
-
-			//Label phase
-
-			//Fill with frequency negative turning points
-			for(int k=0; k<Intervals.Length; k++) {
-				if(avgVelocities[k] > 0f) {
-					Individual winner = Populations[k].GetWinner();
-					for(int i=Intervals[k].Start; i<=Intervals[k].End; i++) {
-						int pivot = i-Intervals[k].Start;
-						int left = Mathf.Max(0, pivot-1);
-						int right = Mathf.Min(Function.Cycle.Length-1, pivot+1);
-						float prevGradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], left*Animation.FrameTime);
-						float nextGradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], right*Animation.FrameTime);
-						float gradient = Utility.LinSin1(winner.Genes[0], winner.Genes[1], winner.Genes[2], winner.Genes[3], winner.Genes[4], pivot*Animation.FrameTime);
-						if(prevGradient > gradient && nextGradient > gradient) {
-							Function.Keys[i] = true;
-						}
-					}
-				}
-			}
-
-			//Fill idle intervals with 1s intervals
-			for(int k=0; k<Intervals.Length; k++) {
-				if(avgVelocities[k] == 0f) {
-					float start = Animation.Frames[Intervals[k].Start].Timestamp;
-					float end = Animation.Frames[Intervals[k].End].Timestamp;
-					BVHFrame prev = Function.GetPreviousKey(Animation.Frames[Intervals[k].Start]);
-					BVHFrame next = Function.GetNextKey(Animation.Frames[Intervals[k].End]);
-					if(prev != null) {
-						start = prev.Timestamp;
-					}
-					if(next != null) {
-						end = next.Timestamp;
-					}
-					float frequency = Mathf.Round(end-start) / (end-start);
-					float timestamp = start + frequency;
-					while(timestamp <= end && frequency > 0f) {
-						Function.Keys[Animation.GetFrame(Mathf.Clamp(Mathf.Round(timestamp), 0f, Animation.TotalTime)).Index-1] = true;
-						timestamp += frequency;
-					}
-				}
-			}
-
-			for(int i=0; i<Function.Keys.Length; i++) {
-				if(Function.Keys[i]) {
-					Function.SetPhase(Animation.Frames[i], i == 0 ? 0f : 1f);
-				}
-			}
-		}
-
-		private float ComputeGradient(int index, int offset) {
-			if(offset == 0) {
-				return 0f;
-			} else {
-				float gradient = 0f;
-				if(offset > 0) {
-					for(int i=1; i<=offset; i++) {
-						gradient += Function.Cycle[Mathf.Min(Function.Cycle.Length-1, index+i)] - Function.Cycle[index];
-					}
-				}
-				if(offset < 0) {
-					for(int i=-1; i>=offset; i--) {
-						gradient += Function.Cycle[Mathf.Max(0, index+i)] - Function.Cycle[index];
-					}
-				}
-				return gradient / Mathf.Abs(offset);
-			}
-		}
-
-
-		public float GetFitness() {
-			float fitness = 0f;
-			for(int i=0; i<Populations.Length; i++) {
-				fitness += Populations[i].GetFitness();
-			}
-			return fitness / Populations.Length;
-		}
-
-		public class Population {
-			public BVHEvolution Evolution;
-			public Individual[] Individuals;
-			public int Size;
-			public int Dimensionality;
-
-			public Population(BVHEvolution evolution, int size, int dimensionality) {
-				Evolution = evolution;
-				Size = size;
-				Dimensionality = dimensionality;
-			}
-
-			public void Initialise(Interval interval) {
-				//Create individuals
-				Individuals = new Individual[Size];
-				for(int i=0; i<Individuals.Length; i++) {
-					Individuals[i] = new Individual(Dimensionality);
-				}
-
-				//Initialise randomly
-				for(int i=0; i<Individuals.Length; i++) {
-					Reroll(Individuals[i]);
-				}
-
-				//Evaluate fitness
-				for(int i=0; i<Individuals.Length; i++) {
-					Evaluate(Individuals[i], interval);
-				}
-
-				//Sort
-				SortByFitness(Individuals);
-			}
-
-			public void Evolve(Interval interval) {
-				//Create offspring
-				Individual[] offspring = new Individual[Individuals.Length];
-				for(int i=0; i<offspring.Length; i++) {
-					offspring[i] = new Individual(Dimensionality);
-				}
-
-				//Copy elite
-				Copy(Individuals[0], offspring[0]);
-
-				//Evolve offspring
-				for(int i=1; i<offspring.Length; i++) {
-					Recombine(Select(Individuals), Select(Individuals), offspring[i]);
-					Mutate(offspring[i]);
-				}
-
-				//Constraints
-				for(int i=0; i<offspring.Length; i++) {
-					Constrain(offspring[i]);
-				}
-
-				//Evaluate fitness
-				for(int i=0; i<offspring.Length; i++) {
-					Evaluate(offspring[i], interval);
-				}
-
-				//Sort
-				SortByFitness(offspring);
-
-				//Form new population
-				Individuals = offspring;
-			}
-
-			public float GetAverageFitness() {
-				float fitness = 0f;
-				for(int i=0; i<Individuals.Length; i++) {
-					fitness += Individuals[i].Fitness;
-				}
-				fitness /= Individuals.Length;
-				return fitness;
-			}
-
-			public Individual GetWinner() {
-				return Individuals[0];
-			}
-
-			public float GetFitness() {
-				return GetWinner().Fitness;
-			}
-
-			private void Copy(Individual from, Individual to) {
-				for(int i=0; i<from.Genes.Length; i++) {
-					to.Genes[i] = from.Genes[i];
-				}
-			}
-
-			private void Reroll(Individual individual) {
-				for(int i=0; i<individual.Genes.Length; i++) {
-					individual.Genes[i] = Random.Range(Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
-				}
-			}
-
-			private void Recombine(Individual parentA, Individual parentB, Individual offspring) {
-				if(Random.value < Evolution.RecombinationRate) {
-					for(int i=0; i<offspring.Genes.Length; i++) {
-						if(Random.value < 0.5f) {
-							offspring.Genes[i] = parentA.Genes[i];
-						} else {
-							offspring.Genes[i] = parentB.Genes[i];
-						}
-					}
-				} else {
-					Reroll(offspring);
-				}
-			}
-
-			private void Mutate(Individual individual) {
-				for(int i=0; i<individual.Genes.Length; i++) {
-					if(Random.value <= Evolution.MutationRate) {
-						float span = Evolution.UpperBounds[i] - Evolution.LowerBounds[i];
-						individual.Genes[i] += Random.Range(-Evolution.MutationStrength*span, Evolution.MutationStrength*span);
-					}
-				}	
-			}
-
-			private void Constrain(Individual indivdiual) {
-				for(int i=0; i<indivdiual.Genes.Length; i++) {
-					indivdiual.Genes[i] = Mathf.Clamp(indivdiual.Genes[i], Evolution.LowerBounds[i], Evolution.UpperBounds[i]);
-				}
-			}
-
-			//Rank-based selection of an individual
-			private Individual Select(Individual[] pool) {
-				double[] probabilities = new double[pool.Length];
-				double rankSum = (double)(pool.Length*(pool.Length+1)) / 2.0;
-				for(int i=0; i<pool.Length; i++) {
-					probabilities[i] = (double)(pool.Length-i)/rankSum;
-				}
-				return pool[GetRandomWeightedIndex(probabilities, pool.Length)];
-			}
-			
-			//Returns a random index with respect to the probability weights
-			private int GetRandomWeightedIndex(double[] probabilities, int count) {
-				double weightSum = 0.0;
-				for(int i=0; i<count; i++) {
-					weightSum += probabilities[i];
-				}
-				double rVal = Random.value * weightSum;
-				for(int i=0; i<count; i++) {
-					rVal -= probabilities[i];
-					if(rVal <= 0.0) {
-						return i;
-					}
-				}
-				return count-1;
-			}
-
-			//Sorts all individuals starting with best (lowest) fitness
-			private void SortByFitness(Individual[] individuals) {
-				System.Array.Sort(individuals,
-					delegate(Individual a, Individual b) {
-						return a.Fitness.CompareTo(b.Fitness);
-					}
-				);
-			}
-
-			//Multi-Objective RMSE
-			private void Evaluate(Individual individual, Interval interval) {
-				float fitness = 0f;
-				for(int i=interval.Start; i<=interval.End; i++) {
-					float y1 = Evolution.Function.Velocities[i];
-					float y2 = Evolution.Function == Evolution.Animation.PhaseFunction ? Evolution.Animation.MirroredPhaseFunction.Velocities[i] : Evolution.Animation.PhaseFunction.Velocities[i];
-					float x = Utility.LinSin(individual.Genes[0], individual.Genes[1], individual.Genes[2], individual.Genes[3], individual.Genes[4], (i-interval.Start)*Evolution.Animation.FrameTime);
-					float error = (y1-x)*(y1-x) + (-y2-x)*(-y2-x);
-
-					//error *= Evolution.Function.Velocities[i];
-					float sqrError = error*error;
-					fitness += sqrError;
-				}
-				fitness /= interval.Length;
-				fitness = Mathf.Sqrt(fitness);
-				individual.Fitness = fitness;
-			}
-		}
-
-		public class Individual {
-			public float[] Genes;
-			public float Fitness;
-
-			public Individual(int dimensionality) {
-				Genes = new float[dimensionality];
-			}
-		}
-
-		public class Interval {
-			public int Start;
-			public int End;
-			public int Length;
-			public Interval(int start, int end) {
-				Start = start;
-				End = end;
-				Length = end-start+1;
-			}
-		}
-
-	}
-	*/

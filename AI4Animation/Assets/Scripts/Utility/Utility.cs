@@ -78,15 +78,25 @@ public static class Utility {
 
 	//0 = Amplitude, 1 = Frequency, 2 = Shift, 3 = Offset, 4 = Slope, 5 = time
 	public static float LinSin(float a, float f, float s, float o, float m, float t) {
-		return a * Mathf.Sin(f * (t * 2f * Mathf.PI) - s) + o + m * t;
+		return a * Mathf.Sin(f * (t - s) * 2f * Mathf.PI) + o + m * t;
 	}
 
 	public static float LinSin1(float a, float f, float s, float o, float m, float t) {
-		return a * f * Mathf.Cos(f * (t * 2f * Mathf.PI) - s) + m;
+		return a * f * 2f * Mathf.PI * Mathf.Cos(f * (t - s) * 2f * Mathf.PI) + m;
 	}
 
 	public static float LinSin2(float a, float f, float s, float o, float m, float t) {
-		return a * f * f * -Mathf.Sin(f * (t * 2f * Mathf.PI) - s);
+		return a * f * f * 2f * Mathf.PI * 2f * Mathf.PI * -Mathf.Sin(f * (t - s) * 2f * Mathf.PI);
+	}
+
+	public static float LinSin3(float a, float f, float s, float o, float m, float t) {
+		return a * f * f * f * 2f * Mathf.PI * 2f * Mathf.PI * 2f * Mathf.PI * -Mathf.Cos(f * (t - s) * 2f * Mathf.PI);
+	}
+
+	public static float Gaussian(float peak, float shift, float sigma, float x) {
+		float upper = (x-shift)*(x-shift);
+		float lower = 2f*sigma*sigma;
+		return peak * Mathf.Exp(-upper/lower);
 	}
 
 	public static Vector3 TransformPosition(Transform frame, Vector3 position) {
