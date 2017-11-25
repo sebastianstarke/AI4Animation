@@ -1713,7 +1713,7 @@ public class BVHAnimation : ScriptableObject {
 		public float Behaviour = 1f;
 
 		public float Window = 1f;
-		public float Blending = 0.5f;
+		public float Blending = 1f;
 
 		public BVHEvolution(BVHAnimation animation, BVHPhaseFunction function) {
 			Animation = animation;
@@ -1820,9 +1820,9 @@ public class BVHAnimation : ScriptableObject {
 			//Fill with frequency negative turning points
 			for(int i=0; i<Populations.Length; i++) {
 				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
-					float val = InterpolateValue(i, j);
-					float prevVal = InterpolateValue(i, j-1);
-					float nextVal = InterpolateValue(i, j+1);
+					//float val = InterpolateValue(i, j);
+					//float prevVal = InterpolateValue(i, j-1);
+					//float nextVal = InterpolateValue(i, j+1);
 					float grad = InterpolateGradient(i, j);
 					float prevGrad = InterpolateGradient(i, j-1);
 					float nextGrad = InterpolateGradient(i, j+1);
@@ -1830,13 +1830,9 @@ public class BVHAnimation : ScriptableObject {
 					float prevMomentum = InterpolateMomentum(i, j-1);
 					float nextMomentum = InterpolateMomentum(i, j+1);
 					if(
-						prevGrad >= grad && 
-						nextGrad >= grad && 
-						prevVal != val &&
-						nextVal != val &&
-						prevMomentum >= 0f &&
-						nextMomentum >= 0f &&
-						momentum >= 0f
+						prevGrad >= grad && nextGrad >= grad && 
+						//prevVal != val && nextVal != val &&
+						(prevMomentum >= 0f || nextMomentum >= 0f || momentum >= 0f)
 						) {
 						Function.Keys[j] = true;
 					}
