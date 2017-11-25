@@ -1778,12 +1778,10 @@ public class BVHAnimation : ScriptableObject {
 				}
 				intervals[i] = new Interval(start, end);
 			}
-
 			Populations = new Population[intervals.Length];
 			for(int i=0; i<Populations.Length; i++) {
 				Populations[i] = new Population(this, 50, 5, intervals[i]);
 			}
-
 			Assign();
 		}
 
