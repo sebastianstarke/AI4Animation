@@ -57,7 +57,7 @@ public class BVHAnimation : ScriptableObject {
 		MirroredPhaseFunction = new BVHPhaseFunction(this);
 		PhaseFunction.SetVelocitySmoothing(0.0f);
 		PhaseFunction.SetVelocityThreshold(0.1f);
-		PhaseFunction.SetHeightThreshold(0.1f);
+		PhaseFunction.SetHeightThreshold(0.0f);
 		StyleFunction = new BVHStyleFunction(this);
 		Sequences = new BVHSequence[0];
 		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
@@ -986,7 +986,7 @@ public class BVHAnimation : ScriptableObject {
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
 						float offset = Mathf.Max(0f, Animation.Frames[i].Positions[j].y - Utility.ProjectGround(Animation.Frames[i].Positions[j], mask).y);
-						Heights[i] = Mathf.Max(Heights[i], offset);
+						Heights[i] += offset < HeightThreshold ? 0f : offset;
 					}
 				}
 				if(Heights[i] < min) {
@@ -1006,10 +1006,10 @@ public class BVHAnimation : ScriptableObject {
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
 						float boneVelocity = Animation.Frames[i].ComputeTranslationalVelocity(j, VelocitySmoothing) / Animation.FrameTime;
-						Velocities[i] = Mathf.Max(0f, Velocities[i], boneVelocity);
+						Velocities[i] += boneVelocity;
 					}
 				}
-				if(Velocities[i] < VelocityThreshold || Heights[i] < HeightThreshold) {
+				if(Velocities[i] < VelocityThreshold || Heights[i] == 0f) {
 					Velocities[i] = 0f;
 				}
 				if(Velocities[i] < min) {
@@ -1787,7 +1787,10 @@ public class BVHAnimation : ScriptableObject {
 
 		public void Optimise() {
 			for(int i=0; i<Populations.Length; i++) {
-				Populations[i].Evolve(IsActive(i), Populations[Mathf.Max(0, i-1)], Populations[Mathf.Min(Populations.Length-1, i+1)]);
+				Populations[i].Active = IsActive(i);
+			}
+			for(int i=0; i<Populations.Length; i++) {
+				Populations[i].Evolve(GetPreviousPopulation(i), GetNextPopulation(i), GetPreviousPivotPopulation(i), GetNextPivotPopulation(i));
 			}
 			Assign();
 		}
@@ -1806,7 +1809,8 @@ public class BVHAnimation : ScriptableObject {
 			float max = float.MinValue;
 			for(int i=0; i<Populations.Length; i++) {
 				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
-					Function.Cycle[j] = InterpolateValue(i, j);
+					
+					Function.Cycle[j] = Interpolate(i, j);
 					min = Mathf.Min(min, Function.Cycle[j]);
 					max = Mathf.Max(max, Function.Cycle[j]);
 				}
@@ -1820,20 +1824,7 @@ public class BVHAnimation : ScriptableObject {
 			//Fill with frequency negative turning points
 			for(int i=0; i<Populations.Length; i++) {
 				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
-					//float val = InterpolateValue(i, j);
-					//float prevVal = InterpolateValue(i, j-1);
-					//float nextVal = InterpolateValue(i, j+1);
-					float grad = InterpolateGradient(i, j);
-					float prevGrad = InterpolateGradient(i, j-1);
-					float nextGrad = InterpolateGradient(i, j+1);
-					float momentum = InterpolateMomentum(i, j);
-					float prevMomentum = InterpolateMomentum(i, j-1);
-					float nextMomentum = InterpolateMomentum(i, j+1);
-					if(
-						prevGrad >= grad && nextGrad >= grad && 
-						//prevVal != val && nextVal != val &&
-						(prevMomentum >= 0f || nextMomentum >= 0f || momentum >= 0f)
-						) {
+					if(InterpolateD2(i, j) <= 0f && InterpolateD2(i, j+1) > 0f) {
 						Function.Keys[j] = true;
 					}
 				}
@@ -1847,6 +1838,32 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
+		public Population GetPreviousPopulation(int current) {
+			return Populations[Mathf.Max(0, current-1)];
+		}
+
+		public Population GetPreviousPivotPopulation(int current) {
+			for(int i=current-1; i>=0; i--) {
+				if(Populations[i].Active) {
+					return Populations[i];
+				}
+			}
+			return Populations[0];
+		}
+
+		public Population GetNextPopulation(int current) {
+			return Populations[Mathf.Min(Populations.Length-1, current+1)];
+		}
+
+		public Population GetNextPivotPopulation(int current) {
+			for(int i=current+1; i<Populations.Length; i++) {
+				if(Populations[i].Active) {
+					return Populations[i];
+				}
+			}
+			return Populations[Populations.Length-1];
+		}
+
 		public bool IsActive(int interval) {
 			float velocity = 0f;
 			for(int i=Populations[interval].Interval.Start; i<=Populations[interval].Interval.End; i++) {
@@ -1856,22 +1873,20 @@ public class BVHAnimation : ScriptableObject {
 			return velocity / Populations[interval].Interval.Length > 0f;
 		}
 
-		public float InterpolateValue(int interval, int frame) {
+		public float Interpolate(int interval, int frame) {
 			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
 			Population current = Populations[interval];
 			float value = current.Phenotype(current.GetWinner().Genes, frame);
 			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
 			float threshold = 0.5f * (1f - Blending);
 			if(pivot < -threshold) {
-				int index = Mathf.Max(0, interval-1);
-				Population previous = Populations[index];
+				Population previous = GetPreviousPopulation(interval);
 				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
 				float prevValue = previous.Phenotype(previous.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * prevValue;
 			}
 			if(pivot > threshold) {
-				int index = Mathf.Min(Populations.Length-1, interval+1);
-				Population next = Populations[index];
+				Population next = GetNextPopulation(interval);
 				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
 				float nextValue = next.Phenotype(next.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * nextValue;
@@ -1879,22 +1894,20 @@ public class BVHAnimation : ScriptableObject {
 			return value;
 		}
 
-		public float InterpolateGradient(int interval, int frame) {
+		public float InterpolateD1(int interval, int frame) {
 			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
 			Population current = Populations[interval];
 			float value = current.Phenotype1(current.GetWinner().Genes, frame);
 			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
 			float threshold = 0.5f * (1f - Blending);
 			if(pivot < -threshold) {
-				int index = Mathf.Max(0, interval-1);
-				Population previous = Populations[index];
+				Population previous = GetPreviousPopulation(interval);
 				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
 				float prevValue = previous.Phenotype1(previous.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * prevValue;
 			}
 			if(pivot > threshold) {
-				int index = Mathf.Min(Populations.Length-1, interval+1);
-				Population next = Populations[index];
+				Population next = GetNextPopulation(interval);
 				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
 				float nextValue = next.Phenotype1(next.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * nextValue;
@@ -1902,22 +1915,41 @@ public class BVHAnimation : ScriptableObject {
 			return value;
 		}
 
-		public float InterpolateMomentum(int interval, int frame) {
+		public float InterpolateD2(int interval, int frame) {
+			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
+			Population current = Populations[interval];
+			float value = current.Phenotype2(current.GetWinner().Genes, frame);
+			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
+			float threshold = 0.5f * (1f - Blending);
+			if(pivot < -threshold) {
+				Population previous = GetPreviousPopulation(interval);
+				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
+				float prevValue = previous.Phenotype2(previous.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * prevValue;
+			}
+			if(pivot > threshold) {
+				Population next = GetNextPopulation(interval);
+				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
+				float nextValue = next.Phenotype2(next.GetWinner().Genes, frame);
+				value = (1f-blend) * value + blend * nextValue;
+			}
+			return value;
+		}
+
+		public float InterpolateD3(int interval, int frame) {
 			interval = Mathf.Clamp(interval, 0, Populations.Length-1);
 			Population current = Populations[interval];
 			float value = current.Phenotype3(current.GetWinner().Genes, frame);
 			float pivot = (float)(frame-current.Interval.Start) / (float)(current.Interval.Length-1) - 0.5f;
 			float threshold = 0.5f * (1f - Blending);
 			if(pivot < -threshold) {
-				int index = Mathf.Max(0, interval-1);
-				Population previous = Populations[index];
+				Population previous = GetPreviousPopulation(interval);
 				float blend = 0.5f * (pivot + threshold) / (-0.5f + threshold);
 				float prevValue = previous.Phenotype3(previous.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * prevValue;
 			}
 			if(pivot > threshold) {
-				int index = Mathf.Min(Populations.Length-1, interval+1);
-				Population next = Populations[index];
+				Population next = GetNextPopulation(interval);
 				float blend = 0.5f * (pivot - threshold) / (0.5f - threshold);
 				float nextValue = next.Phenotype3(next.GetWinner().Genes, frame);
 				value = (1f-blend) * value + blend * nextValue;
@@ -1951,6 +1983,8 @@ public class BVHAnimation : ScriptableObject {
 			public int Size;
 			public int Dimensionality;
 			public Interval Interval;
+
+			public bool Active;
 
 			public Individual[] Individuals;
 			public Individual[] Offspring;
@@ -1998,8 +2032,8 @@ public class BVHAnimation : ScriptableObject {
 				AssignExtinctions(Individuals);
 			}
 
-			public void Evolve(bool active, Population previous, Population next) {
-				if(active) {
+			public void Evolve(Population previous, Population next, Population previousPivot, Population nextPivot) {
+				if(Active) {
 					//Copy elite
 					Copy(Individuals[0], Offspring[0]);
 
@@ -2079,11 +2113,11 @@ public class BVHAnimation : ScriptableObject {
 				} else {
 					//Postprocess
 					for(int i=0; i<Size; i++) {
-						Individuals[i].Genes[0] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[0]);
+						Individuals[i].Genes[0] = 0.5f * (previousPivot.GetWinner().Genes[0] + nextPivot.GetWinner().Genes[0]);
 						Individuals[i].Genes[1] = 1f;
-						Individuals[i].Genes[2] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[2]);
-						Individuals[i].Genes[3] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[3]);
-						Individuals[i].Genes[4] = 0.5f * (previous.GetWinner().Genes[0] + next.GetWinner().Genes[4]);
+						Individuals[i].Genes[2] = 0.5f * (previousPivot.GetWinner().Genes[2] + previousPivot.GetWinner().Genes[2]);
+						Individuals[i].Genes[3] = 0.5f * ((previous.Active ? previous.GetWinner().Genes[3] : 0f) + (next.Active ? next.GetWinner().Genes[3] : 0f));
+						Individuals[i].Genes[4] = 0.5f * ((previous.Active ? previous.GetWinner().Genes[4] : 0f) + (next.Active ? next.GetWinner().Genes[4] : 0f));
 						for(int j=0; j<5; j++) {
 							Individuals[i].Momentum[j] = 0f;
 						}
@@ -2129,7 +2163,7 @@ public class BVHAnimation : ScriptableObject {
 			}
 
 			private void Exploit(Individual individual) {
-				float fitness = ComputeFitness(individual.Genes);
+				individual.Fitness = ComputeFitness(individual.Genes);
 				for(int i=0; i<Dimensionality; i++) {
 					float gene = individual.Genes[i];
 
@@ -2145,16 +2179,16 @@ public class BVHAnimation : ScriptableObject {
 
 					individual.Genes[i] = gene;
 
-					if(incFitness < fitness) {
+					if(incFitness < individual.Fitness) {
 						individual.Genes[i] = incGene;
 						individual.Momentum[i] = incGene - gene;
-						fitness = incFitness;
+						individual.Fitness = incFitness;
 					}
 
-					if(decFitness < fitness) {
+					if(decFitness < individual.Fitness) {
 						individual.Genes[i] = decGene;
 						individual.Momentum[i] = decGene - gene;
-						fitness = decFitness;
+						individual.Fitness = decFitness;
 					}
 				}
 			}

@@ -82,15 +82,15 @@ public static class Utility {
 	}
 
 	public static float LinSin1(float a, float f, float s, float o, float m, float t) {
-		return a * f * 2f * Mathf.PI * Mathf.Cos(f * (t - s) * 2f * Mathf.PI) + m;
+		return a * f * Mathf.Cos(f * (t - s) * 2f * Mathf.PI) + m;
 	}
 
 	public static float LinSin2(float a, float f, float s, float o, float m, float t) {
-		return a * f * f * 2f * Mathf.PI * 2f * Mathf.PI * -Mathf.Sin(f * (t - s) * 2f * Mathf.PI);
+		return a * f * f * -Mathf.Sin(f * (t - s) * 2f * Mathf.PI);
 	}
 
 	public static float LinSin3(float a, float f, float s, float o, float m, float t) {
-		return a * f * f * f * 2f * Mathf.PI * 2f * Mathf.PI * 2f * Mathf.PI * -Mathf.Cos(f * (t - s) * 2f * Mathf.PI);
+		return a * f * f * f * -Mathf.Cos(f * (t - s) * 2f * Mathf.PI);
 	}
 
 	public static float Gaussian(float peak, float shift, float sigma, float x) {
