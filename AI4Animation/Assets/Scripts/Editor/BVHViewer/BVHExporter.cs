@@ -170,12 +170,12 @@ public class BVHExporter : EditorWindow {
 
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
-		WriteAnimations(ref data, ref sequence, false);
-		WriteAnimations(ref data, ref sequence, true);
+		WriteAnimations(ref data, ref sequence, false, 0f);
+		WriteAnimations(ref data, ref sequence, true, 0f);
 		data.Close();
 	}
 
-	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
+	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored, float noise) {
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
 				for(int s=0; s<Animations[i].Sequences.Length; s++) {
@@ -312,10 +312,8 @@ public class BVHExporter : EditorWindow {
 		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator + vector.z.ToString(Accuracy) + Separator;
 	}
 
-	/*
 	private string FormatQuaternion(Quaternion quaternion) {
 		return quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator + quaternion.w + Separator;
 	}
-	*/
-
+	
 }

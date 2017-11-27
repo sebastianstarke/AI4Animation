@@ -247,6 +247,16 @@ public class BioAnimation : MonoBehaviour {
 			for(int i=0; i<Joints.Length; i++) {			
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*6 + 0), PFNN.GetOutput(start + i*6 + 1), PFNN.GetOutput(start + i*6 + 2));
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*6 + 3), PFNN.GetOutput(start + i*6 + 4), PFNN.GetOutput(start + i*6 + 5));
+				if(i==0 || i==1) {
+					position.x = 0f;
+					position.z = 0f;
+					velocity.x = 0f;
+					velocity.z = 0f;
+				}
+				if(i==3) {
+					position.x = 0f;
+					velocity.x = 0f;
+				}
 				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
 				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 			}

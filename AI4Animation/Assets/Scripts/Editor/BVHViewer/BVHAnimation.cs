@@ -560,7 +560,9 @@ public class BVHAnimation : ScriptableObject {
 			float step = 1f;
 			UnityGL.Start();
 			for(int i=1; i<TotalFrames; i++) {
-				UnityGL.DrawLine(Frames[i-1].Positions[0], Frames[i].Positions[0], Utility.Magenta);
+				Vector3[] prevPos = ExtractPositions(Frames[i-1], ShowMirrored);
+				Vector3[] currPos = ExtractPositions(Frames[i], ShowMirrored);
+				UnityGL.DrawLine(prevPos[0], currPos[0], Utility.Magenta);
 			}
 			UnityGL.Finish();
 			for(float i=0f; i<=TotalTime; i+=step) {
