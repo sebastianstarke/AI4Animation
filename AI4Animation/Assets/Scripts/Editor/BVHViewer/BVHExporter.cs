@@ -204,7 +204,7 @@ public class BVHExporter : EditorWindow {
 
 						//Extract data
 						Vector3[] positions = Animations[i].ExtractPositions(frame, mirrored);
-						//Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirror);
+						Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirrored);
 						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
 						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
@@ -217,7 +217,7 @@ public class BVHExporter : EditorWindow {
 							line += FormatVector3(positions[k].RelativePositionTo(root));
 
 							//Rotation
-							//TODO (Not yet required)
+							line += FormatQuaternion(rotations[k].RelativeRotationTo(root));
 
 							//Velocity
 							line += FormatVector3(velocities[k].RelativeDirectionTo(root));
@@ -315,5 +315,5 @@ public class BVHExporter : EditorWindow {
 	private string FormatQuaternion(Quaternion quaternion) {
 		return quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator + quaternion.w + Separator;
 	}
-	
+
 }
