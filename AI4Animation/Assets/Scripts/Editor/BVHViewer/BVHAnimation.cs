@@ -1333,7 +1333,6 @@ public class BVHAnimation : ScriptableObject {
 					AddStyle("Sit");
 					AddStyle("Lie");
 					AddStyle("Stand");
-					AddStyle("Sleep");
 					break;
 				}
 			}
@@ -1536,6 +1535,19 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.EndHorizontal();
 				}
 				
+				/*
+				for(int i=0; i<Animation.TotalFrames; i++) {
+					bool active = false;
+					for(int j=0; j<Styles.Length; j++) {
+						active = active || Styles[j].Flags[i];
+					}
+					if(!active) {
+						EditorGUILayout.LabelField("NOTHING ACTIVE AT " + (i+1));
+						break;
+					}
+				}
+				*/
+
 				if(Style == STYLE.Custom) {
 				EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Add Style", Utility.DarkGrey, Utility.White)) {
@@ -1689,7 +1701,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public class BVHEvolution {
-		public static float AMPLITUDE = 5f;
+		public static float AMPLITUDE = 10f;
 		public static float FREQUENCY = 5f;
 		public static float SHIFT = Mathf.PI;
 		public static float OFFSET = 10f;
@@ -1705,7 +1717,7 @@ public class BVHAnimation : ScriptableObject {
 		public float[] UpperBounds;
 
 		public float Amplitude = AMPLITUDE;
-		public float Frequency = FREQUENCY/2f;
+		public float Frequency = FREQUENCY;
 		public float Shift = SHIFT;
 		public float Offset = OFFSET;
 		public float Slope = SLOPE;
@@ -1809,7 +1821,6 @@ public class BVHAnimation : ScriptableObject {
 			float max = float.MinValue;
 			for(int i=0; i<Populations.Length; i++) {
 				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
-					
 					Function.Cycle[j] = Interpolate(i, j);
 					min = Mathf.Min(min, Function.Cycle[j]);
 					max = Mathf.Max(max, Function.Cycle[j]);
@@ -1824,7 +1835,7 @@ public class BVHAnimation : ScriptableObject {
 			//Fill with frequency negative turning points
 			for(int i=0; i<Populations.Length; i++) {
 				for(int j=Populations[i].Interval.Start; j<=Populations[i].Interval.End; j++) {
-					if(InterpolateD2(i, j) <= 0f && InterpolateD2(i, j+1) > 0f) {
+					if(InterpolateD2(i, j) <= 0f && InterpolateD2(i, j+1) >= 0f) {
 						Function.Keys[j] = true;
 					}
 				}
@@ -2113,11 +2124,11 @@ public class BVHAnimation : ScriptableObject {
 				} else {
 					//Postprocess
 					for(int i=0; i<Size; i++) {
-						Individuals[i].Genes[0] = 0.5f * (previousPivot.GetWinner().Genes[0] + nextPivot.GetWinner().Genes[0]);
+						Individuals[i].Genes[0] = 1f;
 						Individuals[i].Genes[1] = 1f;
-						Individuals[i].Genes[2] = 0.5f * (previousPivot.GetWinner().Genes[2] + previousPivot.GetWinner().Genes[2]);
-						Individuals[i].Genes[3] = 0.5f * ((previous.Active ? previous.GetWinner().Genes[3] : 0f) + (next.Active ? next.GetWinner().Genes[3] : 0f));
-						Individuals[i].Genes[4] = 0.5f * ((previous.Active ? previous.GetWinner().Genes[4] : 0f) + (next.Active ? next.GetWinner().Genes[4] : 0f));
+						Individuals[i].Genes[2] = 0.5f * (previousPivot.GetWinner().Genes[2] + nextPivot.GetWinner().Genes[2]);
+						Individuals[i].Genes[3] = 0.5f * (previousPivot.GetWinner().Genes[3] + nextPivot.GetWinner().Genes[3]);
+						Individuals[i].Genes[4] = 0f;
 						for(int j=0; j<5; j++) {
 							Individuals[i].Momentum[j] = 0f;
 						}
@@ -2221,7 +2232,7 @@ public class BVHAnimation : ScriptableObject {
 					float y1 = Evolution.Function.Velocities[i];
 					float y2 = Evolution.Function == Evolution.Animation.PhaseFunction ? Evolution.Animation.MirroredPhaseFunction.Velocities[i] : Evolution.Animation.PhaseFunction.Velocities[i];
 					float x = Phenotype(genes, i);
-					float error = (y1-x) + (-y2-x);
+					float error = (y1-x)*(y1-x) + (-y2-x)*(-y2-x);
 					float sqrError = error*error;
 					fitness += sqrError;
 				}
