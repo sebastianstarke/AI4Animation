@@ -119,6 +119,10 @@ public class BVHExporter : EditorWindow {
 			labels.WriteLine(index + " " + "BonePositionX"+i); index += 1;
 			labels.WriteLine(index + " " + "BonePositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "BonePositionZ"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationX"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationY"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationZ"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationW"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityX"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityY"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityZ"+i); index += 1;
@@ -170,12 +174,12 @@ public class BVHExporter : EditorWindow {
 
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
-		WriteAnimations(ref data, ref sequence, false, 0f);
-		WriteAnimations(ref data, ref sequence, true, 0f);
+		WriteAnimations(ref data, ref sequence, false);
+		WriteAnimations(ref data, ref sequence, true);
 		data.Close();
 	}
 
-	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored, float noise) {
+	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
 				for(int s=0; s<Animations[i].Sequences.Length; s++) {
@@ -208,19 +212,20 @@ public class BVHExporter : EditorWindow {
 						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
 						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
-
+						
+						//Get root transformation
 						Transformation root = trajectory.Points[6].GetTransformation();
 
 						//Bone data
 						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
 							//Position
-							line += FormatVector3(positions[k].RelativePositionTo(root));
+							line += FormatVector3((positions[k]).RelativePositionTo(root));
 
 							//Rotation
 							line += FormatQuaternion(rotations[k].RelativeRotationTo(root));
 
 							//Velocity
-							line += FormatVector3(velocities[k].RelativeDirectionTo(root));
+							line += FormatVector3((velocities[k]).RelativeDirectionTo(root));
 						}
 						
 						//Trajectory data

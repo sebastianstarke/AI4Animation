@@ -268,6 +268,20 @@ public class BVHAnimation : ScriptableObject {
 				} else {
 					Symmetry[i] = bone.GetIndex();
 				}
+			} else if(name.StartsWith("L") && char.IsUpper(name[1])) {
+				Character.Bone bone = Character.FindBone("R"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.GetIndex();
+				}
+			} else if(name.StartsWith("R") && char.IsUpper(name[1])) {
+				Character.Bone bone = Character.FindBone("L"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.GetIndex();
+				}
 			} else {
 				Symmetry[i] = i;
 			}
@@ -1537,18 +1551,21 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.EndHorizontal();
 				}
 				
-				/*
+				
 				for(int i=0; i<Animation.TotalFrames; i++) {
-					bool active = false;
-					for(int j=0; j<Styles.Length; j++) {
-						active = active || Styles[j].Flags[i];
-					}
-					if(!active) {
-						EditorGUILayout.LabelField("NOTHING ACTIVE AT " + (i+1));
-						break;
+					if(Styles[3].Flags[i]) {
+						bool active = false;
+						for(int j=0; j<Styles.Length; j++) {
+							if(j!=3) {
+								active = active || Styles[j].Flags[i];
+							}
+						}
+						if(!active) {
+							EditorGUILayout.LabelField("FIX AT " + (i+1));
+							break;
+						}
 					}
 				}
-				*/
 
 				if(Style == STYLE.Custom) {
 				EditorGUILayout.BeginHorizontal();
