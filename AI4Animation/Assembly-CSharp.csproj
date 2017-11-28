@@ -105,6 +105,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
+     <Compile Include="Assets\Scripts\BioAnimation_Backup.cs" />
      <Compile Include="Assets\Scripts\Classes\Character.cs" />
      <Compile Include="Assets\Scripts\Classes\Controller.cs" />
      <Compile Include="Assets\Scripts\Classes\PFNN.cs" />
@@ -159,9 +160,7 @@
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
-     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Project\Storage\Weights\19-11-2017\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
