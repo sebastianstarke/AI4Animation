@@ -47,6 +47,16 @@ public class BioAnimation : MonoBehaviour {
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
 		PFNN.Initialise();
+
+		/*
+		Quaternion q = Quaternion.Euler(90*Random.value, 90f*Random.value, 90f*Random.value);
+		Quaternion quat = q.Exp();
+		Debug.Log(quat.ToString("F5"));
+		quat = quat.Exp();
+		Debug.Log(quat.ToString("F5"));
+		quat = quat.Log();
+		Debug.Log(quat.ToString("F5"));
+		*/
 	}
 
 	void Start() {
@@ -280,6 +290,7 @@ public class BioAnimation : MonoBehaviour {
 			Root.rotation = nextRoot.Rotation;
 			for(int i=0; i<Joints.Length; i++) {
 				Joints[i].position = positions[i];
+				Joints[i].rotation = rotations[i];
 			}
 
 			//Map to Character

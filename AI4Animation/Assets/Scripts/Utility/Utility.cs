@@ -219,14 +219,51 @@ public static class Utility {
 		return Quaternion.Inverse(to.Rotation) * quaternion;
 	}
 
-	public static Vector3 MirrorX(this Vector3 vector) {
-		vector.x *= -1f;
+    public static Quaternion Exp(this Quaternion quaternion) {
+        //! returns e^quaternion = exp(v*a) = [cos(a),vsin(a)]
+		float len = Mathf.Sqrt(quaternion.x*quaternion.x + quaternion.y*quaternion.y + quaternion.z*quaternion.z + quaternion.w*quaternion.w);
+		float sin = Mathf.Sin(len);
+		float cos = Mathf.Cos(len);
+		Quaternion quat;
+		quat.w = cos;
+		if(len > 0) {
+			quat.x = sin * quaternion.x / len;
+			quat.y = sin * quaternion.y / len;
+			quat.z = sin * quaternion.z / len;
+		} else {
+			quat.x = quat.y = quat.z = 0;
+		}
+		return quat;
+    }
+
+	public static Quaternion Log(this Quaternion quaternion) {
+        //! returns the logarithm of a quaternion = v*a where q = [cos(a),v*sin(a)]
+		float len = Mathf.Acos(quaternion.w);
+		float sin = Mathf.Sin(len);
+		Quaternion quat;
+		quat.w = Mathf.Acos(Mathf.Sqrt(quaternion.x*quaternion.x + quaternion.y*quaternion.y + quaternion.z*quaternion.z + quaternion.w*quaternion.w));
+		if(sin > 0) {
+			quat.x = len*quaternion.x/sin;
+			quat.y = len*quaternion.y/sin;
+			quat.z = len*quaternion.z/sin;
+		} else {
+			quat.x = quat.y = quat.z= 0;
+		}
+		return quat;
+	}
+
+	public static Vector3 Mirror(this Vector3 vector, bool x, bool y, bool z) {
+		vector.x *= x ? -1f : 1f;
+		vector.y *= y ? -1f : 1f;
+		vector.z *= z ? -1f : 1f;
 		return vector;
 	}
 
-	public static Quaternion MirrorX(this Quaternion quaternion) {
-		quaternion.x *= -1f;
-		quaternion.w *= -1f;
+	public static Quaternion Mirror(this Quaternion quaternion, bool x, bool y, bool z) {
+		quaternion.x *= x ? -1f : 1f;
+		quaternion.y *= y ? -1f : 1f;
+		quaternion.z *= z ? -1f : 1f;
+		quaternion.w *= z || x || y ? -1f : 1f;
 		return quaternion;
 	}
 

@@ -134,6 +134,7 @@ public class Character {
 	public class Bone {
 		public bool Expanded = false;
 		public bool Draw = true;
+		public bool Transform = false;
 
 		[SerializeField] private string Name = "Empty";
 		[SerializeField] private int Index = -1;
@@ -251,6 +252,20 @@ public class Character {
 				GetMaterial()
 			);
 			*/
+			if(bone.Transform) {
+				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+			}
+			/*
+			UnityGL.DrawMesh(
+				Utility.GetPrimitiveMesh(PrimitiveType.Cube),
+				bone.GetPosition(),
+				bone.GetRotation(),
+				BoneSize*Vector3.one,
+				GetMaterial()
+			);
+			*/
 			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
@@ -334,6 +349,9 @@ public class Character {
 		GUILayout.FlexibleSpace();
 		if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, 40f, 20f)) {
 			bone.Draw = !bone.Draw;
+		}
+		if(Utility.GUIButton("Transform", bone.Transform ? Color.grey : Color.white, bone.Transform ? Color.white : Color.gray, 40f, 20f)) {
+			bone.Transform = !bone.Transform;
 		}
 		EditorGUILayout.EndHorizontal();
 		if(bone.Expanded) {

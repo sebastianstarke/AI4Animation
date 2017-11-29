@@ -331,7 +331,7 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.NONE);
 		material.SetPass(0);
-		Graphics.DrawMeshNow(Utility.GetPrimitiveMesh(PrimitiveType.Sphere), Matrix4x4.TRS(position, rotation, scale));
+		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
 	private static Camera GetCamera() {

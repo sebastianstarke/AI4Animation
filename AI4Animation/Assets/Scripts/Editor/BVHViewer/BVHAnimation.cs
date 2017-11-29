@@ -8,6 +8,8 @@ public class BVHAnimation : ScriptableObject {
 	public BVHData Data;
 	public Character Character;
 	public int[] Symmetry;
+	public bool MirrorX, MirrorY, MirrorZ;
+	public bool[] Flipping;
 	
 	public float UnitScale = 100f;
 	public Vector3 PositionOffset = Vector3.zero;
@@ -158,12 +160,6 @@ public class BVHAnimation : ScriptableObject {
 			Frames[i] = new BVHFrame(this, i+1, i*FrameTime);
 		}
 
-		//Create Symmetry Table
-		Symmetry = new int[Character.Bones.Length];
-		for(int i=0; i<Symmetry.Length; i++) {
-			Symmetry[i] = i;
-		}
-
 		//Initialise Variables
 		TimeWindow = TotalTime;
 
@@ -252,6 +248,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void ComputeSymmetry() {
+		Symmetry = new int[Character.Bones.Length];
 		for(int i=0; i<Character.Bones.Length; i++) {
 			string name = Character.Bones[i].GetName();
 			if(name.Contains("Left")) {
@@ -286,6 +283,17 @@ public class BVHAnimation : ScriptableObject {
 				Symmetry[i] = i;
 			}
 		}
+		MirrorX = true;
+		MirrorY = false;
+		MirrorZ = false;
+		//HARDCODED FOR DOG
+		Flipping = new bool[Character.Bones.Length*3];
+		for(int i=0; i<Character.Bones.Length; i++) {
+			if(i==4 || i==5 || i==9 || i==19) {
+				Flipping[3*i + 0] = true;
+			}
+			Flipping[3*i + 1] = true;
+		}
 	}
 
 	public void ComputeFrames() {
@@ -301,6 +309,7 @@ public class BVHAnimation : ScriptableObject {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].Positions[0], mask);
 			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
 			
+			//HARDCODED FOR DOG
 			int hipIndex = Character.FindBone("Hips").GetIndex();
 			int neckIndex = Character.FindBone("Neck").GetIndex();
 			Vector3 rootDir = Frames[i].Positions[neckIndex] - Frames[i].Positions[hipIndex];
@@ -316,7 +325,7 @@ public class BVHAnimation : ScriptableObject {
 	public Vector3[] ExtractPositions(BVHFrame frame, bool mirrored) {
 		Vector3[] positions = new Vector3[Character.Bones.Length];
 		for(int i=0; i<positions.Length; i++) {
-			positions[i] = mirrored ? frame.Positions[Symmetry[i]].MirrorX() : frame.Positions[i];
+			positions[i] = mirrored ? frame.Positions[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) : frame.Positions[i];
 		}
 		return positions;
 	}
@@ -324,7 +333,10 @@ public class BVHAnimation : ScriptableObject {
 	public Quaternion[] ExtractRotations(BVHFrame frame, bool mirrored) {
 		Quaternion[] rotations = new Quaternion[Character.Bones.Length];
 		for(int i=0; i<rotations.Length; i++) {
-			rotations[i] = mirrored ? frame.Rotations[Symmetry[i]].MirrorX() : frame.Rotations[i];
+			rotations[i] = mirrored ? 
+			frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f)
+			: 
+			frame.Rotations[i];
 		}
 		return rotations;
 	}
@@ -332,7 +344,7 @@ public class BVHAnimation : ScriptableObject {
 	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing=0f) {
 		Vector3[] velocities = new Vector3[Character.Bones.Length];
 		for(int i=0; i<velocities.Length; i++) {
-			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).MirrorX() : frame.ComputeVelocity(i, smoothing);
+			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).Mirror(MirrorX, MirrorY, MirrorZ) : frame.ComputeVelocity(i, smoothing);
 		}
 		return velocities;
 	}
@@ -377,10 +389,10 @@ public class BVHAnimation : ScriptableObject {
 
 		if(mirrored) {
 			for(int i=0; i<12; i++) {
-				trajectory.Points[i].Position = trajectory.Points[i].Position.MirrorX();
-				trajectory.Points[i].Direction = trajectory.Points[i].Direction.MirrorX();
-				trajectory.Points[i].LeftSample = trajectory.Points[i].LeftSample.MirrorX();
-				trajectory.Points[i].RightSample = trajectory.Points[i].RightSample.MirrorX();
+				trajectory.Points[i].Position = trajectory.Points[i].Position.Mirror(MirrorX, MirrorY, MirrorZ);
+				trajectory.Points[i].Direction = trajectory.Points[i].Direction.Mirror(MirrorX, MirrorY, MirrorZ);
+				trajectory.Points[i].LeftSample = trajectory.Points[i].LeftSample.Mirror(MirrorX, MirrorY, MirrorZ);
+				trajectory.Points[i].RightSample = trajectory.Points[i].RightSample.Mirror(MirrorX, MirrorY, MirrorZ);
 			}
 		}
 
@@ -431,8 +443,6 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void Inspector() {
-		Character.Inspector();
-
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("Show Mirrored", GUILayout.Width(100f));
 		ShowMirrored = EditorGUILayout.Toggle(ShowMirrored, GUILayout.Width(40));
@@ -443,6 +453,10 @@ public class BVHAnimation : ScriptableObject {
 		EditorGUILayout.LabelField("Show Preview", GUILayout.Width(100f));
 		ShowPreview = EditorGUILayout.Toggle(ShowPreview, GUILayout.Width(40));
 		EditorGUILayout.EndHorizontal();
+
+		if(Utility.GUIButton("Compute Frames", Utility.Brown, Utility.White)) {
+			ComputeFrames();
+		}
 
 		SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
 		SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
@@ -509,8 +523,10 @@ public class BVHAnimation : ScriptableObject {
 
 		StyleFunction.Inspector();
 
+		Character.Inspector();
+
 		if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
-			ExportSkeleton(Character.GetRoot(), null);
+			ExportSkeleton();
 		}
 
 		Utility.SetGUIColor(Utility.DarkGrey);
@@ -543,6 +559,9 @@ public class BVHAnimation : ScriptableObject {
 			if(Utility.GUIButton("Compute Symmetry", Utility.DarkGrey, Utility.White)) {
 				ComputeSymmetry();
 			}
+			MirrorX = EditorGUILayout.Toggle("Mirror X", MirrorX);
+			MirrorY = EditorGUILayout.Toggle("Mirror Y", MirrorY);
+			MirrorZ = EditorGUILayout.Toggle("Mirror Z", MirrorZ);
 			string[] names = new string[Character.Bones.Length];
 			for(int i=0; i<Character.Bones.Length; i++) {
 				names[i] = Character.Bones[i].GetName();
@@ -553,13 +572,24 @@ public class BVHAnimation : ScriptableObject {
 				EditorGUILayout.TextField(names[i]);
 				EditorGUI.EndDisabledGroup();
 				Symmetry[i] = EditorGUILayout.Popup(Symmetry[i], names);
+				EditorGUILayout.LabelField("Flip X", GUILayout.Width(50f));
+				Flipping[i*3 + 0] = EditorGUILayout.Toggle(Flipping[i*3 + 0], GUILayout.Width(25f));
+				EditorGUILayout.LabelField("Flip Y", GUILayout.Width(50f));
+				Flipping[i*3 + 1] = EditorGUILayout.Toggle(Flipping[i*3 + 1], GUILayout.Width(25f));
+				EditorGUILayout.LabelField("Flip Z", GUILayout.Width(50f));
+				Flipping[i*3 + 2] = EditorGUILayout.Toggle(Flipping[i*3 + 2], GUILayout.Width(25f));
 				EditorGUILayout.EndHorizontal();
 			}
 		}
 
 	}
 
-	private void ExportSkeleton(Character.Bone bone, Transform parent) {
+	private void ExportSkeleton() {
+		Transform skeleton = ExportSkeleton(Character.GetRoot(), null);
+		skeleton.gameObject.AddComponent<BioAnimation>();
+	}
+
+	private Transform ExportSkeleton(Character.Bone bone, Transform parent) {
 		Transform instance = new GameObject(bone.GetName()).transform;
 		instance.SetParent(parent);
 		instance.position = bone.GetPosition();
@@ -567,6 +597,7 @@ public class BVHAnimation : ScriptableObject {
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			ExportSkeleton(bone.GetChild(Character, i), instance);
 		}
+		return instance.root;
 	}
 
 	public void Draw() {
@@ -727,10 +758,8 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Generate() {
-			int channel;
-
 			//Original
-			channel = 0;
+			int channel = 0;
 			for(int i=0; i<Animation.Character.Bones.Length; i++) {
 				BVHData.Bone info = Animation.Data.Bones[i];
 				BVHData.Motion motion = Animation.Data.Motions[Index-1];
@@ -767,8 +796,7 @@ public class BVHAnimation : ScriptableObject {
 
 				bone.SetPosition(parentPosition + parentRotation * LocalPositions[i]);
 				bone.SetRotation(parentRotation * LocalRotations[i]);
-			}
-			for(int i=0; i<Animation.Character.Bones.Length; i++) {
+
 				Positions[i] = Animation.Character.Bones[i].GetPosition();
 				Rotations[i] = Animation.Character.Bones[i].GetRotation();
 			}
@@ -782,23 +810,6 @@ public class BVHAnimation : ScriptableObject {
 			Vector3 velocity = Vector3.zero;
 			for(int i=1; i<frames.Length; i++) {
 				velocity += frames[i].Positions[index] - frames[i-1].Positions[index];
-			}
-			velocity /= frames.Length;
-			return velocity;
-		}
-	
-		public float ComputeTranslationalVelocity(int index, float smoothing) {
-			return ComputeVelocity(index, smoothing).magnitude;
-		}
-
-		public float ComputeRotationalVelocity(int index, float smoothing) {
-			if(smoothing == 0f) {
-				return Quaternion.Angle(Animation.GetFrame(Mathf.Max(1, Index-1)).Rotations[index], Rotations[index]);
-			}
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
-			float velocity = 0f;
-			for(int i=1; i<frames.Length; i++) {
-				velocity += Quaternion.Angle(frames[i-1].Rotations[index], frames[i].Rotations[index]);
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -1021,7 +1032,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Animation.TotalFrames; i++) {
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
-						float boneVelocity = Animation.Frames[i].ComputeTranslationalVelocity(j, VelocitySmoothing) / Animation.FrameTime;
+						float boneVelocity = Animation.Frames[i].ComputeVelocity(j, VelocitySmoothing).magnitude / Animation.FrameTime;
 						Velocities[i] += boneVelocity;
 					}
 				}
@@ -1551,22 +1562,6 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.EndHorizontal();
 				}
 				
-				
-				for(int i=0; i<Animation.TotalFrames; i++) {
-					if(Styles[3].Flags[i]) {
-						bool active = false;
-						for(int j=0; j<Styles.Length; j++) {
-							if(j!=3) {
-								active = active || Styles[j].Flags[i];
-							}
-						}
-						if(!active) {
-							EditorGUILayout.LabelField("FIX AT " + (i+1));
-							break;
-						}
-					}
-				}
-
 				if(Style == STYLE.Custom) {
 				EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Add Style", Utility.DarkGrey, Utility.White)) {
