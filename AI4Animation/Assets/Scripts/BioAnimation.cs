@@ -20,17 +20,13 @@ public class BioAnimation : MonoBehaviour {
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
+	private Vector3[] Rotations = new Vector3[0];
 	private Vector3[] Velocities = new Vector3[0];
 	
 	//Trajectory for 60 Hz framerate
 	private const int PointSamples = 12;
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
-
-	private static int InTrajectoryDim = 6;
-	private static int OutTrajectoryDim = 4;
-	private static int inJointDim = 10;
-	private static int JointDim = 10;
 
 	void Reset() {
 		Root = transform;
@@ -43,18 +39,18 @@ public class BioAnimation : MonoBehaviour {
 	void Awake() {
 		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
+		Rotations = new Vector3[Joints.Length];
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
 		PFNN.Initialise();
 
 		/*
-		Quaternion q = Quaternion.Euler(90*Random.value, 90f*Random.value, 90f*Random.value);
-		Quaternion quat = q.Exp();
-		Debug.Log(quat.ToString("F5"));
-		quat = quat.Exp();
+		Quaternion quat = Quaternion.Euler(90*Random.value, 90f*Random.value, 90f*Random.value);
 		Debug.Log(quat.ToString("F5"));
 		quat = quat.Log();
+		Debug.Log(quat.ToString("F5"));
+		quat = quat.Exp();
 		Debug.Log(quat.ToString("F5"));
 		*/
 	}
@@ -157,20 +153,19 @@ public class BioAnimation : MonoBehaviour {
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Joints[i].position.RelativePositionTo(previousRoot);
-				Quaternion rot = Joints[i].rotation.RelativeRotationTo(previousRoot);
+				//Quaternion rot = Joints[i].rotation.RelativeRotationTo(previousRoot);
 				Vector3 vel = Velocities[i].RelativeDirectionTo(previousRoot);
-				PFNN.SetInput(start + i*10 + 0, pos.x);
-				PFNN.SetInput(start + i*10 + 1, pos.y);
-				PFNN.SetInput(start + i*10 + 2, pos.z);
-				PFNN.SetInput(start + i*10 + 3, rot.x);
-				PFNN.SetInput(start + i*10 + 4, rot.y);
-				PFNN.SetInput(start + i*10 + 5, rot.z);
-				PFNN.SetInput(start + i*10 + 6, rot.w);
-				PFNN.SetInput(start + i*10 + 7, vel.x);
-				PFNN.SetInput(start + i*10 + 8, vel.y);
-				PFNN.SetInput(start + i*10 + 9, vel.z);
+				PFNN.SetInput(start + i*9 + 0, pos.x);
+				PFNN.SetInput(start + i*9 + 1, pos.y);
+				PFNN.SetInput(start + i*9 + 2, pos.z);
+				PFNN.SetInput(start + i*9 + 3, Rotations[i].x);
+				PFNN.SetInput(start + i*9 + 4, Rotations[i].y);
+				PFNN.SetInput(start + i*9 + 5, Rotations[i].z);
+				PFNN.SetInput(start + i*9 + 6, vel.x);
+				PFNN.SetInput(start + i*9 + 7, vel.y);
+				PFNN.SetInput(start + i*9 + 8, vel.z);
 			}
-			start += 10*Joints.Length;
+			start += 9*Joints.Length;
 
 			//Predict
 			PFNN.Predict(Phase);
@@ -188,7 +183,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 
 			//Update Current Trajectory
-			int end = 6*4 + 10*Joints.Length;
+			int end = 6*4 + 9*Joints.Length;
 			Vector3 translationalVelocity = new Vector3(PFNN.GetOutput(end+0), 0f, PFNN.GetOutput(end+1));
 			float angularVelocity = PFNN.GetOutput(end+2);
 			float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
@@ -264,11 +259,12 @@ public class BioAnimation : MonoBehaviour {
 
 			//Compute Posture
 			Vector3[] positions = new Vector3[Joints.Length];
-			Quaternion[] rotations = new Quaternion[Joints.Length];
+			//Quaternion[] rotations = new Quaternion[Joints.Length];
 			for(int i=0; i<Joints.Length; i++) {
-				Vector3 position = new Vector3(PFNN.GetOutput(start + i*10 + 0), PFNN.GetOutput(start + i*10 + 1), PFNN.GetOutput(start + i*10 + 2));
-				Quaternion rotation = new Quaternion(PFNN.GetOutput(start + i*10 + 3), PFNN.GetOutput(start + i*10 + 4), PFNN.GetOutput(start + i*10 + 5), PFNN.GetOutput(start + i*10 + 6));
-				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*10 + 7), PFNN.GetOutput(start + i*10 + 8), PFNN.GetOutput(start + i*10 + 9));
+				Vector3 position = new Vector3(PFNN.GetOutput(start + i*9 + 0), PFNN.GetOutput(start + i*9 + 1), PFNN.GetOutput(start + i*9 + 2));
+				//Quaternion rotation = new Quaternion(PFNN.GetOutput(start + i*9 + 3), PFNN.GetOutput(start + i*9 + 4), PFNN.GetOutput(start + i*9 + 5), PFNN.GetOutput(start + i*10 + 6));
+				Vector3 rotation = new Vector3(PFNN.GetOutput(start + i*9 + 3), PFNN.GetOutput(start + i*9 + 4), PFNN.GetOutput(start + i*9 + 5));
+				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*9 + 6), PFNN.GetOutput(start + i*9 + 7), PFNN.GetOutput(start + i*9 + 8));
 				if(i==0 || i==1) {
 					position.x = 0f;
 					position.z = 0f;
@@ -280,17 +276,17 @@ public class BioAnimation : MonoBehaviour {
 					velocity.x = 0f;
 				}
 				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
-				rotations[i] = rotation.RelativeRotationFrom(currentRoot);
+				Rotations[i] = rotation;
 				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 			}
-			start += 10*Joints.Length;
+			start += 9*Joints.Length;
 			
 			//Update Posture
 			Root.position = nextRoot.Position;
 			Root.rotation = nextRoot.Rotation;
 			for(int i=0; i<Joints.Length; i++) {
 				Joints[i].position = positions[i];
-				Joints[i].rotation = rotations[i];
+				//Joints[i].rotation = rotations[i];
 			}
 
 			//Map to Character

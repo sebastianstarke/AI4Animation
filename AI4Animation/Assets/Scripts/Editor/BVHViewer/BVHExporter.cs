@@ -119,10 +119,9 @@ public class BVHExporter : EditorWindow {
 			labels.WriteLine(index + " " + "BonePositionX"+i); index += 1;
 			labels.WriteLine(index + " " + "BonePositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "BonePositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationX"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationY"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationZ"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationW"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationXlog"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationYlog"+i); index += 1;
+			labels.WriteLine(index + " " + "BoneRotationZlog"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityX"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityY"+i); index += 1;
 			labels.WriteLine(index + " " + "BoneVelocityZ"+i); index += 1;
@@ -222,7 +221,7 @@ public class BVHExporter : EditorWindow {
 							line += FormatVector3((positions[k]).RelativePositionTo(root));
 
 							//Rotation
-							line += FormatQuaternion(rotations[k].RelativeRotationTo(root));
+							line += FormatQuaternion(rotations[k].RelativeRotationTo(root).Log(), true, false);
 
 							//Velocity
 							line += FormatVector3((velocities[k]).RelativeDirectionTo(root));
@@ -317,8 +316,15 @@ public class BVHExporter : EditorWindow {
 		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator + vector.z.ToString(Accuracy) + Separator;
 	}
 
-	private string FormatQuaternion(Quaternion quaternion) {
-		return quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator + quaternion.w + Separator;
+	private string FormatQuaternion(Quaternion quaternion, bool imaginary, bool real) {
+		string output = string.Empty;
+		if(imaginary) {
+			output += quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator;
+		}
+		if(real) {
+			output += quaternion.w + Separator;
+		}
+		return output;
 	}
 
 }
