@@ -31,26 +31,26 @@ public class Character {
 		return Bones[0];
 	}
 
-	public void ForwardKinematics(Transform root) {
+	public void FetchForwardKinematics(Transform root) {
 		int index = 0;
-		ForwardKinematics(root, ref index);
+		FetchForwardKinematics(root, ref index);
 		if(index != Bones.Length) {
 			Debug.Log("Forward kinematics did not finish properly because the number of transforms and bones did not match.");
 		}
 	}
 
-	private void ForwardKinematics(Transform transform, ref int index) {
+	private void FetchForwardKinematics(Transform transform, ref int index) {
 		if(index < Bones.Length) {
 			Bones[index].SetPosition(transform.position);
 			Bones[index].SetRotation(transform.rotation);
 			index += 1;
 			for(int i=0; i<transform.childCount; i++) {
-				ForwardKinematics(transform.GetChild(i), ref index);
+				FetchForwardKinematics(transform.GetChild(i), ref index);
 			}
 		}
 	}
 
-	public void ForwardKinematics(Transformation[] transformations) {
+	public void FetchForwardKinematics(Transformation[] transformations) {
 		if(Bones.Length != transformations.Length) {
 			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
 			return;
@@ -243,20 +243,12 @@ public class Character {
 					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
-			/*
-			UnityGL.DrawMesh(
-				Utility.GetPrimitiveMesh(PrimitiveType.Sphere),
-				bone.GetPosition(),
-				bone.GetRotation(),
-				BoneSize*Vector3.one,
-				GetMaterial()
-			);
-			*/
-			if(bone.Transform) {
+			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
+			//if(bone.Transform) {
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-			}
+			//}
 			/*
 			UnityGL.DrawMesh(
 				Utility.GetPrimitiveMesh(PrimitiveType.Cube),
@@ -266,7 +258,6 @@ public class Character {
 				GetMaterial()
 			);
 			*/
-			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));

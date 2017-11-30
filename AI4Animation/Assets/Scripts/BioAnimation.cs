@@ -20,7 +20,6 @@ public class BioAnimation : MonoBehaviour {
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
-	private Vector3[] Rotations = new Vector3[0];
 	private Vector3[] Velocities = new Vector3[0];
 	
 	//Trajectory for 60 Hz framerate
@@ -39,20 +38,10 @@ public class BioAnimation : MonoBehaviour {
 	void Awake() {
 		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
-		Rotations = new Vector3[Joints.Length];
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
 		PFNN.Initialise();
-
-		/*
-		Quaternion quat = Quaternion.Euler(90*Random.value, 90f*Random.value, 90f*Random.value);
-		Debug.Log(quat.ToString("F5"));
-		quat = quat.Log();
-		Debug.Log(quat.ToString("F5"));
-		quat = quat.Exp();
-		Debug.Log(quat.ToString("F5"));
-		*/
 	}
 
 	void Start() {
@@ -153,14 +142,14 @@ public class BioAnimation : MonoBehaviour {
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Joints[i].position.RelativePositionTo(previousRoot);
-				//Quaternion rot = Joints[i].rotation.RelativeRotationTo(previousRoot);
+				Quaternion rot = Joints[i].rotation.RelativeRotationTo(previousRoot).Log();
 				Vector3 vel = Velocities[i].RelativeDirectionTo(previousRoot);
 				PFNN.SetInput(start + i*9 + 0, pos.x);
 				PFNN.SetInput(start + i*9 + 1, pos.y);
 				PFNN.SetInput(start + i*9 + 2, pos.z);
-				PFNN.SetInput(start + i*9 + 3, Rotations[i].x);
-				PFNN.SetInput(start + i*9 + 4, Rotations[i].y);
-				PFNN.SetInput(start + i*9 + 5, Rotations[i].z);
+				PFNN.SetInput(start + i*9 + 3, rot.x);
+				PFNN.SetInput(start + i*9 + 4, rot.y);
+				PFNN.SetInput(start + i*9 + 5, rot.z);
 				PFNN.SetInput(start + i*9 + 6, vel.x);
 				PFNN.SetInput(start + i*9 + 7, vel.y);
 				PFNN.SetInput(start + i*9 + 8, vel.z);
@@ -259,11 +248,10 @@ public class BioAnimation : MonoBehaviour {
 
 			//Compute Posture
 			Vector3[] positions = new Vector3[Joints.Length];
-			//Quaternion[] rotations = new Quaternion[Joints.Length];
+			Quaternion[] rotations = new Quaternion[Joints.Length];
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*9 + 0), PFNN.GetOutput(start + i*9 + 1), PFNN.GetOutput(start + i*9 + 2));
-				//Quaternion rotation = new Quaternion(PFNN.GetOutput(start + i*9 + 3), PFNN.GetOutput(start + i*9 + 4), PFNN.GetOutput(start + i*9 + 5), PFNN.GetOutput(start + i*10 + 6));
-				Vector3 rotation = new Vector3(PFNN.GetOutput(start + i*9 + 3), PFNN.GetOutput(start + i*9 + 4), PFNN.GetOutput(start + i*9 + 5));
+				Quaternion rotation = new Quaternion(PFNN.GetOutput(start + i*9 + 3), PFNN.GetOutput(start + i*9 + 4), PFNN.GetOutput(start + i*9 + 5), 0f).Exp();
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*9 + 6), PFNN.GetOutput(start + i*9 + 7), PFNN.GetOutput(start + i*9 + 8));
 				if(i==0 || i==1) {
 					position.x = 0f;
@@ -276,7 +264,7 @@ public class BioAnimation : MonoBehaviour {
 					velocity.x = 0f;
 				}
 				positions[i] = Vector3.Lerp(Joints[i].position.RelativePositionTo(currentRoot) + velocity, position, 0.5f).RelativePositionFrom(currentRoot);
-				Rotations[i] = rotation;
+				rotations[i] = rotation.RelativeRotationFrom(currentRoot);
 				Velocities[i] = velocity.RelativeDirectionFrom(currentRoot);
 			}
 			start += 9*Joints.Length;
@@ -286,11 +274,11 @@ public class BioAnimation : MonoBehaviour {
 			Root.rotation = nextRoot.Rotation;
 			for(int i=0; i<Joints.Length; i++) {
 				Joints[i].position = positions[i];
-				//Joints[i].rotation = rotations[i];
+				Joints[i].rotation = rotations[i];
 			}
 
 			//Map to Character
-			Character.ForwardKinematics(Root);
+			Character.FetchForwardKinematics(Root);
 
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -352,7 +340,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		
 		if(!Application.isPlaying) {
-			Character.ForwardKinematics(Root);
+			Character.FetchForwardKinematics(Root);
 		}
 		Character.Draw();
 

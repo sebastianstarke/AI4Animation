@@ -270,7 +270,7 @@ public class BioAnimation_Backup : MonoBehaviour {
 			}
 
 			//Map to Character
-			Character.ForwardKinematics(Root);
+			Character.FetchForwardKinematics(Root);
 
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -332,7 +332,7 @@ public class BioAnimation_Backup : MonoBehaviour {
 		}
 		
 		if(!Application.isPlaying) {
-			Character.ForwardKinematics(Root);
+			Character.FetchForwardKinematics(Root);
 		}
 		Character.Draw();
 

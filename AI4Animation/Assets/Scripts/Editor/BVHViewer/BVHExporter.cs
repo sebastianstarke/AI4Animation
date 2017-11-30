@@ -49,7 +49,6 @@ public class BVHExporter : EditorWindow {
 					LoadDirectory(EditorGUILayout.TextField(Directory));
 					EditorGUILayout.EndHorizontal();
 
-					//DefineMirroring();
 					for(int i=0; i<Animations.Length; i++) {
 						if(Use[i]) {
 							Utility.SetGUIColor(Utility.DarkGreen);
@@ -62,7 +61,6 @@ public class BVHExporter : EditorWindow {
 							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
 							Use[i] = EditorGUILayout.Toggle(Use[i], GUILayout.Width(20f));
 							Animations[i] = (BVHAnimation)EditorGUILayout.ObjectField(Animations[i], typeof(BVHAnimation), true);
-							//EditorGUILayout.LabelField("Styles", Animations[i].StyleFunction.Styles.Length.ToString());
 							EditorGUILayout.EndHorizontal();
 						}
 					}

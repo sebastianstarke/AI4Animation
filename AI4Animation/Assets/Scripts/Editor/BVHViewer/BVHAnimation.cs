@@ -289,7 +289,7 @@ public class BVHAnimation : ScriptableObject {
 		//HARDCODED FOR DOG
 		Flipping = new bool[Character.Bones.Length*3];
 		for(int i=0; i<Character.Bones.Length; i++) {
-			if(i==4 || i==5 || i==9 || i==19) {
+			if(i==4 || i==5 || i==9) {
 				Flipping[3*i + 0] = true;
 			}
 			Flipping[3*i + 1] = true;
@@ -333,10 +333,19 @@ public class BVHAnimation : ScriptableObject {
 	public Quaternion[] ExtractRotations(BVHFrame frame, bool mirrored) {
 		Quaternion[] rotations = new Quaternion[Character.Bones.Length];
 		for(int i=0; i<rotations.Length; i++) {
-			rotations[i] = mirrored ? 
-			frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f)
-			: 
-			frame.Rotations[i];
+			if(mirrored) {
+				Quaternion rot = frame.Rotations[i];
+				Quaternion mirroredRot = frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
+				rotations[i] = Quaternion.Slerp(rot, mirroredRot, 1f);
+				//Debug.Log("Normal: " + rot + " Mirrored: " + mirroredRot + " Final: " + rotations[i]);
+			} else {
+				rotations[i] = frame.Rotations[i];
+			}
+			//rotations[i] = mirrored ? frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) : frame.Rotations[i];
+			//rotations[i] = mirrored ? 
+			//frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f)
+			//: 
+			//frame.Rotations[i];
 		}
 		return rotations;
 	}
