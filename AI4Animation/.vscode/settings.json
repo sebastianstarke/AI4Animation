@@ -1,4 +1,6 @@
 {
+	"csharp.suppressDotnetInstallWarning": true,
+	"editor.codeLens": false,
 	"files.exclude":
 	{
 		"**/.DS_Store":true,
@@ -51,7 +53,8 @@
 		"library/":true,
 		"obj/":true,
 		"Obj/":true,
-		"ProjectSettings/":true,		"temp/":true,
+		"ProjectSettings/":true,
+		"temp/":true,
 		"Temp/":true
 	}
 }
