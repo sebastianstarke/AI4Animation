@@ -71,7 +71,7 @@ public class BioAnimation : MonoBehaviour {
 			float bias_dir = 1.25f;
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
-			float vel_boost = 1f;
+			float vel_boost = 2.5f;
 			
 			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
