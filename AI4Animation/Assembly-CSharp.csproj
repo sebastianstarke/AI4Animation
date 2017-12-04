@@ -105,7 +105,6 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
-     <Compile Include="Assets\Scripts\BioAnimation_Backup.cs" />
      <Compile Include="Assets\Scripts\Classes\Character.cs" />
      <Compile Include="Assets\Scripts\Classes\Controller.cs" />
      <Compile Include="Assets\Scripts\Classes\PFNN.cs" />
@@ -118,6 +117,7 @@
      <Compile Include="Assets\Scripts\Utility\UnityGL.cs" />
      <Compile Include="Assets\Scripts\Utility\Utility.cs" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.shader" />
+     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\ParadeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\LutGen.shader" />
@@ -155,7 +155,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
@@ -185,11 +184,11 @@
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
  </Reference>
- <Reference Include="System.Threading">
- <HintPath>/media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Assets/Plugins/System.Threading.dll</HintPath>
- </Reference>
  <Reference Include="MathNet.Numerics">
- <HintPath>/media/sebastian/7aed0e14-7811-4a26-99bd-11184b14102a/Development/AI4Animation/AI4Animation/Assets/Plugins/MathNet.Numerics.dll</HintPath>
+ <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/MathNet.Numerics.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Threading">
+ <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/System.Threading.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

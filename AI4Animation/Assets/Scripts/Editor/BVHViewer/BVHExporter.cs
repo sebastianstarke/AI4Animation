@@ -41,6 +41,18 @@ public class BVHExporter : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+                /*
+                if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
+                    for(int i=0; i<Animations.Length; i++) {
+                        Animations[i].ComputeSymmetry();
+                        Animations[i].ComputeFrames();
+                        Animations[i].ComputeTrajectory();
+                        EditorUtility.SetDirty(Animations[i]);
+                    }
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+				*/
 
 				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -114,15 +126,15 @@ public class BVHExporter : EditorWindow {
 		labels.WriteLine(index + " " + "Frame"); index += 1;
 		labels.WriteLine(index + " " + "Timestamp"); index += 1;
 		for(int i=1; i<=Animations[0].Character.Bones.Length; i++) {
-			labels.WriteLine(index + " " + "BonePositionX"+i); index += 1;
-			labels.WriteLine(index + " " + "BonePositionY"+i); index += 1;
-			labels.WriteLine(index + " " + "BonePositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationXlog"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationYlog"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneRotationZlog"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneVelocityX"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneVelocityY"+i); index += 1;
-			labels.WriteLine(index + " " + "BoneVelocityZ"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionZ"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationXlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationYlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationZlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityZ"+i); index += 1;
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;

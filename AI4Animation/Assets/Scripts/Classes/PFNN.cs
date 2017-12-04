@@ -15,8 +15,8 @@ public class PFNN {
 
 	public string Folder = string.Empty;
 	public int XDim = 342;
-	public int YDim = 311;
 	public int HDim = 512;
+	public int YDim = 311;
 
 	public NetworkParameters Parameters;
 
@@ -216,8 +216,8 @@ public class PFNN {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Folder = EditorGUILayout.TextField("Folder", Folder);
 					XDim = EditorGUILayout.IntField("XDim", XDim);
-					YDim = EditorGUILayout.IntField("YDim", YDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
+					YDim = EditorGUILayout.IntField("YDim", YDim);
 					EditorGUILayout.BeginHorizontal();
 					if(GUILayout.Button("Load Parameters")) {
 						LoadParameters();
