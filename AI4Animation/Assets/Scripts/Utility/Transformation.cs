@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public struct Transformation {
+public class Transformation {
 	public Vector3 Position;
 	public Quaternion Rotation;
 	public Transformation(Transform t) {

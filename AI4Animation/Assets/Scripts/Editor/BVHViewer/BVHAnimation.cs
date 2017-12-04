@@ -321,13 +321,13 @@ public class BVHAnimation : ScriptableObject {
 		Trajectory = new Trajectory(TotalFrames, 0);
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<TotalFrames; i++) {
-			Vector3 rootPos = Utility.ProjectGround(Frames[i].Positions[0], mask);
+			Vector3 rootPos = Utility.ProjectGround(Frames[i].GetWorldPosition(0), mask);
 			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
 			
 			//HARDCODED FOR DOG
 			int hipIndex = Character.FindBone("Hips").GetIndex();
 			int neckIndex = Character.FindBone("Neck").GetIndex();
-			Vector3 rootDir = Frames[i].Positions[neckIndex] - Frames[i].Positions[hipIndex];
+			Vector3 rootDir = Frames[i].GetWorldPosition(neckIndex) - Frames[i].GetWorldPosition(hipIndex);
 			rootDir.y = 0f;
 			rootDir = rootDir.normalized;
 			
@@ -340,7 +340,7 @@ public class BVHAnimation : ScriptableObject {
 	public Vector3[] ExtractPositions(BVHFrame frame, bool mirrored) {
 		Vector3[] positions = new Vector3[Character.Bones.Length];
 		for(int i=0; i<positions.Length; i++) {
-			positions[i] = mirrored ? frame.Positions[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) : frame.Positions[i];
+			positions[i] = mirrored ? frame.GetWorldPosition(Symmetry[i]).Mirror(MirrorX, MirrorY, MirrorZ) : frame.GetWorldPosition(i);
 		}
 		return positions;
 	}
@@ -349,10 +349,12 @@ public class BVHAnimation : ScriptableObject {
 		Quaternion[] rotations = new Quaternion[Character.Bones.Length];
 		for(int i=0; i<rotations.Length; i++) {
 			if(mirrored) {
+				/*
                 Quaternion rot = frame.Rotations[Symmetry[i]];
                 Quaternion mirroredRot = frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
                 Quaternion result = Quaternion.Slerp(rot, mirroredRot, 1f);
                 rotations[i] = result;
+				*/
 
                 /*
                 Quaternion rot = frame.Rotations[Symmetry[i]];
@@ -371,7 +373,19 @@ public class BVHAnimation : ScriptableObject {
                 rotations[i] = result;
                 */
 
-                //Debug.Log("Normal: " + rot + " Mirrored: " + mirroredRot + " Final: " + rotations[i]);
+				/*
+                Quaternion rot = frame.GetWorldRotation(Symmetry[i]);
+                Quaternion mirroredRot = frame.GetWorldRotation(Symmetry[i]).Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
+                Quaternion result = Quaternion.Slerp(rot, mirroredRot, 1f);
+                rotations[i] = result;
+				*/
+
+                Matrix4x4 rotation = frame.GlobalMatrices[Symmetry[i]];
+                rotation[0, 2] *= -1f;
+                rotation[1, 2] *= -1f;
+                rotation[2, 0] *= -1f;
+                rotation[2, 1] *= -1f;
+                rotations[i] = Utility.ExtractRotation(rotation); //* Quaternion.Euler(Flipping[i * 3 + 0] ? 180f : 0f, Flipping[i * 3 + 1] ? 180f : 0f, Flipping[i * 3 + 2] ? 180f : 0f);
             } else {
 				rotations[i] = frame.Rotations[i];
 			}
@@ -514,7 +528,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 		*/
 
-                SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
+    	SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
 		SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
 		SetRotationOffset(EditorGUILayout.Vector3Field("Rotation Offset", RotationOffset));
 		SetOrientation(EditorGUILayout.Vector3Field("Orientation", Orientation));
@@ -818,6 +832,9 @@ public class BVHAnimation : ScriptableObject {
 		public Vector3[] Positions;
 		public Quaternion[] Rotations;
 
+		public Matrix4x4[] LocalMatrices;
+		public Matrix4x4[] GlobalMatrices;
+
 		public BVHFrame(BVHAnimation animation, int index, float timestamp) {
 			Animation = animation;
 			Index = index;
@@ -827,9 +844,15 @@ public class BVHAnimation : ScriptableObject {
 			LocalRotations = new Quaternion[Animation.Character.Bones.Length];
 			Positions = new Vector3[Animation.Character.Bones.Length];
 			Rotations = new Quaternion[Animation.Character.Bones.Length];
+
+			LocalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
+			GlobalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
 		}
 
 		public void Generate() {
+			LocalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
+			GlobalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
+
 			int channel = 0;
 			BVHData.Motion motion = Animation.Data.Motions[Index-1];
 			for(int i=0; i<Animation.Character.Bones.Length; i++) {
@@ -859,7 +882,7 @@ public class BVHAnimation : ScriptableObject {
 
 				LocalPositions[i] = i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale;
 				LocalRotations[i] = i == 0 ? Quaternion.Euler(Animation.RotationOffset) * Quaternion.Euler(Animation.Orientation) * rotation : rotation;
-
+				
 				Character.Bone bone = Animation.Character.Bones[i];
 				Character.Bone parent = bone.GetParent(Animation.Character);
 
@@ -871,17 +894,36 @@ public class BVHAnimation : ScriptableObject {
 
 				Positions[i] = Animation.Character.Bones[i].GetPosition();
 				Rotations[i] = Animation.Character.Bones[i].GetRotation();
+
+				LocalMatrices[i] = Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one);
+				GlobalMatrices[i] = parent == null ? Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one) : GlobalMatrices[parent.GetIndex()] * Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one);
 			}
+		}
+
+		public Vector3 GetWorldPosition(int index) {
+			return Utility.ExtractPosition(GlobalMatrices[index]);
+		}
+
+		public Vector3 GetLocalPosition(int index) {
+			return Utility.ExtractPosition(LocalMatrices[index]);
+		}
+
+		public Quaternion GetWorldRotation(int index) {
+			return Utility.ExtractRotation(GlobalMatrices[index]);
+		}
+
+		public Quaternion GetLocalRotation(int index) {
+			return Utility.ExtractRotation(LocalMatrices[index]);
 		}
 
 		public Vector3 ComputeVelocity(int index, float smoothing) {
 			if(smoothing == 0f) {
-				return Positions[index] - Animation.GetFrame(Mathf.Max(1, Index-1)).Positions[index];
+				return Positions[index] - Animation.GetFrame(Mathf.Max(1, Index-1)).GetWorldPosition(index);
 			}
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
 			for(int i=1; i<frames.Length; i++) {
-				velocity += frames[i].Positions[index] - frames[i-1].Positions[index];
+				velocity += frames[i].GetWorldPosition(index) - frames[i-1].GetWorldPosition(index);
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -1084,7 +1126,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Animation.TotalFrames; i++) {
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
-						float offset = Mathf.Max(0f, Animation.Frames[i].Positions[j].y - Utility.ProjectGround(Animation.Frames[i].Positions[j], mask).y);
+						float offset = Mathf.Max(0f, Animation.Frames[i].GetWorldPosition(j).y - Utility.ProjectGround(Animation.Frames[i].GetWorldPosition(j), mask).y);
 						Heights[i] += offset < HeightThreshold ? 0f : offset;
 					}
 				}

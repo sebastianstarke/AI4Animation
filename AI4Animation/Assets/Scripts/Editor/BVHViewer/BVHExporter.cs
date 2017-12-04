@@ -41,7 +41,7 @@ public class BVHExporter : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
-                /*
+                
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
                         Animations[i].ComputeSymmetry();
@@ -52,8 +52,7 @@ public class BVHExporter : EditorWindow {
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
-				*/
-
+				
 				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.BeginHorizontal();

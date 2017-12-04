@@ -242,11 +242,11 @@ public class Character {
 				}
 			}
 			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
-			if(bone.Transform) {
+			//if(bone.Transform) {
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-			}
+			//}
 			/*
 			UnityGL.DrawMesh(
 				Utility.GetPrimitiveMesh(PrimitiveType.Cube),
