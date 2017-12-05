@@ -17,15 +17,17 @@ public class DemoAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
+	/*
 	private Trajectory Trajectory;
 
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 	private Vector3[] Velocities = new Vector3[0];
+	*/
 
 	//Rescaling for character (cm to m)
-	private float UnitScale = 100f;
+	//private float UnitScale = 100f;
 
 	//Trajectory for 60 Hz framerate
 	private const int PointSamples = 12;
@@ -44,18 +46,21 @@ public class DemoAnimation : MonoBehaviour {
 	}
 
 	void Awake() {
+		/*
 		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
 		PFNN.Initialise();
+		*/
 	}
 
 	void Start() {
 		Utility.SetFPS(60);
 	}
 
+	/*
 	void Update() {
 		if(PFNN.Parameters == null) {
 			return;
@@ -73,6 +78,7 @@ public class DemoAnimation : MonoBehaviour {
 		Trajectory.Points[RootPointIndex].Styles[0] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[0], 1.0f - Mathf.Clamp(Vector3.Magnitude(TargetVelocity) / 0.1f, 0.0f, 1.0f), GaitTransition);
 		Trajectory.Points[RootPointIndex].Styles[1] = Mathf.Max(Trajectory.Points[RootPointIndex].Styles[1] - Trajectory.Points[RootPointIndex].Styles[2], 0f);
 		//
+		*/
 
 		//Blend Trajectory Offset
 		/*
@@ -88,6 +94,7 @@ public class DemoAnimation : MonoBehaviour {
 		}
 		*/
 
+		/*
 		//Predict Future Trajectory
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
 		trajectory_positions_blend[RootPointIndex] = Trajectory.Points[RootPointIndex].GetPosition();
@@ -275,7 +282,7 @@ public class DemoAnimation : MonoBehaviour {
 			//Map to Character
 			Character.FetchForwardKinematics(Root);
 
-			/* Update Phase */
+			//Update Phase
 			Phase = Mathf.Repeat(Phase + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
 	}
@@ -375,5 +382,5 @@ public class DemoAnimation : MonoBehaviour {
 			OnRenderObject();
 		}
 	}
-	
+	*/
 }

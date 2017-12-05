@@ -115,8 +115,8 @@ public class BVHViewer : EditorWindow {
 		if(Animation != null) {
 			Animation.Draw();
 			if(AutoFocus) {
-				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.Positions[0].Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.Positions[0];
-				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.Rotations[0].Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.Rotations[0];
+				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetPosition().Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.World[0].GetPosition();
+				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetRotation().Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.World[0].GetRotation();
 				rotation.x = 0f;
 				rotation.z = 0f;
 				rotation = Quaternion.Euler(0f, Animation.ShowMirrored ? Mathf.Repeat(FocusAngle + 180f, 360f) : FocusAngle, 0f) * rotation;
@@ -129,7 +129,7 @@ public class BVHViewer : EditorWindow {
 		if(AutoFocus != value) {
 			AutoFocus = value;
 			if(!AutoFocus) {
-				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.Positions[0].Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.Positions[0];
+				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetPosition().Mirror(Animation.MirrorX, Animation.MirrorY, Animation.MirrorZ) : Animation.CurrentFrame.World[0].GetPosition();
 				Quaternion rotation = Quaternion.Euler(0f, Mathf.Repeat(FocusAngle + 180f, 360f), 0f);
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
@@ -144,6 +144,13 @@ public class BVHViewer : EditorWindow {
 		if(Animation != animation) {
 			Save();
 			Animation = animation;
+
+			if(Animation != null) {
+				Debug.Log("RELOADING FRAMES");
+				Animation.ComputeSymmetry();
+				Animation.ComputeFrames();
+				Animation.ComputeTrajectory();
+			}
 		}
 	}
 

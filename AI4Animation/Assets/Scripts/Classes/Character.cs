@@ -41,8 +41,7 @@ public class Character {
 
 	private void FetchForwardKinematics(Transform transform, ref int index) {
 		if(index < Bones.Length) {
-			Bones[index].SetPosition(transform.position);
-			Bones[index].SetRotation(transform.rotation);
+			Bones[index].SetTransformation(Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one));
 			index += 1;
 			for(int i=0; i<transform.childCount; i++) {
 				FetchForwardKinematics(transform.GetChild(i), ref index);
@@ -50,14 +49,13 @@ public class Character {
 		}
 	}
 
-	public void FetchForwardKinematics(Transformation[] transformations) {
+	public void FetchForwardKinematics(Matrix4x4[] transformations) {
 		if(Bones.Length != transformations.Length) {
 			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
 			return;
 		}
 		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].SetPosition(transformations[i].Position);
-			Bones[i].SetRotation(transformations[i].Rotation);
+			Bones[i].SetTransformation(transformations[i]);
 		}
 	}
 
@@ -138,8 +136,7 @@ public class Character {
 		[SerializeField] private int Index = -1;
 		[SerializeField] private int Parent = -1;
 		[SerializeField] private int[] Childs = new int[0];
-		[SerializeField] private Vector3 Position = Vector3.zero;	
-		[SerializeField] private Quaternion Rotation = Quaternion.identity;
+		[SerializeField] private Matrix4x4 Transformation;
 
 		public Bone(string name, int index) {
 			Draw = true;
@@ -147,8 +144,7 @@ public class Character {
 			Index = index;
 			Parent = -1;
 			Childs = new int[0];
-			Position = Vector3.zero;
-			Rotation = Quaternion.identity;
+			Transformation = Matrix4x4.identity;
 		}
 
 		public string GetName() {
@@ -210,20 +206,12 @@ public class Character {
 			System.Array.Resize(ref Childs, 0);
 		}
 
-		public void SetPosition(Vector3 position) {
-			Position = position;
+		public void SetTransformation(Matrix4x4 transformation) {
+			Transformation = transformation;
 		}
 
-		public void SetRotation(Quaternion rotation) {
-			Rotation = rotation;
-		}
-
-		public Vector3 GetPosition() {
-			return Position;
-		}
-
-		public Quaternion GetRotation() {
-			return Rotation;
+		public Matrix4x4 GetTransformation() {
+			return Transformation;
 		}
 	}
 
@@ -238,14 +226,14 @@ public class Character {
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
 				if(child.Draw) {
-					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
+					UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
-			UnityGL.DrawSphere(bone.GetPosition(), 0.5f*BoneSize, Color.black);
+			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Color.black);
 			//if(bone.Transform) {
-				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-				UnityGL.DrawArrow(bone.GetPosition(), bone.GetPosition() + 0.05f * (bone.GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
 			//}
 			/*
 			UnityGL.DrawMesh(
@@ -273,10 +261,10 @@ public class Character {
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
 				if(child.Draw) {
-					UnityGL.DrawLine(bone.GetPosition(), child.GetPosition(), Color.grey);
+					UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
 				}
 			}
-			UnityGL.DrawCircle(bone.GetPosition(), 0.01f, Color.black);
+			UnityGL.DrawCircle(bone.GetTransformation().GetPosition(), 0.01f, Color.black);
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			DrawSimple(bone.GetChild(this, i));

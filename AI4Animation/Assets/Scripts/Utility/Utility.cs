@@ -99,42 +99,6 @@ public static class Utility {
 		return peak * Mathf.Exp(-upper/lower);
 	}
 
-	public static Vector3 TransformPosition(Transform frame, Vector3 position) {
-		return frame.position + frame.rotation * position;
-	}
-
-	public static Vector3 DeltaPosition(Transform frame, Vector3 position) {
-		return Quaternion.Inverse(frame.rotation) * (position - frame.position);
-	}
-
-	public static Vector3 TransformDirection(Transform frame, Vector3 direction) {
-		return frame.rotation * direction;
-	}
-
-	public static Vector3 DeltaDirection(Transform frame, Vector3 direction) {
-		return Quaternion.Inverse(frame.rotation) * direction;
-	}
-
-	public static Quaternion TransformRotation(Transform frame, Quaternion rotation) {
-		return frame.rotation * rotation;
-	}
-
-	public static Quaternion DeltaRotation(Transform frame, Quaternion rotation) {
-		return Quaternion.Inverse(frame.rotation) * rotation;
-	}
-
-	public static Vector3 ExtractPosition(Matrix4x4 mat) {
-		return mat.GetColumn(3);
-	}
-
-	public static Quaternion ExtractRotation(Matrix4x4 mat) {
-		return Quaternion.LookRotation(mat.GetColumn(2), mat.GetColumn(1));
-	}
-
-	public static Vector3 ExtractScale(Matrix4x4 mat) {
-		return new Vector3(mat.GetColumn(0).magnitude, mat.GetColumn(1).magnitude, mat.GetColumn(2).magnitude);
-	}
-
 	public static float Interpolate(float from, float to, float amount) {
 		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;
@@ -193,48 +157,6 @@ public static class Utility {
 		for(int i=0; i<childs.Length; i++) {
 			childs[i].SetParent(transform);
 		}
-	}
-
-	public static Vector3 RelativePositionFrom(this Vector3 vector, Transformation from) {
-		return from.Position + from.Rotation * vector;
-	}
-
-	public static Vector3 RelativeDirectionFrom(this Vector3 vector, Transformation from) {
-		return from.Rotation * vector;
-	}
-
-	public static Quaternion RelativeRotationFrom(this Quaternion quaternion, Transformation from) {
-		return from.Rotation * quaternion;
-	}
-
-	public static Vector3 RelativePositionTo(this Vector3 vector, Transformation to) {
-		return Quaternion.Inverse(to.Rotation) * (vector - to.Position);
-	}
-
-	public static Vector3 RelativeDirectionTo(this Vector3 vector, Transformation to) {
-		return Quaternion.Inverse(to.Rotation) * vector;
-	}
-
-	public static Quaternion RelativeRotationTo(this Quaternion quaternion, Transformation to) {
-		return Quaternion.Inverse(to.Rotation) * quaternion;
-	}
-
-    public static Quaternion Exp(this Quaternion quaternion) {
-		Quaternions.Quaternion q = new Quaternions.Quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z).Exp();
-		quaternion.w = (float)q.Real;
-		quaternion.x = (float)q.ImagX;
-		quaternion.y = (float)q.ImagY;
-		quaternion.z = (float)q.ImagZ;
-		return quaternion;
-    }
-
-	public static Quaternion Log(this Quaternion quaternion) {
-		Quaternions.Quaternion q = new Quaternions.Quaternion(quaternion.w, quaternion.x, quaternion.y, quaternion.z).Log();
-		quaternion.w = (float)q.Real;
-		quaternion.x = (float)q.ImagX;
-		quaternion.y = (float)q.ImagY;
-		quaternion.z = (float)q.ImagZ;
-		return quaternion;
 	}
 
 	public static Vector3 Mirror(this Vector3 vector, bool x, bool y, bool z) {

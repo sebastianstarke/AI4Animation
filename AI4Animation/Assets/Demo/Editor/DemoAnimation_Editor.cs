@@ -38,7 +38,7 @@ public class DemoAnimation_Editor : Editor {
 				if(GUILayout.Button("Bio Animation")) {
 					Target.Inspect = !Target.Inspect;
 				}
-
+				/*
 				if(Target.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
@@ -59,6 +59,7 @@ public class DemoAnimation_Editor : Editor {
 						}
 					}
 				}
+				*/
 			}
 		}
 

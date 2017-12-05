@@ -41,6 +41,16 @@ public class BVHExporter : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+				if(Utility.GUIButton("Enable All", Utility.Grey, Utility.White)) {
+					for(int i=0; i<Use.Length; i++) {
+						Use[i] = true;
+					}
+				}
+				if(Utility.GUIButton("Disable All", Utility.Grey, Utility.White)) {
+					for(int i=0; i<Use.Length; i++) {
+						Use[i] = false;
+					}
+				}
                 
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
@@ -183,7 +193,7 @@ public class BVHExporter : EditorWindow {
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
 		WriteAnimations(ref data, ref sequence, false);
-		WriteAnimations(ref data, ref sequence, true);
+		//WriteAnimations(ref data, ref sequence, true);
 		data.Close();
 	}
 
@@ -215,36 +225,44 @@ public class BVHExporter : EditorWindow {
 						line += frame.Timestamp + Separator;
 
 						//Extract data
-						Vector3[] positions = Animations[i].ExtractPositions(frame, mirrored);
-						Quaternion[] rotations = Animations[i].ExtractRotations(frame, mirrored);
-						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+						Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
+						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored);
 						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 						
 						//Get root transformation
-						Transformation root = trajectory.Points[6].GetTransformation();
+						Matrix4x4 root = trajectory.Points[6].GetTransformation();
 
 						//Bone data
 						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
 							//Position
-							line += FormatVector3((positions[k]).RelativePositionTo(root));
+							line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
 							//Rotation
-							line += FormatQuaternion(rotations[k].RelativeRotationTo(root).Log(), true, false);
+							if(Animations[i].Character.Bones[k].GetName() == "Neck") {
+								Debug.Log(
+									"Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).ToString("F3") +
+									" Log Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false).ToString("F3")  + 
+									" Exp Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false).Exp().ToString("F3") +
+									" Log Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(true).ToString("F3") +
+									" Exp Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(true).Exp().ToString("F3")
+									);
+							}
+							line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false), true, false);
 
 							//Velocity
-							line += FormatVector3((velocities[k]).RelativeDirectionTo(root));
+							line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
 						}
 						
 						//Trajectory data
 						for(int k=0; k<12; k++) {
-							line += FormatVector3(trajectory.Points[k].GetPosition().RelativePositionTo(root));
-							line += FormatVector3(trajectory.Points[k].GetDirection().RelativeDirectionTo(root));
+							line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
+							line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
 						}
 
 						for(int k=0; k<12; k++) {
-							line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.Position.y);
-							line += FormatValue(trajectory.Points[k].GetRightSample().y - root.Position.y);
+							line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
+							line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
 						}
 
 						for(int k=0; k<12; k++) {
@@ -258,18 +276,16 @@ public class BVHExporter : EditorWindow {
 							line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
 						}
 
-						//ADDITIONAL
+						//Translational and angular root velocity
 						Vector3 position = trajectory.Points[6].GetPosition();
 						Vector3 direction = trajectory.Points[6].GetDirection();
 						Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
 						Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
 
-						//Translational root velocity
 						Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
 						line += FormatValue(translationOffset.x);
 						line += FormatValue(translationOffset.z);
 
-						//Angular root velocity
 						float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 						line += FormatValue(rotationOffset);
 
@@ -279,6 +295,9 @@ public class BVHExporter : EditorWindow {
 						} else {
 							line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 						}
+
+						//Feet height function
+						//TODO
 
 						//Postprocess
 						line = line.Remove(line.Length-1);

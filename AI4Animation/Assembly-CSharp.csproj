@@ -117,12 +117,14 @@
      <Compile Include="Assets\Scripts\Utility\UnityGL.cs" />
      <Compile Include="Assets\Scripts\Utility\Utility.cs" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.shader" />
-     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.cginc" />
+     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\ParadeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\LutGen.shader" />
+     <None Include="Assets\Project\Data (2).txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramRender.shader" />
      <None Include="Assets\Plugins\MathNet.Numerics.xml" />
+     <None Include="Assets\Project\Data (1).txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
      <None Include="Assets\Palette\low poly medieval buildings\readme.txt" />
@@ -138,6 +140,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
+     <None Include="Assets\Project\Data (4).txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />
@@ -150,6 +153,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
+     <None Include="Assets\Project\Data (3).txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
@@ -159,7 +163,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

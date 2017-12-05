@@ -321,81 +321,28 @@ public class BVHAnimation : ScriptableObject {
 		Trajectory = new Trajectory(TotalFrames, 0);
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<TotalFrames; i++) {
-			Vector3 rootPos = Utility.ProjectGround(Frames[i].GetWorldPosition(0), mask);
+			Vector3 rootPos = Utility.ProjectGround(Frames[i].World[0].GetPosition(), mask);
 			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
 			
 			//HARDCODED FOR DOG
 			int hipIndex = Character.FindBone("Hips").GetIndex();
 			int neckIndex = Character.FindBone("Neck").GetIndex();
-			Vector3 rootDir = Frames[i].GetWorldPosition(neckIndex) - Frames[i].GetWorldPosition(hipIndex);
+			Vector3 rootDir = Frames[i].World[neckIndex].GetPosition() - Frames[i].World[hipIndex].GetPosition();
 			rootDir.y = 0f;
 			rootDir = rootDir.normalized;
 			
-			Trajectory.Points[i].Position = rootPos;
-			Trajectory.Points[i].Direction = rootDir;
+			Trajectory.Points[i].SetPosition(rootPos);
+			Trajectory.Points[i].SetDirection(rootDir);
 			Trajectory.Points[i].Postprocess();
 		}
 	}
 
-	public Vector3[] ExtractPositions(BVHFrame frame, bool mirrored) {
-		Vector3[] positions = new Vector3[Character.Bones.Length];
-		for(int i=0; i<positions.Length; i++) {
-			positions[i] = mirrored ? frame.GetWorldPosition(Symmetry[i]).Mirror(MirrorX, MirrorY, MirrorZ) : frame.GetWorldPosition(i);
+	public Matrix4x4[] ExtractTransformations(BVHFrame frame, bool mirrored) {
+		Matrix4x4[] transformations = new Matrix4x4[Character.Bones.Length];
+		for(int i=0; i<transformations.Length; i++) {
+			transformations[i] = mirrored ? frame.World[Symmetry[i]].GetMirroredZ() : frame.World[i];
 		}
-		return positions;
-	}
-
-	public Quaternion[] ExtractRotations(BVHFrame frame, bool mirrored) {
-		Quaternion[] rotations = new Quaternion[Character.Bones.Length];
-		for(int i=0; i<rotations.Length; i++) {
-			if(mirrored) {
-				/*
-                Quaternion rot = frame.Rotations[Symmetry[i]];
-                Quaternion mirroredRot = frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
-                Quaternion result = Quaternion.Slerp(rot, mirroredRot, 1f);
-                rotations[i] = result;
-				*/
-
-                /*
-                Quaternion rot = frame.Rotations[Symmetry[i]];
-                Matrix4x4 mirror = Matrix4x4.TRS(Vector3.zero, rot, Vector3.one);
-                mirror[0, 2] *= -1f;
-                mirror[1, 2] *= -1f;
-                mirror[2, 0] *= -1f;
-                mirror[2, 1] *= -1f;
-                rotations[i] = Utility.ExtractRotation(mirror) * Quaternion.Euler(Flipping[i * 3 + 0] ? 180f : 0f, Flipping[i * 3 + 1] ? 180f : 0f, Flipping[i * 3 + 2] ? 180f : 0f);
-                Debug.Log(frame.Rotations[Symmetry[i]] + " / " + rotations[i]);
-                */
-                /*
-                Quaternion rot = frame.Rotations[i];
-                Quaternion mirroredRot = frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
-                Quaternion result = Quaternion.Slerp(rot, mirroredRot, 1f);
-                rotations[i] = result;
-                */
-
-				/*
-                Quaternion rot = frame.GetWorldRotation(Symmetry[i]);
-                Quaternion mirroredRot = frame.GetWorldRotation(Symmetry[i]).Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f);
-                Quaternion result = Quaternion.Slerp(rot, mirroredRot, 1f);
-                rotations[i] = result;
-				*/
-
-                Matrix4x4 rotation = frame.GlobalMatrices[Symmetry[i]];
-                rotation[0, 2] *= -1f;
-                rotation[1, 2] *= -1f;
-                rotation[2, 0] *= -1f;
-                rotation[2, 1] *= -1f;
-                rotations[i] = Utility.ExtractRotation(rotation); //* Quaternion.Euler(Flipping[i * 3 + 0] ? 180f : 0f, Flipping[i * 3 + 1] ? 180f : 0f, Flipping[i * 3 + 2] ? 180f : 0f);
-            } else {
-				rotations[i] = frame.Rotations[i];
-			}
-			//rotations[i] = mirrored ? frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) : frame.Rotations[i];
-			//rotations[i] = mirrored ? 
-			//frame.Rotations[Symmetry[i]].Mirror(MirrorX, MirrorY, MirrorZ) * Quaternion.Euler(Flipping[i*3 + 0] ? 180f : 0f, Flipping[i*3 + 1] ? 180f : 0f, Flipping[i*3 + 2] ? 180f : 0f)
-			//: 
-			//frame.Rotations[i];
-		}
-		return rotations;
+		return transformations;
 	}
 
 	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing=0f) {
@@ -412,33 +359,33 @@ public class BVHAnimation : ScriptableObject {
 		for(int i=0; i<6; i++) {
 			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, TotalTime);
 			int index = GetFrame(timestamp).Index;
-			trajectory.Points[i].Index = Trajectory.Points[index-1].Index;
-			trajectory.Points[i].Position = Trajectory.Points[index-1].Position;
-			trajectory.Points[i].Direction = Trajectory.Points[index-1].Direction;
-			trajectory.Points[i].LeftSample = Trajectory.Points[index-1].LeftSample;
-			trajectory.Points[i].RightSample = Trajectory.Points[index-1].RightSample;
-			trajectory.Points[i].Rise = Trajectory.Points[index-1].Rise;
+			trajectory.Points[i].SetIndex(Trajectory.Points[index-1].GetIndex());
+			trajectory.Points[i].SetPosition(Trajectory.Points[index-1].GetPosition());
+			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
+			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
+			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
+			trajectory.Points[i].SetRise(Trajectory.Points[index-1].GetRise());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
 		}
 		//Current
-		trajectory.Points[6].Index = Trajectory.Points[frame.Index-1].Index;
-		trajectory.Points[6].Position = Trajectory.Points[frame.Index-1].Position;
-		trajectory.Points[6].Direction = Trajectory.Points[frame.Index-1].Direction;
-		trajectory.Points[6].LeftSample = Trajectory.Points[frame.Index-1].LeftSample;
-		trajectory.Points[6].RightSample = Trajectory.Points[frame.Index-1].RightSample;
-		trajectory.Points[6].Rise = Trajectory.Points[frame.Index-1].Rise;
+		trajectory.Points[6].SetIndex(Trajectory.Points[frame.Index-1].GetIndex());
+		trajectory.Points[6].SetPosition(Trajectory.Points[frame.Index-1].GetPosition());
+		trajectory.Points[6].SetDirection(Trajectory.Points[frame.Index-1].GetDirection());
+		trajectory.Points[6].SetLeftsample(Trajectory.Points[frame.Index-1].GetLeftSample());
+		trajectory.Points[6].SetRightSample(Trajectory.Points[frame.Index-1].GetRightSample());
+		trajectory.Points[6].SetRise(Trajectory.Points[frame.Index-1].GetRise());
 		//Future
 		for(int i=7; i<12; i++) {
 			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, TotalTime);
 			int index = GetFrame(timestamp).Index;
-			trajectory.Points[i].Index = Trajectory.Points[index-1].Index;
-			trajectory.Points[i].Position = Trajectory.Points[index-1].Position;
-			trajectory.Points[i].Direction = Trajectory.Points[index-1].Direction;
-			trajectory.Points[i].LeftSample = Trajectory.Points[index-1].LeftSample;
-			trajectory.Points[i].RightSample = Trajectory.Points[index-1].RightSample;
-			trajectory.Points[i].Rise = Trajectory.Points[index-1].Rise;
+			trajectory.Points[i].SetIndex(Trajectory.Points[index-1].GetIndex());
+			trajectory.Points[i].SetPosition(Trajectory.Points[index-1].GetPosition());
+			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
+			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
+			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
+			trajectory.Points[i].SetRise(Trajectory.Points[index-1].GetRise());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
@@ -446,10 +393,10 @@ public class BVHAnimation : ScriptableObject {
 
 		if(mirrored) {
 			for(int i=0; i<12; i++) {
-				trajectory.Points[i].Position = trajectory.Points[i].Position.Mirror(MirrorX, MirrorY, MirrorZ);
-				trajectory.Points[i].Direction = trajectory.Points[i].Direction.Mirror(MirrorX, MirrorY, MirrorZ);
-				trajectory.Points[i].LeftSample = trajectory.Points[i].LeftSample.Mirror(MirrorX, MirrorY, MirrorZ);
-				trajectory.Points[i].RightSample = trajectory.Points[i].RightSample.Mirror(MirrorX, MirrorY, MirrorZ);
+				trajectory.Points[i].SetPosition(trajectory.Points[i].GetPosition().Mirror(MirrorX, MirrorY, MirrorZ));
+				trajectory.Points[i].SetDirection(trajectory.Points[i].GetDirection().Mirror(MirrorX, MirrorY, MirrorZ));
+				trajectory.Points[i].SetLeftsample(trajectory.Points[i].GetLeftSample().Mirror(MirrorX, MirrorY, MirrorZ));
+				trajectory.Points[i].SetRightSample(trajectory.Points[i].GetRightSample().Mirror(MirrorX, MirrorY, MirrorZ));
 			}
 		}
 
@@ -609,6 +556,8 @@ public class BVHAnimation : ScriptableObject {
 				Sequences[i].Start = EditorGUILayout.IntSlider(Sequences[i].Start, 1, TotalFrames, GUILayout.Width(182f));
 				EditorGUILayout.LabelField("End", GUILayout.Width(67f));
 				Sequences[i].End = EditorGUILayout.IntSlider(Sequences[i].End, 1, TotalFrames, GUILayout.Width(182f));
+				EditorGUILayout.LabelField("Export", GUILayout.Width(67f));
+				Sequences[i].Export = Mathf.Max(1, EditorGUILayout.IntField(Sequences[i].Export, GUILayout.Width(182f)));
 				if(Utility.GUIButton("Auto", Utility.DarkGrey, Utility.White)) {
 					Sequences[i].Auto();
 				}
@@ -670,8 +619,8 @@ public class BVHAnimation : ScriptableObject {
 	private Transform ExportSkeleton(Character.Bone bone, Transform parent) {
 		Transform instance = new GameObject(bone.GetName()).transform;
 		instance.SetParent(parent);
-		instance.position = bone.GetPosition();
-		instance.rotation = bone.GetRotation();
+		instance.position = bone.GetTransformation().GetPosition();
+		instance.rotation = bone.GetTransformation().GetRotation();
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			ExportSkeleton(bone.GetChild(Character, i), instance);
 		}
@@ -691,17 +640,15 @@ public class BVHAnimation : ScriptableObject {
 			float step = 1f;
 			UnityGL.Start();
 			for(int i=1; i<TotalFrames; i++) {
-				Vector3[] prevPos = ExtractPositions(Frames[i-1], ShowMirrored);
-				Vector3[] currPos = ExtractPositions(Frames[i], ShowMirrored);
-				UnityGL.DrawLine(prevPos[0], currPos[0], Utility.Magenta);
+				Matrix4x4[] prevTransformations = ExtractTransformations(Frames[i-1], ShowMirrored);
+				Matrix4x4[] currTransformations = ExtractTransformations(Frames[i], ShowMirrored);
+				UnityGL.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
 			}
 			UnityGL.Finish();
 			for(float i=0f; i<=TotalTime; i+=step) {
-				Vector3[] pos = ExtractPositions(GetFrame(i), ShowMirrored);
-				Quaternion[] rot = ExtractRotations(GetFrame(i), ShowMirrored);
+				Matrix4x4[] t = ExtractTransformations(GetFrame(i), ShowMirrored);
 				for(int j=0; j<Character.Bones.Length; j++) {
-					Character.Bones[j].SetPosition(pos[j]);
-					Character.Bones[j].SetRotation(rot[j]);
+					Character.Bones[j].SetTransformation(t[j]);
 				}
 				Character.DrawSimple();
 			}
@@ -712,12 +659,10 @@ public class BVHAnimation : ScriptableObject {
 		} else {
 			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
-		
-		Vector3[] positions = ExtractPositions(CurrentFrame, ShowMirrored);
-		Quaternion[] rotations = ExtractRotations(CurrentFrame, ShowMirrored);
+
+		Matrix4x4[] transformations = ExtractTransformations(CurrentFrame, ShowMirrored);
 		for(int i=0; i<Character.Bones.Length; i++) {
-			Character.Bones[i].SetPosition(positions[i]);
-			Character.Bones[i].SetRotation(rotations[i]);
+			Character.Bones[i].SetTransformation(transformations[i]);
 		}
 		Character.Draw();
 
@@ -729,8 +674,8 @@ public class BVHAnimation : ScriptableObject {
 				red.a = 0.25f;
 				Color green = Utility.Green;
 				green.a = 0.25f;
-				UnityGL.DrawCircle(ShowMirrored ? positions[Symmetry[i]] : positions[i], Character.BoneSize*1.25f, green);
-				UnityGL.DrawCircle(ShowMirrored ? positions[i] : positions[Symmetry[i]], Character.BoneSize*1.25f, red);
+				UnityGL.DrawCircle(ShowMirrored ? transformations[Symmetry[i]].GetPosition() : transformations[i].GetPosition(), Character.BoneSize*1.25f, green);
+				UnityGL.DrawCircle(ShowMirrored ? transformations[i].GetPosition() : transformations[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
 			}
 		}
 		UnityGL.Finish();
@@ -740,8 +685,8 @@ public class BVHAnimation : ScriptableObject {
 			UnityGL.Start();
 			for(int i=0; i<Character.Bones.Length; i++) {
 				UnityGL.DrawArrow(
-					positions[i],
-					positions[i] + velocities[i]/FrameTime,
+					transformations[i].GetPosition(),
+					transformations[i].GetPosition() + velocities[i]/FrameTime,
 					0.75f,
 					0.0075f,
 					0.05f,
@@ -755,12 +700,14 @@ public class BVHAnimation : ScriptableObject {
 	[System.Serializable]
 	public class BVHSequence {
 		public BVHAnimation Animation;
-		public int Start;
-		public int End;
+		public int Start = 1;
+		public int End = 1;
+		public int Export = 1;
 		public BVHSequence(BVHAnimation animation) {
 			Animation = animation;
 			Start = 1;
 			End = 1;
+			Export = 1;
 		}
 		public void Auto() {
 			int index = System.Array.FindIndex(Animation.Sequences, x => x == this);
@@ -827,32 +774,19 @@ public class BVHAnimation : ScriptableObject {
 		public int Index;
 		public float Timestamp;
 
-		public Vector3[] LocalPositions;
-		public Quaternion[] LocalRotations;
-		public Vector3[] Positions;
-		public Quaternion[] Rotations;
-
-		public Matrix4x4[] LocalMatrices;
-		public Matrix4x4[] GlobalMatrices;
+		public Matrix4x4[] Local;
+		public Matrix4x4[] World;
 
 		public BVHFrame(BVHAnimation animation, int index, float timestamp) {
 			Animation = animation;
 			Index = index;
 			Timestamp = timestamp;
-			
-			LocalPositions = new Vector3[Animation.Character.Bones.Length];
-			LocalRotations = new Quaternion[Animation.Character.Bones.Length];
-			Positions = new Vector3[Animation.Character.Bones.Length];
-			Rotations = new Quaternion[Animation.Character.Bones.Length];
 
-			LocalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
-			GlobalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
+			Local = new Matrix4x4[Animation.Character.Bones.Length];
+			World = new Matrix4x4[Animation.Character.Bones.Length];
 		}
 
 		public void Generate() {
-			LocalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
-			GlobalMatrices = new Matrix4x4[Animation.Character.Bones.Length];
-
 			int channel = 0;
 			BVHData.Motion motion = Animation.Data.Motions[Index-1];
 			for(int i=0; i<Animation.Character.Bones.Length; i++) {
@@ -880,50 +814,24 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
-				LocalPositions[i] = i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale;
-				LocalRotations[i] = i == 0 ? Quaternion.Euler(Animation.RotationOffset) * Quaternion.Euler(Animation.Orientation) * rotation : rotation;
-				
-				Character.Bone bone = Animation.Character.Bones[i];
-				Character.Bone parent = bone.GetParent(Animation.Character);
-
-				Vector3 parentPosition = parent == null ? Vector3.zero : parent.GetPosition();
-				Quaternion parentRotation = parent == null ? Quaternion.identity : parent.GetRotation();
-
-				bone.SetPosition(parentPosition + parentRotation * LocalPositions[i]);
-				bone.SetRotation(parentRotation * LocalRotations[i]);
-
-				Positions[i] = Animation.Character.Bones[i].GetPosition();
-				Rotations[i] = Animation.Character.Bones[i].GetRotation();
-
-				LocalMatrices[i] = Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one);
-				GlobalMatrices[i] = parent == null ? Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one) : GlobalMatrices[parent.GetIndex()] * Matrix4x4.TRS(LocalPositions[i], LocalRotations[i], Vector3.one);
+				Character.Bone parent = Animation.Character.Bones[i].GetParent(Animation.Character);
+				Local[i] = Matrix4x4.TRS(
+					i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale,
+					i == 0 ? Quaternion.Euler(Animation.RotationOffset) * Quaternion.Euler(Animation.Orientation) * rotation : rotation, 
+					Vector3.one
+					);
+				World[i] = parent == null ? Local[i] : World[parent.GetIndex()] * Local[i];
 			}
-		}
-
-		public Vector3 GetWorldPosition(int index) {
-			return Utility.ExtractPosition(GlobalMatrices[index]);
-		}
-
-		public Vector3 GetLocalPosition(int index) {
-			return Utility.ExtractPosition(LocalMatrices[index]);
-		}
-
-		public Quaternion GetWorldRotation(int index) {
-			return Utility.ExtractRotation(GlobalMatrices[index]);
-		}
-
-		public Quaternion GetLocalRotation(int index) {
-			return Utility.ExtractRotation(LocalMatrices[index]);
 		}
 
 		public Vector3 ComputeVelocity(int index, float smoothing) {
 			if(smoothing == 0f) {
-				return Positions[index] - Animation.GetFrame(Mathf.Max(1, Index-1)).GetWorldPosition(index);
+				return World[index].GetPosition() - Animation.GetFrame(Mathf.Max(1, Index-1)).World[index].GetPosition();
 			}
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
 			for(int i=1; i<frames.Length; i++) {
-				velocity += frames[i].GetWorldPosition(index) - frames[i-1].GetWorldPosition(index);
+				velocity += frames[i].World[index].GetPosition() - frames[i-1].World[index].GetPosition();
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -1126,7 +1034,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Animation.TotalFrames; i++) {
 				for(int j=0; j<Animation.Character.Bones.Length; j++) {
 					if(Variables[j]) {
-						float offset = Mathf.Max(0f, Animation.Frames[i].GetWorldPosition(j).y - Utility.ProjectGround(Animation.Frames[i].GetWorldPosition(j), mask).y);
+						float offset = Mathf.Max(0f, Animation.Frames[i].World[j].GetPosition().y - Utility.ProjectGround(Animation.Frames[i].World[j].GetPosition(), mask).y);
 						Heights[i] += offset < HeightThreshold ? 0f : offset;
 					}
 				}

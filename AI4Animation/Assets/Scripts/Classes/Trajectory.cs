@@ -14,8 +14,7 @@ public class Trajectory {
 		Points = new Point[size];
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
-			Points[i].SetPosition(Vector3.zero);
-			Points[i].SetDirection(Vector3.forward);
+			Points[i].SetTransformation(Matrix4x4.identity);
 		}
 	}
 
@@ -24,8 +23,7 @@ public class Trajectory {
 		Points = new Point[size];
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
-			Points[i].SetPosition(seedPosition);
-			Points[i].SetDirection(seedDirection);
+			Points[i].SetTransformation(Matrix4x4.TRS(seedPosition, Quaternion.LookRotation(seedDirection, Vector3.up), Vector3.one));
 		}
 	}
 
@@ -34,8 +32,7 @@ public class Trajectory {
 		Points = new Point[size];
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
-			Points[i].SetPosition(positions[i]);
-			Points[i].SetDirection(directions[i]);
+			Points[i].SetTransformation(Matrix4x4.TRS(positions[i], Quaternion.LookRotation(directions[i], Vector3.up), Vector3.one));
 		}
 	}
 
@@ -47,68 +44,100 @@ public class Trajectory {
 
 	[System.Serializable]
 	public class Point {
-		public int Index;
-		public Vector3 Position;
-		public Vector3 Direction;
-		public Vector3 LeftSample;
-		public Vector3 RightSample;
-		public float Rise;
+		[SerializeField] private int Index;
+		[SerializeField] private Matrix4x4 Transformation;
+		[SerializeField] private Vector3 LeftSample;
+		[SerializeField] private Vector3 RightSample;
+		[SerializeField] private float Rise;
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
 			Index = index;
-			Position = Vector3.zero;
-			Direction = Vector3.forward;
+			Transformation = Matrix4x4.identity;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
 			Rise = 0f;
 			Styles = new float[styles];
 		}
 
+		public void SetIndex(int index) {
+			Index = index;
+		}
+
 		public int GetIndex() {
 			return Index;
+		}
+
+		public void SetTransformation(Matrix4x4 matrix) {
+			Transformation = matrix;
+		}
+
+		public Matrix4x4 GetTransformation() {
+			return Transformation;
+		}
+
+		public void SetPosition(Vector3 position) {
+			Transformation = Transformation.SetPosition(position);
+		}
+
+		public Vector3 GetPosition() {
+			return Transformation.GetPosition();
+		}
+
+		public void SetRotation(Quaternion rotation) {
+			Transformation = Transformation.SetRotation(rotation);
+		}
+
+		public Quaternion GetRotation() {
+			return Transformation.GetRotation();
+		}
+
+		public void SetDirection(Vector3 direction) {
+			SetRotation(Quaternion.LookRotation(direction, Vector3.up));
+		}
+
+		public Vector3 GetDirection() {
+			return Transformation.GetForward();
+		}
+
+		public void SetLeftsample(Vector3 position) {
+			LeftSample = position;
 		}
 
 		public Vector3 GetLeftSample() {
 			return LeftSample;
 		}
 
+		public void SetRightSample(Vector3 position) {
+			RightSample = position;
+		}
+
 		public Vector3 GetRightSample() {
 			return RightSample;
 		}
 
-		public void SetPosition(Vector3 position) {
-			Position = position;
+		public void SetRise(float rise) {
+			Rise = rise;
 		}
 
-		public Vector3 GetPosition() {
-			return Position;
-		}
-
-		public void SetDirection(Vector3 direction) {
-			Direction = direction;
-		}
-
-		public Vector3 GetDirection() {
-			return Direction;
-		}
-
-		public Quaternion GetRotation() {
-			return Quaternion.LookRotation(Direction, Vector3.up);
-		}
-
-		public Transformation GetTransformation() {
-			return new Transformation(GetPosition(), GetRotation());
+		public float GetRise() {
+			return Rise;
 		}
 
 		public void Postprocess() {
 			LayerMask mask = LayerMask.GetMask("Ground");
-			Position.y = Utility.GetHeight(Position, mask);
-			Rise = Utility.GetRise(Position, mask);
-			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * Direction;
-			RightSample = Position + Trajectory.Width * ortho.normalized;
+			Vector3 position = Transformation.GetPosition();
+			Vector3 direction = Transformation.GetForward();
+
+			position.y = Utility.GetHeight(Transformation.GetPosition(), mask);
+			Transformation = Transformation.SetPosition(position);
+
+			Rise = Utility.GetRise(position, mask);
+
+			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * direction;
+			RightSample = position + Trajectory.Width * ortho.normalized;
 			RightSample.y = Utility.GetHeight(RightSample, mask);
-			LeftSample = Position - Trajectory.Width * ortho.normalized;
+			LeftSample = position - Trajectory.Width * ortho.normalized;
 			LeftSample.y = Utility.GetHeight(LeftSample, mask);
 		}
 	}
@@ -137,7 +166,7 @@ public class Trajectory {
 		//Rises
 		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Rise * Vector3.up, 0.025f, 0f, transparentRise);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetRise() * Vector3.up, 0.025f, 0f, transparentRise);
 		}
 
 		//Positions
