@@ -51,7 +51,11 @@ public class BVHExporter : EditorWindow {
 						Use[i] = false;
 					}
 				}
-                
+
+                if(Utility.GUIButton("Test Data", Utility.DarkGreen, Utility.White)) {
+					TestRotation(false);
+                }
+
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
                         Animations[i].ComputeSymmetry();
@@ -197,6 +201,37 @@ public class BVHExporter : EditorWindow {
 		data.Close();
 	}
 
+	private void TestRotation(bool mirrored) {
+		for(int i=0; i<Animations.Length; i++) {
+			if(Use[i]) {
+				for(int s=0; s<Animations[i].Sequences.Length; s++) {
+					int startIndex = Animations[i].Sequences[s].Start;
+					int endIndex = Animations[i].Sequences[s].End;
+					for(int j=startIndex; j<=endIndex; j++) {
+						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
+						Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
+						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
+						Matrix4x4 root = trajectory.Points[6].GetTransformation();
+						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
+							if(Animations[i].Character.Bones[k].GetName() == "LeftShoulder") {
+								Debug.Log(
+									"Frame: " + j +
+									" Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).ToString("F3") +
+									//" Log Quaternion: " + transformations[k].GetRotation().Log().ToString("F3")  + 
+									//" Exp Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log2(false).Exp().ToString("F3") +
+									//" Absolute Quaternion: " + transformations[k].GetRotation().GetAbsolute().ToString("F3") +
+									" Log Absolute Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log().ToString("F3") +
+									" Exp Absolute Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log().Exp().ToString("F3")
+									);
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
 	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
@@ -239,16 +274,7 @@ public class BVHExporter : EditorWindow {
 							line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
 							//Rotation
-							if(Animations[i].Character.Bones[k].GetName() == "Neck") {
-								Debug.Log(
-									"Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).ToString("F3") +
-									" Log Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false).ToString("F3")  + 
-									" Exp Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false).Exp().ToString("F3") +
-									" Log Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(true).ToString("F3") +
-									" Exp Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log(true).Exp().ToString("F3")
-									);
-							}
-							line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).Log(false), true, false);
+							line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
 
 							//Velocity
 							line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));

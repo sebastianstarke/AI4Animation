@@ -146,10 +146,12 @@ public class BVHViewer : EditorWindow {
 			Animation = animation;
 
 			if(Animation != null) {
+				/*
 				Debug.Log("RELOADING FRAMES");
 				Animation.ComputeSymmetry();
 				Animation.ComputeFrames();
 				Animation.ComputeTrajectory();
+				*/
 			}
 		}
 	}
