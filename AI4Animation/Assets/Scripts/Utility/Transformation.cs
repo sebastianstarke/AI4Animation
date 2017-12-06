@@ -15,7 +15,7 @@ public static class Transformation {
 	}
 	
 	public static Quaternion GetRotation(this Matrix4x4 matrix) {
-		return Quaternion.SlerpUnclamped(Quaternion.identity, Quaternion.LookRotation(matrix.GetColumn(2).normalized, matrix.GetColumn(1).normalized), 1f);
+		return Quaternion.LookRotation(matrix.GetColumn(2).normalized, matrix.GetColumn(1).normalized);
 	}
 
 	public static Matrix4x4 SetScale(this Matrix4x4 matrix, Vector3 scale) {
