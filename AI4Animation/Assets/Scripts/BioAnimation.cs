@@ -61,8 +61,10 @@ public class BioAnimation : MonoBehaviour {
 			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
 		}
 		//Only for current project
-		if(Controller.Styles[2].Query() == 1f) {
-			Trajectory.Points[RootPointIndex].Styles[1] = 1f - Trajectory.Points[RootPointIndex].Styles[2];
+		if(Controller.Styles.Length > 0) {
+			if(Controller.Styles[2].Query() == 1f) {
+				Trajectory.Points[RootPointIndex].Styles[1] = 1f - Trajectory.Points[RootPointIndex].Styles[2];
+			}
 		}
 		//
 

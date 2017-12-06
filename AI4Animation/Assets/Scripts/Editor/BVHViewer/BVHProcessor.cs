@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.IO;
 
-public class BVHExporter : EditorWindow {
+public class BVHProcessor : EditorWindow {
 
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
@@ -14,9 +14,9 @@ public class BVHExporter : EditorWindow {
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
 
-	[MenuItem ("Addons/BVH Exporter")]
+	[MenuItem ("Addons/BVH Processor")]
 	static void Init() {
-		Window = EditorWindow.GetWindow(typeof(BVHExporter));
+		Window = EditorWindow.GetWindow(typeof(BVHProcessor));
 		Scroll = Vector3.zero;
 	}
 
@@ -32,7 +32,7 @@ public class BVHExporter : EditorWindow {
 				Utility.SetGUIColor(Utility.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField("Exporter");
+					EditorGUILayout.LabelField("Processor");
 				}
 
 				if(Utility.GUIButton("Export Labels", Utility.DarkGrey, Utility.White)) {
@@ -41,6 +41,8 @@ public class BVHExporter : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+
+				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("Enable All", Utility.Grey, Utility.White)) {
 					for(int i=0; i<Use.Length; i++) {
 						Use[i] = true;
@@ -51,6 +53,7 @@ public class BVHExporter : EditorWindow {
 						Use[i] = false;
 					}
 				}
+				EditorGUILayout.EndHorizontal();
 
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {

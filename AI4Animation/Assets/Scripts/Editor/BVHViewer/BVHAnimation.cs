@@ -53,9 +53,9 @@ public class BVHAnimation : ScriptableObject {
 		MirroredPhaseFunction.EditorUpdate();
 	}
 
-	public BVHAnimation Create(BVHViewer viewer) {
-		Load(viewer.Path);
-		string name = viewer.Path.Substring(viewer.Path.LastIndexOf("/")+1);
+	public BVHAnimation Create(BVHEditor editor) {
+		Load(editor.Path);
+		string name = editor.Path.Substring(editor.Path.LastIndexOf("/")+1);
 		if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+name+".asset", typeof(BVHAnimation)) == null) {
 			AssetDatabase.CreateAsset(this , "Assets/Project/"+name+".asset");
 		} else {

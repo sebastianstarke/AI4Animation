@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class BVHViewer : EditorWindow {
+public class BVHEditor : EditorWindow {
 
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
@@ -15,9 +15,9 @@ public class BVHViewer : EditorWindow {
 	public string Path = string.Empty;
 	public BVHAnimation Animation = null;
 
-	[MenuItem ("Addons/BVH Viewer")]
+	[MenuItem ("Addons/BVH Editor")]
 	static void Init() {
-		Window = EditorWindow.GetWindow(typeof(BVHViewer));
+		Window = EditorWindow.GetWindow(typeof(BVHEditor));
 		Scroll = Vector3.zero;
 		Timestamp = Utility.GetTimestamp();
 	}
@@ -79,7 +79,7 @@ public class BVHViewer : EditorWindow {
 					Path = EditorGUILayout.TextField(Path);
 					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
 					if(GUILayout.Button("O", GUILayout.Width(20))) {
-						Path = EditorUtility.OpenFilePanel("BVH Viewer", Path == string.Empty ? Application.dataPath : Path.Substring(0, Path.LastIndexOf("/")), "bvh");
+						Path = EditorUtility.OpenFilePanel("BVH Editor", Path == string.Empty ? Application.dataPath : Path.Substring(0, Path.LastIndexOf("/")), "bvh");
 						GUI.SetNextControlName("");
 						GUI.FocusControl("");
 					}

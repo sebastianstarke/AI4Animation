@@ -6,15 +6,19 @@ using UnityEditor;
 [System.Serializable]
 public class Character {
 
+	public enum DRAWTYPE {Diffuse, Transparent}
+
 	public bool Inspect = false;
 
 	public Bone[] Bones = new Bone[0];
 
 	public float BoneSize = 0.025f;
+	public DRAWTYPE DrawType = DRAWTYPE.Diffuse;
 
 	private Mesh JointMesh;
 	private Mesh BoneMesh;
-	private Material Material;
+	private Material DiffuseMaterial;
+	private Material TransparentMaterial;
 
 	public Character() {
 		Inspect = false;
@@ -33,6 +37,16 @@ public class Character {
 		return Bones[0];
 	}
 
+	public void FetchForwardKinematics(Matrix4x4[] transformations) {
+		if(Bones.Length != transformations.Length) {
+			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
+			return;
+		}
+		for(int i=0; i<Bones.Length; i++) {
+			Bones[i].SetTransformation(transformations[i]);
+		}
+	}
+
 	public void FetchForwardKinematics(Transform root) {
 		int index = 0;
 		FetchForwardKinematics(root, ref index);
@@ -48,16 +62,6 @@ public class Character {
 			for(int i=0; i<transform.childCount; i++) {
 				FetchForwardKinematics(transform.GetChild(i), ref index);
 			}
-		}
-	}
-
-	public void FetchForwardKinematics(Matrix4x4[] transformations) {
-		if(Bones.Length != transformations.Length) {
-			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
-			return;
-		}
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].SetTransformation(transformations[i]);
 		}
 	}
 
@@ -225,7 +229,7 @@ public class Character {
 
 	private void Draw(Bone bone) {
 		if(bone.Draw) {
-			/*
+			
 			UnityGL.DrawMesh(
 				GetJointMesh(),
 				bone.GetTransformation().GetPosition(),
@@ -233,7 +237,6 @@ public class Character {
 				5f*BoneSize*Vector3.one,
 				GetMaterial()
 			);
-			*/
 			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
@@ -298,10 +301,20 @@ public class Character {
 	}
 
 	private Material GetMaterial() {
-		if(Material == null) {
-			Material = (Material)Resources.Load("Materials/UnityGL", typeof(Material));
+		switch(DrawType) {
+			case DRAWTYPE.Diffuse:
+			if(DiffuseMaterial == null) {
+				DiffuseMaterial = (Material)Resources.Load("Materials/UnityGLDiffuse", typeof(Material));
+			}
+			return DiffuseMaterial;
+			case DRAWTYPE.Transparent:
+			if(TransparentMaterial == null) {
+				TransparentMaterial = (Material)Resources.Load("Materials/UnityGLTransparent", typeof(Material));
+			}
+			return TransparentMaterial;
 		}
-		return Material;
+		Debug.Log("Material could not be found.");
+		return null;
 	}
 
 	#if UNITY_EDITOR
@@ -316,6 +329,7 @@ public class Character {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
+					DrawType = (DRAWTYPE)EditorGUILayout.EnumPopup("Draw Type", DrawType);
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Expand All", Color.grey, Color.white)) {
 						for(int i=0; i<Bones.Length; i++) {
