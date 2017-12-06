@@ -102,7 +102,7 @@ public class Controller {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(GUILayout.Button("Controller")) {
+			if(Utility.GUIButton("Controller", Utility.DarkGrey, Utility.White)) {
 				Inspect = !Inspect;
 			}
 

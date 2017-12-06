@@ -35,7 +35,7 @@ public class BioAnimation_Editor : Editor {
 					}
 				}
 
-				if(GUILayout.Button("Animation")) {
+				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 

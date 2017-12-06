@@ -52,15 +52,12 @@ public class BVHExporter : EditorWindow {
 					}
 				}
 
-                if(Utility.GUIButton("Test Data", Utility.DarkGreen, Utility.White)) {
-					TestRotation(false);
-                }
-
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-                        Animations[i].ComputeSymmetry();
-                        Animations[i].ComputeFrames();
-                        Animations[i].ComputeTrajectory();
+						Animations[i].ComputeCorrections();
+                       	Animations[i].ComputeSymmetry();
+                       	Animations[i].ComputeFrames();
+                       	Animations[i].ComputeTrajectory();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -197,40 +194,8 @@ public class BVHExporter : EditorWindow {
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
 		WriteAnimations(ref data, ref sequence, false);
-		//WriteAnimations(ref data, ref sequence, true);
+		WriteAnimations(ref data, ref sequence, true);
 		data.Close();
-	}
-
-	private void TestRotation(bool mirrored) {
-		/*
-		for(int i=0; i<Animations.Length; i++) {
-			if(Use[i]) {
-				for(int s=0; s<Animations[i].Sequences.Length; s++) {
-					int startIndex = Animations[i].Sequences[s].Start;
-					int endIndex = Animations[i].Sequences[s].End;
-					for(int j=startIndex; j<=endIndex; j++) {
-						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
-						Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
-						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
-						Matrix4x4 root = trajectory.Points[6].GetTransformation();
-						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
-							if(Animations[i].Character.Bones[k].GetName() == "LeftShoulder") {
-								Debug.Log(
-									"Frame: " + j +
-									" Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).ToString("F3") +
-									//" Log Quaternion: " + transformations[k].GetRotation().Log().ToString("F3")  + 
-									//" Exp Non-Absolute: " + transformations[k].GetRotation().GetRelativeRotationTo(root).Log2(false).Exp().ToString("F3") +
-									//" Absolute Quaternion: " + transformations[k].GetRotation().GetAbsolute().ToString("F3") +
-									" Log Absolute Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log().ToString("F3") +
-									" Exp Absolute Quaternion: " + transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log().Exp().ToString("F3")
-									);
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
 	}
 
 	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
@@ -325,7 +290,7 @@ public class BVHExporter : EditorWindow {
 							line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 						}
 
-						//Feet height function
+						//Feet offset function
 						//TODO
 
 						//Postprocess

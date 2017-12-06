@@ -251,11 +251,11 @@ public class Character {
 					//UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
-			//if(bone.Transform) {
+			if(bone.Transform) {
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-			//}			
+			}			
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));
@@ -309,7 +309,7 @@ public class Character {
 		Utility.SetGUIColor(Color.grey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(GUILayout.Button("Character")) {
+			if(Utility.GUIButton("Character", Utility.DarkGrey, Utility.White)) {
 				Inspect = !Inspect;
 			}
 

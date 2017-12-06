@@ -35,7 +35,7 @@ public class DemoAnimation_Editor : Editor {
 					}
 				}
 
-				if(GUILayout.Button("Bio Animation")) {
+				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 				
