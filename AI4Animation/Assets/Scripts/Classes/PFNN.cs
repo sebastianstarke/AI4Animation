@@ -92,7 +92,10 @@ public class PFNN {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
 		if(!Parameters.Load(Folder, XDim, YDim, HDim)) {
 			Parameters = null;
+			Debug.Log("Failed loading parameters.");
 			return;
+		} else {
+			Debug.Log("Parameters successfully loaded.");
 		}
 		if(Application.isPlaying) {
 			Initialise();

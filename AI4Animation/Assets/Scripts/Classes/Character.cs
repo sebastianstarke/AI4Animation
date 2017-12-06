@@ -12,6 +12,8 @@ public class Character {
 
 	public float BoneSize = 0.025f;
 
+	private Mesh JointMesh;
+	private Mesh BoneMesh;
 	private Material Material;
 
 	public Character() {
@@ -223,27 +225,37 @@ public class Character {
 
 	private void Draw(Bone bone) {
 		if(bone.Draw) {
+			/*
+			UnityGL.DrawMesh(
+				GetJointMesh(),
+				bone.GetTransformation().GetPosition(),
+				bone.GetTransformation().GetRotation(),
+				5f*BoneSize*Vector3.one,
+				GetMaterial()
+			);
+			*/
+			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
 			for(int i=0; i<bone.GetChildCount(); i++) {
 				Bone child = bone.GetChild(this, i);
 				if(child.Draw) {
-					UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
+					float distance = Vector3.Distance(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition());
+					if(distance > 0f) {
+						UnityGL.DrawMesh(
+							GetBoneMesh(),
+							bone.GetTransformation().GetPosition(),
+							Quaternion.FromToRotation(bone.GetTransformation().GetForward(), child.GetTransformation().GetPosition() - bone.GetTransformation().GetPosition()) * bone.GetTransformation().GetRotation(),
+							new Vector3(0.1f, 0.1f, distance),
+							GetMaterial()
+						);
+					}
+					//UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
 				}
 			}
-			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Color.black);
 			//if(bone.Transform) {
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-			//}
-			/*
-			UnityGL.DrawMesh(
-				Utility.GetPrimitiveMesh(PrimitiveType.Cube),
-				bone.GetPosition(),
-				bone.GetRotation(),
-				BoneSize*Vector3.one,
-				GetMaterial()
-			);
-			*/
+			//}			
 		}
 		for(int i=0; i<bone.GetChildCount(); i++) {
 			Draw(bone.GetChild(this, i));
@@ -271,9 +283,23 @@ public class Character {
 		}
 	}
 
+	private Mesh GetJointMesh() {
+		if(JointMesh == null) {
+			JointMesh = (Mesh)Resources.Load("Meshes/Joint", typeof(Mesh));
+		}
+		return JointMesh;
+	}
+
+	private Mesh GetBoneMesh() {
+		if(BoneMesh == null) {
+			BoneMesh = (Mesh)Resources.Load("Meshes/Bone", typeof(Mesh));
+		}
+		return BoneMesh;
+	}
+
 	private Material GetMaterial() {
 		if(Material == null) {
-			Material = (Material)Resources.Load("Materials/Black", typeof(Material));
+			Material = (Material)Resources.Load("Materials/UnityGL", typeof(Material));
 		}
 		return Material;
 	}

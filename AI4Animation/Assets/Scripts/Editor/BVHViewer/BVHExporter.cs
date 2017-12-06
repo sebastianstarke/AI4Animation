@@ -202,6 +202,7 @@ public class BVHExporter : EditorWindow {
 	}
 
 	private void TestRotation(bool mirrored) {
+		/*
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
 				for(int s=0; s<Animations[i].Sequences.Length; s++) {
@@ -229,7 +230,7 @@ public class BVHExporter : EditorWindow {
 				}
 			}
 		}
-
+		*/
 	}
 
 	private void WriteAnimations(ref StreamWriter data, ref int sequence, bool mirrored) {
@@ -261,7 +262,7 @@ public class BVHExporter : EditorWindow {
 
 						//Extract data
 						Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
-						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored);
+						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
 						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 						
@@ -274,7 +275,9 @@ public class BVHExporter : EditorWindow {
 							line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
 							//Rotation
-							line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
+							//line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
+							line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
+							line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
 
 							//Velocity
 							line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));

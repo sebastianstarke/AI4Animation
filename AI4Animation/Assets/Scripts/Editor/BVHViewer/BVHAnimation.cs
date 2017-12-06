@@ -690,7 +690,7 @@ public class BVHAnimation : ScriptableObject {
 					0.75f,
 					0.0075f,
 					0.05f,
-					new Color(0f, 1f, 0f, 0.5f)
+					new Color(0f, 1f, 1f, 0.5f)
 				);				
 			}
 			UnityGL.Finish();

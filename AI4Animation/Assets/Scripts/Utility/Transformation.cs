@@ -47,6 +47,7 @@ public static class Transformation {
 		return matrix;
 	}
 
+	/*
 	public static Quaternion GetAbsolute(this Quaternion rotation) {
 		rotation = rotation.GetNormalised();
 		//float imag = rotation.x + rotation.y + rotation.z;
@@ -64,6 +65,7 @@ public static class Transformation {
 
         return rotation;
 	}
+	*/
 
 	public static Quaternion GetNormalised(this Quaternion rotation) {
 		float length = rotation.GetMagnitude();
@@ -110,6 +112,7 @@ public static class Transformation {
 		return to.inverse.MultiplyVector(direction);
 	}
 	
+	/*
 	public static Quaternion Log(this Quaternion rotation) {
 		float mag = rotation.GetMagnitude();
 		float arg = Mathf.Atan2(mag, rotation.w) / mag;
@@ -130,6 +133,7 @@ public static class Transformation {
 		);
 		return exp.GetNormalised();
     }
+	*/
 
 	/*
 	public static Quaternion Log2(this Quaternion rotation, bool makeAbs) {
