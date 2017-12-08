@@ -6,7 +6,7 @@ public class BioAnimation : MonoBehaviour {
 
 	public float TargetBlending = 0.25f;
 	public float StyleTransition = 0.25f;
-	public float TrajectoryCorrection = 0.75f;
+	public float TrajectoryCorrection = 1f;
 
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
@@ -53,7 +53,7 @@ public class BioAnimation : MonoBehaviour {
 
 	void Update() {	
 		//Update Target Direction / Velocity
-		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetTransformation().GetForward(), TargetBlending);
+		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 		
 		//Update Style
@@ -147,7 +147,6 @@ public class BioAnimation : MonoBehaviour {
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Joints[i].position.GetRelativePositionTo(previousRoot);
-				//Quaternion rot = Joints[i].rotation.GetRelativeRotationTo(previousRoot).Log();
 				Vector3 forward = Joints[i].forward.GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Joints[i].up.GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
@@ -160,9 +159,6 @@ public class BioAnimation : MonoBehaviour {
 				PFNN.SetInput(start + i*JointDimIn + 6, up.x);
 				PFNN.SetInput(start + i*JointDimIn + 7, up.y);
 				PFNN.SetInput(start + i*JointDimIn + 8, up.z);
-				//PFNN.SetInput(start + i*JointDimIn + 3, rot.x);
-				//PFNN.SetInput(start + i*JointDimIn + 4, rot.y);
-				//PFNN.SetInput(start + i*JointDimIn + 5, rot.z);
 				PFNN.SetInput(start + i*JointDimIn + 9, vel.x);
 				PFNN.SetInput(start + i*JointDimIn + 10, vel.y);
 				PFNN.SetInput(start + i*JointDimIn + 11, vel.z);
@@ -263,7 +259,6 @@ public class BioAnimation : MonoBehaviour {
 			Matrix4x4[] transformations = new Matrix4x4[Joints.Length];
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 0), PFNN.GetOutput(start + i*JointDimOut + 1), PFNN.GetOutput(start + i*JointDimOut + 2));
-				//Quaternion rotation = new Quaternion(PFNN.GetOutput(start + i*JointDimOut + 3), PFNN.GetOutput(start + i*JointDimOut + 4), PFNN.GetOutput(start + i*JointDimOut + 5), 0f).Exp();
 				Vector3 forward = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 3), PFNN.GetOutput(start + i*JointDimOut + 4), PFNN.GetOutput(start + i*JointDimOut + 5));
 				Vector3 up = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 6), PFNN.GetOutput(start + i*JointDimOut + 7), PFNN.GetOutput(start + i*JointDimOut + 8));
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 9), PFNN.GetOutput(start + i*JointDimOut + 10), PFNN.GetOutput(start + i*JointDimOut + 11));
@@ -278,7 +273,6 @@ public class BioAnimation : MonoBehaviour {
 					velocity.x = 0f;
 				}
 				position = Vector3.Lerp(Joints[i].position.GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
-				//rotation = rotation.GetRelativeRotationFrom(currentRoot);
 				forward = forward.GetRelativeDirectionFrom(currentRoot);
 				up = up.GetRelativeDirectionFrom(currentRoot);
 				Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
@@ -365,18 +359,16 @@ public class BioAnimation : MonoBehaviour {
 		if(Application.isPlaying) {
 			UnityGL.Start();
 			for(int i=0; i<Joints.Length; i++) {
-				Character.Bone bone = Character.FindBone(Joints[i].name);
-				if(bone != null) {
-					if(bone.Draw) {
-						UnityGL.DrawArrow(
-							Joints[i].position,
-							Joints[i].position + Velocities[i]/Time.deltaTime,
-							0.75f,
-							0.0075f,
-							0.05f,
-							new Color(0f, 1f, 1f, 0.5f)
-						);
-					}
+				Character.Segment segment = Character.FindSegment(Joints[i].name);
+				if(segment != null) {
+					UnityGL.DrawArrow(
+						Joints[i].position,
+						Joints[i].position + Velocities[i]/Time.deltaTime,
+						0.75f,
+						0.0075f,
+						0.05f,
+						new Color(0f, 1f, 1f, 0.5f)
+					);
 				}
 			}
 			UnityGL.Finish();

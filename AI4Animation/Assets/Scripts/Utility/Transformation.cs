@@ -1,25 +1,25 @@
 ﻿using UnityEngine;
 
-public static class Transformation {
+public static class Transformations {
 
-	public static Matrix4x4 SetPosition(this Matrix4x4 matrix, Vector3 position) {
-		return Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
+	public static void SetPosition(ref Matrix4x4 matrix, Vector3 position) {
+		matrix = Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
+	}
+
+	public static void SetRotation(ref Matrix4x4 matrix, Quaternion rotation) {
+		matrix = Matrix4x4.TRS(matrix.GetPosition(), rotation, matrix.GetScale());
+	}
+
+	public static void SetScale(ref Matrix4x4 matrix, Vector3 scale) {
+		matrix = Matrix4x4.TRS(matrix.GetPosition(), matrix.GetRotation(), scale);
 	}
 
 	public static Vector3 GetPosition(this Matrix4x4 matrix) {
 		return matrix.GetColumn(3);
 	}
-
-	public static Matrix4x4 SetRotation(this Matrix4x4 matrix, Quaternion rotation) {
-		return Matrix4x4.TRS(matrix.GetPosition(), rotation, matrix.GetScale());
-	}
 	
 	public static Quaternion GetRotation(this Matrix4x4 matrix) {
 		return Quaternion.LookRotation(matrix.GetColumn(2).normalized, matrix.GetColumn(1).normalized);
-	}
-
-	public static Matrix4x4 SetScale(this Matrix4x4 matrix, Vector3 scale) {
-		return Matrix4x4.TRS(matrix.GetPosition(), matrix.GetRotation(), scale);
 	}
 
 	public static Vector3 GetScale(this Matrix4x4 matrix) {
@@ -36,48 +36,6 @@ public static class Transformation {
 
 	public static Vector3 GetForward(this Matrix4x4 matrix) {
 		return matrix.GetColumn(2);
-	}
-
-	public static Matrix4x4 GetMirroredZ(this Matrix4x4 matrix) {
-		matrix[2, 3] *= -1f; //Pos
-		matrix[0, 2] *= -1f; //Rot
-		matrix[1, 2] *= -1f; //Rot
-		matrix[2, 0] *= -1f; //Rot
-		matrix[2, 1] *= -1f; //Rot
-		return matrix;
-	}
-
-	/*
-	public static Quaternion GetAbsolute(this Quaternion rotation) {
-		rotation = rotation.GetNormalised();
-		//float imag = rotation.x + rotation.y + rotation.z;
-		//float real = rotation.w;
-		//if(imag < 0f && real > 0f) {
-		
-		//float scalar = Mathf.Sign(rotation.x) * rotation.x *rotation.x + Mathf.Sign(rotation.y) * rotation.y *rotation.y + Mathf.Sign(rotation.z) * rotation.z *rotation.z;
-		//if(rotation.w < 0f || scalar < 0f) {
-		if(rotation.w < 0f) {
-			rotation.x *= -1f;
-			rotation.y *= -1f;
-			rotation.z *= -1f;
-			rotation.w *= -1f;
-		}
-
-        return rotation;
-	}
-	*/
-
-	public static Quaternion GetNormalised(this Quaternion rotation) {
-		float length = rotation.GetMagnitude();
-		rotation.x /= length;
-		rotation.y /= length;
-		rotation.z /= length;
-		rotation.w /= length;
-		return rotation;
-	}
-
-	public static float GetMagnitude(this Quaternion rotation) {
-		return Mathf.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z + rotation.w*rotation.w);
 	}
 
 	public static Matrix4x4 GetRelativeTransformationFrom(this Matrix4x4 matrix, Matrix4x4 from) {
@@ -111,8 +69,62 @@ public static class Transformation {
 	public static Vector3 GetRelativeDirectionTo(this Vector3 direction, Matrix4x4 to) {
 		return to.inverse.MultiplyVector(direction);
 	}
+
+	public static Matrix4x4 GetMirror(this Matrix4x4 matrix) {
+		matrix[2, 3] *= -1f; //Pos
+		matrix[0, 2] *= -1f; //Rot
+		matrix[1, 2] *= -1f; //Rot
+		matrix[2, 0] *= -1f; //Rot
+		matrix[2, 1] *= -1f; //Rot
+		return matrix;
+	}
+
+	public static Vector3 GetMirror(this Vector3 vector) {
+		vector.z *= -1f;
+		return vector;
+	}
+
+	public static Quaternion GetMirror(this Quaternion quaternion) {
+		Quaternion mirror = quaternion;
+		mirror.z *= -1f;
+		mirror.w *= -1f;
+		return Quaternion.Slerp(quaternion, mirror, 1f);
+	}
+
+	public static Quaternion GetNormalised(this Quaternion rotation) {
+		float length = rotation.GetMagnitude();
+		rotation.x /= length;
+		rotation.y /= length;
+		rotation.z /= length;
+		rotation.w /= length;
+		return rotation;
+	}
+
+	public static float GetMagnitude(this Quaternion rotation) {
+		return Mathf.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z + rotation.w*rotation.w);
+	}
 	
+}
+
 	/*
+	public static Quaternion GetAbsolute(this Quaternion rotation) {
+		rotation = rotation.GetNormalised();
+		//float imag = rotation.x + rotation.y + rotation.z;
+		//float real = rotation.w;
+		//if(imag < 0f && real > 0f) {
+		
+		//float scalar = Mathf.Sign(rotation.x) * rotation.x *rotation.x + Mathf.Sign(rotation.y) * rotation.y *rotation.y + Mathf.Sign(rotation.z) * rotation.z *rotation.z;
+		//if(rotation.w < 0f || scalar < 0f) {
+		if(rotation.w < 0f) {
+			rotation.x *= -1f;
+			rotation.y *= -1f;
+			rotation.z *= -1f;
+			rotation.w *= -1f;
+		}
+
+        return rotation;
+	}
+
 	public static Quaternion Log(this Quaternion rotation) {
 		float mag = rotation.GetMagnitude();
 		float arg = Mathf.Atan2(mag, rotation.w) / mag;
@@ -201,4 +213,3 @@ public static class Transformation {
 		return quaternion;
 	}
 	*/
-}

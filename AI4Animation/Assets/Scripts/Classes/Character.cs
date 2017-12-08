@@ -1,19 +1,25 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-[System.Serializable]
+[Serializable]
 public class Character {
 
 	public enum DRAWTYPE {Diffuse, Transparent}
 
 	public bool Inspect = false;
+	public bool[] Expanded = new bool[0];
 
-	public Bone[] Bones = new Bone[0];
+	public Segment[] Hierarchy = new Segment[0];
+	public Bone[] Skeleton = new Bone[0];
 
 	public float BoneSize = 0.025f;
 	public DRAWTYPE DrawType = DRAWTYPE.Diffuse;
+	public bool DrawSkeleton = true;
+	public bool DrawTransforms = false;
 
 	private Mesh JointMesh;
 	private Mesh BoneMesh;
@@ -22,130 +28,189 @@ public class Character {
 
 	public Character() {
 		Inspect = false;
+		Expanded = new bool[0];
 		BoneSize = 0.025f;
 	}
 
 	public void Clear() {
-		System.Array.Resize(ref Bones, 0);
+		Array.Resize(ref Expanded, 0);
+		Array.Resize(ref Hierarchy, 0);
+		Array.Resize(ref Skeleton, 0);
 	}
 
-	public Bone GetRoot() {
-		if(Bones.Length == 0) {
-			Debug.Log("Character has not been assigned a root bone.");
+	public Segment GetHierarchyRoot() {
+		if(Hierarchy.Length == 0) {
+			Debug.Log("Hierarchy has not been assigned a root segment.");
 			return null;
 		}
-		return Bones[0];
+		return Hierarchy[0];
 	}
 
-	public void FetchForwardKinematics(Matrix4x4[] transformations) {
-		if(Bones.Length != transformations.Length) {
-			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of bones.");
-			return;
+	public Bone GetSkeletonRoot() {
+		if(Skeleton.Length == 0) {
+			Debug.Log("Skeleton has not been assigned a root bone.");
+			return null;
 		}
-		for(int i=0; i<Bones.Length; i++) {
-			Bones[i].SetTransformation(transformations[i]);
-		}
+		return Skeleton[0];
 	}
 
-	public void FetchForwardKinematics(Transform root) {
-		int index = 0;
-		FetchForwardKinematics(root, ref index);
-		if(index != Bones.Length) {
-			Debug.Log("Forward kinematics did not finish properly because the number of transforms and bones did not match.");
-		}
-	}
-
-	private void FetchForwardKinematics(Transform transform, ref int index) {
-		if(index < Bones.Length) {
-			Bones[index].SetTransformation(Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one));
-			index += 1;
-			for(int i=0; i<transform.childCount; i++) {
-				FetchForwardKinematics(transform.GetChild(i), ref index);
-			}
-		}
+	public Segment FindSegment(string name) {
+		return Array.Find(Hierarchy, x => x.GetName() == name);
 	}
 
 	public Bone FindBone(string name) {
-		return System.Array.Find(Bones, x => x.GetName() == name);
+		return Array.Find(Skeleton, x => x.GetName() == name);
+	}
+
+	public void FetchForwardKinematics(Transform root) {
+		List<Matrix4x4> transformations = new List<Matrix4x4>();
+		Action<Transform> recursion = null;
+		recursion = new Action<Transform>((transform) => {
+			transformations.Add(Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one));
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i));
+			}
+		});
+		recursion(root);
+		if(Hierarchy.Length != transformations.Count) {
+			Debug.Log("Forward kinematics returned because the number of given transformations does not match the number of segments.");
+			return;
+		}
+		for(int i=0; i<Hierarchy.Length; i++) {
+			Hierarchy[i].SetTransformation(transformations[i]);
+		}
 	}
 
 	public bool RebuildRequired(Transform root) {
-		bool error = false;
-		RebuildRequired(root, GetRoot(), ref error);
-		return error;
-	}
-
-	private void RebuildRequired(Transform transform, Bone bone, ref bool error) {
-		if(error) {
-			return;
-		}
-		if(transform.name != bone.GetName() || transform.childCount != bone.GetChildCount()) {
-			error = true;
-		}
-		for(int i=0; i<transform.childCount; i++) {
-			RebuildRequired(transform.GetChild(i), bone.GetChild(this, i), ref error);
-		}
+		Func<Transform, Segment, bool> recursion = null;
+		recursion = new Func<Transform, Segment, bool>((transform, segment) => {
+			if(transform.name != segment.GetName() || transform.childCount != segment.GetChildCount()) {
+				return true;
+			}
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i), segment.GetChild(this, i));
+			}
+			return false;
+		});
+		return recursion(root, GetHierarchyRoot());
 	}
 
 	public void BuildHierarchy(Transform root) {
-		System.Array.Resize(ref Bones, 0);
-		BuildHierarchy(root, null);
+		Clear();
+		Action<Transform, Segment> recursion = null;
+		recursion = new Action<Transform, Segment>((transform, parent) => {
+			Segment segment = AddSegment(transform.name, parent);
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i), segment);
+			}
+		});
+		recursion(root, null);
 	}
 
-	private void BuildHierarchy(Transform transform, Bone parent) {
-		Bone bone = AddBone(transform.name, parent);
-		for(int i=0; i<transform.childCount; i++) {
-			BuildHierarchy(transform.GetChild(i), bone);
-		}
-	}
-
-	public Bone AddBone(string name, Bone parent) {
-		if(FindBone(name) != null) {
-			Debug.Log("Bone has not been added because another bone with name " + name + " already exists.");
+	public Segment AddSegment(string name, Segment parent) {
+		if(FindSegment(name) != null) {
+			Debug.Log("Segment has not been added because another segment with name " + name + " already exists.");
 			return null;
 		}
-		Bone bone = new Bone(name, Bones.Length);
-		System.Array.Resize(ref Bones, Bones.Length+1);
-		Bones[Bones.Length-1] = bone;
+		Segment segment = new Segment(name, Hierarchy.Length);
+		Array.Resize(ref Expanded, Expanded.Length+1);
+		Expanded[Expanded.Length-1] = false;
+		Array.Resize(ref Hierarchy, Hierarchy.Length+1);
+		Hierarchy[Hierarchy.Length-1] = segment;
 		if(parent != null) {
-			bone.SetParent(this, parent);
-			parent.AddChild(this, bone);
+			segment.SetParent(parent);
+			parent.AddChild(segment);
 		}
-		return bone;
+		return segment;
 	}
 
-	public void Print() {
-		Print(GetRoot());
+	public Segment AddSegment(string name, string parent) {
+		return AddSegment(name, FindSegment(parent));
 	}
 
-	private void Print(Bone bone) {
-		string output = string.Empty;
-		output += "Name: " + bone.GetName() + " ";
-		output += "Parent: " + bone.GetParent(this) + " ";
-		output += "Childs: ";
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			output += bone.GetChild(this, i).GetName() + " ";
-		}
-		UnityEngine.Debug.Log(output);
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			Print(bone.GetChild(this, i));
-		}
-	}
-
-	[System.Serializable]
+	[Serializable]
 	public class Bone {
-		public bool Expanded = false;
-		public bool Draw = true;
-		public bool Transform = false;
+		[SerializeField] private Segment Segment;
+		[SerializeField] private int Index = -1;
+		[SerializeField] private int Parent = -1;
+		[SerializeField] private int[] Childs = new int[0];
 
+		public Bone(Segment segment, int index) {
+			Segment = segment;
+			Index = index;
+			Parent = -1;
+			Childs = new int[0];
+		}
+
+		public string GetName() {
+			return Segment.GetName();
+		}
+
+		public void SetIndex(int index) {
+			Index = index;
+		}
+
+		public int GetIndex() {
+			return Index;
+		}
+
+		public void SetParent(Bone parent) {
+			if(parent == null) {
+				Parent = -1;
+			} else {
+				Parent = parent.Index;
+			}
+		}
+
+		public Bone GetParent(Character character) {
+			if(Parent == -1) {
+				return null;
+			} else {
+				return character.Skeleton[Parent];
+			}
+		}
+
+		public void AddChild(Bone child) {
+			if(child != null) {
+				Array.Resize(ref Childs, Childs.Length+1);
+				Childs[Childs.Length-1] = child.Index;
+			}
+		}
+
+		public Bone GetChild(Character character, int index) {
+			return character.Skeleton[Childs[index]];
+		}
+		
+		public Bone[] GetChilds(Character character) {
+			Bone[] childs = new Bone[Childs.Length];
+			for(int i=0; i<childs.Length; i++) {
+				childs[i] = character.Skeleton[Childs[i]];
+			}
+			return childs;
+		}
+
+		public int GetChildCount() {
+			return Childs.Length;
+		}
+
+		public void SetTransformation(Matrix4x4 transformation) {
+			Segment.SetTransformation(transformation);
+		}
+
+		public Matrix4x4 GetTransformation() {
+			return Segment.GetTransformation();
+		}
+	}
+
+	[Serializable]
+	public class Segment {
 		[SerializeField] private string Name = "Empty";
 		[SerializeField] private int Index = -1;
 		[SerializeField] private int Parent = -1;
 		[SerializeField] private int[] Childs = new int[0];
 		[SerializeField] private Matrix4x4 Transformation;
 
-		public Bone(string name, int index) {
-			Draw = true;
+		public Segment(string name, int index) {
 			Name = name;
 			Index = index;
 			Parent = -1;
@@ -165,7 +230,7 @@ public class Character {
 			return Index;
 		}
 
-		public void SetParent(Character character, Bone parent) {
+		public void SetParent(Segment parent) {
 			if(parent == null) {
 				Parent = -1;
 			} else {
@@ -173,43 +238,35 @@ public class Character {
 			}
 		}
 
-		public Bone GetParent(Character character) {
+		public Segment GetParent(Character character) {
 			if(Parent == -1) {
 				return null;
 			} else {
-				return character.Bones[Parent];
+				return character.Hierarchy[Parent];
 			}
 		}
 
-		public void RemoveParent() {
-			Parent = -1;
-		}
-
-		public void AddChild(Character character, Bone child) {
+		public void AddChild(Segment child) {
 			if(child != null) {
-				System.Array.Resize(ref Childs, Childs.Length+1);
+				Array.Resize(ref Childs, Childs.Length+1);
 				Childs[Childs.Length-1] = child.Index;
 			}
 		}
 
-		public Bone GetChild(Character character, int index) {
-			return character.Bones[Childs[index]];
+		public Segment GetChild(Character character, int index) {
+			return character.Hierarchy[Childs[index]];
 		}
 		
-		public Bone[] GetChilds(Character character) {
-			Bone[] childs = new Bone[Childs.Length];
+		public Segment[] GetChilds(Character character) {
+			Segment[] childs = new Segment[Childs.Length];
 			for(int i=0; i<childs.Length; i++) {
-				childs[i] = character.Bones[Childs[i]];
+				childs[i] = character.Hierarchy[Childs[i]];
 			}
 			return childs;
 		}
 
 		public int GetChildCount() {
 			return Childs.Length;
-		}
-
-		public void RemoveChilds() {
-			System.Array.Resize(ref Childs, 0);
 		}
 
 		public void SetTransformation(Matrix4x4 transformation) {
@@ -223,66 +280,59 @@ public class Character {
 
 	public void Draw() {
 		UnityGL.Start();
-		Draw(GetRoot());
+		Draw(GetHierarchyRoot());
 		UnityGL.Finish();
 	}
 
-	private void Draw(Bone bone) {
-		if(bone.Draw) {
-			
+	private void Draw(Segment segment) {
+		if(DrawSkeleton) {
 			UnityGL.DrawMesh(
 				GetJointMesh(),
-				bone.GetTransformation().GetPosition(),
-				bone.GetTransformation().GetRotation(),
+				segment.GetTransformation().GetPosition(),
+				segment.GetTransformation().GetRotation(),
 				5f*BoneSize*Vector3.one,
 				GetMaterial()
 			);
-			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
-			for(int i=0; i<bone.GetChildCount(); i++) {
-				Bone child = bone.GetChild(this, i);
-				if(child.Draw) {
-					float distance = Vector3.Distance(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition());
-					if(distance > 0f) {
-						UnityGL.DrawMesh(
-							GetBoneMesh(),
-							bone.GetTransformation().GetPosition(),
-							Quaternion.FromToRotation(bone.GetTransformation().GetForward(), child.GetTransformation().GetPosition() - bone.GetTransformation().GetPosition()) * bone.GetTransformation().GetRotation(),
-							new Vector3(0.1f, 0.1f, distance),
-							GetMaterial()
-						);
-					}
-					//UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
+			UnityGL.DrawSphere(segment.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
+			for(int i=0; i<segment.GetChildCount(); i++) {
+				Segment child = segment.GetChild(this, i);
+				float distance = Vector3.Distance(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition());
+				if(distance > 0f) {
+					UnityGL.DrawMesh(
+						GetBoneMesh(),
+						segment.GetTransformation().GetPosition(),
+						Quaternion.FromToRotation(segment.GetTransformation().GetForward(), child.GetTransformation().GetPosition() - segment.GetTransformation().GetPosition()) * segment.GetTransformation().GetRotation(),
+						new Vector3(4f*BoneSize, 4f*BoneSize, distance),
+						GetMaterial()
+					);
 				}
-			}
-			if(bone.Transform) {
-				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-				UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-			}			
+				//UnityGL.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), BoneSize, 0f, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
+			}	
 		}
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			Draw(bone.GetChild(this, i));
+		if(DrawTransforms) {
+			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+		}		
+		for(int i=0; i<segment.GetChildCount(); i++) {
+			Draw(segment.GetChild(this, i));
 		}
 	}
 
 	public void DrawSimple() {
 		UnityGL.Start();
-		DrawSimple(GetRoot());
+		DrawSimple(GetHierarchyRoot());
 		UnityGL.Finish();
 	}
 
-	private void DrawSimple(Bone bone) {
-		if(bone.Draw) {
-			for(int i=0; i<bone.GetChildCount(); i++) {
-				Bone child = bone.GetChild(this, i);
-				if(child.Draw) {
-					UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
-				}
-			}
-			UnityGL.DrawCircle(bone.GetTransformation().GetPosition(), 0.01f, Color.black);
+	private void DrawSimple(Segment segment) {
+		for(int i=0; i<segment.GetChildCount(); i++) {
+			Segment child = segment.GetChild(this, i);
+			UnityGL.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
 		}
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			DrawSimple(bone.GetChild(this, i));
+		UnityGL.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
+		for(int i=0; i<segment.GetChildCount(); i++) {
+			DrawSimple(segment.GetChild(this, i));
 		}
 	}
 
@@ -330,52 +380,52 @@ public class Character {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					DrawType = (DRAWTYPE)EditorGUILayout.EnumPopup("Draw Type", DrawType);
+					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
+					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Expand All", Color.grey, Color.white)) {
-						for(int i=0; i<Bones.Length; i++) {
-							Bones[i].Expanded = true;
+						for(int i=0; i<Hierarchy.Length; i++) {
+							Expanded[i] = true;
 						}
 					}
 					if(Utility.GUIButton("Collapse All", Color.grey, Color.white)) {
-						for(int i=0; i<Bones.Length; i++) {
-							Bones[i].Expanded = false;
+						for(int i=0; i<Hierarchy.Length; i++) {
+							Expanded[i] = false;
 						}
 					}
 					EditorGUILayout.EndHorizontal();
-					if(Bones.Length > 0) {
-						InspectHierarchy(GetRoot(), 0);
+					if(Hierarchy.Length > 0) {
+						InspectHierarchy(GetHierarchyRoot(), 0);
 					} else {
-						EditorGUILayout.LabelField("No bones available.");
+						EditorGUILayout.LabelField("No hierarchy available.");
 					}
 				}
 			}
 		}
 	}
 
-	private void InspectHierarchy(Bone bone, int indent) {
+	private void InspectHierarchy(Segment segment, int indent) {
 		EditorGUILayout.BeginHorizontal();
 		EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
-		if(bone.GetChildCount() > 0) {
-			if(Utility.GUIButton(bone.Expanded ? "-" : "+", Color.grey, Color.white, 20f, 20f)) {
-				bone.Expanded = !bone.Expanded;
+		if(segment.GetChildCount() > 0) {
+			if(Utility.GUIButton(Expanded[segment.GetIndex()] ? "-" : "+", Color.grey, Color.white, 20f, 20f)) {
+				Expanded[segment.GetIndex()] = !Expanded[segment.GetIndex()];
 			}
 		} else {
-			bone.Expanded = false;
+			Expanded[segment.GetIndex()] = false;
 		}
-		EditorGUILayout.LabelField(bone.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
+		EditorGUILayout.LabelField(segment.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
 		GUILayout.FlexibleSpace();
-		if(Utility.GUIButton("Draw", bone.Draw ? Color.grey : Color.white, bone.Draw ? Color.white : Color.grey, 40f, 20f)) {
-			bone.Draw = !bone.Draw;
+		if(Utility.GUIButton("Bone", Utility.DarkGrey, Utility.White)) {
+
 		}
-		if(Utility.GUIButton("Transform", bone.Transform ? Color.grey : Color.white, bone.Transform ? Color.white : Color.gray, 40f, 20f)) {
-			bone.Transform = !bone.Transform;
-		}
+
 		EditorGUILayout.EndHorizontal();
-		if(bone.Expanded) {
-			for(int i=0; i<bone.GetChildCount(); i++) {
-				Bone child = bone.GetChild(this, i);
+		if(Expanded[segment.GetIndex()]) {
+			for(int i=0; i<segment.GetChildCount(); i++) {
+				Segment child = segment.GetChild(this, i);
 				if(child != null) {
-					InspectHierarchy(bone.GetChild(this, i), indent+1);
+					InspectHierarchy(segment.GetChild(this, i), indent+1);
 				}
 			}
 		}

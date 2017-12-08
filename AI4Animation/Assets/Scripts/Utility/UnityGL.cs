@@ -25,26 +25,17 @@ public static class UnityGL {
 			return;
 		}
 
-		//Create Material
 		Resources.UnloadUnusedAssets();
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
 		ColorMaterial = new Material(colorShader);
 		ColorMaterial.hideFlags = HideFlags.HideAndDontSave;
-		// Turn on alpha blending
 		ColorMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
 		ColorMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-		// Turn backface culling off
 		ColorMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-		// Turn off depth writes
 		ColorMaterial.SetInt("_ZWrite", 1);
 
-		//Create Triangle
 		IsocelesTrianglePoints = new Vector3[3];
-
-		//Create Circle
 		CirclePoints = new Vector3[CircleResolution];
-
-		//Create Sphere
 		SpherePoints = new Vector3[4 * SphereResolution * SphereResolution];
 
 		Initialised = true;
@@ -194,20 +185,6 @@ public static class UnityGL {
 		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
-
-		/*
-		Vector3 center = 0.5f*(end+start);
-		Vector3 ctoA = start+orthoStart-center;
-		Vector3 ctoB = start-orthoStart-center;
-		Vector3 ctoC = end-orthoEnd-center;
-		Vector3 ctoD = end+orthoEnd-center;
-
-		GL.Color(Color.black);
-        GL.Vertex(center+ctoA+0.01f*(start-ViewPosition).normalized);
-		GL.Vertex(center+ctoB+0.01f*(start-ViewPosition).normalized);
-		GL.Vertex(center+ctoC+0.01f*(end-ViewPosition).normalized);
-		GL.Vertex(center+ctoD+0.01f*(end-ViewPosition).normalized);
-		*/
 
 		GL.Color(color);
         GL.Vertex(start+orthoStart);

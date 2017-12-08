@@ -159,21 +159,6 @@ public static class Utility {
 		}
 	}
 
-	public static Vector3 Mirror(this Vector3 vector, bool x, bool y, bool z) {
-		vector.x *= x ? -1f : 1f;
-		vector.y *= y ? -1f : 1f;
-		vector.z *= z ? -1f : 1f;
-		return vector;
-	}
-
-	public static Quaternion Mirror(this Quaternion quaternion, bool x, bool y, bool z) {
-		quaternion.x *= x ? -1f : 1f;
-		quaternion.y *= y ? -1f : 1f;
-		quaternion.z *= z ? -1f : 1f;
-		quaternion.w *= z || x || y ? -1f : 1f;
-		return quaternion;
-	}
-
 	public static Vector3 ProjectCollision(Vector3 start, Vector3 end, LayerMask mask) {
 		RaycastHit hit;
 		if(Physics.Raycast(start, end-start, out hit, Vector3.Magnitude(end-start), mask)) {

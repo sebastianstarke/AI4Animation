@@ -8,7 +8,7 @@ public class DemoAnimation : MonoBehaviour {
 
 	public float TargetBlending = 0.25f;
 	public float GaitTransition = 0.25f;
-	public float TrajectoryCorrection = 0.75f;
+	public float TrajectoryCorrection = 1f;
 
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
@@ -351,18 +351,16 @@ public class DemoAnimation : MonoBehaviour {
 		if(Application.isPlaying) {
 			UnityGL.Start();
 			for(int i=0; i<Joints.Length; i++) {
-				Character.Bone bone = Character.FindBone(Joints[i].name);
-				if(bone != null) {
-					if(bone.Draw) {
-						UnityGL.DrawArrow(
-							Joints[i].position,
-							Joints[i].position + Velocities[i],
-							0.75f,
-							0.0075f,
-							0.05f,
-							new Color(0f, 1f, 1f, 0.5f)
-						);
-					}
+				Character.Segment segment = Character.FindSegment(Joints[i].name);
+				if(segment != null) {
+					UnityGL.DrawArrow(
+						Joints[i].position,
+						Joints[i].position + Velocities[i],
+						0.75f,
+						0.0075f,
+						0.05f,
+						new Color(0f, 1f, 1f, 0.5f)
+					);
 				}
 			}
 			UnityGL.Finish();

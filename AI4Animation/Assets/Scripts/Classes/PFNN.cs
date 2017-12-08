@@ -14,9 +14,9 @@ public class PFNN {
 	//public MODE Mode = MODE.CONSTANT;
 
 	public string Folder = string.Empty;
-	public int XDim = 342;
+	public int XDim = 504;
 	public int HDim = 512;
-	public int YDim = 311;
+	public int YDim = 352;
 
 	public NetworkParameters Parameters;
 

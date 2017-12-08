@@ -57,10 +57,7 @@ public class BVHProcessor : EditorWindow {
 
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						Animations[i].ComputeCorrections();
-                       	Animations[i].ComputeSymmetry();
-                       	Animations[i].ComputeFrames();
-                       	Animations[i].ComputeTrajectory();
+						Animations[i].Recompute();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -138,16 +135,16 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "Sequence"); index += 1;
 		labels.WriteLine(index + " " + "Frame"); index += 1;
 		labels.WriteLine(index + " " + "Timestamp"); index += 1;
-		for(int i=1; i<=Animations[0].Character.Bones.Length; i++) {
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "PositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationXlog"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationYlog"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "RotationZlog"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Bones[i-1].GetName() + "VelocityZ"+i); index += 1;
+		for(int i=1; i<=Animations[0].Character.Hierarchy.Length; i++) {
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionZ"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationXlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationYlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationZlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityZ"+i); index += 1;
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
@@ -238,7 +235,7 @@ public class BVHProcessor : EditorWindow {
 						Matrix4x4 root = trajectory.Points[6].GetTransformation();
 
 						//Bone data
-						for(int k=0; k<Animations[i].Character.Bones.Length; k++) {
+						for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
 							//Position
 							line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 

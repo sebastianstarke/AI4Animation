@@ -77,7 +77,7 @@ public class Trajectory {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Transformation = Transformation.SetPosition(position);
+			Transformations.SetPosition(ref Transformation, position);
 		}
 
 		public Vector3 GetPosition() {
@@ -85,7 +85,7 @@ public class Trajectory {
 		}
 
 		public void SetRotation(Quaternion rotation) {
-			Transformation = Transformation.SetRotation(rotation);
+			Transformations.SetRotation(ref Transformation, rotation);
 		}
 
 		public Quaternion GetRotation() {
@@ -130,7 +130,7 @@ public class Trajectory {
 			Vector3 direction = Transformation.GetForward();
 
 			position.y = Utility.GetHeight(Transformation.GetPosition(), mask);
-			Transformation = Transformation.SetPosition(position);
+			SetPosition(position);
 
 			Rise = Utility.GetRise(position, mask);
 
