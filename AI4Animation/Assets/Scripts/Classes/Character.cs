@@ -188,7 +188,7 @@ public class Character {
 
 	[Serializable]
 	public class Bone {
-		[SerializeField] private Segment Segment;
+		[SerializeField] private Segment Segment; //THIS PART IS BROKEN!!! FIX REFERENCE AFTER RUN
 		[SerializeField] private int Index = -1;
 		[SerializeField] private int Parent = -1;
 		[SerializeField] private int[] Childs = new int[0];
