@@ -12,6 +12,7 @@ public class Character {
 
 	public bool Inspect = false;
 	public bool[] Expanded = new bool[0];
+	public bool[] Connections = new bool[0];
 
 	public Segment[] Hierarchy = new Segment[0];
 	public Bone[] Skeleton = new Bone[0];
@@ -28,19 +29,12 @@ public class Character {
 
 	public Character() {
 		Inspect = false;
-		Expanded = new bool[0];
 		BoneSize = 0.025f;
-	}
-
-	public void Clear() {
-		Array.Resize(ref Expanded, 0);
-		Array.Resize(ref Hierarchy, 0);
-		Array.Resize(ref Skeleton, 0);
 	}
 
 	public Segment GetHierarchyRoot() {
 		if(Hierarchy.Length == 0) {
-			Debug.Log("Hierarchy has not been assigned a root segment.");
+			//Debug.Log("Hierarchy has not been assigned a root segment.");
 			return null;
 		}
 		return Hierarchy[0];
@@ -48,7 +42,7 @@ public class Character {
 
 	public Bone GetSkeletonRoot() {
 		if(Skeleton.Length == 0) {
-			Debug.Log("Skeleton has not been assigned a root bone.");
+			//Debug.Log("Skeleton has not been assigned a root bone.");
 			return null;
 		}
 		return Skeleton[0];
@@ -96,7 +90,11 @@ public class Character {
 	}
 
 	public void BuildHierarchy(Transform root) {
-		Clear();
+		Array.Resize(ref Expanded, 0);
+		Array.Resize(ref Connections, 0);
+
+		Array.Resize(ref Hierarchy, 0);
+		Array.Resize(ref Skeleton, 0);
 		Action<Transform, Segment> recursion = null;
 		recursion = new Action<Transform, Segment>((transform, parent) => {
 			Segment segment = AddSegment(transform.name, parent);
@@ -107,6 +105,18 @@ public class Character {
 		recursion(root, null);
 	}
 
+	public void BuildSkeleton() {
+		Array.Resize(ref Skeleton, 0);
+		Action<Segment, Bone> recursion = null;
+		recursion = new Action<Segment, Bone>((segment, parent) => {
+			Bone bone = Connections[segment.GetIndex()] ? AddBone(segment, parent) : parent;
+			for(int i=0; i<segment.GetChildCount(); i++) {
+				recursion(segment.GetChild(this, i), bone);
+			}
+		});
+		recursion(GetHierarchyRoot(), null);
+	}
+	
 	public Segment AddSegment(string name, Segment parent) {
 		if(FindSegment(name) != null) {
 			Debug.Log("Segment has not been added because another segment with name " + name + " already exists.");
@@ -115,6 +125,8 @@ public class Character {
 		Segment segment = new Segment(name, Hierarchy.Length);
 		Array.Resize(ref Expanded, Expanded.Length+1);
 		Expanded[Expanded.Length-1] = false;
+		Array.Resize(ref Connections, Connections.Length+1);
+		Connections[Connections.Length-1] = false;
 		Array.Resize(ref Hierarchy, Hierarchy.Length+1);
 		Hierarchy[Hierarchy.Length-1] = segment;
 		if(parent != null) {
@@ -126,6 +138,52 @@ public class Character {
 
 	public Segment AddSegment(string name, string parent) {
 		return AddSegment(name, FindSegment(parent));
+	}
+
+	public Bone AddBone(Segment segment, Bone parent) {
+		if(segment == null) {
+			Debug.Log("Bone has not been added because given segment is null.");
+			return null;
+		}
+		if(FindBone(segment.GetName()) != null) {
+			Debug.Log("Bone has not been added because another bone with name " + segment.GetName() + " already exists.");
+			return null;
+		}
+		Bone bone = new Bone(segment, Skeleton.Length);
+		Array.Resize(ref Skeleton, Skeleton.Length+1);
+		Skeleton[Skeleton.Length-1] = bone;
+		if(parent != null) {
+			bone.SetParent(parent);
+			parent.AddChild(bone);
+		}
+		Connections[segment.GetIndex()] = true;
+		return bone;
+	}
+
+	public void AddBone(Segment segment) {
+		if(segment == null) {
+			Debug.Log("Bone has not been added because given segment is null.");
+			return;
+		}
+		if(Connections[segment.GetIndex()]) {
+			Debug.Log("Bone has not been added because segment with name " + segment.GetName() + " was already specified as bone.");
+			return;
+		}
+		Connections[segment.GetIndex()] = true;
+		BuildSkeleton();
+	}
+
+	public void RemoveBone(Segment segment) {
+		if(segment == null) {
+			Debug.Log("Bone has not been removed because given segment is null.");
+			return;
+		}
+		if(!Connections[segment.GetIndex()]) {
+			Debug.Log("Bone has not been removed because segment with name " + segment.GetName() + " was not specified as bone.");
+			return;
+		}
+		Connections[segment.GetIndex()] = false;
+		BuildSkeleton();
 	}
 
 	[Serializable]
@@ -280,28 +338,31 @@ public class Character {
 
 	public void Draw() {
 		UnityGL.Start();
-		Draw(GetHierarchyRoot());
+		Draw(GetSkeletonRoot());
 		UnityGL.Finish();
 	}
 
-	private void Draw(Segment segment) {
+	private void Draw(Bone bone) {
+		if(bone == null) {
+			return;
+		}
 		if(DrawSkeleton) {
 			UnityGL.DrawMesh(
 				GetJointMesh(),
-				segment.GetTransformation().GetPosition(),
-				segment.GetTransformation().GetRotation(),
+				bone.GetTransformation().GetPosition(),
+				bone.GetTransformation().GetRotation(),
 				5f*BoneSize*Vector3.one,
 				GetMaterial()
 			);
-			UnityGL.DrawSphere(segment.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
-			for(int i=0; i<segment.GetChildCount(); i++) {
-				Segment child = segment.GetChild(this, i);
-				float distance = Vector3.Distance(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition());
+			UnityGL.DrawSphere(bone.GetTransformation().GetPosition(), 0.5f*BoneSize, Utility.Mustard);
+			for(int i=0; i<bone.GetChildCount(); i++) {
+				Bone child = bone.GetChild(this, i);
+				float distance = Vector3.Distance(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition());
 				if(distance > 0f) {
 					UnityGL.DrawMesh(
 						GetBoneMesh(),
-						segment.GetTransformation().GetPosition(),
-						Quaternion.FromToRotation(segment.GetTransformation().GetForward(), child.GetTransformation().GetPosition() - segment.GetTransformation().GetPosition()) * segment.GetTransformation().GetRotation(),
+						bone.GetTransformation().GetPosition(),
+						Quaternion.FromToRotation(bone.GetTransformation().GetForward(), child.GetTransformation().GetPosition() - bone.GetTransformation().GetPosition()) * bone.GetTransformation().GetRotation(),
 						new Vector3(4f*BoneSize, 4f*BoneSize, distance),
 						GetMaterial()
 					);
@@ -310,29 +371,32 @@ public class Character {
 			}	
 		}
 		if(DrawTransforms) {
-			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-			UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+			UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+			UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+			UnityGL.DrawArrow(bone.GetTransformation().GetPosition(), bone.GetTransformation().GetPosition() + 0.05f * (bone.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
 		}		
-		for(int i=0; i<segment.GetChildCount(); i++) {
-			Draw(segment.GetChild(this, i));
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			Draw(bone.GetChild(this, i));
 		}
 	}
 
 	public void DrawSimple() {
 		UnityGL.Start();
-		DrawSimple(GetHierarchyRoot());
+		DrawSimple(GetSkeletonRoot());
 		UnityGL.Finish();
 	}
 
-	private void DrawSimple(Segment segment) {
-		for(int i=0; i<segment.GetChildCount(); i++) {
-			Segment child = segment.GetChild(this, i);
-			UnityGL.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
+	private void DrawSimple(Bone bone) {
+		if(bone == null) {
+			return;
 		}
-		UnityGL.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
-		for(int i=0; i<segment.GetChildCount(); i++) {
-			DrawSimple(segment.GetChild(this, i));
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			Bone child = bone.GetChild(this, i);
+			UnityGL.DrawLine(bone.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
+		}
+		UnityGL.DrawCircle(bone.GetTransformation().GetPosition(), 0.01f, Color.black);
+		for(int i=0; i<bone.GetChildCount(); i++) {
+			DrawSimple(bone.GetChild(this, i));
 		}
 	}
 
@@ -378,6 +442,8 @@ public class Character {
 
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
+					EditorGUILayout.LabelField("Hierarchy: " + Hierarchy.Length);
+					EditorGUILayout.LabelField("Skeleton: " + Skeleton.Length);
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					DrawType = (DRAWTYPE)EditorGUILayout.EnumPopup("Draw Type", DrawType);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
@@ -405,22 +471,36 @@ public class Character {
 	}
 
 	private void InspectHierarchy(Segment segment, int indent) {
-		EditorGUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
-		if(segment.GetChildCount() > 0) {
-			if(Utility.GUIButton(Expanded[segment.GetIndex()] ? "-" : "+", Color.grey, Color.white, 20f, 20f)) {
-				Expanded[segment.GetIndex()] = !Expanded[segment.GetIndex()];
+		bool isBone = Connections[segment.GetIndex()];
+
+		Utility.SetGUIColor(isBone ? Utility.LightGrey : Utility.White);
+		using(new EditorGUILayout.HorizontalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			EditorGUILayout.BeginHorizontal();
+
+			EditorGUILayout.LabelField("", GUILayout.Width(indent*20f));
+			if(segment.GetChildCount() > 0) {
+				if(Utility.GUIButton(Expanded[segment.GetIndex()] ? "-" : "+", Color.grey, Color.white, 20f, 20f)) {
+					Expanded[segment.GetIndex()] = !Expanded[segment.GetIndex()];
+				}
+			} else {
+				Expanded[segment.GetIndex()] = false;
 			}
-		} else {
-			Expanded[segment.GetIndex()] = false;
-		}
-		EditorGUILayout.LabelField(segment.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
-		GUILayout.FlexibleSpace();
-		if(Utility.GUIButton("Bone", Utility.DarkGrey, Utility.White)) {
 
+			EditorGUILayout.LabelField(segment.GetName(), GUILayout.Width(100f), GUILayout.Height(20f));
+			GUILayout.FlexibleSpace();
+			if(Utility.GUIButton("Bone", isBone ? Utility.DarkGrey : Utility.White, isBone ? Utility.White : Utility.DarkGrey)) {
+				if(isBone) {
+					RemoveBone(segment);
+				} else {
+					AddBone(segment);
+				}
+			}
+
+			EditorGUILayout.EndHorizontal();
 		}
 
-		EditorGUILayout.EndHorizontal();
 		if(Expanded[segment.GetIndex()]) {
 			for(int i=0; i<segment.GetChildCount(); i++) {
 				Segment child = segment.GetChild(this, i);
