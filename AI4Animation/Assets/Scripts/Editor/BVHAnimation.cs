@@ -815,7 +815,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	private void ExportSkeleton() {
-		Transform skeleton = ExportSkeleton(Character.GetHierarchyRoot(), null);
+		Transform skeleton = ExportSkeleton(Character.GetRoot(), null);
 		Transform root = new GameObject("Skeleton").transform;
 		root.position = new Vector3(skeleton.position.x, 0f, skeleton.position.z);
 		root.rotation = skeleton.rotation;

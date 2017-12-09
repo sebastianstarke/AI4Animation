@@ -272,7 +272,7 @@ public class DemoAnimation : MonoBehaviour {
 			}
 
 			//Map to Character
-			Character.FetchForwardKinematics(Root);
+			Character.FetchTransformations(Root);
 
 			//Update Phase
 			Phase = Mathf.Repeat(Phase + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -344,7 +344,7 @@ public class DemoAnimation : MonoBehaviour {
 		}
 
 		if(!Application.isPlaying) {
-			Character.FetchForwardKinematics(Root);
+			Character.FetchTransformations(Root);
 		}
 		Character.Draw();
 		

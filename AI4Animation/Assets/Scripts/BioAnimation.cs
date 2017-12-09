@@ -23,6 +23,10 @@ public class BioAnimation : MonoBehaviour {
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
+
+	private Vector3[] Positions = new Vector3[0];
+	private Vector3[] Forwards = new Vector3[0];
+	private Vector3[] Ups = new Vector3[0];
 	private Vector3[] Velocities = new Vector3[0];
 	
 	//Trajectory for 60 Hz framerate
@@ -44,6 +48,9 @@ public class BioAnimation : MonoBehaviour {
 	void Awake() {
 		TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
 		TargetVelocity = Vector3.zero;
+		Positions = new Vector3[Joints.Length];
+		Forwards = new Vector3[Joints.Length];
+		Ups = new Vector3[Joints.Length];
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
@@ -149,9 +156,9 @@ public class BioAnimation : MonoBehaviour {
 
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
-				Vector3 pos = Joints[i].position.GetRelativePositionTo(previousRoot);
-				Vector3 forward = Joints[i].forward.GetRelativeDirectionTo(previousRoot);
-				Vector3 up = Joints[i].up.GetRelativeDirectionTo(previousRoot);
+				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
+				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
+				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
 				PFNN.SetInput(start + i*JointDimIn + 0, pos.x);
 				PFNN.SetInput(start + i*JointDimIn + 1, pos.y);
@@ -259,11 +266,10 @@ public class BioAnimation : MonoBehaviour {
 			}
 
 			//Compute Posture
-			Matrix4x4[] transformations = new Matrix4x4[Joints.Length];
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 position = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 0), PFNN.GetOutput(start + i*JointDimOut + 1), PFNN.GetOutput(start + i*JointDimOut + 2));
-				Vector3 forward = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 3), PFNN.GetOutput(start + i*JointDimOut + 4), PFNN.GetOutput(start + i*JointDimOut + 5));
-				Vector3 up = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 6), PFNN.GetOutput(start + i*JointDimOut + 7), PFNN.GetOutput(start + i*JointDimOut + 8));
+				Vector3 forward = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 3), PFNN.GetOutput(start + i*JointDimOut + 4), PFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
+				Vector3 up = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 6), PFNN.GetOutput(start + i*JointDimOut + 7), PFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
 				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 9), PFNN.GetOutput(start + i*JointDimOut + 10), PFNN.GetOutput(start + i*JointDimOut + 11));
 				if(i==0 || i==1) {
 					position.x = 0f;
@@ -275,12 +281,10 @@ public class BioAnimation : MonoBehaviour {
 					position.x = 0f;
 					velocity.x = 0f;
 				}
-				position = Vector3.Lerp(Joints[i].position.GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
-				forward = forward.GetRelativeDirectionFrom(currentRoot);
-				up = up.GetRelativeDirectionFrom(currentRoot);
+				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
+				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
+				Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
 				Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
-
-				transformations[i] = Matrix4x4.TRS(position, Quaternion.LookRotation(forward, up), Vector3.one);
 			}
 			start += JointDimOut*Joints.Length;
 			
@@ -288,12 +292,12 @@ public class BioAnimation : MonoBehaviour {
 			Root.position = nextRoot.GetPosition();
 			Root.rotation = nextRoot.GetRotation();
 			for(int i=0; i<Joints.Length; i++) {
-				Joints[i].position = transformations[i].GetPosition();
-				Joints[i].rotation = transformations[i].GetRotation();
+				Joints[i].position = Positions[i];
+				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 
 			//Map to Character
-			Character.FetchForwardKinematics(Root);
+			Character.FetchTransformations(Root);
 
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -355,7 +359,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		
 		if(!Application.isPlaying) {
-			Character.FetchForwardKinematics(Root);
+			Character.FetchTransformations(Root);
 		}
 		Character.Draw();
 
@@ -408,6 +412,9 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		private void Inspector() {
+			//if(Target.name == "Skeleton") {
+			//	Target.Character.BuildHierarchy(Target.Root);
+			//}
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
