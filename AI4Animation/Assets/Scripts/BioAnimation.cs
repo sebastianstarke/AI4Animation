@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,10 +15,16 @@ public class BioAnimation : MonoBehaviour {
 
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
+	public float[] Weights = new float[0];
 
 	public Controller Controller;
 	public Character Character;
 	public PFNN PFNN;
+
+	private Matrix4x4[] TargetSkeleton;
+	private Matrix4x4[] SourceSkeleton;
+	private Matrix4x4[] DeltaSkeleton;
+	public BioAnimation Source;
 
 	private Trajectory Trajectory;
 
@@ -59,6 +67,34 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
+		TargetSkeleton = GetSkeleton();
+		SourceSkeleton = Source.GetSkeleton();
+		DeltaSkeleton = new Matrix4x4[Joints.Length];
+		for(int i=0; i<Joints.Length; i++) {
+			DeltaSkeleton[i] = SourceSkeleton[i].inverse * TargetSkeleton[i];
+		}
+	}
+
+	public Matrix4x4[] GetSkeleton() {
+		List<Matrix4x4> skeleton = new List<Matrix4x4>();
+		for(int i=0; i<Joints.Length; i++) {
+			skeleton.Add(Matrix4x4.TRS(Joints[i].position, Joints[i].rotation, Joints[i].localScale));
+		}
+		return skeleton.ToArray();
+	}
+
+	public void AutoDetect() {
+		SetJointCount(0);
+		Action<Transform> recursion = null;
+		recursion = new Action<Transform>((transform) => {
+			if(Character.FindSegment(transform.name) != null) {
+				AddJoint(transform);
+			}
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i));
+			}
+		});
+		recursion(Root);
 	}
 
 	void Update() {	
@@ -291,17 +327,28 @@ public class BioAnimation : MonoBehaviour {
 			//Update Posture
 			Root.position = nextRoot.GetPosition();
 			Root.rotation = nextRoot.GetRotation();
+			
+			//Generate Transformations
 			for(int i=0; i<Joints.Length; i++) {
-				Joints[i].position = Positions[i];
-				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
+				Matrix4x4 transformation = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]), Vector3.one);
+				transformation *= DeltaSkeleton[i];
+				Joints[i].position = transformation.GetPosition();
+				Joints[i].rotation = transformation.GetRotation();
 			}
-
+			
 			//Map to Character
 			Character.FetchTransformations(Root);
+
+			//Retarget Motion
+			//Character.RetargetMotion(prediction * deltarotation from source to target rest poses);
 
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
+	}
+
+	private int GetJointIndex(string name) {
+		return System.Array.FindIndex(Joints, x => x.name == name);
 	}
 
 	private Trajectory.Point GetSample(int index) {
@@ -320,6 +367,13 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
+	public void AddJoint(Transform joint) {
+		System.Array.Resize(ref Joints, Joints.Length+1);
+		Joints[Joints.Length-1] = joint;
+		System.Array.Resize(ref Weights, Weights.Length+1);
+		Weights[Weights.Length-1] = 1f;
+	}
+
 	public void SetJoint(int index, Transform t) {
 		if(index < 0 || index >= Joints.Length) {
 			return;
@@ -331,6 +385,7 @@ public class BioAnimation : MonoBehaviour {
 		count = Mathf.Max(0, count);
 		if(Joints.Length != count) {
 			System.Array.Resize(ref Joints, count);
+			System.Array.Resize(ref Weights, count);
 		}
 	}
 
@@ -403,7 +458,7 @@ public class BioAnimation : MonoBehaviour {
 
 			Inspector();
 			Target.Controller.Inspector();
-			Target.Character.Inspector();
+			Target.Character.Inspector(Target.Root);
 			Target.PFNN.Inspector();
 
 			if(GUI.changed) {
@@ -412,9 +467,14 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		private void Inspector() {
-			//if(Target.name == "Skeleton") {
-			//	Target.Character.BuildHierarchy(Target.Root);
-			//}
+			/*
+			if(GUILayout.Button("Clear Hierarchy")) {
+				Utility.Clear(ref Target.Character.Hierarchy);
+			}
+			if(GUILayout.Button("Rebuild Hierarchy")) {
+				Target.Character.BuildHierarchy(Target.Root);
+			}
+			*/
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -432,6 +492,7 @@ public class BioAnimation : MonoBehaviour {
 
 				if(Target.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Target.Source = (BioAnimation)EditorGUILayout.ObjectField("Source", Target.Source, typeof(BioAnimation), true);
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 						Target.StyleTransition = EditorGUILayout.Slider("Style Transition", Target.StyleTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
@@ -439,13 +500,21 @@ public class BioAnimation : MonoBehaviour {
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
+						if(Utility.GUIButton("Auto Detect", Utility.DarkGrey, Utility.White)) {
+							Target.AutoDetect();
+						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
 								Utility.SetGUIColor(Utility.Green);
 							} else {
 								Utility.SetGUIColor(Utility.Red);
 							}
-							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField("Joint " + (i+1), Target.Joints[i], typeof(Transform), true));
+							EditorGUILayout.BeginHorizontal();
+							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));
+							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField(Target.Joints[i], typeof(Transform), true));
+							EditorGUILayout.LabelField("Weight", GUILayout.Width(50f));
+							Target.Weights[i] = EditorGUILayout.Slider(Target.Weights[i], 0f, 1f);
+							EditorGUILayout.EndHorizontal();
 							Utility.ResetGUIColor();
 						}
 					}

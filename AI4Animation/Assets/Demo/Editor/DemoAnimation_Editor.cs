@@ -15,7 +15,7 @@ public class DemoAnimation_Editor : Editor {
 
 			Inspector();
 			Target.Controller.Inspector();
-			Target.Character.Inspector();
+			Target.Character.Inspector(Target.transform);
 			Target.PFNN.Inspector();
 
 			if(GUI.changed) {

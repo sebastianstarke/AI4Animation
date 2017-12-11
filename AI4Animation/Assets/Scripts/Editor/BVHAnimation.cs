@@ -355,9 +355,13 @@ public class BVHAnimation : ScriptableObject {
 
 	public void GenerateCharacter() {
 		Character = new Character();
+		string[] names = new string[Data.Bones.Length];
+		string[] parents = new string[Data.Bones.Length];
 		for(int i=0; i<Data.Bones.Length; i++) {
-			Character.AddSegment(Data.Bones[i].Name, Data.Bones[i].Parent);
+			names[i] = Data.Bones[i].Name;
+			parents[i] = Data.Bones[i].Parent;
 		}
+		Character.BuildHierarchy(names, parents);
 	}
 
 	public void ComputeCorrections() {
