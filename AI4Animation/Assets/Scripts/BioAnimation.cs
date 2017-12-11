@@ -331,12 +331,19 @@ public class BioAnimation : MonoBehaviour {
 			//Generate Transformations
 			for(int i=0; i<Joints.Length; i++) {
 				Matrix4x4 transformation = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]), Vector3.one);
+				//
+				Source.Joints[i].position = transformation.GetPosition();
+				Source.Joints[i].rotation = transformation.GetRotation();
+				//
 				transformation *= DeltaSkeleton[i];
 				Joints[i].position = transformation.GetPosition();
 				Joints[i].rotation = transformation.GetRotation();
 			}
 			
 			//Map to Character
+			//
+			Source.Character.FetchTransformations(Source.Root);
+			//
 			Character.FetchTransformations(Root);
 
 			//Retarget Motion
@@ -417,6 +424,15 @@ public class BioAnimation : MonoBehaviour {
 			Character.FetchTransformations(Root);
 		}
 		Character.Draw();
+
+		//
+		if(Source != this) {
+			if(!Application.isPlaying) {
+				Source.Character.FetchTransformations(Source.Root);
+			}
+			Source.Character.Draw();
+		}
+		//
 
 		if(Application.isPlaying) {
 			UnityGL.Start();

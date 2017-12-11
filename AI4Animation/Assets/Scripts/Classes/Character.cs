@@ -89,6 +89,26 @@ public class Character {
 		return names;
 	}
 
+	public float[] GetBoneLengths() {
+		float[] lengths = new float[Hierarchy.Length];
+		int index = 0;
+		Action<Segment> recursion = null;
+		recursion = new Action<Segment>((segment) => {
+			Segment parent = segment.GetParent(this);
+			if(parent == null) {
+				lengths[index] = 0f;
+			} else {
+				lengths[index] = Vector3.Distance(segment.GetTransformation().GetPosition(), parent.GetTransformation().GetPosition());
+			}
+			index += 1;
+			for(int i=0; i<segment.GetChildCount(); i++) {
+				recursion(segment.GetChild(this, i));
+			}
+		});
+		recursion(GetRoot());
+		return lengths;
+	}
+
 	public Segment GetRoot() {
 		if(Hierarchy.Length == 0) {
 			return null;
