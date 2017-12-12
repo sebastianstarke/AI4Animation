@@ -8,6 +8,8 @@ using UnityEditor;
 public class BioAnimation : MonoBehaviour {
 
 	public bool Inspect = false;
+	public bool ShowTrajectory = true;
+	public bool ShowVelocities = true;
 
 	public float TargetBlending = 0.25f;
 	public float StyleTransition = 0.25f;
@@ -21,10 +23,10 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
-	private Matrix4x4[] TargetSkeleton;
-	private Matrix4x4[] SourceSkeleton;
-	private Matrix4x4[] DeltaSkeleton;
-	public BioAnimation Source;
+	//private Matrix4x4[] TargetSkeleton;
+	//private Matrix4x4[] SourceSkeleton;
+	//private Matrix4x4[] DeltaSkeleton;
+	//public BioAnimation Source;
 
 	private Trajectory Trajectory;
 
@@ -67,20 +69,27 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
-		TargetSkeleton = GetSkeleton();
-		SourceSkeleton = Source.GetSkeleton();
-		DeltaSkeleton = new Matrix4x4[Joints.Length];
-		for(int i=0; i<Joints.Length; i++) {
-			DeltaSkeleton[i] = SourceSkeleton[i].inverse * TargetSkeleton[i];
-		}
+		/*
+		TargetSkeleton = GetSkeleton(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
+		SourceSkeleton = Source.GetSkeleton(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
+		DeltaSkeleton = GetDeltaSkeleton(SourceSkeleton, TargetSkeleton);
+		*/
 	}
 
-	public Matrix4x4[] GetSkeleton() {
-		List<Matrix4x4> skeleton = new List<Matrix4x4>();
+	public Matrix4x4[] GetSkeleton(Matrix4x4 root) {
+		Matrix4x4[] skeleton = new Matrix4x4[Joints.Length];
 		for(int i=0; i<Joints.Length; i++) {
-			skeleton.Add(Matrix4x4.TRS(Joints[i].position, Joints[i].rotation, Joints[i].localScale));
+			skeleton[i] = Matrix4x4.TRS(Joints[i].position, Joints[i].rotation, Vector3.one).GetRelativeTransformationTo(root);
 		}
-		return skeleton.ToArray();
+		return skeleton;
+	}
+
+	public Matrix4x4[] GetDeltaSkeleton(Matrix4x4[] from, Matrix4x4[] to) {
+		Matrix4x4[] delta = new Matrix4x4[from.Length];
+		for(int i=0; i<delta.Length; i++) {
+			delta[i] = from[i].inverse * to[i];
+		}
+		return delta;
 	}
 
 	public void AutoDetect() {
@@ -327,27 +336,93 @@ public class BioAnimation : MonoBehaviour {
 			//Update Posture
 			Root.position = nextRoot.GetPosition();
 			Root.rotation = nextRoot.GetRotation();
-			
+			for(int i=0; i<Joints.Length; i++) {
+				Joints[i].position = Positions[i];
+				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
+			}
+			Character.FetchTransformations(Root);
+
+			/*
 			//Generate Transformations
 			for(int i=0; i<Joints.Length; i++) {
 				Matrix4x4 transformation = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]), Vector3.one);
-				//
 				Source.Joints[i].position = transformation.GetPosition();
-				Source.Joints[i].rotation = transformation.GetRotation();
-				//
-				transformation *= DeltaSkeleton[i];
-				Joints[i].position = transformation.GetPosition();
-				Joints[i].rotation = transformation.GetRotation();
+				Source.Joints[i].rotation = transformation.GetRotation() * DeltaSkeleton[i].GetRotation();
+				
+				//Matrix4x4 retarget = transformation * DeltaSkeleton[i];
+				//Joints[i].position = transformation.GetPosition();
+				//Joints[i].rotation = retarget.GetRotation();	
+				
+				Matrix4x4 restTransformation = TargetSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
+				Joints[i].position = restTransformation.GetPosition();
+				Joints[i].rotation = restTransformation.GetRotation();
+				
 			}
-			
-			//Map to Character
-			//
-			Source.Character.FetchTransformations(Source.Root);
-			//
-			Character.FetchTransformations(Root);
+			*/
 
+			/*
+			//Prediction
+			Matrix4x4[] prediction = new Matrix4x4[Joints.Length];
+			for(int i=0; i<Joints.Length; i++) {
+				prediction[i] = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]) * DeltaSkeleton[i].GetRotation(), Vector3.one);
+			}
+			*/
+
+			/*
+			//Visualise Source
+			for(int i=0; i<Joints.Length; i++) {
+				Source.Joints[i].position = prediction[i].GetPosition();
+				Source.Joints[i].rotation = prediction[i].GetRotation();
+			}
+			Source.Root.position = Root.position;
+			Source.Root.rotation = Root.rotation;
+			Source.Character.FetchTransformations(Source.Root);
+			*/
+
+			/*
 			//Retarget Motion
-			//Character.RetargetMotion(prediction * deltarotation from source to target rest poses);
+			for(int i=0; i<Joints.Length; i++) {
+				Joints[i].position = prediction[i].GetPosition();
+				Joints[i].rotation = prediction[i].GetRotation();
+			}
+			Character.FetchTransformations(Root);
+		    prediction = Character.GetWorldTransformations();
+
+			for(int i=0; i<Joints.Length; i++) {
+				Matrix4x4 restTransformation = SourceSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
+				Joints[i].position = restTransformation.GetPosition();
+				Joints[i].rotation = restTransformation.GetRotation();
+			}
+			Character.FetchTransformations(Root);
+			Matrix4x4[] source = Character.GetWorldTransformations();
+			
+			for(int i=0; i<Joints.Length; i++) {
+				Matrix4x4 restTransformation = TargetSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
+				Joints[i].position = restTransformation.GetPosition();
+				Joints[i].rotation = restTransformation.GetRotation();
+			}
+			Character.FetchTransformations(Root);
+			Matrix4x4[] target = Character.GetWorldTransformations();
+			
+			//Retargetting
+			Matrix4x4[] retarget = new Matrix4x4[Joints.Length];
+			for(int i=0; i<Joints.Length; i++) {
+				int index = GetJointIndex(Character.Hierarchy[i].GetName());
+				Vector3 position = Vector3.Slerp(target[i].GetPosition(), prediction[i].GetPosition(), Weights[index]);
+				Quaternion rotation = Quaternion.Slerp(target[i].GetRotation(), prediction[i].GetRotation(), Weights[index]);
+				retarget[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
+			}
+			*/
+
+			//Character.SetWorldTransformations(retarget);
+
+			//Character.SetWorldTransformations(source);
+
+
+			//Retargetting = Character.RetargetMotion(seed, target);
+			//Character.SetWorldTransformations(Retargetting);
+
+			//Character.WriteTransformations(Root);
 
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
@@ -412,12 +487,14 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		if(Application.isPlaying) {
-			UnityGL.Start();
-			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
-			UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
-			UnityGL.Finish();
-			Trajectory.Draw(10);
+		if(ShowTrajectory) {
+			if(Application.isPlaying) {
+				UnityGL.Start();
+				UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
+				UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
+				UnityGL.Finish();
+				Trajectory.Draw(10);
+			}
 		}
 		
 		if(!Application.isPlaying) {
@@ -425,6 +502,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		Character.Draw();
 
+		/*
 		//
 		if(Source != this) {
 			if(!Application.isPlaying) {
@@ -433,23 +511,26 @@ public class BioAnimation : MonoBehaviour {
 			Source.Character.Draw();
 		}
 		//
+		*/
 
-		if(Application.isPlaying) {
-			UnityGL.Start();
-			for(int i=0; i<Joints.Length; i++) {
-				Character.Segment segment = Character.FindSegment(Joints[i].name);
-				if(segment != null) {
-					UnityGL.DrawArrow(
-						Joints[i].position,
-						Joints[i].position + Velocities[i]/Time.deltaTime,
-						0.75f,
-						0.0075f,
-						0.05f,
-						new Color(0f, 1f, 1f, 0.5f)
-					);
+		if(ShowVelocities) {
+			if(Application.isPlaying) {
+				UnityGL.Start();
+				for(int i=0; i<Joints.Length; i++) {
+					Character.Segment segment = Character.FindSegment(Joints[i].name);
+					if(segment != null) {
+						UnityGL.DrawArrow(
+							Joints[i].position,
+							Joints[i].position + Velocities[i]/Time.deltaTime,
+							0.75f,
+							0.0075f,
+							0.05f,
+							new Color(0f, 1f, 1f, 0.5f)
+						);
+					}
 				}
+				UnityGL.Finish();
 			}
-			UnityGL.Finish();
 		}
 	}
 
@@ -482,15 +563,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 		}
 
-		private void Inspector() {
-			/*
-			if(GUILayout.Button("Clear Hierarchy")) {
-				Utility.Clear(ref Target.Character.Hierarchy);
-			}
-			if(GUILayout.Button("Rebuild Hierarchy")) {
-				Target.Character.BuildHierarchy(Target.Root);
-			}
-			*/
+		private void Inspector() {			
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -502,13 +575,22 @@ public class BioAnimation : MonoBehaviour {
 					}
 				}
 
+				if(Utility.GUIButton("Rebuild Hierarchy", Utility.DarkGreen, Utility.White)) {
+					Target.Character.BuildHierarchy(Target.Root);
+				}
+				if(Utility.GUIButton("Clear Hierarchy", Utility.DarkRed, Utility.White)) {
+					Utility.Clear(ref Target.Character.Hierarchy);
+				}
+
 				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 
 				if(Target.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Target.Source = (BioAnimation)EditorGUILayout.ObjectField("Source", Target.Source, typeof(BioAnimation), true);
+						//Target.Source = (BioAnimation)EditorGUILayout.ObjectField("Source", Target.Source, typeof(BioAnimation), true);
+						Target.ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", Target.ShowTrajectory);
+						Target.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", Target.ShowVelocities);
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 						Target.StyleTransition = EditorGUILayout.Slider("Style Transition", Target.StyleTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);

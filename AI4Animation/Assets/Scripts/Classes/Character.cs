@@ -16,9 +16,9 @@ public class Character {
 	public Matrix4x4[] RestPose = new Matrix4x4[0];
 
 	public float BoneSize = 0.025f;
-	public Color BoneColor = Utility.Black;
+	public Color BoneColor = Utility.Cyan;
 	public Color JointColor = Utility.Mustard;
-	public DRAWTYPE DrawType = DRAWTYPE.Diffuse;
+	public DRAWTYPE DrawType = DRAWTYPE.Transparent;
 	public bool DrawHierarchy = false;
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
@@ -28,19 +28,72 @@ public class Character {
 	private Material DiffuseMaterial;
 	private Material TransparentMaterial;
 
+	private Matrix4x4[] Seed;
+	private Matrix4x4[] Target;
+
 	public Character() {
 
 	}
 
 	//Input in world space
-	public void RetargetMotion(Matrix4x4 root, Matrix4x4[] target) {
-		//Transform everything relative to root
+	public Matrix4x4[] RetargetMotion(Matrix4x4[] seed, Matrix4x4[] target) {
+		//Use L-BFGS-B optimiser to solve target = seed * modify
+		Seed = WorldToLocal(seed);
+		Target = target;
+		double[] solution = new double[Hierarchy.Length * 3];
+		BFGS optimiser = new BFGS(solution.Length, x => ComputeValue(x), y => ComputeGradient(y, 1e-3));
+		for(int i=0; i<solution.Length; i++) {
+			optimiser.LowerBounds[i] = double.MinValue;
+			optimiser.UpperBounds[i] = double.MaxValue;
+		}
+		optimiser.Minimise(solution, 10);
+		return ForwardKinematics(optimiser.Solution);
+	}
 
-		//use optimiser to generate deltas with RestPose*optimised = target
+	private double ComputeValue(double[] x) {
+		Matrix4x4[] result = ForwardKinematics(x);
+		double error = 0.0;
+		int items = 0;
+		for(int i=0; i<Hierarchy.Length; i++) {
+			//if(Hierarchy[i].GetChildCount() == 0 || i == 0) {
+				double loss = Vector3.Distance(result[i].GetPosition(), Target[i].GetPosition());//+ Mathf.Deg2Rad*Quaternion.Angle(result[i].GetRotation(), target[i].GetRotation());
+				error += loss*loss;
+				items += 1;
+			//}
+		}
+		error /= items;
+		error = System.Math.Sqrt(error);
+		return error;
+	}
 
-		//Arbitrarily translate/rotate root bone, then do whatever is required in local space...
+	private double[] ComputeGradient(double[] x, double epsilon) {
+		double[] gradient = new double[x.Length];
 
-		//Transform everything back from root
+		double oldValue = ComputeValue(x);
+		for(int i=0; i<x.Length; i++) {
+			x[i] += epsilon;
+			//TODO FASTER
+			gradient[i] = (ComputeValue(x) - oldValue) / epsilon;
+			//
+			x[i] -= epsilon;
+		}
+		return gradient;
+	}
+
+	private Matrix4x4[] ForwardKinematics(double[] variables) {
+		Matrix4x4[] transformations = new Matrix4x4[Hierarchy.Length];
+		for(int i=0; i<Hierarchy.Length; i++) {
+			Segment parent = Hierarchy[i].GetParent(this);
+			Vector3 position = new Vector3((float)variables[i*3 + 0], (float)variables[i*3 + 1], (float)variables[i*3 + 2]);
+			Quaternion rotation = Quaternion.identity;
+			Matrix4x4 local = Matrix4x4.TRS(position, rotation, Vector3.one);
+			if(parent == null) {
+				transformations[i] = Seed[i] * local;
+			} else {
+				transformations[i] = transformations[parent.GetIndex()] * Seed[i] * local;
+			}
+		}
+		return transformations;
 	}
 
 	public void SetWorldTransformations(Matrix4x4[] transformations) {
@@ -79,6 +132,32 @@ public class Character {
 			}
 		}
 		return transformations;
+	}
+
+	public Matrix4x4[] WorldToLocal(Matrix4x4[] world) {
+		Matrix4x4[] local = new Matrix4x4[Hierarchy.Length];
+		for(int i=0; i<Hierarchy.Length; i++) {
+			Segment parent = Hierarchy[i].GetParent(this);
+			if(parent == null) {
+				local[i] = world[i];
+			} else {
+				local[i] = world[parent.GetIndex()].inverse * world[i];
+			}
+		}
+		return local;
+	}
+
+	public Matrix4x4[] LocalToWorld(Matrix4x4[] local) {
+		Matrix4x4[] world = new Matrix4x4[Hierarchy.Length];
+		for(int i=0; i<Hierarchy.Length; i++) {
+			Segment parent = Hierarchy[i].GetParent(this);
+			if(parent == null) {
+				world[i] = local[i];
+			} else {
+				world[i] = world[parent.GetIndex()] * local[i];
+			}
+		}
+		return world;
 	}
 
 	public string[] GetBoneNames() {
@@ -289,6 +368,9 @@ public class Character {
 			boneMaterial.color = BoneColor;
 			Action<Segment, Segment> recursion = null;
 			recursion = new Action<Segment, Segment>((segment, parent) => {
+				if(segment == null) {
+					return;
+				}
 				if(parent != null) {
 					UnityGL.DrawMesh(
 						GetJointMesh(),
@@ -416,6 +498,9 @@ public class Character {
 					DrawHierarchy = EditorGUILayout.Toggle("Draw Hierarchy", DrawHierarchy);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
+					if(Utility.GUIButton("Clear", Utility.DarkRed, Utility.White)) {
+						Utility.Clear(ref Hierarchy);
+					}
 					if(root == null) {
 						if(Hierarchy.Length == 0) {
 							EditorGUILayout.HelpBox("No skeleton available.", MessageType.Warning);

@@ -93,9 +93,9 @@ public partial class BFGS {
 		NewG = null;
 	}
 
-	public void Minimise(double[] values, int iterations) {
+	public void Minimise(double[] seed, int iterations) {
 		for(int i=0; i<Dimensionality; i++) {
-			Solution[i] = values[i];
+			Solution[i] = seed[i];
 		}
 
 		F = 0.0;
@@ -130,9 +130,9 @@ public partial class BFGS {
 		Value = Function(Solution);
 	}
 
-	public void Minimise(double[] values, double timeout) {
+	public void Minimise(double[] seed, double timeout) {
 		for(int i=0; i<Dimensionality; i++) {
-			Solution[i] = values[i];
+			Solution[i] = seed[i];
 		}
 
 		F = 0.0;
