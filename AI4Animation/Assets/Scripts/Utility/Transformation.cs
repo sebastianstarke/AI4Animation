@@ -79,6 +79,23 @@ public static class Transformations {
 		return matrix;
 	}
 
+	public static Matrix4x4 GetMirror(this Matrix4x4 matrix, Vector3 axisPos) {
+		if(axisPos == Vector3.right) {
+			matrix[0, 3] *= -1f; //Pos
+		}
+		if(axisPos == Vector3.up) {
+			matrix[1, 3] *= -1f; //Pos
+		}
+		if(axisPos == Vector3.forward) {
+			matrix[2, 3] *= -1f; //Pos
+			matrix[0, 2] *= -1f; //Rot
+			matrix[1, 2] *= -1f; //Rot
+			matrix[2, 0] *= -1f; //Rot
+			matrix[2, 1] *= -1f; //Rot
+		}
+		return matrix;
+	}
+
 	public static Vector3 GetMirror(this Vector3 vector) {
 		vector.z *= -1f;
 		return vector;
@@ -103,9 +120,7 @@ public static class Transformations {
 	public static float GetMagnitude(this Quaternion rotation) {
 		return Mathf.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z + rotation.w*rotation.w);
 	}
-	
-}
-	/*
+
 	public static Quaternion Log(this Quaternion rotation) {
 		float mag = rotation.GetMagnitude();
 		float arg = Mathf.Atan2(mag, rotation.w) / mag;
@@ -126,4 +141,5 @@ public static class Transformations {
 		);
 		return exp.GetNormalised();
     }
-	*/
+
+}

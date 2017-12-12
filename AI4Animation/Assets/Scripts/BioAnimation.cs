@@ -487,6 +487,9 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
+		if(Root == null) {
+			Root = transform;
+		}
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
 				UnityGL.Start();

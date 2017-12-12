@@ -56,6 +56,25 @@ public class DemoAnimation : MonoBehaviour {
 		Utility.SetFPS(60);
 	}
 
+	public void AutoDetect() {
+		SetJointCount(0);
+		System.Action<Transform> recursion = null;
+		recursion = new System.Action<Transform>((transform) => {
+			if(Character.FindSegment(transform.name) != null) {
+				AddJoint(transform);
+			}
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i));
+			}
+		});
+		recursion(Root);
+	}
+
+	public void AddJoint(Transform joint) {
+		System.Array.Resize(ref Joints, Joints.Length+1);
+		Joints[Joints.Length-1] = joint;
+	}
+
 	void Update() {
 		if(PFNN.Parameters == null) {
 			return;
@@ -255,13 +274,17 @@ public class DemoAnimation : MonoBehaviour {
 			
 			//Compute Posture
 			Vector3[] positions = new Vector3[Joints.Length];
+			Quaternion[] rotations = new Quaternion[Joints.Length];
 			int opos = 8 + 4*RootSampleIndex + Joints.Length*3*0;
 			int ovel = 8 + 4*RootSampleIndex + Joints.Length*3*1;
+			int orot = 8 + 4*RootSampleIndex + Joints.Length*3*2;
 			for(int i=0; i<Joints.Length; i++) {			
 				Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
 				Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
+				Quaternion rotation = new Quaternion(PFNN.GetOutput(orot+i*3+0), PFNN.GetOutput(orot+i*3+1), PFNN.GetOutput(orot+i*3+2), 0f).Exp();
 				positions[i] = Vector3.Lerp(Joints[i].position.GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
+				rotations[i] = rotation.GetRelativeRotationFrom(currentRoot);
 			}
 			
 			//Update Posture
@@ -269,6 +292,7 @@ public class DemoAnimation : MonoBehaviour {
 			Root.rotation = nextRoot.GetRotation();
 			for(int i=0; i<Joints.Length; i++) {
 				Joints[i].position = positions[i];
+				Joints[i].rotation = rotations[i];
 			}
 
 			//Map to Character

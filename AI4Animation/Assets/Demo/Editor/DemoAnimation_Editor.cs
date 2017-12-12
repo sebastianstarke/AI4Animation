@@ -48,6 +48,9 @@ public class DemoAnimation_Editor : Editor {
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
+						if(Utility.GUIButton("Auto Detect", Utility.DarkGrey, Utility.White)) {
+							Target.AutoDetect();
+						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
 								Utility.SetGUIColor(Utility.Green);
