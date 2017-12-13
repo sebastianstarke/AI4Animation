@@ -58,6 +58,10 @@ public static class Utility {
 		return mesh;
 	}
 
+	public static Color Transparent(this Color color, float opacity) {
+		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
+	}
+
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
 		if(valueMax-valueMin != 0f) {
 			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;

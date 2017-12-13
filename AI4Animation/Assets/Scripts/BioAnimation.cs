@@ -23,11 +23,6 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
-	//private Matrix4x4[] TargetSkeleton;
-	//private Matrix4x4[] SourceSkeleton;
-	//private Matrix4x4[] DeltaSkeleton;
-	//public BioAnimation Source;
-
 	private Trajectory Trajectory;
 
 	private float Phase = 0f;
@@ -69,11 +64,6 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
-		/*
-		TargetSkeleton = GetSkeleton(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
-		SourceSkeleton = Source.GetSkeleton(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
-		DeltaSkeleton = GetDeltaSkeleton(SourceSkeleton, TargetSkeleton);
-		*/
 	}
 
 	public Matrix4x4[] GetSkeleton(Matrix4x4 root) {
@@ -342,88 +332,6 @@ public class BioAnimation : MonoBehaviour {
 			}
 			Character.FetchTransformations(Root);
 
-			/*
-			//Generate Transformations
-			for(int i=0; i<Joints.Length; i++) {
-				Matrix4x4 transformation = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]), Vector3.one);
-				Source.Joints[i].position = transformation.GetPosition();
-				Source.Joints[i].rotation = transformation.GetRotation() * DeltaSkeleton[i].GetRotation();
-				
-				//Matrix4x4 retarget = transformation * DeltaSkeleton[i];
-				//Joints[i].position = transformation.GetPosition();
-				//Joints[i].rotation = retarget.GetRotation();	
-				
-				Matrix4x4 restTransformation = TargetSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
-				Joints[i].position = restTransformation.GetPosition();
-				Joints[i].rotation = restTransformation.GetRotation();
-				
-			}
-			*/
-
-			/*
-			//Prediction
-			Matrix4x4[] prediction = new Matrix4x4[Joints.Length];
-			for(int i=0; i<Joints.Length; i++) {
-				prediction[i] = Matrix4x4.TRS(Positions[i], Quaternion.LookRotation(Forwards[i], Ups[i]) * DeltaSkeleton[i].GetRotation(), Vector3.one);
-			}
-			*/
-
-			/*
-			//Visualise Source
-			for(int i=0; i<Joints.Length; i++) {
-				Source.Joints[i].position = prediction[i].GetPosition();
-				Source.Joints[i].rotation = prediction[i].GetRotation();
-			}
-			Source.Root.position = Root.position;
-			Source.Root.rotation = Root.rotation;
-			Source.Character.FetchTransformations(Source.Root);
-			*/
-
-			/*
-			//Retarget Motion
-			for(int i=0; i<Joints.Length; i++) {
-				Joints[i].position = prediction[i].GetPosition();
-				Joints[i].rotation = prediction[i].GetRotation();
-			}
-			Character.FetchTransformations(Root);
-		    prediction = Character.GetWorldTransformations();
-
-			for(int i=0; i<Joints.Length; i++) {
-				Matrix4x4 restTransformation = SourceSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
-				Joints[i].position = restTransformation.GetPosition();
-				Joints[i].rotation = restTransformation.GetRotation();
-			}
-			Character.FetchTransformations(Root);
-			Matrix4x4[] source = Character.GetWorldTransformations();
-			
-			for(int i=0; i<Joints.Length; i++) {
-				Matrix4x4 restTransformation = TargetSkeleton[i].GetRelativeTransformationFrom(Matrix4x4.TRS(Root.position, Root.rotation, Vector3.one));
-				Joints[i].position = restTransformation.GetPosition();
-				Joints[i].rotation = restTransformation.GetRotation();
-			}
-			Character.FetchTransformations(Root);
-			Matrix4x4[] target = Character.GetWorldTransformations();
-			
-			//Retargetting
-			Matrix4x4[] retarget = new Matrix4x4[Joints.Length];
-			for(int i=0; i<Joints.Length; i++) {
-				int index = GetJointIndex(Character.Hierarchy[i].GetName());
-				Vector3 position = Vector3.Slerp(target[i].GetPosition(), prediction[i].GetPosition(), Weights[index]);
-				Quaternion rotation = Quaternion.Slerp(target[i].GetRotation(), prediction[i].GetRotation(), Weights[index]);
-				retarget[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
-			}
-			*/
-
-			//Character.SetWorldTransformations(retarget);
-
-			//Character.SetWorldTransformations(source);
-
-
-			//Retargetting = Character.RetargetMotion(seed, target);
-			//Character.SetWorldTransformations(Retargetting);
-
-			//Character.WriteTransformations(Root);
-
 			/* Update Phase */
 			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
 		}
@@ -473,7 +381,6 @@ public class BioAnimation : MonoBehaviour {
 
 	void OnGUI() {
 		float height = 0.05f;
-		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.1f, 0.1f, height), Phase, 0f, 2f*Mathf.PI);
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			GUI.Label(Utility.GetGUIRect(0.725f, 0.05f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
@@ -490,6 +397,12 @@ public class BioAnimation : MonoBehaviour {
 		if(Root == null) {
 			Root = transform;
 		}
+
+		UnityGL.Start();
+		UnityGL.DrawGUICircle(0.5f, 0.85f, 0.075f, Utility.Black.Transparent(0.5f));
+		UnityGL.DrawGUILine(0.5f, 0.85f, 0.5f + 0.075f*Mathf.Sin(Phase)/Screen.width*Screen.height, 0.85f + 0.075f*Mathf.Cos(Phase), Utility.Cyan);
+		UnityGL.Finish();
+
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
 				UnityGL.Start();
@@ -504,17 +417,6 @@ public class BioAnimation : MonoBehaviour {
 			Character.FetchTransformations(Root);
 		}
 		Character.Draw();
-
-		/*
-		//
-		if(Source != this) {
-			if(!Application.isPlaying) {
-				Source.Character.FetchTransformations(Source.Root);
-			}
-			Source.Character.Draw();
-		}
-		//
-		*/
 
 		if(ShowVelocities) {
 			if(Application.isPlaying) {

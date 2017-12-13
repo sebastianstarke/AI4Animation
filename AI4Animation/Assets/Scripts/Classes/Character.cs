@@ -35,6 +35,7 @@ public class Character {
 
 	}
 
+	/*
 	//Input in world space
 	public Matrix4x4[] RetargetMotion(Matrix4x4[] seed, Matrix4x4[] target) {
 		//Use L-BFGS-B optimiser to solve target = seed * modify
@@ -95,6 +96,7 @@ public class Character {
 		}
 		return transformations;
 	}
+	*/
 
 	public void SetWorldTransformations(Matrix4x4[] transformations) {
 		for(int i=0; i<Hierarchy.Length; i++) {

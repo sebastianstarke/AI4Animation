@@ -2,7 +2,9 @@
 
 public static class UnityGL {
 
-	private static Material ColorMaterial;
+	private static Material SceneMaterial;
+	private static Material GUIMaterial;
+
 	private static Vector3[] IsocelesTrianglePoints;
 	private static int CircleResolution = 10;
 	private static Vector3[] CirclePoints;
@@ -14,8 +16,12 @@ public static class UnityGL {
 	private static bool Initialised = false;
 
 	private static PROGRAM Program = PROGRAM.NONE;
+	private static SPACE Space = SPACE.NONE;
 
 	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
+	private enum SPACE {NONE, SCENE, GUI}
+
+	private static float GUIOffset = 0.00001f;
 
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
@@ -26,13 +32,22 @@ public static class UnityGL {
 		}
 
 		Resources.UnloadUnusedAssets();
+
 		Shader colorShader = Shader.Find("Hidden/Internal-Colored");
-		ColorMaterial = new Material(colorShader);
-		ColorMaterial.hideFlags = HideFlags.HideAndDontSave;
-		ColorMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-		ColorMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-		ColorMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-		ColorMaterial.SetInt("_ZWrite", 1);
+
+		SceneMaterial = new Material(colorShader);
+		SceneMaterial.hideFlags = HideFlags.HideAndDontSave;
+		SceneMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		SceneMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+		SceneMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+		SceneMaterial.SetInt("_ZWrite", 1);
+
+		GUIMaterial = new Material(colorShader);
+		GUIMaterial.hideFlags = HideFlags.HideAndDontSave;
+		GUIMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		GUIMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+		GUIMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+		GUIMaterial.SetInt("_ZWrite", 0);
 
 		IsocelesTrianglePoints = new Vector3[3];
 		CirclePoints = new Vector3[CircleResolution];
@@ -87,30 +102,38 @@ public static class UnityGL {
 		return new Vector3(Mathf.Cos(u)*Mathf.Sin(v), Mathf.Cos(v), Mathf.Sin(u)*Mathf.Sin(v));
 	}
 
-	private static void SetProgram(PROGRAM program) {
-		if(Program != program) {
+	private static void SetProgram(PROGRAM program, SPACE space) {
+		if(Program != program || Space != space) {
 			GL.End();
-			switch(program) {
-				case PROGRAM.NONE:
-				break;
-				case PROGRAM.LINES:
-				ColorMaterial.SetPass(0);
-				GL.Begin(GL.LINES);
-				break;
-				case PROGRAM.TRIANGLES:
-				ColorMaterial.SetPass(0);
-				GL.Begin(GL.TRIANGLES);
-				break;
-				case PROGRAM.TRIANGLE_STRIP:
-				ColorMaterial.SetPass(0);
-				GL.Begin(GL.TRIANGLE_STRIP);
-				break;
-				case PROGRAM.QUADS:
-				ColorMaterial.SetPass(0);
-				GL.Begin(GL.QUADS);
-				break;
+			if(program == PROGRAM.NONE || space == SPACE.NONE) {
+				Program = PROGRAM.NONE;
+				Space = SPACE.NONE;
+			} else {
+				switch(space) {
+					case SPACE.SCENE:
+					SceneMaterial.SetPass(0);
+					break;
+					case SPACE.GUI:
+					GUIMaterial.SetPass(0);
+					break;
+				}
+				switch(program) {
+					case PROGRAM.LINES:
+					GL.Begin(GL.LINES);
+					break;
+					case PROGRAM.TRIANGLES:
+					GL.Begin(GL.TRIANGLES);
+					break;
+					case PROGRAM.TRIANGLE_STRIP:
+					GL.Begin(GL.TRIANGLE_STRIP);
+					break;
+					case PROGRAM.QUADS:
+					GL.Begin(GL.QUADS);
+					break;
+				}
+				Program = program;
+				Space = space;
 			}
-			Program = program;
 		}
 	}
 
@@ -126,7 +149,7 @@ public static class UnityGL {
 
 	public static void Finish() {
 		if(Drawing) {
-			SetProgram(PROGRAM.NONE);
+			SetProgram(PROGRAM.NONE, SPACE.NONE);
 			Drawing = false;
 		} else {
 			ViewPosition = Vector3.zero;
@@ -140,7 +163,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.LINES);
+		SetProgram(PROGRAM.LINES, SPACE.SCENE);
 		GL.Color(color);
 		GL.Vertex(start);
 		GL.Vertex(end);
@@ -151,7 +174,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.LINES);
+		SetProgram(PROGRAM.LINES, SPACE.SCENE);
 		GL.Color(startColor);
 		GL.Vertex(start);
 		GL.Color(endColor);
@@ -163,7 +186,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.QUADS);
+		SetProgram(PROGRAM.QUADS, SPACE.SCENE);
 		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
@@ -181,7 +204,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.QUADS);
+		SetProgram(PROGRAM.QUADS, SPACE.SCENE);
 		Vector3 dir = end-start;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
@@ -198,7 +221,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.QUADS);
+		SetProgram(PROGRAM.QUADS, SPACE.SCENE);
 		Vector3 dir = end-start;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
@@ -216,7 +239,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.QUADS);
+		SetProgram(PROGRAM.QUADS, SPACE.SCENE);
 		Vector3 dir = end-start;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir).normalized;
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir).normalized;
@@ -233,7 +256,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.TRIANGLES);
+		SetProgram(PROGRAM.TRIANGLES, SPACE.SCENE);
         GL.Color(color);
         GL.Vertex(a);
 		GL.Vertex(b);
@@ -245,7 +268,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.TRIANGLES);
+		SetProgram(PROGRAM.TRIANGLES, SPACE.SCENE);
         GL.Color(color);
         GL.Vertex(center + radius*IsocelesTrianglePoints[0]);
 		GL.Vertex(center + radius*IsocelesTrianglePoints[1]);
@@ -257,7 +280,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.TRIANGLES);
+		SetProgram(PROGRAM.TRIANGLES, SPACE.SCENE);
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
@@ -271,7 +294,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.TRIANGLES);
+		SetProgram(PROGRAM.TRIANGLES, SPACE.SCENE);
         GL.Color(color);
 		int index = 0;
 		for(int i=0; i<SphereResolution; i++) {
@@ -306,11 +329,50 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.NONE);
+		SetProgram(PROGRAM.NONE, SPACE.SCENE);
 		material.SetPass(0);
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
+	//TODO FASTER
+	public static void DrawGUILine(float xStart, float yStart, float xEnd, float yEnd, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		xStart *= Screen.width;
+		yStart *= Screen.height;
+		xEnd *= Screen.width;
+		yEnd *= Screen.height;
+		SetProgram(PROGRAM.LINES, SPACE.GUI);
+		GL.Color(color);
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xStart, yStart, GetCamera().nearClipPlane + GUIOffset)));
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xEnd, yEnd, GetCamera().nearClipPlane + GUIOffset)));
+	}
+
+	//TODO FASTER
+	public static void DrawGUICircle(float xCenter, float yCenter, float radius, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		xCenter *= Screen.width;
+		yCenter *= Screen.height;
+		radius *= Screen.height;
+		int resolution = 30;
+		SetProgram(PROGRAM.TRIANGLES, SPACE.GUI);
+        GL.Color(color);
+		Vector3 center = GetCamera().ScreenToWorldPoint(new Vector3(xCenter, yCenter, GetCamera().nearClipPlane + GUIOffset));
+		for(int i=0; i<resolution-1; i++) {
+			GL.Vertex(center);
+			float a = 2f * Mathf.PI * (float)i / ((float)resolution-1f);
+			GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xCenter + Mathf.Cos(a)*radius, yCenter + Mathf.Sin(a)*radius, GetCamera().nearClipPlane + GUIOffset)));
+			float b = 2f * Mathf.PI * (float)(i+1) / ((float)resolution-1f);
+			GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xCenter + Mathf.Cos(b)*radius, yCenter + Mathf.Sin(b)*radius, GetCamera().nearClipPlane + GUIOffset)));
+
+		}
+	}
+	
 	private static Camera GetCamera() {
 		if(Camera.current != null) {
 			return Camera.current;
