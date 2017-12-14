@@ -455,7 +455,7 @@ public class BVHAnimation : ScriptableObject {
 		Matrix4x4[] transformations = new Matrix4x4[Character.Hierarchy.Length];
 		for(int i=0; i<Character.Hierarchy.Length; i++) {
 			BVHData.Bone info = Data.Bones[i];
-			Character.Segment parent = Character.Hierarchy[i].GetParent(Character);
+			Character.Segment parent = Character.Hierarchy[i].GetParent(Character.Hierarchy);
 			Matrix4x4 local = Matrix4x4.TRS(
 				i == 0 ? PositionOffset : info.Offset / UnitScale,
 				i == 0 ? Quaternion.Euler(RotationOffset) : Quaternion.identity, 
@@ -837,7 +837,7 @@ public class BVHAnimation : ScriptableObject {
 		instance.position = bone.GetTransformation().GetPosition();
 		instance.rotation = bone.GetTransformation().GetRotation();
 		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(bone.GetChild(Character, i), instance);
+			ExportSkeleton(bone.GetChild(Character.Hierarchy, i), instance);
 		}
 		return instance.root;
 	}
@@ -1035,7 +1035,7 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
-				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character);
+				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character.Hierarchy);
 				Local[i] = Matrix4x4.TRS(
 					i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale,
 					i == 0 ? Quaternion.Euler(Animation.RotationOffset) * rotation : rotation, 

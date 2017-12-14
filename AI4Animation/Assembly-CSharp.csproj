@@ -108,6 +108,7 @@
      <Compile Include="Assets\Scripts\Classes\BFGS.cs" />
      <Compile Include="Assets\Scripts\Classes\Character.cs" />
      <Compile Include="Assets\Scripts\Classes\Controller.cs" />
+     <Compile Include="Assets\Scripts\Classes\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Classes\PFNN.cs" />
      <Compile Include="Assets\Scripts\Classes\Trajectory.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\NetworkParameters.cs" />

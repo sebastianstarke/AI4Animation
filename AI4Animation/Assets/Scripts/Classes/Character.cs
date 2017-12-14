@@ -13,7 +13,6 @@ public class Character {
 	public bool Inspect = false;
 
 	public Segment[] Hierarchy = new Segment[0];
-	public Matrix4x4[] RestPose = new Matrix4x4[0];
 
 	public float BoneSize = 0.025f;
 	public Color BoneColor = Utility.Cyan;
@@ -28,11 +27,73 @@ public class Character {
 	private Material DiffuseMaterial;
 	private Material TransparentMaterial;
 
-	private Matrix4x4[] Seed;
-	private Matrix4x4[] Target;
-
 	public Character() {
 
+	}
+
+	public void SolveIK(Segment start, Segment end, Matrix4x4 goal) {
+		List<Segment> segmentList = new List<Segment>();
+		List<Matrix4x4> sequenceList = new List<Matrix4x4>();
+		Action<Segment> recursion = null;
+		recursion = new Action<Segment>((segment) => {
+			if(segment == start) {
+				sequenceList.Add(segment.GetTransformation());
+				segmentList.Add(segment);
+			} else {
+				sequenceList.Add(segment.GetParent(Hierarchy).GetTransformation().inverse * segment.GetTransformation());
+				segmentList.Add(segment);
+				recursion(segment.GetParent(Hierarchy));
+			}
+		});
+		recursion(end);
+		sequenceList.Reverse();
+		segmentList.Reverse();
+		Matrix4x4[] sequence = sequenceList.ToArray();
+		Segment[] segments = segmentList.ToArray();
+
+		double[] solution = new double[sequence.Length * 3];
+		BFGS optimiser = new BFGS(solution.Length, x => ComputeValue(x, sequence, goal), y => ComputeGradient(y, sequence, goal, 1e-3));
+		for(int i=0; i<solution.Length; i++) {
+			optimiser.LowerBounds[i] = double.MinValue;
+			optimiser.UpperBounds[i] = double.MaxValue;
+		}
+		optimiser.Minimise(solution, 100);
+		solution = optimiser.Solution;
+
+		Matrix4x4[] transformations = FK(solution, sequence);
+		for(int i=0; i<segments.Length; i++) {
+			segments[i].SetTransformation(transformations[i]);
+		}
+	}
+
+	private double ComputeValue(double[] x, Matrix4x4[] sequence, Matrix4x4 goal) {
+		Matrix4x4[] result = FK(x, sequence);
+		float error = Vector3.Distance(result[result.Length-1].GetPosition(), goal.GetPosition()); //+ Mathf.Deg2Rad*Quaternion.Angle(result[result.Length-1].GetRotation(), goal.GetRotation());
+		return error;
+	}
+
+	private double[] ComputeGradient(double[] x, Matrix4x4[] sequence, Matrix4x4 goal, double epsilon) {
+		double[] gradient = new double[x.Length];
+		double oldValue = ComputeValue(x, sequence, goal);
+		for(int i=0; i<x.Length; i++) {
+			x[i] += epsilon;
+			gradient[i] = (ComputeValue(x, sequence, goal) - oldValue) / epsilon;
+			x[i] -= epsilon;
+		}
+		return gradient;
+	}
+
+	private Matrix4x4[] FK(double[] variables, Matrix4x4[] sequence) {
+		Matrix4x4[] result = new Matrix4x4[sequence.Length];
+		for(int i=0; i<sequence.Length; i++) {
+			Matrix4x4 update = Matrix4x4.TRS(Vector3.zero, Quaternion.AngleAxis((float)variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis((float)variables[i*3+1], Vector3.right) * Quaternion.AngleAxis((float)variables[i*3+2], Vector3.up), Vector3.one);
+			if(i==0) {
+				result[i] = sequence[i] * update;
+			} else {
+				result[i] = result[i-1] * sequence[i] * update;
+			}
+		}
+		return result;
 	}
 
 	/*
@@ -114,7 +175,7 @@ public class Character {
 
 	public void SetLocalTransformations(Matrix4x4[] transformations) {
 		for(int i=0; i<Hierarchy.Length; i++) {
-			Segment parent = Hierarchy[i].GetParent(this);
+			Segment parent = Hierarchy[i].GetParent(Hierarchy);
 			if(parent == null) {
 				Hierarchy[i].SetTransformation(transformations[i]);
 			} else {
@@ -126,7 +187,7 @@ public class Character {
 	public Matrix4x4[] GetLocalTransformations() {
 		Matrix4x4[] transformations = new Matrix4x4[Hierarchy.Length];
 		for(int i=0; i<Hierarchy.Length; i++) {
-			Segment parent = Hierarchy[i].GetParent(this);
+			Segment parent = Hierarchy[i].GetParent(Hierarchy);
 			if(parent == null) {
 				transformations[i] = Hierarchy[i].GetTransformation();
 			} else {
@@ -139,7 +200,7 @@ public class Character {
 	public Matrix4x4[] WorldToLocal(Matrix4x4[] world) {
 		Matrix4x4[] local = new Matrix4x4[Hierarchy.Length];
 		for(int i=0; i<Hierarchy.Length; i++) {
-			Segment parent = Hierarchy[i].GetParent(this);
+			Segment parent = Hierarchy[i].GetParent(Hierarchy);
 			if(parent == null) {
 				local[i] = world[i];
 			} else {
@@ -152,7 +213,7 @@ public class Character {
 	public Matrix4x4[] LocalToWorld(Matrix4x4[] local) {
 		Matrix4x4[] world = new Matrix4x4[Hierarchy.Length];
 		for(int i=0; i<Hierarchy.Length; i++) {
-			Segment parent = Hierarchy[i].GetParent(this);
+			Segment parent = Hierarchy[i].GetParent(Hierarchy);
 			if(parent == null) {
 				world[i] = local[i];
 			} else {
@@ -175,7 +236,7 @@ public class Character {
 		int index = 0;
 		Action<Segment> recursion = null;
 		recursion = new Action<Segment>((segment) => {
-			Segment parent = segment.GetParent(this);
+			Segment parent = segment.GetParent(Hierarchy);
 			if(parent == null) {
 				lengths[index] = 0f;
 			} else {
@@ -183,7 +244,7 @@ public class Character {
 			}
 			index += 1;
 			for(int i=0; i<segment.GetChildCount(); i++) {
-				recursion(segment.GetChild(this, i));
+				recursion(segment.GetChild(Hierarchy, i));
 			}
 		});
 		recursion(GetRoot());
@@ -335,16 +396,16 @@ public class Character {
 			return Index;
 		}
 
-		public Segment GetParent(Character character) {
+		public Segment GetParent(Segment[] segments) {
 			if(Parent == -1) {
 				return null;
 			} else {
-				return character.Hierarchy[Parent];
+				return segments[Parent];
 			}
 		}
 
-		public Segment GetChild(Character character, int index) {
-			return character.Hierarchy[Childs[index]];
+		public Segment GetChild(Segment[] segments, int index) {
+			return segments[Childs[index]];
 		}
 		
 		public int GetChildCount() {
@@ -394,7 +455,7 @@ public class Character {
 				}
 				parent = segment;
 				for(int i=0; i<segment.GetChildCount(); i++) {
-					recursion(segment.GetChild(this, i), parent);
+					recursion(segment.GetChild(Hierarchy, i), parent);
 				}
 			});
 			recursion(GetRoot(), null);
@@ -406,8 +467,8 @@ public class Character {
 			Action<Segment> recursion = null;
 			recursion = new Action<Segment>((segment) => {
 				for(int i=0; i<segment.GetChildCount(); i++) {
-					UnityGL.DrawLine(segment.GetTransformation().GetPosition(), segment.GetChild(this, i).GetTransformation().GetPosition(), 0.25f*BoneSize, 0.25f*BoneSize, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
-					recursion(segment.GetChild(this, i));
+					UnityGL.DrawLine(segment.GetTransformation().GetPosition(), segment.GetChild(Hierarchy, i).GetTransformation().GetPosition(), 0.25f*BoneSize, 0.25f*BoneSize, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
+					recursion(segment.GetChild(Hierarchy, i));
 				}
 			});
 			recursion(GetRoot());
@@ -420,7 +481,7 @@ public class Character {
 				UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
 				for(int i=0; i<segment.GetChildCount(); i++) {
-					recursion(segment.GetChild(this, i));
+					recursion(segment.GetChild(Hierarchy, i));
 				}
 			});
 			recursion(GetRoot());
@@ -441,12 +502,12 @@ public class Character {
 			return;
 		}
 		for(int i=0; i<segment.GetChildCount(); i++) {
-			Segment child = segment.GetChild(this, i);
+			Segment child = segment.GetChild(Hierarchy, i);
 			UnityGL.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
 		}
 		UnityGL.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
 		for(int i=0; i<segment.GetChildCount(); i++) {
-			DrawSimple(segment.GetChild(this, i));
+			DrawSimple(segment.GetChild(Hierarchy, i));
 		}
 	}
 
@@ -560,7 +621,7 @@ public class Character {
 			EditorGUILayout.EndHorizontal();
 		}
 		for(int i=0; i<segment.GetChildCount(); i++) {
-			InspectHierarchy(segment.GetChild(this, i), indent+1);
+			InspectHierarchy(segment.GetChild(Hierarchy, i), indent+1);
 		}
 	}
 	#endif
