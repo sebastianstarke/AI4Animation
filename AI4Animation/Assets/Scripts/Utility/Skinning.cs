@@ -22,6 +22,7 @@ public class Skinning : MonoBehaviour {
 		skeleton.name = "Skeleton";
 		Cleanup(skeleton.transform);
 		GetComponent<BioAnimation>().AutoDetect();
+		GetComponent<MeshSkinnerDebugWeights>().enabled = false;
 	}
 
 	private GameObject FindSkeleton() {

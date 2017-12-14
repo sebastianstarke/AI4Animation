@@ -400,7 +400,11 @@ public class BioAnimation : MonoBehaviour {
 
 		UnityGL.Start();
 		UnityGL.DrawGUICircle(0.5f, 0.85f, 0.075f, Utility.Black.Transparent(0.5f));
-		UnityGL.DrawGUILine(0.5f, 0.85f, 0.5f + 0.075f*Mathf.Sin(Phase)/Screen.width*Screen.height, 0.85f + 0.075f*Mathf.Cos(Phase), Utility.Cyan);
+		Quaternion rotation = Quaternion.AngleAxis(-360f * Phase / (2f * Mathf.PI), Vector3.forward);
+		Vector2 a = rotation * new Vector2(-0.005f, 0f);
+		Vector2 b = rotation *new Vector3(0.005f, 0f);
+		Vector3 c = rotation * new Vector3(0f, 0.075f);
+		UnityGL.DrawGUITriangle(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y, 0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y, 0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y, Utility.Cyan);
 		UnityGL.Finish();
 
 		if(ShowTrajectory) {
