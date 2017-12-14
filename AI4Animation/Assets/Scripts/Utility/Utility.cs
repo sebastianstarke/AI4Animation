@@ -80,7 +80,7 @@ public static class Utility {
 		}
 	}
 
-	//0 = Amplitude, 1 = Frequency, 2 = Shift, 3 = Offset, 4 = Slope, 5 = time
+	//0 = Amplitude, 1 = Frequency, 2 = Shift, 3 = Offset, 4 = Slope, 5 = Time
 	public static float LinSin(float a, float f, float s, float o, float m, float t) {
 		return a * Mathf.Sin(f * (t - s) * 2f * Mathf.PI) + o + m * t;
 	}
