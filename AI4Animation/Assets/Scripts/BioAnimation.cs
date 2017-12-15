@@ -7,8 +7,6 @@ using UnityEditor;
 
 public class BioAnimation : MonoBehaviour {
 
-	public Transform Goal;
-
 	public bool Inspect = false;
 	public bool ShowTrajectory = true;
 	public bool ShowVelocities = true;
@@ -335,13 +333,7 @@ public class BioAnimation : MonoBehaviour {
 			Character.FetchTransformations(Root);
 
 			//Update Phase
-			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);
-
-			//Solve IK
-			/*
-			Character.SolveIK(Character.FindSegment("LeftShoulder"), Character.FindSegment("LeftHandSite"), Matrix4x4.TRS(Goal.position, Goal.rotation, Vector3.one));
-			Character.WriteTransformations(Root);
-			*/
+			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);			
 		}
 	}
 
@@ -484,8 +476,6 @@ public class BioAnimation : MonoBehaviour {
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-
-				Target.Goal = (Transform)EditorGUILayout.ObjectField("Goal", Target.Goal, typeof(Transform), true);
 
 				if(Target.Character.RebuildRequired(Target.Root)) {
 					EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
