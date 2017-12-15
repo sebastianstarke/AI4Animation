@@ -2,6 +2,14 @@
 
 public static class Transformations {
 
+	public static Matrix4x4 GetLocalMatrix(this Transform transform) {
+		return Matrix4x4.TRS(transform.localPosition, transform.localRotation, Vector3.one);
+	}
+
+	public static Matrix4x4 GetWorldMatrix(this Transform transform) {
+		return Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+	}
+
 	public static void SetPosition(ref Matrix4x4 matrix, Vector3 position) {
 		matrix = Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
 	}

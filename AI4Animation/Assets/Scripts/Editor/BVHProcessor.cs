@@ -139,9 +139,12 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionX"+i); index += 1;
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionY"+i); index += 1;
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationXlog"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationYlog"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "RotationZlog"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardZ"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpX"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpY"+i); index += 1;
+			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpZ"+i); index += 1;
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityX"+i); index += 1;
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityY"+i); index += 1;
 			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityZ"+i); index += 1;
