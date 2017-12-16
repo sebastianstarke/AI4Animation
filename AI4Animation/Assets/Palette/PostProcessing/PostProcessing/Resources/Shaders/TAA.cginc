@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 #ifndef __TAA__
 #define __TAA__
 
@@ -11,8 +9,6 @@
 
 // -----------------------------------------------------------------------------
 // Solver
-
-#define TAA_USE_GATHER4_FOR_DEPTH_SAMPLE (SHADER_TARGET >= 41)
 
 #define TAA_USE_STABLE_BUT_GHOSTY_VARIANT 0
 
@@ -41,13 +37,7 @@ struct OutputSolver
 sampler2D _HistoryTex;
 
 sampler2D _CameraMotionVectorsTexture;
-
-#if TAA_USE_GATHER4_FOR_DEPTH_SAMPLE
-Texture2D _CameraDepthTexture;
-SamplerState sampler_CameraDepthTexture;
-#else
 sampler2D _CameraDepthTexture;
-#endif
 
 float4 _HistoryTex_TexelSize;
 float4 _CameraDepthTexture_TexelSize;
@@ -76,24 +66,24 @@ VaryingsSolver VertSolver(AttributesDefault input)
 float2 GetClosestFragment(float2 uv)
 {
     const float2 k = _CameraDepthTexture_TexelSize.xy;
-
-#if TAA_USE_GATHER4_FOR_DEPTH_SAMPLE
-    const float4 neighborhood = _CameraDepthTexture.Gather(sampler_CameraDepthTexture, uv, int2(1, 1));
-    float3 result = float3(0.0, 0.0, _CameraDepthTexture.Sample(sampler_CameraDepthTexture, uv).r);
-#else
     const float4 neighborhood = float4(
         SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv - k),
         SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv + float2(k.x, -k.y)),
         SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv + float2(-k.x, k.y)),
         SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv + k)
         );
-    float3 result = float3(0.0, 0.0, SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+
+#if defined(UNITY_REVERSED_Z)
+    #define COMPARE_DEPTH(a, b) step(b, a)
+#else
+    #define COMPARE_DEPTH(a, b) step(a, b)
 #endif
 
-    result = lerp(result, float3(-1.0, -1.0, neighborhood.x), step(neighborhood.x, result.z));
-    result = lerp(result, float3( 1.0, -1.0, neighborhood.y), step(neighborhood.y, result.z));
-    result = lerp(result, float3(-1.0,  1.0, neighborhood.z), step(neighborhood.z, result.z));
-    result = lerp(result, float3( 1.0,  1.0, neighborhood.w), step(neighborhood.w, result.z));
+    float3 result = float3(0.0, 0.0, SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv));
+    result = lerp(result, float3(-1.0, -1.0, neighborhood.x), COMPARE_DEPTH(neighborhood.x, result.z));
+    result = lerp(result, float3( 1.0, -1.0, neighborhood.y), COMPARE_DEPTH(neighborhood.y, result.z));
+    result = lerp(result, float3(-1.0,  1.0, neighborhood.z), COMPARE_DEPTH(neighborhood.z, result.z));
+    result = lerp(result, float3( 1.0,  1.0, neighborhood.w), COMPARE_DEPTH(neighborhood.w, result.z));
 
     return (uv + result.xy * k);
 }

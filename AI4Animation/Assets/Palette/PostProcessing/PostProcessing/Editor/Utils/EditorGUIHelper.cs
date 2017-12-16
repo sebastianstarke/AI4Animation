@@ -41,7 +41,7 @@ namespace UnityEditor.PostProcessing
 
         #endregion
 
-        public static bool Header(string title, SerializedProperty group)
+        public static bool Header(string title, SerializedProperty group, Action resetAction)
         {
             var rect = GUILayoutUtility.GetRect(16f, 22f, FxStyles.header);
             GUI.Box(rect, title, FxStyles.header);
@@ -51,12 +51,29 @@ namespace UnityEditor.PostProcessing
             var foldoutRect = new Rect(rect.x + 4f, rect.y + 2f, 13f, 13f);
             var e = Event.current;
 
+            var popupRect = new Rect(rect.x + rect.width - FxStyles.paneOptionsIcon.width - 5f, rect.y + FxStyles.paneOptionsIcon.height / 2f + 1f, FxStyles.paneOptionsIcon.width, FxStyles.paneOptionsIcon.height);
+            GUI.DrawTexture(popupRect, FxStyles.paneOptionsIcon);
+
             if (e.type == EventType.Repaint)
                 FxStyles.headerFoldout.Draw(foldoutRect, false, false, display, false);
 
             if (e.type == EventType.MouseDown)
             {
-                if (rect.Contains(e.mousePosition))
+                if (popupRect.Contains(e.mousePosition))
+                {
+                    var popup = new GenericMenu();
+                    popup.AddItem(GetContent("Reset"), false, () => resetAction());
+                    popup.AddSeparator(string.Empty);
+                    popup.AddItem(GetContent("Copy Settings"), false, () => CopySettings(group));
+
+                    if (CanPaste(group))
+                        popup.AddItem(GetContent("Paste Settings"), false, () => PasteSettings(group));
+                    else
+                        popup.AddDisabledItem(GetContent("Paste Settings"));
+
+                    popup.ShowAsContext();
+                }
+                else if (rect.Contains(e.mousePosition) && group != null)
                 {
                     display = !display;
 

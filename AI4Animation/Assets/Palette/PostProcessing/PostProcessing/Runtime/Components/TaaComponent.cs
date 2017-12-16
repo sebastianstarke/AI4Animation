@@ -1,4 +1,4 @@
-using UnityEngine.Rendering;
+using System;
 
 namespace UnityEngine.PostProcessing
 {
@@ -18,8 +18,8 @@ namespace UnityEngine.PostProcessing
 
         readonly RenderBuffer[] m_MRT = new RenderBuffer[2];
 
-        int m_SampleIndex;
-        bool m_ResetHistory;
+        int m_SampleIndex = 0;
+        bool m_ResetHistory = true;
 
         RenderTexture m_HistoryTexture;
 
@@ -45,7 +45,7 @@ namespace UnityEngine.PostProcessing
             m_ResetHistory = true;
         }
 
-        public void SetProjectionMatrix()
+        public void SetProjectionMatrix(Func<Vector2, Matrix4x4> jitteredFunc)
         {
             var settings = model.settings.taaSettings;
 
@@ -53,9 +53,17 @@ namespace UnityEngine.PostProcessing
             jitter *= settings.jitterSpread;
 
             context.camera.nonJitteredProjectionMatrix = context.camera.projectionMatrix;
-            context.camera.projectionMatrix = context.camera.orthographic
-                ? GetOrthographicProjectionMatrix(jitter)
-                : GetPerspectiveProjectionMatrix(jitter);
+
+            if (jitteredFunc != null)
+            {
+                context.camera.projectionMatrix = jitteredFunc(jitter);
+            }
+            else
+            {
+                context.camera.projectionMatrix = context.camera.orthographic
+                    ? GetOrthographicProjectionMatrix(jitter)
+                    : GetPerspectiveProjectionMatrix(jitter);
+            }
 
 #if UNITY_5_5_OR_NEWER
             context.camera.useJitteredProjectionMatrixForTransparentRendering = false;
@@ -198,6 +206,7 @@ namespace UnityEngine.PostProcessing
 
             m_HistoryTexture = null;
             m_SampleIndex = 0;
+            ResetHistory();
         }
     }
 }

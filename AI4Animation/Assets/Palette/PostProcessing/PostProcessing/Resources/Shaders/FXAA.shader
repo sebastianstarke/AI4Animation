@@ -9,6 +9,9 @@ Shader "Hidden/Post FX/FXAA"
 
         #include "UnityCG.cginc"
         #include "Common.cginc"
+        #include "UberSecondPass.cginc"
+        #pragma multi_compile __ GRAIN
+        #pragma multi_compile __ DITHERING
 
         #if defined(SHADER_API_PS3)
             #define FXAA_PS3 1
@@ -35,7 +38,7 @@ Shader "Hidden/Post FX/FXAA"
         float3 _QualitySettings;
         float4 _ConsoleSettings;
 
-        fixed4 Frag(VaryingsDefault i) : SV_Target
+        half4 Frag(VaryingsDefault i) : SV_Target
         {
             const float4 consoleUV = i.uv.xyxy + 0.5 * float4(-_MainTex_TexelSize.xy, _MainTex_TexelSize.xy);
             const float4 consoleSubpixelFrame = _ConsoleSettings.x * float4(-1.0, -1.0, 1.0, 1.0) *
@@ -50,10 +53,17 @@ Shader "Hidden/Post FX/FXAA"
             const float4 consoleConstants = float4(0.0, 0.0, 0.0, 0.0);
         #endif
 
-            return FxaaPixelShader(UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST), UnityStereoScreenSpaceUVAdjust(consoleUV, _MainTex_ST), _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy,
+            half4 color = FxaaPixelShader(
+                UnityStereoScreenSpaceUVAdjust(i.uv, _MainTex_ST),
+                UnityStereoScreenSpaceUVAdjust(consoleUV, _MainTex_ST),
+                _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy,
                 consoleSubpixelFrame, consoleSubpixelFramePS3, consoleSubpixelFrameXBOX,
-                _QualitySettings.x, _QualitySettings.y, _QualitySettings.z, _ConsoleSettings.y, _ConsoleSettings.z,
-                _ConsoleSettings.w, consoleConstants);
+                _QualitySettings.x, _QualitySettings.y, _QualitySettings.z,
+                _ConsoleSettings.y, _ConsoleSettings.z, _ConsoleSettings.w, consoleConstants);
+
+            color.rgb = UberSecondPass(color.rgb, i.uv);
+
+            return color;
         }
 
     ENDCG

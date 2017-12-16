@@ -17,6 +17,7 @@ namespace UnityEditor.PostProcessing
         SerializedProperty m_Roundness;
         SerializedProperty m_Mask;
         SerializedProperty m_Opacity;
+        SerializedProperty m_Rounded;
 
         public override void OnEnable()
         {
@@ -28,6 +29,7 @@ namespace UnityEditor.PostProcessing
             m_Roundness = FindSetting((Settings x) => x.roundness);
             m_Mask = FindSetting((Settings x) => x.mask);
             m_Opacity = FindSetting((Settings x) => x.opacity);
+            m_Rounded = FindSetting((Settings x) => x.rounded);
         }
 
         public override void OnInspectorGUI()
@@ -35,14 +37,13 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_Mode);
             EditorGUILayout.PropertyField(m_Color);
 
-            if (m_Mode.intValue <= (int)VignetteMode.Round)
+            if (m_Mode.intValue < (int)VignetteMode.Masked)
             {
                 EditorGUILayout.PropertyField(m_Center);
                 EditorGUILayout.PropertyField(m_Intensity);
                 EditorGUILayout.PropertyField(m_Smoothness);
-
-                if (m_Mode.intValue == (int)VignetteMode.Classic)
-                    EditorGUILayout.PropertyField(m_Roundness);
+                EditorGUILayout.PropertyField(m_Roundness);
+                EditorGUILayout.PropertyField(m_Rounded);
             }
             else
             {

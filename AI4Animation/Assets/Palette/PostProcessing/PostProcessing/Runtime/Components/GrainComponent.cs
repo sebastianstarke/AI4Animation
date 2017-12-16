@@ -6,8 +6,8 @@ namespace UnityEngine.PostProcessing
         {
             internal static readonly int _Grain_Params1 = Shader.PropertyToID("_Grain_Params1");
             internal static readonly int _Grain_Params2 = Shader.PropertyToID("_Grain_Params2");
-            internal static readonly int _GrainTex = Shader.PropertyToID("_GrainTex");
-            internal static readonly int _Phase = Shader.PropertyToID("_Phase");
+            internal static readonly int _GrainTex      = Shader.PropertyToID("_GrainTex");
+            internal static readonly int _Phase         = Shader.PropertyToID("_Phase");
         }
 
         public override bool active

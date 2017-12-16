@@ -27,7 +27,7 @@ namespace UnityEngine.PostProcessing
     {
         public T model { get; internal set; }
 
-        public void Init(PostProcessingContext pcontext, T pmodel)
+        public virtual void Init(PostProcessingContext pcontext, T pmodel)
         {
             context = pcontext;
             model = pmodel;

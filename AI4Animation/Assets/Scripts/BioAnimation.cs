@@ -23,6 +23,8 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
+	public SerialIK[] IKSolvers;
+
 	private Trajectory Trajectory;
 
 	private float Phase = 0f;
@@ -330,6 +332,39 @@ public class BioAnimation : MonoBehaviour {
 				Joints[i].position = Positions[i];
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
+
+			//Motion Editing
+			float amount = 0.25f;
+			Transform spine = Array.Find(Joints, x => x.name == "Spine1");
+			Transform neck = Array.Find(Joints, x => x.name == "Neck");
+			Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
+			Transform rightShoulder = Array.Find(Joints, x => x.name == "RightShoulder");
+			float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
+			float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
+			float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
+			float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
+
+			//Transform hip = Array.Find(Joints, x => x.name == "Hips");
+			//Vector3 hipToNeck = neck.position - hip.position;
+
+			spine.position = Vector3.Lerp(spine.position, new Vector3(spine.position.x, spine.position.y + spineHeight - Root.position.y, spine.position.z), amount);
+			neck.position = Vector3.Lerp(neck.position, new Vector3(neck.position.x, neck.position.y + neckHeight - Root.position.y, neck.position.z), amount);
+			leftShoulder.position = Vector3.Lerp(leftShoulder.position, new Vector3(leftShoulder.position.x, leftShoulder.position.y + leftShoulderHeight - Root.position.y, leftShoulder.position.z), amount);
+			rightShoulder.position = Vector3.Lerp(rightShoulder.position, new Vector3(rightShoulder.position.x, rightShoulder.position.y + rightShoulderHeight - Root.position.y, rightShoulder.position.z), amount);
+
+			/*
+			float angle = Vector3.Angle(hipToNeck, neck.position - hip.position) / 5f;
+			Debug.Log(angle);
+			float hipRise = Utility.GetRise(hip.position, LayerMask.GetMask("Ground"));
+			float hipHeight = Utility.GetHeight(hip.position, LayerMask.GetMask("Ground"));
+			hip.position = Vector3.Lerp(hip.position, new Vector3(hip.position.x, (1f-angle) * (hip.position.y - Root.position.y) + hipHeight, hip.position.z), amount);
+			*/
+
+			for(int i=0; i<IKSolvers.Length; i++) {
+				IKSolvers[i].Process();
+			}
+			
+			//Update Skeleton
 			Character.FetchTransformations(Root);
 
 			//Update Phase
@@ -503,6 +538,19 @@ public class BioAnimation : MonoBehaviour {
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 						Target.StyleTransition = EditorGUILayout.Slider("Style Transition", Target.StyleTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
+
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("Add IK Solver", Utility.Brown, Utility.White)) {
+							Utility.Expand(ref Target.IKSolvers);
+						}
+						if(Utility.GUIButton("Remove IK Solver", Utility.Brown, Utility.White)) {
+							Utility.Shrink(ref Target.IKSolvers);
+						}
+						EditorGUILayout.EndHorizontal();
+						for(int i=0; i<Target.IKSolvers.Length; i++) {
+							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
+						}
+
 						EditorGUI.BeginDisabledGroup(true);
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();

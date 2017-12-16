@@ -18,6 +18,22 @@ namespace UnityEngine.PostProcessing
 #endif
         }
 
+        static Texture2D s_WhiteTexture;
+        public static Texture2D whiteTexture
+        {
+            get
+            {
+                if (s_WhiteTexture != null)
+                    return s_WhiteTexture;
+
+                s_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+                s_WhiteTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 1f));
+                s_WhiteTexture.Apply();
+
+                return s_WhiteTexture;
+            }
+        }
+
         static Mesh s_Quad;
         public static Mesh quad
         {

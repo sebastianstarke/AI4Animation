@@ -29,7 +29,13 @@ Shader "Hidden/Post FX/Builtin Debug Views"
         {
             float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, UnityStereoScreenSpaceUVAdjust(i.uv, _CameraDepthTexture_ST));
             depth = Linear01Depth(depth) * _DepthScale;
-            return float4(depth.xxx, 1.0);
+            float3 d = depth.xxx;
+            
+        #if !UNITY_COLORSPACE_GAMMA
+            d = GammaToLinearSpace(d);
+        #endif
+
+            return float4(d, 1.0);
         }
 
         // -----------------------------------------------------------------------------
@@ -49,6 +55,11 @@ Shader "Hidden/Post FX/Builtin Debug Views"
         float4 FragNormals(VaryingsDefault i) : SV_Target
         {
             float3 n = SampleNormal(UnityStereoScreenSpaceUVAdjust(i.uv, _CameraDepthNormalsTexture_ST));
+
+        #if UNITY_COLORSPACE_GAMMA
+            n = LinearToGammaSpace(n);
+        #endif
+
             return float4(n, 1.0);
         }
 
@@ -225,6 +236,7 @@ Shader "Hidden/Post FX/Builtin Debug Views"
 
                 #pragma vertex VertDefault
                 #pragma fragment FragMovecsImaging
+                #pragma multi_compile __ UNITY_COLORSPACE_GAMMA
 
             ENDCG
         }
@@ -232,6 +244,8 @@ Shader "Hidden/Post FX/Builtin Debug Views"
         // (4) - Motion vectors - Arrows
         Pass
         {
+            Blend SrcAlpha OneMinusSrcAlpha
+
             CGPROGRAM
 
                 #pragma vertex VertArrows

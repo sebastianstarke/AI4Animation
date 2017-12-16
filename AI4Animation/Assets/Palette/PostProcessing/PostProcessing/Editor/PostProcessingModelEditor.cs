@@ -36,7 +36,7 @@ namespace UnityEditor.PostProcessing
             GUILayout.Space(5);
 
             var display = alwaysEnabled
-                ? EditorGUIHelper.Header(serializedProperty.displayName, m_SettingsProperty)
+                ? EditorGUIHelper.Header(serializedProperty.displayName, m_SettingsProperty, Reset)
                 : EditorGUIHelper.Header(serializedProperty.displayName, m_SettingsProperty, m_EnabledProperty, Reset);
 
             if (display)

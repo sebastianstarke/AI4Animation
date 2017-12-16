@@ -12,7 +12,8 @@ namespace UnityEditor.PostProcessing
         SerializedProperty m_HighPercent;
         SerializedProperty m_MinLuminance;
         SerializedProperty m_MaxLuminance;
-        SerializedProperty m_ExposureCompensation;
+        SerializedProperty m_KeyValue;
+        SerializedProperty m_DynamicKeyValue;
         SerializedProperty m_AdaptationType;
         SerializedProperty m_SpeedUp;
         SerializedProperty m_SpeedDown;
@@ -25,7 +26,8 @@ namespace UnityEditor.PostProcessing
             m_HighPercent = FindSetting((Settings x) => x.highPercent);
             m_MinLuminance = FindSetting((Settings x) => x.minLuminance);
             m_MaxLuminance = FindSetting((Settings x) => x.maxLuminance);
-            m_ExposureCompensation = FindSetting((Settings x) => x.exposureCompensation);
+            m_KeyValue = FindSetting((Settings x) => x.keyValue);
+            m_DynamicKeyValue = FindSetting((Settings x) => x.dynamicKeyValue);
             m_AdaptationType = FindSetting((Settings x) => x.adaptationType);
             m_SpeedUp = FindSetting((Settings x) => x.speedUp);
             m_SpeedDown = FindSetting((Settings x) => x.speedDown);
@@ -36,28 +38,39 @@ namespace UnityEditor.PostProcessing
         public override void OnInspectorGUI()
         {
             if (!GraphicsUtils.supportsDX11)
-            {
                 EditorGUILayout.HelpBox("This effect requires support for compute shaders. Enabling it won't do anything on unsupported platforms.", MessageType.Warning);
-                return;
-            }
 
-            EditorGUILayout.PropertyField(m_LogMin, EditorGUIHelper.GetContent("Histogram Log Min"));
-            EditorGUILayout.PropertyField(m_LogMax, EditorGUIHelper.GetContent("Histogram Log Max"));
+            EditorGUILayout.LabelField("Luminosity range", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(m_LogMin, EditorGUIHelper.GetContent("Minimum (EV)"));
+            EditorGUILayout.PropertyField(m_LogMax, EditorGUIHelper.GetContent("Maximum (EV)"));
+            EditorGUI.indentLevel--;
             EditorGUILayout.Space();
 
+            EditorGUILayout.LabelField("Auto exposure", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             float low = m_LowPercent.floatValue;
             float high = m_HighPercent.floatValue;
 
-            EditorGUILayout.MinMaxSlider(EditorGUIHelper.GetContent("Filter|These values are the lower and upper percentages of the histogram that will be used to find a stable average luminance. Values outside of this range will be discarded and won't contribute to the average luminance."), ref low, ref high, 1f, 99f);
+            EditorGUILayout.MinMaxSlider(EditorGUIHelper.GetContent("Histogram filtering|These values are the lower and upper percentages of the histogram that will be used to find a stable average luminance. Values outside of this range will be discarded and won't contribute to the average luminance."), ref low, ref high, 1f, 99f);
 
             m_LowPercent.floatValue = low;
             m_HighPercent.floatValue = high;
 
-            EditorGUILayout.PropertyField(m_MinLuminance);
-            EditorGUILayout.PropertyField(m_MaxLuminance);
-            EditorGUILayout.PropertyField(m_ExposureCompensation);
+            EditorGUILayout.PropertyField(m_MinLuminance, EditorGUIHelper.GetContent("Minimum (EV)"));
+            EditorGUILayout.PropertyField(m_MaxLuminance, EditorGUIHelper.GetContent("Maximum (EV)"));
+            EditorGUILayout.PropertyField(m_DynamicKeyValue);
 
-            EditorGUILayout.PropertyField(m_AdaptationType);
+            if (!m_DynamicKeyValue.boolValue)
+                EditorGUILayout.PropertyField(m_KeyValue);
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Adaptation", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            EditorGUILayout.PropertyField(m_AdaptationType, EditorGUIHelper.GetContent("Type"));
 
             if (m_AdaptationType.intValue == (int)EyeAdaptationModel.EyeAdaptationType.Progressive)
             {
@@ -66,6 +79,8 @@ namespace UnityEditor.PostProcessing
                 EditorGUILayout.PropertyField(m_SpeedDown);
                 EditorGUI.indentLevel--;
             }
+
+            EditorGUI.indentLevel--;
         }
     }
 }

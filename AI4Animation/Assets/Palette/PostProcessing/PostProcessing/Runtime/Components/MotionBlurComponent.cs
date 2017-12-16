@@ -10,9 +10,11 @@ namespace UnityEngine.PostProcessing
         {
             internal static readonly int _VelocityScale     = Shader.PropertyToID("_VelocityScale");
             internal static readonly int _MaxBlurRadius     = Shader.PropertyToID("_MaxBlurRadius");
+            internal static readonly int _RcpMaxBlurRadius  = Shader.PropertyToID("_RcpMaxBlurRadius");
             internal static readonly int _VelocityTex       = Shader.PropertyToID("_VelocityTex");
-            internal static readonly int _Tile4RT           = Shader.PropertyToID("_Tile4RT");
             internal static readonly int _MainTex           = Shader.PropertyToID("_MainTex");
+            internal static readonly int _Tile2RT           = Shader.PropertyToID("_Tile2RT");
+            internal static readonly int _Tile4RT           = Shader.PropertyToID("_Tile4RT");
             internal static readonly int _Tile8RT           = Shader.PropertyToID("_Tile8RT");
             internal static readonly int _TileMaxOffs       = Shader.PropertyToID("_TileMaxOffs");
             internal static readonly int _TileMaxLoop       = Shader.PropertyToID("_TileMaxLoop");
@@ -40,12 +42,11 @@ namespace UnityEngine.PostProcessing
         enum Pass
         {
             VelocitySetup,
-            TileMax4,
+            TileMax1,
             TileMax2,
             TileMaxV,
             NeighborMax,
             Reconstruction,
-            ReconstructionUnroll,
             FrameCompression,
             FrameBlendingChroma,
             FrameBlendingRaw
@@ -59,14 +60,9 @@ namespace UnityEngine.PostProcessing
             // Texture format for storing packed velocity/depth.
             RenderTextureFormat m_PackedRTFormat = RenderTextureFormat.ARGB2101010;
 
-            bool m_UseUnrolledShader;
-
             public ReconstructionFilter()
             {
                 CheckTextureFormatSupport();
-
-                // Use loop unrolling on Adreno GPUs to avoid shader issues.
-                m_UseUnrolledShader = SystemInfo.graphicsDeviceName.Contains("Adreno");
             }
 
             void CheckTextureFormatSupport()
@@ -93,54 +89,60 @@ namespace UnityEngine.PostProcessing
                 int tileSize = ((maxBlurPixels - 1) / 8 + 1) * 8;
 
                 // Pass 1 - Velocity/depth packing
-                // Motion vectors are scaled by an empirical factor of 1.45.
-                var velocityScale = settings.shutterAngle / 360f * 1.45f;
+                var velocityScale = settings.shutterAngle / 360f;
                 cb.SetGlobalFloat(Uniforms._VelocityScale, velocityScale);
                 cb.SetGlobalFloat(Uniforms._MaxBlurRadius, maxBlurPixels);
+                cb.SetGlobalFloat(Uniforms._RcpMaxBlurRadius, 1f / maxBlurPixels);
 
                 int vbuffer = Uniforms._VelocityTex;
-                cb.GetTemporaryRT(vbuffer, context.width, context.height, 0, FilterMode.Point, m_PackedRTFormat);
+                cb.GetTemporaryRT(vbuffer, context.width, context.height, 0, FilterMode.Point, m_PackedRTFormat, RenderTextureReadWrite.Linear);
                 cb.Blit((Texture)null, vbuffer, material, (int)Pass.VelocitySetup);
 
-                // Pass 2 - First TileMax filter (1/4 downsize)
-                int tile4 = Uniforms._Tile4RT;
-                cb.GetTemporaryRT(tile4, context.width / 4, context.height / 4, 0, FilterMode.Point, m_VectorRTFormat);
+                // Pass 2 - First TileMax filter (1/2 downsize)
+                int tile2 = Uniforms._Tile2RT;
+                cb.GetTemporaryRT(tile2, context.width / 2, context.height / 2, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
                 cb.SetGlobalTexture(Uniforms._MainTex, vbuffer);
-                cb.Blit(vbuffer, tile4, material, (int)Pass.TileMax4);
+                cb.Blit(vbuffer, tile2, material, (int)Pass.TileMax1);
 
                 // Pass 3 - Second TileMax filter (1/2 downsize)
+                int tile4 = Uniforms._Tile4RT;
+                cb.GetTemporaryRT(tile4, context.width / 4, context.height / 4, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
+                cb.SetGlobalTexture(Uniforms._MainTex, tile2);
+                cb.Blit(tile2, tile4, material, (int)Pass.TileMax2);
+                cb.ReleaseTemporaryRT(tile2);
+
+                // Pass 4 - Third TileMax filter (1/2 downsize)
                 int tile8 = Uniforms._Tile8RT;
-                cb.GetTemporaryRT(tile8, context.width / 8, context.height / 8, 0, FilterMode.Point, m_VectorRTFormat);
+                cb.GetTemporaryRT(tile8, context.width / 8, context.height / 8, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
                 cb.SetGlobalTexture(Uniforms._MainTex, tile4);
                 cb.Blit(tile4, tile8, material, (int)Pass.TileMax2);
                 cb.ReleaseTemporaryRT(tile4);
 
-                // Pass 4 - Third TileMax filter (reduce to tileSize)
+                // Pass 5 - Fourth TileMax filter (reduce to tileSize)
                 var tileMaxOffs = Vector2.one * (tileSize / 8f - 1f) * -0.5f;
                 cb.SetGlobalVector(Uniforms._TileMaxOffs, tileMaxOffs);
                 cb.SetGlobalFloat(Uniforms._TileMaxLoop, (int)(tileSize / 8f));
 
                 int tile = Uniforms._TileVRT;
-                cb.GetTemporaryRT(tile, context.width / tileSize, context.height / tileSize, 0, FilterMode.Point, m_VectorRTFormat);
+                cb.GetTemporaryRT(tile, context.width / tileSize, context.height / tileSize, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
                 cb.SetGlobalTexture(Uniforms._MainTex, tile8);
                 cb.Blit(tile8, tile, material, (int)Pass.TileMaxV);
                 cb.ReleaseTemporaryRT(tile8);
 
-                // Pass 5 - NeighborMax filter
+                // Pass 6 - NeighborMax filter
                 int neighborMax = Uniforms._NeighborMaxTex;
                 int neighborMaxWidth = context.width / tileSize;
                 int neighborMaxHeight = context.height / tileSize;
-                cb.GetTemporaryRT(neighborMax, neighborMaxWidth, neighborMaxHeight, 0, FilterMode.Point, m_VectorRTFormat);
+                cb.GetTemporaryRT(neighborMax, neighborMaxWidth, neighborMaxHeight, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
                 cb.SetGlobalTexture(Uniforms._MainTex, tile);
                 cb.Blit(tile, neighborMax, material, (int)Pass.NeighborMax);
                 cb.ReleaseTemporaryRT(tile);
 
-                // Pass 6 - Reconstruction pass
+                // Pass 7 - Reconstruction pass
                 cb.SetGlobalFloat(Uniforms._LoopCount, Mathf.Clamp(settings.sampleCount / 2, 1, 64));
-                cb.SetGlobalFloat(Uniforms._MaxBlurRadius, maxBlurPixels);
                 cb.SetGlobalTexture(Uniforms._MainTex, source);
 
-                cb.Blit(source, destination, material, m_UseUnrolledShader ? (int)Pass.ReconstructionUnroll : (int)Pass.Reconstruction);
+                cb.Blit(source, destination, material, (int)Pass.Reconstruction);
 
                 cb.ReleaseTemporaryRT(vbuffer);
                 cb.ReleaseTemporaryRT(neighborMax);
@@ -182,8 +184,8 @@ namespace UnityEngine.PostProcessing
                 {
                     Release();
 
-                    lumaTexture = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.R8);
-                    chromaTexture = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.R8);
+                    lumaTexture = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.R8, RenderTextureReadWrite.Linear);
+                    chromaTexture = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.R8, RenderTextureReadWrite.Linear);
 
                     lumaTexture.filterMode = FilterMode.Point;
                     chromaTexture.filterMode = FilterMode.Point;

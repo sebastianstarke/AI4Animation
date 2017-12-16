@@ -16,7 +16,7 @@ namespace UnityEngine.PostProcessing
         [Serializable]
         public struct Settings
         {
-            [Min(0.1f), Tooltip("Distance to the point of focus (only used when none is specified in focusTransform).")]
+            [Min(0.1f), Tooltip("Distance to the point of focus.")]
             public float focusDistance;
 
             [Range(0.05f, 32f), Tooltip("Ratio of aperture (known as f-stop or f-number). The smaller the value is, the shallower the depth of field is.")]

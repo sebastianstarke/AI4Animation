@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 /**
 \author Michael Mara and Morgan McGuire, Casual Effects. 2015.
 */

@@ -52,7 +52,7 @@ namespace UnityEngine.PostProcessing
                     {
                         sourceOpacity = 1f,
 
-                        motionImageOpacity = 0.9f,
+                        motionImageOpacity = 0f,
                         motionImageAmplitude = 16f,
 
                         motionVectorsOpacity = 1f,

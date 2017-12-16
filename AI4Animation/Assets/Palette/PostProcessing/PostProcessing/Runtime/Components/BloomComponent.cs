@@ -37,12 +37,8 @@ namespace UnityEngine.PostProcessing
             var material = context.materialFactory.Get("Hidden/Post FX/Bloom");
             material.shaderKeywords = null;
 
-            // Apply auto exposure before the prefiltering pass if needed
-            if (autoExposure != null)
-            {
-                material.EnableKeyword("EYE_ADAPTATION");
-                material.SetTexture(Uniforms._AutoExposure, autoExposure);
-            }
+            // Apply auto exposure before the prefiltering pass
+            material.SetTexture(Uniforms._AutoExposure, autoExposure);
 
             // Do bloom on a half-res buffer, full-res doesn't bring much and kills performances on
             // fillrate limited platforms
@@ -129,7 +125,6 @@ namespace UnityEngine.PostProcessing
             context.renderTextureFactory.Release(prefiltered);
 
             // Push everything to the uber material
-            uberMaterial.EnableKeyword("BLOOM");
             uberMaterial.SetTexture(Uniforms._BloomTex, bloomTex);
             uberMaterial.SetVector(Uniforms._Bloom_Settings, new Vector2(sampleScale, bloom.intensity));
 
@@ -138,6 +133,10 @@ namespace UnityEngine.PostProcessing
                 uberMaterial.SetTexture(Uniforms._Bloom_DirtTex, lensDirt.texture);
                 uberMaterial.SetFloat(Uniforms._Bloom_DirtIntensity, lensDirt.intensity);
                 uberMaterial.EnableKeyword("BLOOM_LENS_DIRT");
+            }
+            else
+            {
+                uberMaterial.EnableKeyword("BLOOM");
             }
         }
     }

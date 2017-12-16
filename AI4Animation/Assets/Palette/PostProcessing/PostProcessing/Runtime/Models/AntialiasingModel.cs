@@ -182,11 +182,11 @@ namespace UnityEngine.PostProcessing
             public float sharpen;
 
             [Tooltip("The blend coefficient for a stationary fragment. Controls the percentage of history sample blended into the final color.")]
-            [Range(0f, 1f)]
+            [Range(0f, 0.99f)]
             public float stationaryBlending;
 
             [Tooltip("The blend coefficient for a fragment with significant motion. Controls the percentage of history sample blended into the final color.")]
-            [Range(0f, 1f)]
+            [Range(0f, 0.99f)]
             public float motionBlending;
 
             public static TaaSettings defaultSettings

@@ -505,52 +505,13 @@ half segmented_spline_c5_fwd(half x)
     return pow(10.0, logy);
 }
 
-half segmented_spline_c5_fwd_opt(half x)
-{
-    const float xmin = log10(0.18 * exp2(-15.0));
-    const float xmid = log10(0.18);
-    const float xmax = log10(0.18 * exp2(18.0));
-
-    // Clamp input
-    x = min(47185.91999999996, max(5.493164062500005e-6, x));
-
-    float logx = log10(x);
-    float logy;
-
-    if ((logx > xmin) && (logx < xmid))
-    {
-        const float coefs[6] = { -4.0000000000, -4.0000000000, -3.1573765773, -0.4852499958, 1.8477324706, 1.8477324706 }; // coefs for B-spline between minPoint and midPoint (units of log luminance)
-        const float2 maxPoint = float2(0.18 * exp2(18.0), 10000.0); // {luminance, luminance} linear extension above this
-        float knot_coord = 3.0 * (logx - xmin) / (xmid - xmin);
-        int j = knot_coord;
-        float t = knot_coord - j;
-
-        float3 cf = float3(coefs[j], coefs[j + 1], coefs[j + 2]);
-        float3 monomials = float3(t * t, t, 1.0);
-        logy = dot(monomials, mul(M, cf));
-    }
-    else
-    {
-        const float coefs[6] = { -0.7185482425, 2.0810307172, 3.6681241237, 4.0000000000, 4.0000000000, 4.0000000000 }; // coefs for B-spline between midPoint and maxPoint (units of log luminance)
-        float knot_coord = 3 * (logx - xmid) / (xmax - xmid);
-        int j = knot_coord;
-        float t = knot_coord - j;
-
-        float3 cf = float3(coefs[j], coefs[j + 1], coefs[j + 2]);
-        float3 monomials = float3(t * t, t, 1.0);
-        logy = dot(monomials, mul(M, cf));
-    }
-
-    return pow(10.0, logy);
-}
-
 half segmented_spline_c9_fwd(half x)
 {
     const half coefsLow[10] = { -1.6989700043, -1.6989700043, -1.4779000000, -1.2291000000, -0.8648000000, -0.4480000000, 0.0051800000, 0.4511080334, 0.9113744414, 0.9113744414 }; // coefs for B-spline between minPoint and midPoint (units of log luminance)
     const half coefsHigh[10] = { 0.5154386965, 0.8470437783, 1.1358000000, 1.3802000000, 1.5197000000, 1.5985000000, 1.6467000000, 1.6746091357, 1.6878733390, 1.6878733390 }; // coefs for B-spline between midPoint and maxPoint (units of log luminance)
-    const half2 minPoint = half2(segmented_spline_c5_fwd_opt(0.18 * exp2(-6.5)), 0.02); // {luminance, luminance} linear extension below this
-    const half2 midPoint = half2(segmented_spline_c5_fwd_opt(0.18), 4.8); // {luminance, luminance}
-    const half2 maxPoint = half2(segmented_spline_c5_fwd_opt(0.18 * exp2(6.5)), 48.0); // {luminance, luminance} linear extension above this
+    const half2 minPoint = half2(segmented_spline_c5_fwd(0.18 * exp2(-6.5)), 0.02); // {luminance, luminance} linear extension below this
+    const half2 midPoint = half2(segmented_spline_c5_fwd(0.18), 4.8); // {luminance, luminance}
+    const half2 maxPoint = half2(segmented_spline_c5_fwd(0.18 * exp2(6.5)), 48.0); // {luminance, luminance} linear extension above this
     const half slopeLow = 0.0; // log-log slope of low linear extension
     const half slopeHigh = 0.04; // log-log slope of high linear extension
 
@@ -639,9 +600,9 @@ half3 RRT(half3 aces)
 
     // --- Apply the tonescale independently in rendering-space RGB --- //
     half3 rgbPost;
-    rgbPost.x = segmented_spline_c5_fwd_opt(rgbPre.x);
-    rgbPost.y = segmented_spline_c5_fwd_opt(rgbPre.y);
-    rgbPost.z = segmented_spline_c5_fwd_opt(rgbPre.z);
+    rgbPost.x = segmented_spline_c5_fwd(rgbPre.x);
+    rgbPost.y = segmented_spline_c5_fwd(rgbPre.y);
+    rgbPost.z = segmented_spline_c5_fwd(rgbPre.z);
 
     // --- RGB rendering space to OCES --- //
     half3 rgbOces = mul(AP1_2_AP0_MAT, rgbPost);
@@ -659,13 +620,13 @@ half3 Y_2_linCV(half3 Y, half Ymax, half Ymin)
 
 half3 XYZ_2_xyY(half3 XYZ)
 {
-    half divisor = max(dot(XYZ, (1.0).xxx), 1e-10);
+    half divisor = max(dot(XYZ, (1.0).xxx), 1e-4);
     return half3(XYZ.xy / divisor, XYZ.y);
 }
 
 half3 xyY_2_XYZ(half3 xyY)
 {
-    half m = xyY.z / max(xyY.y, 1e-10);
+    half m = xyY.z / max(xyY.y, 1e-4);
     half3 XYZ = half3(xyY.xz, (1.0 - xyY.x - xyY.y));
     XYZ.xz *= m;
     return XYZ;

@@ -22,19 +22,19 @@ Shader "Hidden/Post FX/Motion Blur"
             ENDCG
         }
 
-        // (1) TileMax filter (4 pixels width with normalization)
+        // (1) TileMax filter (2 pixel width with normalization)
         Pass
         {
             CGPROGRAM
 
                 #include "MotionBlur.cginc"
                 #pragma vertex VertDefault
-                #pragma fragment FragTileMax4
+                #pragma fragment FragTileMax1
 
             ENDCG
         }
 
-        //  (2) TileMax filter (2 pixels width)
+        //  (2) TileMax filter (2 pixel width)
         Pass
         {
             CGPROGRAM
@@ -82,20 +82,7 @@ Shader "Hidden/Post FX/Motion Blur"
             ENDCG
         }
 
-        // (6) Reconstruction filter (unrolled)
-        Pass
-        {
-            CGPROGRAM
-
-                #define UNROLL_LOOP_COUNT 2
-                #include "MotionBlur.cginc"
-                #pragma vertex VertMultitex
-                #pragma fragment FragReconstruction
-
-            ENDCG
-        }
-
-        // (7) Frame compression
+        // (6) Frame compression
         Pass
         {
             CGPROGRAM
@@ -108,7 +95,7 @@ Shader "Hidden/Post FX/Motion Blur"
             ENDCG
         }
 
-        // (8) Frame blending
+        // (7) Frame blending
         Pass
         {
             CGPROGRAM
@@ -121,7 +108,7 @@ Shader "Hidden/Post FX/Motion Blur"
             ENDCG
         }
 
-        // (9) Frame blending (without chroma subsampling)
+        // (8) Frame blending (without chroma subsampling)
         Pass
         {
             CGPROGRAM

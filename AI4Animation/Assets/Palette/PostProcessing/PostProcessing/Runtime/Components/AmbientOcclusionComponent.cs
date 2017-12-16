@@ -42,7 +42,7 @@ namespace UnityEngine.PostProcessing
                 if (context.isGBufferAvailable && !model.settings.forceForwardCompatibility)
                     return OcclusionSource.GBuffer;
 
-                if (model.settings.highPrecision && !context.isGBufferAvailable)
+                if (model.settings.highPrecision && (!context.isGBufferAvailable || model.settings.forceForwardCompatibility))
                     return OcclusionSource.DepthTexture;
 
                 return OcclusionSource.DepthNormalsTexture;

@@ -8,7 +8,6 @@ namespace UnityEngine.PostProcessing
         public enum Mode
         {
             Classic,
-            Round,
             Masked
         }
 
@@ -40,6 +39,9 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 1f), Tooltip("Mask opacity.")]
             public float opacity;
 
+            [Tooltip("Should the vignette be perfectly round or be dependent on the current aspect ratio?")]
+            public bool rounded;
+
             public static Settings defaultSettings
             {
                 get
@@ -53,7 +55,8 @@ namespace UnityEngine.PostProcessing
                         smoothness = 0.2f,
                         roundness = 1f,
                         mask = null,
-                        opacity = 1f
+                        opacity = 1f,
+                        rounded = false
                     };
                 }
             }

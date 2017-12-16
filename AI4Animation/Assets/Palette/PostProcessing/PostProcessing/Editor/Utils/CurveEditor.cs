@@ -94,6 +94,34 @@ namespace UnityEditor.PostProcessing
                 this.keyframe = keyframe;
             }
         }
+
+        internal struct MenuAction
+        {
+            internal SerializedProperty curve;
+            internal int index;
+            internal Vector3 position;
+
+            internal MenuAction(SerializedProperty curve)
+            {
+                this.curve = curve;
+                this.index = -1;
+                this.position = Vector3.zero;
+            }
+
+            internal MenuAction(SerializedProperty curve, int index)
+            {
+                this.curve = curve;
+                this.index = index;
+                this.position = Vector3.zero;
+            }
+
+            internal MenuAction(SerializedProperty curve, Vector3 position)
+            {
+                this.curve = curve;
+                this.index = -1;
+                this.position = position;
+            }
+        }
         #endregion
 
         #region Fields & properties
@@ -201,7 +229,8 @@ namespace UnityEditor.PostProcessing
 
         public bool OnGUI(Rect rect)
         {
-            m_Dirty = false;
+            if (Event.current.type == EventType.Repaint)
+                m_Dirty = false;
 
             GUI.BeginClip(rect);
             {
@@ -392,14 +421,34 @@ namespace UnityEditor.PostProcessing
                         EditMoveTangent(animCurve, keys, k, m_TangentEditMode, e.shift || !(alreadyBroken || e.control));
                     }
 
-                    // Keyframe selection
+                    // Keyframe selection & context menu
                     if (e.type == EventType.mouseDown && rect.Contains(e.mousePosition))
                     {
                         if (hitRect.Contains(e.mousePosition))
                         {
-                            SelectKeyframe(curve, k);
-                            m_EditMode = EditMode.Moving;
-                            e.Use();
+                            if (e.button == 0)
+                            {
+                                SelectKeyframe(curve, k);
+                                m_EditMode = EditMode.Moving;
+                                e.Use();
+                            }
+                            else if (e.button == 1)
+                            {
+                                // Keyframe context menu
+                                var menu = new GenericMenu();
+                                menu.AddItem(new GUIContent("Delete Key"), false, (x) =>
+                                {
+                                    var action = (MenuAction)x;
+                                    var curveValue = action.curve.animationCurveValue;
+                                    action.curve.serializedObject.Update();
+                                    RemoveKeyframe(curveValue, action.index);
+                                    m_SelectedKeyframeIndex = -1;
+                                    SaveCurve(action.curve, curveValue);
+                                    action.curve.serializedObject.ApplyModifiedProperties();
+                                }, new MenuAction(curve, k));
+                                menu.ShowAsContext();
+                                e.Use();
+                            }
                         }
                     }
 
@@ -455,6 +504,7 @@ namespace UnityEditor.PostProcessing
                 GUI.FocusControl(null);
                 m_SelectedCurve = null;
                 m_SelectedKeyframeIndex = -1;
+                bool used = false;
 
                 var hit = CanvasToCurve(e.mousePosition);
                 float curvePickValue = CurveToCanvas(hit).y;
@@ -478,18 +528,35 @@ namespace UnityEditor.PostProcessing
                     {
                         m_SelectedCurve = prop;
 
-                        // Create a keyframe on double-click on this curve
-                        if (e.clickCount == 2)
+                        if (e.clickCount == 2 && e.button == 0)
                         {
+                            // Create a keyframe on double-click on this curve
                             EditCreateKeyframe(animCurve, hit, true, state.zeroKeyConstantValue);
                             SaveCurve(prop, animCurve);
+                        }
+                        else if (e.button == 1)
+                        {
+                            // Curve context menu
+                            var menu = new GenericMenu();
+                            menu.AddItem(new GUIContent("Add Key"), false, (x) =>
+                            {
+                                var action = (MenuAction)x;
+                                var curveValue = action.curve.animationCurveValue;
+                                action.curve.serializedObject.Update();
+                                EditCreateKeyframe(curveValue, hit, true, 0f);
+                                SaveCurve(action.curve, curveValue);
+                                action.curve.serializedObject.ApplyModifiedProperties();
+                            }, new MenuAction(prop, hit));
+                            menu.ShowAsContext();
+                            e.Use();
+                            used = true;
                         }
                     }
                 }
 
-                // Create a keyframe on every curve on double-click
-                if (e.clickCount == 2 && m_SelectedCurve == null)
+                if (e.clickCount == 2 && e.button == 0 && m_SelectedCurve == null)
                 {
+                    // Create a keyframe on every curve on double-click
                     foreach (var curve in m_Curves)
                     {
                         if (!curve.Value.editable || !curve.Value.visible)
@@ -501,6 +568,14 @@ namespace UnityEditor.PostProcessing
                         EditCreateKeyframe(animCurve, hit, e.alt, state.zeroKeyConstantValue);
                         SaveCurve(prop, animCurve);
                     }
+                }
+                else if (!used && e.button == 1)
+                {
+                    // Global context menu
+                    var menu = new GenericMenu();
+                    menu.AddItem(new GUIContent("Add Key At Position"), false, () => ContextMenuAddKey(hit, false));
+                    menu.AddItem(new GUIContent("Add Key On Curves"), false, () => ContextMenuAddKey(hit, true));
+                    menu.ShowAsContext();
                 }
 
                 e.Use();
@@ -544,6 +619,35 @@ namespace UnityEditor.PostProcessing
         {
             m_SelectedKeyframeIndex = keyframeIndex;
             m_SelectedCurve = curve;
+            Invalidate();
+        }
+
+        void ContextMenuAddKey(Vector3 hit, bool createOnCurve)
+        {
+            SerializedObject serializedObject = null;
+
+            foreach (var curve in m_Curves)
+            {
+                if (!curve.Value.editable || !curve.Value.visible)
+                    continue;
+
+                var prop = curve.Key;
+                var state = curve.Value;
+
+                if (serializedObject == null)
+                {
+                    serializedObject = prop.serializedObject;
+                    serializedObject.Update();
+                }
+
+                var animCurve = prop.animationCurveValue;
+                EditCreateKeyframe(animCurve, hit, createOnCurve, state.zeroKeyConstantValue);
+                SaveCurve(prop, animCurve);
+            }
+
+            if (serializedObject != null)
+                serializedObject.ApplyModifiedProperties();
+
             Invalidate();
         }
 

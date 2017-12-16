@@ -30,13 +30,7 @@ namespace UnityEngine.PostProcessing
                 uberMaterial.SetVector(Uniforms._Vignette_Center, settings.center);
                 uberMaterial.EnableKeyword("VIGNETTE_CLASSIC");
                 float roundness = (1f - settings.roundness) * 6f + settings.roundness;
-                uberMaterial.SetVector(Uniforms._Vignette_Settings, new Vector3(settings.intensity * 3f, settings.smoothness * 5f, roundness));
-            }
-            else if (settings.mode == VignetteModel.Mode.Round)
-            {
-                uberMaterial.SetVector(Uniforms._Vignette_Center, settings.center);
-                uberMaterial.EnableKeyword("VIGNETTE_ROUND");
-                uberMaterial.SetVector(Uniforms._Vignette_Settings, new Vector3(settings.intensity * 3f, settings.smoothness * 5f, 1f));
+                uberMaterial.SetVector(Uniforms._Vignette_Settings, new Vector4(settings.intensity * 3f, settings.smoothness * 5f, roundness, settings.rounded ? 1f : 0f));
             }
             else if (settings.mode == VignetteModel.Mode.Masked)
             {

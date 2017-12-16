@@ -1,5 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 #ifndef __DEPTH_OF_FIELD__
 #define __DEPTH_OF_FIELD__
 
@@ -11,6 +9,7 @@
 
 sampler2D_float _CameraDepthTexture;
 sampler2D_float _HistoryCoC;
+float _HistoryWeight;
 
 // Camera parameters
 float _Distance;
@@ -35,12 +34,12 @@ VaryingsDOF VertDOF(AttributesDefault v)
 #endif
 
     VaryingsDOF o;
-#if defined(UNITY_SINGLE_PASS_STEREO)
     o.pos = UnityObjectToClipPos(v.vertex);
+
+#if defined(UNITY_SINGLE_PASS_STEREO)
     o.uv = UnityStereoScreenSpaceUVAdjust(v.texcoord, _MainTex_ST);
     o.uvAlt = UnityStereoScreenSpaceUVAdjust(uvAlt, _MainTex_ST);
 #else
-    o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = v.texcoord;
     o.uvAlt = uvAlt;
 #endif
@@ -48,8 +47,27 @@ VaryingsDOF VertDOF(AttributesDefault v)
     return o;
 }
 
-// Downsampling, prefiltering and CoC calculation
-half4 FragPrefilter(VaryingsDOF i) : SV_Target
+// Prefilter: CoC calculation, downsampling and premultiplying.
+
+#if defined(PREFILTER_TAA)
+
+// TAA enabled: use MRT to update the history buffer in the same pass.
+struct PrefilterOutput
+{
+    half4 base : SV_Target0;
+    half4 history : SV_Target1;
+};
+#define PrefilterSemantics
+
+#else
+
+// No TAA
+#define PrefilterOutput half4
+#define PrefilterSemantics :SV_Target
+
+#endif
+
+PrefilterOutput FragPrefilter(VaryingsDOF i) PrefilterSemantics
 {
     float3 duv = _MainTex_TexelSize.xyx * float3(0.5, 0.5, -0.5);
 
@@ -70,6 +88,12 @@ half4 FragPrefilter(VaryingsDOF i) : SV_Target
     float4 cocs = (depths - _Distance) * _LensCoeff / depths;
     cocs = clamp(cocs, -_MaxCoC, _MaxCoC);
 
+#if defined(PREFILTER_TAA)
+    // Get the average with the history to avoid temporal aliasing.
+    half hcoc = tex2D(_HistoryCoC, i.uv).r;
+    cocs = lerp(cocs, hcoc, _HistoryWeight);
+#endif
+
     // Premultiply CoC to reduce background bleeding.
     float4 weights = saturate(abs(cocs) * _RcpMaxCoC);
 
@@ -89,39 +113,25 @@ half4 FragPrefilter(VaryingsDOF i) : SV_Target
     avg /= dot(weights, 1.0);
 
     // Output CoC = average of CoCs
-    half coc = dot(cocs, 0.25);
+    half cocmin = Min4(cocs);
+    half cocmax = Max4(cocs);
+    half coc = -cocmin > cocmax ? cocmin : cocmax;
+
+    // Premultiply CoC again.
+    avg *= smoothstep(0, _MainTex_TexelSize.y * 2, abs(coc));
 
 #if defined(UNITY_COLORSPACE_GAMMA)
     avg = GammaToLinearSpace(avg);
 #endif
 
-    return half4(avg, coc);
-}
-
-// Very simple temporal antialiasing on CoC to reduce jitter (mostly visible on the front plane)
-struct Output
-{
-    half4 base : SV_Target0;
-    half4 history : SV_Target1;
-};
-
-Output FragAntialiasCoC(VaryingsDOF i)
-{
-    half4 base = tex2D(_MainTex, i.uv);
-    half hCoC = tex2D(_HistoryCoC, i.uv).r;
-    half CoC = base.a;
-    half nCoC = (hCoC + CoC) / 2.0; // TODO: Smarter CoC AA
-
-    Output output;
-    output.base = half4(base.rgb, nCoC);
-    output.history = nCoC.xxxx;
+#if defined(PREFILTER_TAA)
+    PrefilterOutput output;
+    output.base = half4(avg, coc);
+    output.history = coc.xxxx;
     return output;
-}
-
-// CoC history clearing
-half4 FragClearCoCHistory(VaryingsDOF i) : SV_Target
-{
-    return tex2D(_MainTex, i.uv).aaaa;
+#else
+    return half4(avg, coc);
+#endif
 }
 
 // Bokeh filter with disk-shaped kernels
@@ -146,8 +156,13 @@ half4 FragBlur(VaryingsDOF i) : SV_Target
 
         // Compare the CoC to the sample distance.
         // Add a small margin to smooth out.
-        half bgWeight = saturate((bgCoC - dist + 0.005) / 0.01);
-        half fgWeight = saturate((-samp.a - dist + 0.005) / 0.01);
+        const half margin = _MainTex_TexelSize.y * 2;
+        half bgWeight = saturate((bgCoC   - dist + margin) / margin);
+        half fgWeight = saturate((-samp.a - dist + margin) / margin);
+
+        // Cut influence from focused areas because they're darkened by CoC
+        // premultiplying. This is only needed for near field.
+        fgWeight *= step(_MainTex_TexelSize.y, -samp.a);
 
         // Accumulation
         bgAcc += half4(samp.rgb, 1.0) * bgWeight;
@@ -174,6 +189,42 @@ half4 FragBlur(VaryingsDOF i) : SV_Target
     half alpha = (1.0 - saturate(bgAcc.a)) * (1.0 - saturate(fgAcc.a));
 
     return half4(rgb, alpha);
+}
+
+// Postfilter blur
+half4 FragPostBlur(VaryingsDOF i) : SV_Target
+{
+    // 9-tap tent filter
+    float4 duv = _MainTex_TexelSize.xyxy * float4(1, 1, -1, 0);
+
+    half4 c0 = tex2D(_MainTex, i.uv - duv.xy);
+    half4 c1 = tex2D(_MainTex, i.uv - duv.wy);
+    half4 c2 = tex2D(_MainTex, i.uv - duv.zy);
+
+    half4 c3 = tex2D(_MainTex, i.uv + duv.zw);
+    half4 c4 = tex2D(_MainTex, i.uv         );
+    half4 c5 = tex2D(_MainTex, i.uv + duv.xw);
+
+    half4 c6 = tex2D(_MainTex, i.uv + duv.zy);
+    half4 c7 = tex2D(_MainTex, i.uv + duv.wy);
+    half4 c8 = tex2D(_MainTex, i.uv + duv.xy);
+
+    half4 acc = c0 * 1 + c1 * 2 + c2 * 1 +
+                c3 * 2 + c4 * 4 + c5 * 2 +
+                c6 * 1 + c7 * 2 + c8 * 1;
+
+    half aa =
+        c0.a * c0.a * 1 + c1.a * c1.a * 2 + c2.a * c2.a * 1 +
+        c3.a * c3.a * 2 + c4.a * c4.a * 4 + c5.a * c5.a * 2 +
+        c6.a * c6.a * 1 + c7.a * c7.a * 2 + c8.a * c8.a * 1;
+
+    half wb = 1.2;
+    half a = (wb * acc.a - aa) / (wb * 16 - acc.a);
+
+    acc /= 16;
+
+    half3 rgb = acc.rgb * (1 + saturate(acc.a - a));
+    return half4(rgb, a);
 }
 
 #endif // __DEPTH_OF_FIELD__

@@ -40,6 +40,11 @@ namespace UnityEngine.PostProcessing
             }
         }
 
+        public void ResetHistory()
+        {
+            m_FirstFrame = true;
+        }
+
         public override void OnEnable()
         {
             m_FirstFrame = true;
@@ -79,6 +84,7 @@ namespace UnityEngine.PostProcessing
                 m_EyeCompute = Resources.Load<ComputeShader>("Shaders/EyeHistogram");
 
             var material = context.materialFactory.Get("Hidden/Post FX/Eye Adaptation");
+            material.shaderKeywords = null;
 
             if (m_HistogramBuffer == null)
                 m_HistogramBuffer = new ComputeBuffer(k_HistogramBins, sizeof(uint));
@@ -119,10 +125,13 @@ namespace UnityEngine.PostProcessing
 
             // Compute auto exposure
             material.SetBuffer("_Histogram", m_HistogramBuffer); // No (int, buffer) overload for SetBuffer ?
-            material.SetVector(Uniforms._Params, new Vector4(settings.lowPercent * 0.01f, settings.highPercent * 0.01f, settings.minLuminance, settings.maxLuminance));
+            material.SetVector(Uniforms._Params, new Vector4(settings.lowPercent * 0.01f, settings.highPercent * 0.01f, Mathf.Exp(settings.minLuminance * 0.69314718055994530941723212145818f), Mathf.Exp(settings.maxLuminance * 0.69314718055994530941723212145818f)));
             material.SetVector(Uniforms._Speed, new Vector2(settings.speedDown, settings.speedUp));
             material.SetVector(Uniforms._ScaleOffsetRes, scaleOffsetRes);
-            material.SetFloat(Uniforms._ExposureCompensation, settings.exposureCompensation);
+            material.SetFloat(Uniforms._ExposureCompensation, settings.keyValue);
+
+            if (settings.dynamicKeyValue)
+                material.EnableKeyword("AUTO_KEY_VALUE");
 
             if (m_FirstFrame || !Application.isPlaying)
             {
@@ -143,10 +152,6 @@ namespace UnityEngine.PostProcessing
                 m_AutoExposurePingPing = ++pp % 2;
                 m_CurrentAutoExposure = dst;
             }
-
-            // Uber setup
-            uberMaterial.EnableKeyword("EYE_ADAPTATION");
-            uberMaterial.SetTexture(Uniforms._AutoExposure, m_CurrentAutoExposure);
 
             // Generate debug histogram
             if (context.profile.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.EyeAdaptation))
