@@ -10,7 +10,7 @@ public class Footprint : MonoBehaviour {
 	public bool Mirror = false;
 	public float Radius = 0.025f;
 	public float TimeToLive = 10f;
-	public bool Collision = false;
+	private bool Collision = false;
 
 	void Update() {
 		if(Decal == null) {

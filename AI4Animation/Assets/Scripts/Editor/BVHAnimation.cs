@@ -1664,7 +1664,7 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 			}
-			return null;
+			return Animation.Frames[0];
 		}
 
 		public BVHFrame GetNextKey(BVHFrame frame) {
@@ -1675,7 +1675,7 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 			}
-			return null;
+			return Animation.Frames[Animation.TotalFrames-1];
 		}
 
 		private void SetTransition(float value) {

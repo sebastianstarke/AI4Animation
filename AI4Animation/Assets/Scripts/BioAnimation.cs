@@ -168,7 +168,8 @@ public class BioAnimation : MonoBehaviour {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				PFNN.SetInput(start + i*6 + 0, pos.x);
-				PFNN.SetInput(start + i*6 + 1, pos.y);
+				//PFNN.SetInput(start + i*6 + 1, pos.y);
+				PFNN.SetInput(start + i*6 + 1, 0f);
 				PFNN.SetInput(start + i*6 + 2, pos.z);
 				PFNN.SetInput(start + i*6 + 3, dir.x);
 				PFNN.SetInput(start + i*6 + 4, dir.y);
@@ -178,8 +179,10 @@ public class BioAnimation : MonoBehaviour {
 
 			//Input Trajectory Heights
 			for(int i=0; i<PointSamples; i++) {
-				PFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y);
-				PFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y);
+				//PFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y);
+				//PFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y);
+				PFNN.SetInput(start + i*2 + 0, 0f);
+				PFNN.SetInput(start + i*2 + 1, 0f);
 			}
 			start += 2*PointSamples;
 
@@ -334,34 +337,32 @@ public class BioAnimation : MonoBehaviour {
 			}
 
 			//Motion Editing
-			float amount = 0.25f;
+			for(int i=0; i<IKSolvers.Length; i++) {
+				IKSolvers[i].UpdateGoal();
+			}
+
 			Transform spine = Array.Find(Joints, x => x.name == "Spine1");
 			Transform neck = Array.Find(Joints, x => x.name == "Neck");
 			Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
 			Transform rightShoulder = Array.Find(Joints, x => x.name == "RightShoulder");
+			Vector3 spinePosition = spine.position;
+			Vector3 neckPosition = neck.position;
+			Vector3 leftShoulderPosition = leftShoulder.position;
+			Vector3 rightShoulderPosition = rightShoulder.position;
 			float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
 			float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
 			float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
 			float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
 
-			//Transform hip = Array.Find(Joints, x => x.name == "Hips");
-			//Vector3 hipToNeck = neck.position - hip.position;
+			spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
 
-			spine.position = Vector3.Lerp(spine.position, new Vector3(spine.position.x, spine.position.y + spineHeight - Root.position.y, spine.position.z), amount);
-			neck.position = Vector3.Lerp(neck.position, new Vector3(neck.position.x, neck.position.y + neckHeight - Root.position.y, neck.position.z), amount);
-			leftShoulder.position = Vector3.Lerp(leftShoulder.position, new Vector3(leftShoulder.position.x, leftShoulder.position.y + leftShoulderHeight - Root.position.y, leftShoulder.position.z), amount);
-			rightShoulder.position = Vector3.Lerp(rightShoulder.position, new Vector3(rightShoulder.position.x, rightShoulder.position.y + rightShoulderHeight - Root.position.y, rightShoulder.position.z), amount);
-
-			/*
-			float angle = Vector3.Angle(hipToNeck, neck.position - hip.position) / 5f;
-			Debug.Log(angle);
-			float hipRise = Utility.GetRise(hip.position, LayerMask.GetMask("Ground"));
-			float hipHeight = Utility.GetHeight(hip.position, LayerMask.GetMask("Ground"));
-			hip.position = Vector3.Lerp(hip.position, new Vector3(hip.position.x, (1f-angle) * (hip.position.y - Root.position.y) + hipHeight, hip.position.z), amount);
-			*/
+			spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - Root.position.y), spinePosition.z);
+			neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z);
+			leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - Root.position.y), leftShoulderPosition.z);
+			rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - Root.position.y), rightShoulderPosition.z);
 
 			for(int i=0; i<IKSolvers.Length; i++) {
-				IKSolvers[i].Process();
+				IKSolvers[i].ProcessIK();
 			}
 			
 			//Update Skeleton

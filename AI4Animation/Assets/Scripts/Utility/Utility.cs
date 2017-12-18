@@ -261,6 +261,29 @@ public static class Utility {
 		return Vector3.Angle(normal, Vector3.up) / 90f;
 	}
 
+	public static Vector3 GetNormal(Vector3 origin, LayerMask mask) {
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		if(upHits.Length == 0 && downHits.Length == 0) {
+			return Vector3.up;
+		}
+		Vector3 normal = Vector3.up;
+		float height = float.MinValue;
+		for(int i=0; i<downHits.Length; i++) {
+			if(downHits[i].point.y > height) {
+				height = downHits[i].point.y;
+				normal = downHits[i].normal;
+			}
+		}
+		for(int i=0; i<upHits.Length; i++) {
+			if(upHits[i].point.y > height) {
+				height = upHits[i].point.y;
+				normal = upHits[i].normal;
+			}
+		}
+		return normal;
+	}
+
 	public static Color[] GetRainbowColors(int number) {
 		Color[] colors = new Color[number];
 		for(int i=0; i<number; i++) {

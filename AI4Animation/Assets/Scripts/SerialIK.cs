@@ -25,7 +25,12 @@ public class SerialIK : MonoBehaviour {
 		Transforms = new Transform[1] {transform};
 	}
 
-	public void Process() {
+	public void UpdateGoal() {
+		Goal.position = GetTipPosition();
+		Goal.rotation = GetTipRotation();
+	}
+
+	public void ProcessIK() {
 		if(Goal == null || Transforms.Length == 0) {
 			return;
 		}
@@ -48,13 +53,9 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	private bool RequireProcessing() {
-		Goal.position = GetTipPosition();
-		Goal.rotation = GetTipRotation();
-		//FOOT IK
-		//Vector3 tipPosition = GetTipPosition();
 		float height = Utility.GetHeight(Goal.position, LayerMask.GetMask("Ground"));
 		//if(height > Goal.position.y - transform.root.position.y) {
-			Goal.position = new Vector3(Goal.position.x, height + Goal.position.y - transform.root.position.y, Goal.position.z);
+			Goal.position = new Vector3(Goal.position.x, height + (Goal.position.y - transform.root.position.y), Goal.position.z);
 			return true;
 		//}
 		//return false;
