@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 using System.IO;
 using System.Collections;
 
@@ -8,7 +9,10 @@ public class BVHRecorder : EditorWindow {
 	public static EditorWindow Window;
 
 	public BioAnimation Animation;
+	public string Name = "Animation";
+	public float FrameTime = 1f/60f;
 
+	private BVHAnimation Data;
 	private bool Recording = false;
 
 	[MenuItem ("Addons/BVH Recorder")]
@@ -16,15 +20,78 @@ public class BVHRecorder : EditorWindow {
 		Window = EditorWindow.GetWindow(typeof(BVHRecorder));
 	}
 
-	void LateUpdate() {
-		Debug.Log("LATE UPDATE");
+	void Update() {
+		if(!Application.isPlaying) {
+			Data = null;
+			Recording = false;
+		}
 	}
 
 	private IEnumerator Record() {
-		while(Recording) {
+		Data = ScriptableObject.CreateInstance<BVHAnimation>();
+		Data.Character = Animation.Character;
+		Data.FrameTime = FrameTime;
+
+		Data.Trajectory = new Trajectory(0, Animation.Controller.Styles.Length);
+		Data.PhaseFunction = new BVHAnimation.BVHPhaseFunction(Data);
+		Data.MirroredPhaseFunction = new BVHAnimation.BVHPhaseFunction(Data);
+		Data.StyleFunction = new BVHAnimation.BVHStyleFunction(Data);
+		Data.StyleFunction.SetStyle(BVHAnimation.BVHStyleFunction.STYLE.Quadruped);
+		
+		while(Recording && Application.isPlaying) {
 			yield return new WaitForEndOfFrame();
-			Debug.Log("RECORD");
+			//Frames
+			BVHAnimation.BVHFrame frame = new BVHAnimation.BVHFrame(Data, Data.GetTotalFrames()+1, Data.GetTotalFrames()*FrameTime);
+			frame.Local = Data.Character.GetLocalTransformations();
+			frame.World = Data.Character.GetWorldTransformations();
+			Utility.Add(ref Data.Frames, frame);
+			
+			//Trajectory
+			Trajectory.Point point = new Trajectory.Point(Data.Trajectory.Points.Length, Animation.Controller.Styles.Length);
+			point.SetTransformation(Animation.GetTrajectory().Points[60].GetTransformation());
+			point.SetLeftsample(Animation.GetTrajectory().Points[60].GetLeftSample());
+			point.SetRightSample(Animation.GetTrajectory().Points[60].GetRightSample());
+			point.SetRise(Animation.GetTrajectory().Points[60].GetRise());
+			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
+				point.Styles[i] = Animation.GetTrajectory().Points[60].Styles[i];
+			}
+			Utility.Add(ref Data.Trajectory.Points, point);
+
+			//Phase Function
+			Utility.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase(), 2f*Mathf.PI));
+			Utility.Add(ref Data.PhaseFunction.Keys, false);
+			Utility.Add(ref Data.PhaseFunction.Cycle, 0f);
+			Utility.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
+			Utility.Add(ref Data.PhaseFunction.Velocities, 0f);
+			Utility.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
+			Utility.Add(ref Data.PhaseFunction.Heights, 0f);
+
+			//Mirrored Phase Function
+			Utility.Add(ref Data.MirroredPhaseFunction.Phase, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.Keys, false);
+			Utility.Add(ref Data.MirroredPhaseFunction.Cycle, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedCycle, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.Velocities, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedVelocities, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
+
+			//Style Function
+			Utility.Add(ref Data.StyleFunction.Keys, false);
+			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
+				Utility.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query() == 1f ? true : false);
+				Utility.Add(ref Data.StyleFunction.Styles[i].Values, Animation.GetTrajectory().Points[60].Styles[i]);
+			}
 		}
+		Data.TimeWindow = Data.GetTotalTime();
+
+		Data.Corrections = new Vector3[Animation.Character.Hierarchy.Length];
+		Data.ComputeSymmetry();
+
+		Recording = false;
+	}
+
+	private void Generate() {
+		
 	}
 
 	void OnGUI() {
@@ -48,11 +115,31 @@ public class BVHRecorder : EditorWindow {
 				}
 
 				Animation = (BioAnimation)EditorGUILayout.ObjectField("Animation", Animation, typeof(BioAnimation), true);
+				Name = EditorGUILayout.TextField("Name", Name);
+				FrameTime = EditorGUILayout.FloatField("Frame Time", FrameTime);
+
+				if(Data == null) {
+					EditorGUILayout.LabelField("No data recorded.");
+				} else {
+					EditorGUILayout.LabelField("Frames: " + Data.Frames.Length);
+				}
 
 				if(Utility.GUIButton(Recording ? "Stop" : "Start", Recording ? Utility.DarkRed : Utility.DarkGreen, Utility.White)) {
 					Recording = !Recording;
 					if(Recording) {
 						Animation.StartCoroutine(Record());
+					}
+				}
+
+				if(Utility.GUIButton("Save", Utility.DarkGrey, Utility.White)) {
+					if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+".asset", typeof(BVHAnimation)) == null) {
+						AssetDatabase.CreateAsset(Data , "Assets/Project/"+Name+".asset");
+					} else {
+						int i = 1;
+						while(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
+							i += 1;
+						}
+						AssetDatabase.CreateAsset(Data, "Assets/Project/"+Name+" ("+i+").asset");
 					}
 				}
 

@@ -11,8 +11,8 @@ public class BVHAnimation : ScriptableObject {
 	public bool MirrorX, MirrorY, MirrorZ;
 
 	public float UnitScale = 100f;
-	public Vector3 PositionOffset = Vector3.zero;
-	public Vector3 RotationOffset = Vector3.zero;
+	//public Vector3 PositionOffset = Vector3.zero;
+	//public Vector3 RotationOffset = Vector3.zero;
 	public Vector3[] Corrections;
 	
 	public BVHFrame[] Frames = new BVHFrame[0];
@@ -30,8 +30,6 @@ public class BVHAnimation : ScriptableObject {
 	public bool ShowZero = false;
 
 	public BVHFrame CurrentFrame = null;
-	public int TotalFrames = 0;
-	public float TotalTime = 0f;
 	public float FrameTime = 0f;
 	public float PlayTime = 0f;
 	public bool Playing = false;
@@ -42,8 +40,8 @@ public class BVHAnimation : ScriptableObject {
 	public void EditorUpdate() {
 		if(Playing) {
 			PlayTime += Timescale*(float)Utility.GetElapsedTime(Timestamp);
-			if(PlayTime > TotalTime) {
-				PlayTime -= TotalTime;
+			if(PlayTime > GetTotalTime()) {
+				PlayTime -= GetTotalTime();
 			}
 			LoadFrame(PlayTime);
 		}
@@ -66,6 +64,14 @@ public class BVHAnimation : ScriptableObject {
 			AssetDatabase.CreateAsset(this, "Assets/Project/"+name+" ("+i+").asset");
 		}
 		return this;
+	}
+
+	public int GetTotalFrames() {
+		return Frames.Length;
+	}
+
+	public float GetTotalTime() {
+		return Frames.Length * FrameTime;
 	}
 
 	private void Load(string path) {
@@ -142,14 +148,11 @@ public class BVHAnimation : ScriptableObject {
 
 		//Read frame count
 		index += 1;
-		TotalFrames = Utility.ReadInt(lines[index].Substring(8));
+		System.Array.Resize(ref Frames, Utility.ReadInt(lines[index].Substring(8)));
 
 		//Read frame time
 		index += 1;
 		FrameTime = Utility.ReadFloat(lines[index].Substring(12));
-
-		//Compute total time
-		TotalTime = TotalFrames * FrameTime;
 
 		//Read motions
 		index += 1;
@@ -157,28 +160,24 @@ public class BVHAnimation : ScriptableObject {
 			Data.AddMotion(Utility.ReadArray(lines[i]));
 		}
 
-		//Resize frames
-		System.Array.Resize(ref Frames, TotalFrames);
-
 		//Generate character
 		GenerateCharacter();
 
 		//Generate frames
-		for(int i=0; i<TotalFrames; i++) {
+		for(int i=0; i<GetTotalFrames(); i++) {
 			Frames[i] = new BVHFrame(this, i+1, i*FrameTime);
 		}
 
 		//Initialise variables
-		TimeWindow = TotalTime;
+		TimeWindow = GetTotalTime();
 		PhaseFunction = new BVHPhaseFunction(this);
 		MirroredPhaseFunction = new BVHPhaseFunction(this);
-		PhaseFunction.SetVelocitySmoothing(0.0f);
-		PhaseFunction.SetVelocityThreshold(0.1f);
-		PhaseFunction.SetHeightThreshold(0.0f);
+		PhaseFunction.Initialise();
+		MirroredPhaseFunction.Initialise();
 		StyleFunction = new BVHStyleFunction(this);
 		Sequences = new BVHSequence[0];
 
-		//Generate
+		//Finalise
 		ComputeCorrections();
 		ComputeSymmetry();
 		ComputeFrames();
@@ -188,6 +187,7 @@ public class BVHAnimation : ScriptableObject {
 		LoadFrame(1);
 	}
 
+	/*
 	public void Recompute() {
 		GenerateCharacter();
 		ComputeCorrections();
@@ -195,7 +195,9 @@ public class BVHAnimation : ScriptableObject {
 		ComputeFrames();
 		ComputeTrajectory();
 	}
+	*/
 
+	/*
 	public void Reimport(string path) {
 		string[] lines = File.ReadAllLines(path);
 		char[] whitespace = new char[] {' '};
@@ -287,6 +289,7 @@ public class BVHAnimation : ScriptableObject {
 
 		Recompute();
 	}
+	*/
 
 	public void Play() {
 		PlayTime = CurrentFrame.Timestamp;
@@ -299,7 +302,7 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void LoadNextFrame() {
-		LoadFrame(Mathf.Min(CurrentFrame.Index+1, TotalFrames));
+		LoadFrame(Mathf.Min(CurrentFrame.Index+1, GetTotalFrames()));
 	}
 
 	public void LoadPreviousFrame() {
@@ -319,19 +322,19 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public BVHFrame GetFrame(int index) {
-		if(index < 1 || index > TotalFrames) {
-			Debug.Log("Please specify an index between 1 and " + TotalFrames + ".");
+		if(index < 1 || index > GetTotalFrames()) {
+			Debug.Log("Please specify an index between 1 and " + GetTotalFrames() + ".");
 			return null;
 		}
 		return Frames[index-1];
 	}
 
 	public BVHFrame GetFrame(float time) {
-		if(time < 0f || time > TotalTime) {
-			Debug.Log("Please specify a time between 0 and " + TotalTime + ".");
+		if(time < 0f || time > GetTotalTime()) {
+			Debug.Log("Please specify a time between 0 and " + GetTotalTime() + ".");
 			return null;
 		}
-		return GetFrame(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, TotalFrames));
+		return GetFrame(Mathf.Min(Mathf.RoundToInt(time / FrameTime) + 1, GetTotalFrames()));
 	}
 
 	public BVHFrame[] GetFrames(int startIndex, int endIndex) {
@@ -432,9 +435,9 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void ComputeTrajectory() {
-		Trajectory = new Trajectory(TotalFrames, 0);
+		Trajectory = new Trajectory(GetTotalFrames(), 0);
 		LayerMask mask = LayerMask.GetMask("Ground");
-		for(int i=0; i<TotalFrames; i++) {
+		for(int i=0; i<GetTotalFrames(); i++) {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].World[0].GetPosition(), mask);
 			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
 			
@@ -457,8 +460,10 @@ public class BVHAnimation : ScriptableObject {
 			BVHData.Bone info = Data.Bones[i];
 			Character.Segment parent = Character.Hierarchy[i].GetParent(Character.Hierarchy);
 			Matrix4x4 local = Matrix4x4.TRS(
-				i == 0 ? PositionOffset : info.Offset / UnitScale,
-				i == 0 ? Quaternion.Euler(RotationOffset) : Quaternion.identity, 
+				//i == 0 ? PositionOffset : info.Offset / UnitScale,
+				//i == 0 ? Quaternion.Euler(RotationOffset) : Quaternion.identity, 
+				info.Offset / UnitScale,
+				Quaternion.identity,
 				Vector3.one
 				);
 			transformations[i] = parent == null ? local : transformations[parent.GetIndex()] * local;
@@ -494,7 +499,7 @@ public class BVHAnimation : ScriptableObject {
 		Trajectory trajectory = new Trajectory(12, StyleFunction.Styles.Length);
 		//Past
 		for(int i=0; i<6; i++) {
-			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, TotalTime);
+			float timestamp = Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, GetTotalTime());
 			int index = GetFrame(timestamp).Index;
 			trajectory.Points[i].SetIndex(Trajectory.Points[index-1].GetIndex());
 			trajectory.Points[i].SetPosition(Trajectory.Points[index-1].GetPosition());
@@ -515,7 +520,7 @@ public class BVHAnimation : ScriptableObject {
 		trajectory.Points[6].SetRise(Trajectory.Points[frame.Index-1].GetRise());
 		//Future
 		for(int i=7; i<12; i++) {
-			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, TotalTime);
+			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, GetTotalTime());
 			int index = GetFrame(timestamp).Index;
 			trajectory.Points[i].SetIndex(Trajectory.Points[index-1].GetIndex());
 			trajectory.Points[i].SetPosition(Trajectory.Points[index-1].GetPosition());
@@ -548,6 +553,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 	}
 
+	/*
 	private void SetPositionOffset(Vector3 value) {
 		if(PositionOffset != value) {
 			PositionOffset = value;
@@ -563,6 +569,7 @@ public class BVHAnimation : ScriptableObject {
 			ComputeTrajectory();
 		}
 	}
+	*/
 
 	private void SetCorrection(int index, Vector3 correction) {
 		if(Corrections[index] != correction) {
@@ -612,6 +619,7 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.EndHorizontal();
 		}
 
+		/*
 		if(Utility.GUIButton("Recompute", Utility.Brown, Utility.White)) {
 			Recompute();
 		}
@@ -628,13 +636,14 @@ public class BVHAnimation : ScriptableObject {
 			GUI.FocusControl("");
 			Reimport(path);
 		}
+		*/
 
 		Utility.SetGUIColor(Utility.LightGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Frames: " + TotalFrames, GUILayout.Width(100f));
-			EditorGUILayout.LabelField("Time: " + TotalTime.ToString("F3") + "s", GUILayout.Width(100f));
+			EditorGUILayout.LabelField("Frames: " + GetTotalFrames(), GUILayout.Width(100f));
+			EditorGUILayout.LabelField("Time: " + GetTotalTime().ToString("F3") + "s", GUILayout.Width(100f));
 			EditorGUILayout.LabelField("Time/Frame: " + FrameTime.ToString("F3") + "s" + " (" + (1f/FrameTime).ToString("F1") + "Hz)", GUILayout.Width(175f));
 			EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 			Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
@@ -661,7 +670,7 @@ public class BVHAnimation : ScriptableObject {
 			if(Utility.GUIButton(">", Utility.Grey, Utility.White, 20f, 20f)) {
 				LoadNextFrame();
 			}
-			BVHAnimation.BVHFrame frame = GetFrame(EditorGUILayout.IntSlider(CurrentFrame.Index, 1, TotalFrames, GUILayout.Width(440f)));
+			BVHAnimation.BVHFrame frame = GetFrame(EditorGUILayout.IntSlider(CurrentFrame.Index, 1, GetTotalFrames(), GUILayout.Width(440f)));
 			if(CurrentFrame != frame) {
 				PlayTime = frame.Timestamp;
 				LoadFrame(frame);
@@ -678,9 +687,9 @@ public class BVHAnimation : ScriptableObject {
 			if(Utility.GUIButton("-1s", Utility.Grey, Utility.White, 65, 20f)) {
 				LoadFrame(Mathf.Max(CurrentFrame.Timestamp - 1f, 0f));
 			}
-			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, TotalTime, GUILayout.Width(440f));
+			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, GetTotalTime(), GUILayout.Width(440f));
 			if(Utility.GUIButton("+1s", Utility.Grey, Utility.White, 65, 20f)) {
-				LoadFrame(Mathf.Min(CurrentFrame.Timestamp + 1f, TotalTime));
+				LoadFrame(Mathf.Min(CurrentFrame.Timestamp + 1f, GetTotalTime()));
 			}
 			EditorGUILayout.EndHorizontal();
 		}
@@ -711,9 +720,9 @@ public class BVHAnimation : ScriptableObject {
 				for(int i=0; i<Sequences.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Start", GUILayout.Width(67f));
-					Sequences[i].Start = EditorGUILayout.IntSlider(Sequences[i].Start, 1, TotalFrames, GUILayout.Width(182f));
+					Sequences[i].Start = EditorGUILayout.IntSlider(Sequences[i].Start, 1, GetTotalFrames(), GUILayout.Width(182f));
 					EditorGUILayout.LabelField("End", GUILayout.Width(67f));
-					Sequences[i].End = EditorGUILayout.IntSlider(Sequences[i].End, 1, TotalFrames, GUILayout.Width(182f));
+					Sequences[i].End = EditorGUILayout.IntSlider(Sequences[i].End, 1, GetTotalFrames(), GUILayout.Width(182f));
 					EditorGUILayout.LabelField("Export", GUILayout.Width(67f));
 					Sequences[i].Export = Mathf.Max(1, EditorGUILayout.IntField(Sequences[i].Export, GUILayout.Width(182f)));
 					if(Utility.GUIButton("Auto", Utility.DarkGrey, Utility.White)) {
@@ -752,8 +761,8 @@ public class BVHAnimation : ScriptableObject {
 				}
 
 				SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
-				SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
-				SetRotationOffset(EditorGUILayout.Vector3Field("Rotation Offset", RotationOffset));
+				//SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
+				//SetRotationOffset(EditorGUILayout.Vector3Field("Rotation Offset", RotationOffset));
 
 				EditorGUILayout.LabelField("Import Corrections");
 				if(Utility.GUIButton("Auto Correct", Utility.DarkGrey, Utility.White)) {
@@ -765,7 +774,7 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUI.BeginDisabledGroup(true);
 					EditorGUILayout.TextField(Character.Hierarchy[i].GetName());
 					EditorGUI.EndDisabledGroup();
-					SetCorrection(i, EditorGUILayout.Vector3Field("",Corrections[i]));
+					SetCorrection(i, EditorGUILayout.Vector3Field("", Corrections[i]));
 					EditorGUILayout.EndHorizontal();
 				}
 			}
@@ -854,13 +863,13 @@ public class BVHAnimation : ScriptableObject {
 		if(ShowPreview) {
 			float step = 1f;
 			UnityGL.Start();
-			for(int i=1; i<TotalFrames; i++) {
+			for(int i=1; i<GetTotalFrames(); i++) {
 				Matrix4x4[] prevTransformations = ExtractTransformations(Frames[i-1], ShowMirrored);
 				Matrix4x4[] currTransformations = ExtractTransformations(Frames[i], ShowMirrored);
 				UnityGL.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
 			}
 			UnityGL.Finish();
-			for(float i=0f; i<=TotalTime; i+=step) {
+			for(float i=0f; i<=GetTotalTime(); i+=step) {
 				Matrix4x4[] t = ExtractTransformations(GetFrame(i), ShowMirrored);
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
 					Character.Hierarchy[j].SetTransformation(t[j]);
@@ -936,7 +945,7 @@ public class BVHAnimation : ScriptableObject {
 			if(next != this) {
 				End = next.Start - 60;
 			} else {
-				End = Animation.TotalFrames-60;
+				End = Animation.GetTotalFrames()-60;
 			}
 		}
 	}
@@ -1037,8 +1046,10 @@ public class BVHAnimation : ScriptableObject {
 
 				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character.Hierarchy);
 				Local[i] = Matrix4x4.TRS(
-					i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale,
-					i == 0 ? Quaternion.Euler(Animation.RotationOffset) * rotation : rotation, 
+					//i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale,
+					//i == 0 ? Quaternion.Euler(Animation.RotationOffset) * rotation : rotation, 
+					i == 0 ? position / Animation.UnitScale : (position + info.Offset) / Animation.UnitScale,
+					rotation,
 					Vector3.one
 					);
 				World[i] = parent == null ? Local[i] : World[parent.GetIndex()] * Local[i];
@@ -1053,7 +1064,7 @@ public class BVHAnimation : ScriptableObject {
 			if(smoothing == 0f) {
 				return World[index].GetPosition() - Animation.GetFrame(Mathf.Max(1, Index-1)).World[index].GetPosition();
 			}
-			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.TotalTime, Timestamp+smoothing/2f));
+			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.GetTotalTime(), Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
 			for(int i=1; i<frames.Length; i++) {
 				velocity += frames[i].World[index].GetPosition() - frames[i-1].World[index].GetPosition();
@@ -1067,39 +1078,55 @@ public class BVHAnimation : ScriptableObject {
 	public class BVHPhaseFunction {
 		public BVHAnimation Animation;
 
-		public bool[] Keys;
 		public float[] Phase;
+
+		public bool[] Keys;
+		
+		public bool ShowCycle;
 		public float[] Cycle;
 		public float[] NormalisedCycle;
-		public bool ShowCycle;
 
 		public Vector2 VariablesScroll;
 		public bool[] Variables;
+
 		public float VelocitySmoothing;
 		public float VelocityThreshold;
-		public float HeightThreshold;
-
-		public float[] Heights;
 		public float[] Velocities;
 		public float[] NormalisedVelocities;
+
+		public float HeightThreshold;
+		public float[] Heights;
 
 		private BVHEvolution Optimiser;
 		private bool Optimising;
 
 		public BVHPhaseFunction(BVHAnimation animation) {
 			Animation = animation;
-			Keys = new bool[Animation.TotalFrames];
-			Phase = new float[Animation.TotalFrames];
-			Cycle = new float[Animation.TotalFrames];
-			NormalisedCycle = new float[Animation.TotalFrames];
-			Keys[0] = true;
-			Keys[Animation.TotalFrames-1] = true;
-			Phase[0] = 0f;
-			Phase[Animation.TotalFrames-1] = 1f;
+
+			Phase = new float[Animation.GetTotalFrames()];
+
+			Keys = new bool[Animation.GetTotalFrames()];
+
+			Cycle = new float[Animation.GetTotalFrames()];
+			NormalisedCycle = new float[Animation.GetTotalFrames()];
+
 			Variables = new bool[Animation.Character.Hierarchy.Length];
-			Velocities = new float[Animation.TotalFrames];
-			NormalisedVelocities = new float[Animation.TotalFrames];
-			Heights = new float[Animation.TotalFrames];
+
+			Velocities = new float[Animation.GetTotalFrames()];
+			NormalisedVelocities = new float[Animation.GetTotalFrames()];
+
+			Heights = new float[Animation.GetTotalFrames()];
+		}
+
+		public void Initialise() {
+			Keys[0] = true;
+			Keys[Animation.GetTotalFrames()-1] = true;
+			Phase[0] = 0f;
+			Phase[Animation.GetTotalFrames()-1] = 1f;
+			VelocitySmoothing = 0f;
+			VelocityThreshold = 0.1f;
+			HeightThreshold = 0f;
+			ComputeValues();
 		}
 
 		public void SetKey(BVHFrame frame, bool value) {
@@ -1193,13 +1220,13 @@ public class BVHAnimation : ScriptableObject {
 
 		public BVHFrame GetNextKey(BVHFrame frame) {
 			if(frame != null) {
-				for(int i=frame.Index+1; i<=Animation.TotalFrames; i++) {
+				for(int i=frame.Index+1; i<=Animation.GetTotalFrames(); i++) {
 					if(Keys[i-1]) {
 						return Animation.Frames[i-1];
 					}
 				}
 			}
-			return Animation.Frames[Animation.TotalFrames-1];
+			return Animation.Frames[Animation.GetTotalFrames()-1];
 		}
 
 		private void Interpolate(BVHFrame frame) {
@@ -1234,11 +1261,11 @@ public class BVHAnimation : ScriptableObject {
 				float mFirst = next2.Timestamp - next1.Timestamp;
 				SetPhase(first, Mathf.Clamp(1f - xFirst / mFirst, 0f, 1f));
 			}
-			if(b.Index == Animation.TotalFrames) {
-				BVHFrame last = Animation.Frames[Animation.TotalFrames-1];
+			if(b.Index == Animation.GetTotalFrames()) {
+				BVHFrame last = Animation.Frames[Animation.GetTotalFrames()-1];
 				BVHFrame previous1 = GetPreviousKey(last);
 				BVHFrame previous2 = GetPreviousKey(previous1);
-				Keys[Animation.TotalFrames-1] = true;
+				Keys[Animation.GetTotalFrames()-1] = true;
 				float xLast = last.Timestamp - previous1.Timestamp;
 				float mLast = previous1.Timestamp - previous2.Timestamp;
 				SetPhase(last, Mathf.Clamp(xLast / mLast, 0f, 1f));
@@ -1246,7 +1273,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		private void ComputeValues() {
-			for(int i=0; i<Animation.TotalFrames; i++) {
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				Heights[i] = 0f;
 				Velocities[i] = 0f;
 				NormalisedVelocities[i] = 0f;
@@ -1256,7 +1283,7 @@ public class BVHAnimation : ScriptableObject {
 			LayerMask mask = LayerMask.GetMask("Ground");
 			min = float.MaxValue;
 			max = float.MinValue;
-			for(int i=0; i<Animation.TotalFrames; i++) {
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				for(int j=0; j<Animation.Character.Hierarchy.Length; j++) {
 					if(Variables[j]) {
 						float offset = Mathf.Max(0f, Animation.Frames[i].World[j].GetPosition().y - Utility.ProjectGround(Animation.Frames[i].World[j].GetPosition(), mask).y);
@@ -1276,7 +1303,7 @@ public class BVHAnimation : ScriptableObject {
 
 			min = float.MaxValue;
 			max = float.MinValue;
-			for(int i=0; i<Animation.TotalFrames; i++) {
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				for(int j=0; j<Animation.Character.Hierarchy.Length; j++) {
 					if(Variables[j]) {
 						float boneVelocity = Animation.Frames[i].ComputeVelocity(j, VelocitySmoothing).magnitude / Animation.FrameTime;
@@ -1301,9 +1328,9 @@ public class BVHAnimation : ScriptableObject {
 		public void EditorUpdate() {
 			if(Optimising) {
 				if(Cycle == null) {
-					Cycle = new float[Animation.TotalFrames];
-				} else if(Cycle.Length != Animation.TotalFrames) {
-					Cycle = new float[Animation.TotalFrames];
+					Cycle = new float[Animation.GetTotalFrames()];
+				} else if(Cycle.Length != Animation.GetTotalFrames()) {
+					Cycle = new float[Animation.GetTotalFrames()];
 				}
 				if(Optimiser == null) {
 					Optimiser = new BVHEvolution(Animation, this);
@@ -1419,26 +1446,26 @@ public class BVHAnimation : ScriptableObject {
 					endTime -= startTime;
 					startTime = 0f;
 				}
-				if(endTime > Animation.TotalTime) {
-					startTime -= endTime-Animation.TotalTime;
-					endTime = Animation.TotalTime;
+				if(endTime > Animation.GetTotalTime()) {
+					startTime -= endTime-Animation.GetTotalTime();
+					endTime = Animation.GetTotalTime();
 				}
 				startTime = Mathf.Max(0f, startTime);
-				endTime = Mathf.Min(Animation.TotalTime, endTime);
+				endTime = Mathf.Min(Animation.GetTotalTime(), endTime);
 				int start = Animation.GetFrame(startTime).Index;
 				int end = Animation.GetFrame(endTime).Index;
 				int elements = end-start;
 
 				//TODO REMOVE LATER
 				if(NormalisedVelocities == null) {
-					NormalisedVelocities = new float[Animation.TotalFrames];
+					NormalisedVelocities = new float[Animation.GetTotalFrames()];
 				} else if(NormalisedVelocities.Length == 0) {
-					NormalisedVelocities = new float[Animation.TotalFrames];
+					NormalisedVelocities = new float[Animation.GetTotalFrames()];
 				}
 				if(NormalisedCycle == null) {
-					NormalisedCycle = new float[Animation.TotalFrames];
+					NormalisedCycle = new float[Animation.GetTotalFrames()];
 				} else if(NormalisedCycle.Length == 0) {
-					NormalisedCycle = new float[Animation.TotalFrames];
+					NormalisedCycle = new float[Animation.GetTotalFrames()];
 				}
 				//
 
@@ -1578,7 +1605,7 @@ public class BVHAnimation : ScriptableObject {
 
 		public void Reset() {
 			Transition = 0.25f;
-			Keys = new bool[Animation.TotalFrames];
+			Keys = new bool[Animation.GetTotalFrames()];
 			Styles = new BVHStyle[0];
 		}
 
@@ -1614,7 +1641,7 @@ public class BVHAnimation : ScriptableObject {
 
 		public void AddStyle(string name = "Style") {
 			System.Array.Resize(ref Styles, Styles.Length+1);
-			Styles[Styles.Length-1] = new BVHStyle(name, Animation.TotalFrames);
+			Styles[Styles.Length-1] = new BVHStyle(name, Animation.GetTotalFrames());
 		}
 
 		public void RemoveStyle() {
@@ -1669,13 +1696,13 @@ public class BVHAnimation : ScriptableObject {
 
 		public BVHFrame GetNextKey(BVHFrame frame) {
 			if(frame != null) {
-				for(int i=frame.Index+1; i<=Animation.TotalFrames; i++) {
+				for(int i=frame.Index+1; i<=Animation.GetTotalFrames(); i++) {
 					if(Keys[i-1]) {
 						return Animation.Frames[i-1];
 					}
 				}
 			}
-			return Animation.Frames[Animation.TotalFrames-1];
+			return Animation.Frames[Animation.GetTotalFrames()-1];
 		}
 
 		private void SetTransition(float value) {
@@ -1688,7 +1715,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		private void Refresh() {
-			for(int i=0; i<Animation.TotalFrames; i++) {
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				if(Keys[i]) {
 					for(int j=0; j<Styles.Length; j++) {
 						Interpolate(Animation.Frames[i], j);
@@ -1714,7 +1741,7 @@ public class BVHAnimation : ScriptableObject {
 
 		private void MakeConstant(int dimension, BVHFrame previous, BVHFrame next) {
 			int start = previous == null ? 1 : previous.Index;
-			int end = next == null ? Animation.TotalFrames : next.Index-1;
+			int end = next == null ? Animation.GetTotalFrames() : next.Index-1;
 			for(int i=start; i<end; i++) {
 				Styles[dimension].Flags[i] = Styles[dimension].Flags[start-1];
 				Styles[dimension].Values[i] = Styles[dimension].Flags[start-1] ? 1f : 0f;
@@ -1749,7 +1776,7 @@ public class BVHAnimation : ScriptableObject {
 			BVHFrame prev = GetPreviousKey(frame);
 			BVHFrame next = GetNextKey(frame);
 			float prevTS = prev == null ? 0f : prev.Timestamp;
-			float nextTS = next == null ? Animation.TotalTime : next.Timestamp;
+			float nextTS = next == null ? Animation.GetTotalTime() : next.Timestamp;
 			float prevTime = Mathf.Abs(frame.Timestamp - prevTS);
 			float nextTime = Mathf.Abs(frame.Timestamp - nextTS);
 			float window = Mathf.Min(prevTime, nextTime, Transition);
@@ -1846,12 +1873,12 @@ public class BVHAnimation : ScriptableObject {
 					endTime -= startTime;
 					startTime = 0f;
 				}
-				if(endTime > Animation.TotalTime) {
-					startTime -= (endTime-Animation.TotalTime);
-					endTime = Animation.TotalTime;
+				if(endTime > Animation.GetTotalTime()) {
+					startTime -= (endTime-Animation.GetTotalTime());
+					endTime = Animation.GetTotalTime();
 				}
 				startTime = Mathf.Max(0f, startTime);
-				endTime = Mathf.Min(Animation.TotalTime, endTime);
+				endTime = Mathf.Min(Animation.GetTotalTime(), endTime);
 				int start = Animation.GetFrame(startTime).Index;
 				int end = Animation.GetFrame(endTime).Index;
 				int elements = end-start;
@@ -2042,11 +2069,11 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Initialise() {
-			Interval[] intervals = new Interval[Mathf.FloorToInt(Animation.TotalTime / Window) + 1];
+			Interval[] intervals = new Interval[Mathf.FloorToInt(Animation.GetTotalTime() / Window) + 1];
 			for(int i=0; i<intervals.Length; i++) {
 				int start = Animation.GetFrame(i*Window).Index-1;
-				int end = Animation.GetFrame(Mathf.Min(Animation.TotalTime, (i+1)*Window)).Index-2;
-				if(end == Animation.TotalFrames-2) {
+				int end = Animation.GetFrame(Mathf.Min(Animation.GetTotalTime(), (i+1)*Window)).Index-2;
+				if(end == Animation.GetTotalFrames()-2) {
 					end += 1;
 				}
 				intervals[i] = new Interval(start, end);
@@ -2070,7 +2097,7 @@ public class BVHAnimation : ScriptableObject {
 
 		
 		public void Assign() {
-			for(int i=0; i<Animation.TotalFrames; i++) {
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				Function.Keys[i] = false;
 				Function.Phase[i] = 0f;
 				Function.Cycle[i] = 0f;

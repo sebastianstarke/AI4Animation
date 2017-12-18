@@ -68,6 +68,14 @@ public class BioAnimation : MonoBehaviour {
 		Utility.SetFPS(60);
 	}
 
+	public float GetPhase() {
+		return Phase;
+	}
+
+	public Trajectory GetTrajectory() {
+		return Trajectory;
+	}
+
 	public Matrix4x4[] GetSkeleton(Matrix4x4 root) {
 		Matrix4x4[] skeleton = new Matrix4x4[Joints.Length];
 		for(int i=0; i<Joints.Length; i++) {

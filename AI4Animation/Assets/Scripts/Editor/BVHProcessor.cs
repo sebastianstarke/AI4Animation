@@ -55,6 +55,7 @@ public class BVHProcessor : EditorWindow {
 				}
 				EditorGUILayout.EndHorizontal();
 
+				/*
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						Animations[i].Recompute();
@@ -63,6 +64,7 @@ public class BVHProcessor : EditorWindow {
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
+				*/
 				
 				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -215,7 +217,7 @@ public class BVHProcessor : EditorWindow {
 						//Get frame
 						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
 						//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
-						BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].TotalFrames));
+						BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
 
 						//j = frame.Timestamp;
 
