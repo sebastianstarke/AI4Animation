@@ -207,103 +207,105 @@ public class BVHProcessor : EditorWindow {
 		for(int i=0; i<Animations.Length; i++) {
 			if(Use[i]) {
 				for(int s=0; s<Animations[i].Sequences.Length; s++) {
-					sequence += 1;
-					//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
-					//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
-					//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
-					int startIndex = Animations[i].Sequences[s].Start;
-					int endIndex = Animations[i].Sequences[s].End;
-					for(int j=startIndex; j<=endIndex; j++) {
-						//Get frame
-						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
-						//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
-						BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
+					for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
+						sequence += 1;
+						//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
+						//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
+						//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
+						int startIndex = Animations[i].Sequences[s].Start;
+						int endIndex = Animations[i].Sequences[s].End;
+						for(int j=startIndex; j<=endIndex; j++) {
+							//Get frame
+							BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
+							//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
+							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
 
-						//j = frame.Timestamp;
+							//j = frame.Timestamp;
 
-						//Sequence number
-						string line = sequence + Separator;
+							//Sequence number
+							string line = sequence + Separator;
 
-						//Frame index
-						line += frame.Index + Separator;
+							//Frame index
+							line += frame.Index + Separator;
 
-						//Frame time
-						line += frame.Timestamp + Separator;
+							//Frame time
+							line += frame.Timestamp + Separator;
 
-						//Extract data
-						Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
-						Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
-						Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
-						Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
-						
-						//Get root transformation
-						Matrix4x4 root = trajectory.Points[6].GetTransformation();
+							//Extract data
+							Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
+							Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+							Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
+							Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
+							
+							//Get root transformation
+							Matrix4x4 root = trajectory.Points[6].GetTransformation();
 
-						//Bone data
-						for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
-							//Position
-							line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
+							//Bone data
+							for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
+								//Position
+								line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
-							//Rotation
-							//line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
-							line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
-							line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
+								//Rotation
+								//line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
+								line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
+								line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
 
-							//Velocity
-							line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
+								//Velocity
+								line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
+							}
+							
+							//Trajectory data
+							for(int k=0; k<12; k++) {
+								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
+								line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
+							}
+
+							for(int k=0; k<12; k++) {
+								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
+								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
+							}
+
+							for(int k=0; k<12; k++) {
+								line += FormatArray(trajectory.Points[k].Styles);
+							}
+
+							//Phase
+							if(mirrored) {
+								line += FormatValue(Animations[i].MirroredPhaseFunction.GetPhase(frame));
+							} else {
+								line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
+							}
+
+							//Translational and angular root velocity
+							Vector3 position = trajectory.Points[6].GetPosition();
+							Vector3 direction = trajectory.Points[6].GetDirection();
+							Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
+							Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
+
+							Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
+							line += FormatValue(translationOffset.x);
+							line += FormatValue(translationOffset.z);
+
+							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
+							line += FormatValue(rotationOffset);
+
+							//Phase change
+							if(mirrored) {
+								line += FormatValue(GetPhaseChange(Animations[i].MirroredPhaseFunction.GetPhase(prevFrame), Animations[i].MirroredPhaseFunction.GetPhase(frame)));
+							} else {
+								line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
+							}
+
+							//Feet offset function
+							//TODO
+
+							//Postprocess
+							line = line.Remove(line.Length-1);
+							line = line.Replace(",",".");
+
+							//Write
+							data.WriteLine(line);
 						}
-						
-						//Trajectory data
-						for(int k=0; k<12; k++) {
-							line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-							line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
-						}
-
-						for(int k=0; k<12; k++) {
-							line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
-							line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
-						}
-
-						for(int k=0; k<12; k++) {
-							line += FormatArray(trajectory.Points[k].Styles);
-						}
-
-						//Phase
-						if(mirrored) {
-							line += FormatValue(Animations[i].MirroredPhaseFunction.GetPhase(frame));
-						} else {
-							line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
-						}
-
-						//Translational and angular root velocity
-						Vector3 position = trajectory.Points[6].GetPosition();
-						Vector3 direction = trajectory.Points[6].GetDirection();
-						Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
-						Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
-
-						Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
-						line += FormatValue(translationOffset.x);
-						line += FormatValue(translationOffset.z);
-
-						float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
-						line += FormatValue(rotationOffset);
-
-						//Phase change
-						if(mirrored) {
-							line += FormatValue(GetPhaseChange(Animations[i].MirroredPhaseFunction.GetPhase(prevFrame), Animations[i].MirroredPhaseFunction.GetPhase(frame)));
-						} else {
-							line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
-						}
-
-						//Feet offset function
-						//TODO
-
-						//Postprocess
-						line = line.Remove(line.Length-1);
-						line = line.Replace(",",".");
-
-						//Write
-						data.WriteLine(line);
 					}
 				}
 			}

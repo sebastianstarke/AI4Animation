@@ -20,16 +20,15 @@ public class PFNN {
 
 	public NetworkParameters Parameters;
 
-	public Matrix<float> Xmean, Xstd;
-	public Matrix<float> Ymean, Ystd;
-	public Matrix<float>[] W0, W1, W2;
-	public Matrix<float>[] b0, b1, b2;
+	private Vector<float> Xmean, Xstd;
+	private Vector<float> Ymean, Ystd;
 
-	public Matrix<float> Xp, Yp;
-	public Matrix<float> H0, H1;
+	private Matrix<float>[] W0, W1, W2;
+	private Vector<float>[] b0, b1, b2;
 
-	public Matrix<float> W0p, W1p, W2p;
-	public Matrix<float> b0p, b1p, b2p;
+	private Vector<float> X, Y;
+	//private Matrix<float> W0p, W1p, W2p;
+	//private Vector<float> b0p, b1p, b2p;
 
 	private const float M_PI = 3.14159265358979323846f;
 
@@ -43,103 +42,90 @@ public class PFNN {
 			return;
 		}
 
-		Xmean = Parameters.Xmean.Build();
-		Xstd = Parameters.Xstd.Build();
-		Ymean = Parameters.Ymean.Build();
-		Ystd = Parameters.Ystd.Build();
+		Xmean = Parameters.GetVector(0).Build();
+		Xstd = Parameters.GetVector(1).Build();
+		Ymean = Parameters.GetVector(2).Build();
+		Ystd = Parameters.GetVector(3).Build();
 
-		W0 = new Matrix<float>[Parameters.W0.Length];
-		W1 = new Matrix<float>[Parameters.W1.Length];
-		W2 = new Matrix<float>[Parameters.W2.Length];
-		b0 = new Matrix<float>[Parameters.b0.Length];
-		b1 = new Matrix<float>[Parameters.b1.Length];
-		b2 = new Matrix<float>[Parameters.b2.Length];
-		for(int i=0; i<W0.Length; i++) {
-			W0[i] = Parameters.W0[i].Build();
-		}
-		for(int i=0; i<W0.Length; i++) {
-			W1[i] = Parameters.W1[i].Build();
-		}
-		for(int i=0; i<W0.Length; i++) {
-			W2[i] = Parameters.W2[i].Build();
-		}
-		for(int i=0; i<W0.Length; i++) {
-			b0[i] = Parameters.b0[i].Build();
-		}
-		for(int i=0; i<W0.Length; i++) {
-			b1[i] = Parameters.b1[i].Build();
-		}
-		for(int i=0; i<W0.Length; i++) {
-			b2[i] = Parameters.b2[i].Build();
+		W0 = new Matrix<float>[50];
+		W1 = new Matrix<float>[50];
+		W2 = new Matrix<float>[50];
+		b0 = new Vector<float>[50];
+		b1 = new Vector<float>[50];
+		b2 = new Vector<float>[50];
+		for(int i=0; i<50; i++) {
+			W0[i] = Parameters.GetMatrix(i*3 + 0).Build();
+			W1[i] = Parameters.GetMatrix(i*3 + 1).Build();
+			W2[i] = Parameters.GetMatrix(i*3 + 2).Build();
+			b0[i] = Parameters.GetVector(4 + i*3 + 0).Build();
+			b1[i] = Parameters.GetVector(4 + i*3 + 1).Build();
+			b2[i] = Parameters.GetVector(4 + i*3 + 2).Build();
 		}
 
-		Xp = Matrix<float>.Build.Dense(XDim, 1);
-		Yp = Matrix<float>.Build.Dense(YDim, 1);
+		X = Vector<float>.Build.Dense(XDim);
+		Y = Vector<float>.Build.Dense(YDim);
 
-		H0 = Matrix<float>.Build.Dense(HDim, 1);
-		H1 = Matrix<float>.Build.Dense(HDim, 1);
-
+		/*
 		W0p = Matrix<float>.Build.Dense(HDim, XDim);
 		W1p = Matrix<float>.Build.Dense(HDim, HDim);
 		W2p = Matrix<float>.Build.Dense(YDim, HDim);
 
-		b0p = Matrix<float>.Build.Dense(HDim, 1);
-		b1p = Matrix<float>.Build.Dense(HDim, 1);
-		b2p = Matrix<float>.Build.Dense(YDim, 1);
+		b0p = Vector<float>.Build.Dense(HDim);
+		b1p = Vector<float>.Build.Dense(HDim);
+		b2p = Vector<float>.Build.Dense(YDim);
+		*/
 	}
 
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		if(!Parameters.Load(Folder, XDim, YDim, HDim)) {
-			Parameters = null;
-			Debug.Log("Failed loading parameters.");
-			return;
-		} else {
-			Debug.Log("Parameters successfully loaded.");
-		}
-		if(Application.isPlaying) {
-			Initialise();
+		Parameters.StoreVector(Folder+"/Xmean.bin", XDim);
+		Parameters.StoreVector(Folder+"/Xstd.bin", XDim);
+		Parameters.StoreVector(Folder+"/Ymean.bin", YDim);
+		Parameters.StoreVector(Folder+"/Ystd.bin", YDim);
+		for(int i=0; i<50; i++) {
+			Parameters.StoreMatrix(Folder+"/W0_"+i.ToString("D3")+".bin", HDim, XDim);
+			Parameters.StoreMatrix(Folder+"/W1_"+i.ToString("D3")+".bin", HDim, HDim);
+			Parameters.StoreMatrix(Folder+"/W2_"+i.ToString("D3")+".bin", YDim, HDim);
+			Parameters.StoreVector(Folder+"/b0_"+i.ToString("D3")+".bin", HDim);
+			Parameters.StoreVector(Folder+"/b1_"+i.ToString("D3")+".bin", HDim);
+			Parameters.StoreVector(Folder+"/b2_"+i.ToString("D3")+".bin", YDim);
 		}
 	}
 
 	public void SetInput(int i, float value) {
-		Xp[i, 0] = value;
+		X[i] = value;
 	}
 
 	public float GetOutput(int i) {
-		return Yp[i, 0];
+		return Y[i];
 	}
 
 	public void Output() {
 		Debug.Log("====================INPUT====================");
 		for(int i=0; i<XDim; i++) {
-			Debug.Log(i + ": " + Xp[i, 0]);
+			Debug.Log(i + ": " + X[i]);
 		}
 		Debug.Log("====================OUTPUT====================");
 		for(int i=0; i<YDim; i++) {
-			Debug.Log(i + ": " + Yp[i, 0]);
+			Debug.Log(i + ": " + Y[i]);
 		}
 	}
 
-	public Matrix<float> Predict(float phase) {
+	public void Predict(float phase) {
 		//float pamount;
 		//int pindex_0;
 		int pindex_1;
 		//int pindex_2;
 		//int pindex_3;
 
-		Matrix<float> _Xp = Xp.Clone();
-		
-		_Xp = (_Xp - Xmean).PointwiseDivide(Xstd);
+		Vector<float> _X = (X - Xmean).PointwiseDivide(Xstd);
 		
 		//switch(Mode) {
 		//	case MODE.CONSTANT:
 				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				H0 = (W0[pindex_1] * _Xp) + b0[pindex_1];
-				ELU(ref H0);
-				H1 = (W1[pindex_1] * H0) + b1[pindex_1];
-				ELU(ref H1);
-				Yp = (W2[pindex_1] * H1) + b2[pindex_1];
+				Vector<float> H0 = (W0[pindex_1] * _X) + b0[pindex_1]; ELU(ref H0);
+				Vector<float> H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+				Y = (W2[pindex_1] * H1) + b2[pindex_1];
 		/*	break;
 			
 			case MODE.LINEAR:
@@ -181,24 +167,30 @@ public class PFNN {
 		}
 		*/
 		
-		Yp = (Yp.PointwiseMultiply(Ystd)) + Ymean;
-
-		return Yp;
+		Y = (Y.PointwiseMultiply(Ystd)) + Ymean;
 	}
 
-	private void ELU(ref Matrix<float> m) {
-		for(int x=0; x<m.RowCount; x++) {
-			for(int y=0; y<m.ColumnCount; y++) {
-				m[x,y] = System.Math.Max(m[x,y], 0f) + (float)System.Math.Exp(System.Math.Min(m[x,y], 0f)) - 1f;
-			}
+	private void ELU(ref Vector<float> m) {
+		for(int x=0; x<m.Count; x++) {
+			m[x] = System.Math.Max(m[x], 0f) + (float)System.Math.Exp(System.Math.Min(m[x], 0f)) - 1f;
 		}
 	}
 
-	private void Linear(ref Matrix<float> o, ref Matrix<float> y0, ref Matrix<float> y1, float mu) {
+	private void SoftMax(ref Vector<float> m) {
+		float lower = 0f;
+		for(int x=0; x<m.Count; x++) {
+			lower += (float)System.Math.Exp(m[x]);
+		}
+		for(int x=0; x<m.Count; x++) {
+			m[x] = (float)System.Math.Exp(m[x]) / lower;
+		}
+	}
+
+	private void Linear(ref Vector<float> o, ref Vector<float> y0, ref Vector<float> y1, float mu) {
 		o = (1.0f-mu) * y0 + (mu) * y1;
 	}
 
-	private void Cubic(ref Matrix<float> o, ref Matrix<float> y0, ref Matrix<float> y1, ref Matrix<float> y2, ref Matrix<float> y3, float mu) {
+	private void Cubic(ref Vector<float> o, ref Vector<float> y0, ref Vector<float> y1, ref Vector<float> y2, ref Vector<float> y3, float mu) {
 		o = (
 		(-0.5f*y0+1.5f*y1-1.5f*y2+0.5f*y3)*mu*mu*mu + 
 		(y0-2.5f*y1+2.0f*y2-0.5f*y3)*mu*mu + 

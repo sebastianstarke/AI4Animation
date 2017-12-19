@@ -4,97 +4,40 @@ using MathNet.Numerics.LinearAlgebra;
 
 public class NetworkParameters : ScriptableObject {
 
-	public FloatMatrix Xmean, Xstd, Ymean, Ystd;
-	public FloatMatrix[] W0, W1, W2, b0, b1, b2;
+	public FloatVector[] Vectors = new FloatVector[0];
+	public FloatMatrix[] Matrices = new FloatMatrix[0];
 
-	public bool Load(string folder, int xDim, int yDim, int hDim) {
-		Xmean = LoadWeights(folder+"/Xmean.bin", xDim, 1);
-		Xstd = LoadWeights(folder+"/Xstd.bin", xDim, 1);
-		Ymean = LoadWeights(folder+"/Ymean.bin", yDim, 1);
-		Ystd = LoadWeights(folder+"/Ystd.bin", yDim, 1);
-		
-		W0 = new FloatMatrix[50];
-		W1 = new FloatMatrix[50];
-		W2 = new FloatMatrix[50];
-		b0 = new FloatMatrix[50];
-		b1 = new FloatMatrix[50];
-		b2 = new FloatMatrix[50];
-		for(int i=0; i<50; i++) {
-			W0[i] = LoadWeights(folder+"/W0_"+i.ToString("D3")+".bin", hDim, xDim);
-			W1[i] = LoadWeights(folder+"/W1_"+i.ToString("D3")+".bin", hDim, hDim);
-			W2[i] = LoadWeights(folder+"/W2_"+i.ToString("D3")+".bin", yDim, hDim);
-			b0[i] = LoadWeights(folder+"/b0_"+i.ToString("D3")+".bin", hDim, 1);
-			b1[i] = LoadWeights(folder+"/b1_"+i.ToString("D3")+".bin", hDim, 1);
-			b2[i] = LoadWeights(folder+"/b2_"+i.ToString("D3")+".bin", yDim, 1);
-		}
-
-		if(Xmean == null || Xstd == null || Ymean == null || Ystd == null) {
-			return false;
-		}
-		for(int i=0; i<50; i++) {
-			if(W0[i] == null || W1[i] == null || W2[i] == null || b0[i] == null || b1[i] == null || b2[i] == null) {
-				return false;
-			}
-		}
-		return true;
-
-		/*
-		switch(Mode) {
-			case MODE.CONSTANT:
-			W0 = new Matrix<float>[50];
-			W1 = new Matrix<float>[50];
-			W2 = new Matrix<float>[50];
-			b0 = new Matrix<float>[50];
-			b1 = new Matrix<float>[50];
-			b2 = new Matrix<float>[50];
-			for(int i=0; i<50; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/Demo/Parameters/W0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/Demo/Parameters/W1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/Demo/Parameters/W2_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/Demo/Parameters/b0_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/Demo/Parameters/b1_"+i.ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/Demo/Parameters/b2_"+i.ToString("D3")+".bin");
-			}	
-			break;
-			
-			case MODE.LINEAR:
-			W0 = new Matrix<float>[10];
-			W1 = new Matrix<float>[10];
-			W2 = new Matrix<float>[10];
-			b0 = new Matrix<float>[10];
-			b1 = new Matrix<float>[10];
-			b2 = new Matrix<float>[10];
-			for(int i=0; i<10; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/Demo/Parameters/W0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/Demo/Parameters/W1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/Demo/Parameters/W2_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/Demo/Parameters/b0_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/Demo/Parameters/b1_"+(i*5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/Demo/Parameters/b2_"+(i*5).ToString("D3")+".bin");
-			}	
-			break;
-
-			case MODE.CUBIC:
-			W0 = new Matrix<float>[4];
-			W1 = new Matrix<float>[4];
-			W2 = new Matrix<float>[4];
-			b0 = new Matrix<float>[4];
-			b1 = new Matrix<float>[4];
-			b2 = new Matrix<float>[4];
-			for(int i=0; i<4; i++) {
-				LoadWeights(ref W0[i], HDim, XDim, "Assets/Animation/Demo/Parameters/W0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W1[i], HDim, HDim, "Assets/Animation/Demo/Parameters/W1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref W2[i], YDim, HDim, "Assets/Animation/Demo/Parameters/W2_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b0[i], HDim, 1, "Assets/Animation/Demo/Parameters/b0_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b1[i], HDim, 1, "Assets/Animation/Demo/Parameters/b1_"+(i*12.5).ToString("D3")+".bin");
-				LoadWeights(ref b2[i], YDim, 1, "Assets/Animation/Demo/Parameters/b2_"+(i*12.5).ToString("D3")+".bin");
-			}	
-			break;
-		}
-		*/
+	public void StoreVector(string fn, int dim) {
+		Utility.Add(ref Vectors, LoadVector(fn, dim));
 	}
 
-	private FloatMatrix LoadWeights(string fn, int rows, int cols) {
+	public void StoreMatrix(string fn, int rows, int cols) {
+		Utility.Add(ref Matrices, LoadMatrix(fn, rows, cols));
+	}
+
+	public FloatVector GetVector(int index) {
+		return Vectors[index];
+	}
+
+	public FloatMatrix GetMatrix(int index) {
+		return Matrices[index];
+	}
+
+	private FloatVector LoadVector(string fn, int dim) {
+		FloatVector vector = new FloatVector(dim);
+		try {
+			BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
+			for(int x=0; x<dim; x++) {
+				vector.Values[x] = reader.ReadSingle();
+			}
+		} catch (System.Exception e) {
+        	Debug.Log(e.Message);
+			return null;
+        }
+		return vector;
+	}
+
+	private FloatMatrix LoadMatrix(string fn, int rows, int cols) {
 		FloatMatrix matrix = new FloatMatrix(rows, cols);
 		try {
 			BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
@@ -111,25 +54,31 @@ public class NetworkParameters : ScriptableObject {
 	}
 
 	[System.Serializable]
-	public class FloatArray {
+	public class FloatVector {
 		public float[] Values;
 
-		public FloatArray(int size) {
+		public FloatVector(int size) {
 			Values = new float[size];
+		}
+
+		public Vector<float> Build() {
+			Vector<float> vector = Vector<float>.Build.Dense(Values.Length);
+			vector.SetValues(Values);
+			return vector;
 		}
 	}
 
 	[System.Serializable]
 	public class FloatMatrix {
-		public FloatArray[] Values;
+		public FloatVector[] Values;
 		public int Rows, Cols;
 
 		public FloatMatrix(int rows, int cols) {
 			Rows = rows;
 			Cols = cols;
-			Values = new FloatArray[rows];
+			Values = new FloatVector[rows];
 			for(int i=0; i<rows; i++) {
-				Values[i] = new FloatArray(cols);
+				Values[i] = new FloatVector(cols);
 			}
 		}
 
