@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-public class BioAnimation : MonoBehaviour {
+public class BioAnimation_APFNN : MonoBehaviour {
 
 	public bool Inspect = false;
 	public bool ShowTrajectory = true;
@@ -23,7 +23,7 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
-	public SerialIK[] IKSolvers;
+	public SerialIK[] IKSolvers = new SerialIK[0];
 
 	private Trajectory Trajectory;
 
@@ -494,13 +494,13 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	#if UNITY_EDITOR
-	[CustomEditor(typeof(BioAnimation))]
-	public class BioAnimation_Editor : Editor {
+	[CustomEditor(typeof(BioAnimation_APFNN))]
+	public class BioAnimation_APFNN_Editor : Editor {
 
-		public BioAnimation Target;
+		public BioAnimation_APFNN Target;
 
 		void Awake() {
-			Target = (BioAnimation)target;
+			Target = (BioAnimation_APFNN)target;
 		}
 
 		public override void OnInspectorGUI() {

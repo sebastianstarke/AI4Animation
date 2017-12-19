@@ -1,28 +1,32 @@
 ﻿using UnityEngine;
 using System.IO;
-using MathNet.Numerics.LinearAlgebra;
 
 public class NetworkParameters : ScriptableObject {
 
-	public FloatVector[] Vectors = new FloatVector[0];
+	//public FloatVector[] Vectors = new FloatVector[0];
 	public FloatMatrix[] Matrices = new FloatMatrix[0];
 
+	/*
 	public void StoreVector(string fn, int dim) {
 		Utility.Add(ref Vectors, LoadVector(fn, dim));
 	}
+	*/
 
 	public void StoreMatrix(string fn, int rows, int cols) {
 		Utility.Add(ref Matrices, LoadMatrix(fn, rows, cols));
 	}
 
+	/*
 	public FloatVector GetVector(int index) {
 		return Vectors[index];
 	}
+	*/
 
 	public FloatMatrix GetMatrix(int index) {
 		return Matrices[index];
 	}
 
+	/*
 	private FloatVector LoadVector(string fn, int dim) {
 		FloatVector vector = new FloatVector(dim);
 		try {
@@ -36,6 +40,7 @@ public class NetworkParameters : ScriptableObject {
         }
 		return vector;
 	}
+	*/
 
 	private FloatMatrix LoadMatrix(string fn, int rows, int cols) {
 		FloatMatrix matrix = new FloatMatrix(rows, cols);
@@ -60,12 +65,6 @@ public class NetworkParameters : ScriptableObject {
 		public FloatVector(int size) {
 			Values = new float[size];
 		}
-
-		public Vector<float> Build() {
-			Vector<float> vector = Vector<float>.Build.Dense(Values.Length);
-			vector.SetValues(Values);
-			return vector;
-		}
 	}
 
 	[System.Serializable]
@@ -82,10 +81,12 @@ public class NetworkParameters : ScriptableObject {
 			}
 		}
 
-		public Matrix<float> Build() {
-			Matrix<float> matrix = Matrix<float>.Build.Dense(Rows, Cols);
+		public Matrix Build() {
+			Matrix matrix = new Matrix(Rows, Cols);
 			for(int i=0; i<Rows; i++) {
-				matrix.SetRow(i, Values[i].Values);
+				for(int j=0; j<Cols; j++) {
+					matrix.Values[i][j] = Values[i].Values[j];
+				}
 			}
 			return matrix;
 		}

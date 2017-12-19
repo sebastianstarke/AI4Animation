@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 
 public class SerialIK : MonoBehaviour {
@@ -9,17 +8,17 @@ public class SerialIK : MonoBehaviour {
 	public Transform Goal;
 	public Transform[] Transforms;
 
-	public enum JacobianMethod{Transpose, Pseudoinverse, DampedLeastSquares};
+	public enum JacobianMethod{Transpose, DampedLeastSquares};
 	public JacobianMethod Method = JacobianMethod.DampedLeastSquares;
-	[Range(0f, 1f)] public double Step = 1.0;
-	[Range(0f, 1f)] public double Damping = 0.1;
+	[Range(0f, 1f)] public float Step = 1.0f;
+	[Range(0f, 1f)] public float Damping = 0.1f;
 
 	private int DoF;
 	private int Entries;
-	private double[][] Jacobian;
-	private double[] Gradient;
+	private float[][] Jacobian;
+	private float[] Gradient;
 
-	private double Differential = 0.001;
+	private float Differential = 0.001f;
 
 	void Reset() {
 		Transforms = new Transform[1] {transform};
@@ -37,14 +36,14 @@ public class SerialIK : MonoBehaviour {
 
 		if(RequireProcessing()) {
 			Matrix4x4[] posture = GetPosture();
-			double[] solution = new double[3*Transforms.Length];
+			float[] solution = new float[3*Transforms.Length];
 			DoF = Transforms.Length * 3;
 			Entries = 3;
-			Jacobian = new double[Entries][];
+			Jacobian = new float[Entries][];
 			for(int i=0; i<Entries; i++) {
-				Jacobian[i] = new double[DoF];
+				Jacobian[i] = new float[DoF];
 			}
-			Gradient = new double[Entries];
+			Gradient = new float[Entries];
 			for(int i=0; i<10; i++) {
 				Iterate(posture, solution);
 			}
@@ -61,9 +60,9 @@ public class SerialIK : MonoBehaviour {
 		//return false;
 	}
 	
-	private void FK(Matrix4x4[] posture, double[] variables) {
+	private void FK(Matrix4x4[] posture, float[] variables) {
 		for(int i=0; i<Transforms.Length; i++) {
-			Quaternion update = Quaternion.AngleAxis(Mathf.Rad2Deg*(float)variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*(float)variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*(float)variables[i*3+2], Vector3.up);
+			Quaternion update = Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+2], Vector3.up);
 			Transforms[i].localPosition = posture[i].GetPosition();
 			Transforms[i].localRotation = posture[i].GetRotation() * update;
 		}
@@ -85,7 +84,7 @@ public class SerialIK : MonoBehaviour {
 		return Transforms[Transforms.Length-1].rotation;
 	}
 
-	private void Iterate(Matrix4x4[] posture, double[] variables) {
+	private void Iterate(Matrix4x4[] posture, float[] variables) {
 		FK(posture, variables);
 		Vector3 tipPosition = GetTipPosition();
 		//Quaternion tipRotation = GetTipRotation();
@@ -96,7 +95,7 @@ public class SerialIK : MonoBehaviour {
 			FK(posture, variables);
 			variables[j] -= Differential;
 
-			Vector3 deltaPosition = (GetTipPosition() - tipPosition) / (float)Differential;
+			Vector3 deltaPosition = (GetTipPosition() - tipPosition) / Differential;
 
 			//Quaternion deltaRotation = Quaternion.Inverse(tipRotation) * GetTipRotation();
 	
@@ -110,7 +109,7 @@ public class SerialIK : MonoBehaviour {
 		}
 
 		//Gradient Vector
-		Vector3 gradientPosition = (float)Step * (Goal.position - tipPosition);
+		Vector3 gradientPosition = Step * (Goal.position - tipPosition);
 
 		//Quaternion gradientRotation = Quaternion.Inverse(tipRotation) * Goal.rotation;
 
@@ -130,11 +129,10 @@ public class SerialIK : MonoBehaviour {
 				}
 			}
 		}
-		
 
 		//Jacobian Damped-Least-Squares
 		if(Method == JacobianMethod.DampedLeastSquares) {
-			double[][] DLS = DampedLeastSquares();
+			float[][] DLS = DampedLeastSquares();
 			for(int m=0; m<DoF; m++) {
 				for(int n=0; n<Entries; n++) {
 					variables[m] += DLS[m][n] * Gradient[n];
@@ -143,18 +141,18 @@ public class SerialIK : MonoBehaviour {
 		}
 	}
 
-	private double[][] DampedLeastSquares() {
-		double[][] transpose = Matrix.MatrixCreate(DoF, Entries);
+	private float[][] DampedLeastSquares() {
+		float[][] transpose = Matrix.MatrixCreate(DoF, Entries);
 		for(int m=0; m<Entries; m++) {
 			for(int n=0; n<DoF; n++) {
 				transpose[n][m] = Jacobian[m][n];
 			}
 		}
-		double[][] jTj = Matrix.MatrixProduct(transpose, Jacobian);
+		float[][] jTj = Matrix.MatrixProduct(transpose, Jacobian);
 		for(int i=0; i<DoF; i++) {
 			jTj[i][i] += Damping*Damping;
 		}
-		double[][] dls = Matrix.MatrixProduct(Matrix.MatrixInverse(jTj), transpose);
+		float[][] dls = Matrix.MatrixProduct(Matrix.MatrixInverse(jTj), transpose);
 		return dls;
   	}
 

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using MathNet.Numerics.LinearAlgebra;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,15 +19,21 @@ public class PFNN {
 
 	public NetworkParameters Parameters;
 
-	private Vector<float> Xmean, Xstd;
-	private Vector<float> Ymean, Ystd;
+	//private Vector<float> Xmean, Xstd;
+	//private Vector<float> Ymean, Ystd;
 
-	private Matrix<float>[] W0, W1, W2;
-	private Vector<float>[] b0, b1, b2;
+	//private Matrix<float>[] W0, W1, W2;
+	//private Vector<float>[] b0, b1, b2;
 
-	private Vector<float> X, Y;
+	//private Vector<float> X, Y;
 	//private Matrix<float> W0p, W1p, W2p;
 	//private Vector<float> b0p, b1p, b2p;
+
+	private Matrix Xmean, Xstd, Ymean, Ystd;
+
+	private Matrix[] W0, W1, W2, b0, b1, b2;
+
+	private Matrix X, Y;
 
 	private const float M_PI = 3.14159265358979323846f;
 
@@ -42,28 +47,28 @@ public class PFNN {
 			return;
 		}
 
-		Xmean = Parameters.GetVector(0).Build();
-		Xstd = Parameters.GetVector(1).Build();
-		Ymean = Parameters.GetVector(2).Build();
-		Ystd = Parameters.GetVector(3).Build();
+		Xmean = Parameters.GetMatrix(0).Build();
+		Xstd = Parameters.GetMatrix(1).Build();
+		Ymean = Parameters.GetMatrix(2).Build();
+		Ystd = Parameters.GetMatrix(3).Build();
 
-		W0 = new Matrix<float>[50];
-		W1 = new Matrix<float>[50];
-		W2 = new Matrix<float>[50];
-		b0 = new Vector<float>[50];
-		b1 = new Vector<float>[50];
-		b2 = new Vector<float>[50];
+		W0 = new Matrix[50];
+		W1 = new Matrix[50];
+		W2 = new Matrix[50];
+		b0 = new Matrix[50];
+		b1 = new Matrix[50];
+		b2 = new Matrix[50];
 		for(int i=0; i<50; i++) {
-			W0[i] = Parameters.GetMatrix(i*3 + 0).Build();
-			W1[i] = Parameters.GetMatrix(i*3 + 1).Build();
-			W2[i] = Parameters.GetMatrix(i*3 + 2).Build();
-			b0[i] = Parameters.GetVector(4 + i*3 + 0).Build();
-			b1[i] = Parameters.GetVector(4 + i*3 + 1).Build();
-			b2[i] = Parameters.GetVector(4 + i*3 + 2).Build();
+			W0[i] = Parameters.GetMatrix(4 + i*6 + 0).Build();
+			W1[i] = Parameters.GetMatrix(4 + i*6 + 1).Build();
+			W2[i] = Parameters.GetMatrix(4 + i*6 + 2).Build();
+			b0[i] = Parameters.GetMatrix(4 + i*6 + 3).Build();
+			b1[i] = Parameters.GetMatrix(4 + i*6 + 4).Build();
+			b2[i] = Parameters.GetMatrix(4 + i*6 + 5).Build();
 		}
 
-		X = Vector<float>.Build.Dense(XDim);
-		Y = Vector<float>.Build.Dense(YDim);
+		X = new Matrix(XDim, 1);
+		Y = new Matrix(YDim, 1);
 
 		/*
 		W0p = Matrix<float>.Build.Dense(HDim, XDim);
@@ -78,36 +83,36 @@ public class PFNN {
 
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		Parameters.StoreVector(Folder+"/Xmean.bin", XDim);
-		Parameters.StoreVector(Folder+"/Xstd.bin", XDim);
-		Parameters.StoreVector(Folder+"/Ymean.bin", YDim);
-		Parameters.StoreVector(Folder+"/Ystd.bin", YDim);
+		Parameters.StoreMatrix(Folder+"/Xmean.bin", XDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xstd.bin", XDim, 1);
+		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
+		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
 		for(int i=0; i<50; i++) {
 			Parameters.StoreMatrix(Folder+"/W0_"+i.ToString("D3")+".bin", HDim, XDim);
 			Parameters.StoreMatrix(Folder+"/W1_"+i.ToString("D3")+".bin", HDim, HDim);
 			Parameters.StoreMatrix(Folder+"/W2_"+i.ToString("D3")+".bin", YDim, HDim);
-			Parameters.StoreVector(Folder+"/b0_"+i.ToString("D3")+".bin", HDim);
-			Parameters.StoreVector(Folder+"/b1_"+i.ToString("D3")+".bin", HDim);
-			Parameters.StoreVector(Folder+"/b2_"+i.ToString("D3")+".bin", YDim);
+			Parameters.StoreMatrix(Folder+"/b0_"+i.ToString("D3")+".bin", HDim, 1);
+			Parameters.StoreMatrix(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1);
+			Parameters.StoreMatrix(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
 		}
 	}
 
 	public void SetInput(int i, float value) {
-		X[i] = value;
+		X.Values[i][0] = value;
 	}
 
 	public float GetOutput(int i) {
-		return Y[i];
+		return Y.Values[i][0];
 	}
 
 	public void Output() {
 		Debug.Log("====================INPUT====================");
 		for(int i=0; i<XDim; i++) {
-			Debug.Log(i + ": " + X[i]);
+			Debug.Log(i + ": " + X.Values[i][0]);
 		}
 		Debug.Log("====================OUTPUT====================");
 		for(int i=0; i<YDim; i++) {
-			Debug.Log(i + ": " + Y[i]);
+			Debug.Log(i + ": " + Y.Values[i][0]);
 		}
 	}
 
@@ -118,13 +123,13 @@ public class PFNN {
 		//int pindex_2;
 		//int pindex_3;
 
-		Vector<float> _X = (X - Xmean).PointwiseDivide(Xstd);
+		Matrix _X = (X - Xmean).PointwiseDivide(Xstd);
 		
 		//switch(Mode) {
 		//	case MODE.CONSTANT:
 				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				Vector<float> H0 = (W0[pindex_1] * _X) + b0[pindex_1]; ELU(ref H0);
-				Vector<float> H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+				Matrix H0 = (W0[pindex_1] * _X) + b0[pindex_1]; ELU(ref H0);
+				Matrix H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
 				Y = (W2[pindex_1] * H1) + b2[pindex_1];
 		/*	break;
 			
@@ -170,31 +175,31 @@ public class PFNN {
 		Y = (Y.PointwiseMultiply(Ystd)) + Ymean;
 	}
 
-	private void ELU(ref Vector<float> m) {
-		for(int x=0; x<m.Count; x++) {
-			m[x] = System.Math.Max(m[x], 0f) + (float)System.Math.Exp(System.Math.Min(m[x], 0f)) - 1f;
+	private void ELU(ref Matrix m) {
+		for(int x=0; x<m.Values.Length; x++) {
+			m.Values[x][0] = System.Math.Max(m.Values[x][0], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[x][0], 0f)) - 1f;
 		}
 	}
 
-	private void SoftMax(ref Vector<float> m) {
+	private void SoftMax(ref Matrix m) {
 		float lower = 0f;
-		for(int x=0; x<m.Count; x++) {
-			lower += (float)System.Math.Exp(m[x]);
+		for(int x=0; x<m.Values.Length; x++) {
+			lower += (float)System.Math.Exp(m.Values[x][0]);
 		}
-		for(int x=0; x<m.Count; x++) {
-			m[x] = (float)System.Math.Exp(m[x]) / lower;
+		for(int x=0; x<m.Values.Length; x++) {
+			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]) / lower;
 		}
 	}
 
-	private void Linear(ref Vector<float> o, ref Vector<float> y0, ref Vector<float> y1, float mu) {
+	private void Linear(ref Matrix o, ref Matrix y0, ref Matrix y1, float mu) {
 		o = (1.0f-mu) * y0 + (mu) * y1;
 	}
 
-	private void Cubic(ref Vector<float> o, ref Vector<float> y0, ref Vector<float> y1, ref Vector<float> y2, ref Vector<float> y3, float mu) {
+	private void Cubic(ref Matrix o, ref Matrix y0, ref Matrix y1, ref Matrix y2, ref Matrix y3, float mu) {
 		o = (
-		(-0.5f*y0+1.5f*y1-1.5f*y2+0.5f*y3)*mu*mu*mu + 
-		(y0-2.5f*y1+2.0f*y2-0.5f*y3)*mu*mu + 
-		(-0.5f*y0+0.5f*y2)*mu + 
+		(-0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3)*mu*mu*mu + 
+		(y0 - 2.5f*y1 + 2.0f*y2 - 0.5f*y3)*mu*mu + 
+		(-0.5f*y0 + 0.5f*y2)*mu + 
 		(y1));
 	}
 

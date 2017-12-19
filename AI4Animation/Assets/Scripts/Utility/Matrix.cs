@@ -1,37 +1,114 @@
 ﻿using System;
 
 public class Matrix {
-	public static double[][] MatrixInverse(double[][] matrix)
+	public float[][] Values;
+
+	public Matrix(int rows, int cols) {
+		Values = new float[rows][];
+		for(int i=0; i<rows; i++) {
+			Values[i] = new float[cols];
+		}
+	}
+
+	public Matrix(float[][] values) {
+		Values = values;
+	}
+
+	public static Matrix operator+ (Matrix a, Matrix b) {
+		Matrix result = new Matrix(a.Values.Length, a.Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = a.Values[i][j] + b.Values[i][j];
+			}
+		}
+		return result;
+	}
+
+	public static Matrix operator- (Matrix a, Matrix b) {
+		Matrix result = new Matrix(a.Values.Length, a.Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = a.Values[i][j] - b.Values[i][j];
+			}
+		}
+		return result;
+	}
+
+	public static Matrix operator* (float value, Matrix m) {
+		Matrix result = new Matrix(m.Values.Length, m.Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = value * m.Values[i][j];
+			}
+		}
+		return result;
+	}
+
+	public static Matrix operator* (Matrix m, float value) {
+		Matrix result = new Matrix(m.Values.Length, m.Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = m.Values[i][j] * value;
+			}
+		}
+		return result;
+	}
+
+	public static Matrix operator* (Matrix a, Matrix b) {
+		return new Matrix(Matrix.MatrixProduct(a.Values, b.Values));
+	}
+
+	public Matrix PointwiseMultiply(Matrix m) {
+		Matrix result = new Matrix(Values.Length, Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = Values[i][j] * m.Values[i][j];
+			}
+		}
+		return result;
+	}
+
+	public Matrix PointwiseDivide(Matrix m) {
+		Matrix result = new Matrix(Values.Length, Values[0].Length);
+		for(int i=0; i<result.Values.Length; i++) {
+			for(int j=0; j<result.Values[i].Length; j++) {
+				result.Values[i][j] = Values[i][j] / m.Values[i][j];
+			}
+		}
+		return result;
+	}
+
+	public static float[][] MatrixInverse(float[][] matrix)
 	{
 	// assumes determinant is not 0
 	// that is, the matrix does have an inverse
 	int n = matrix.Length;
-	double[][] result = MatrixCreate(n, n); // make a copy of matrix
+	float[][] result = MatrixCreate(n, n); // make a copy of matrix
 	for (int i = 0; i < n; ++i)
 		for (int j = 0; j < n; ++j)
 		result[i][j] = matrix[i][j];
 
-	double[][] lum; // combined lower & upper
+	float[][] lum; // combined lower & upper
 	int[] perm;
 	MatrixDecompose(matrix, out lum, out perm);
 
-	double[] b = new double[n];
+	float[] b = new float[n];
 	for (int i = 0; i < n; ++i)
 	{
 		for (int j = 0; j < n; ++j)
 		if (i == perm[j])
-			b[j] = 1.0;
+			b[j] = 1f;
 		else
-			b[j] = 0.0;
+			b[j] = 0f;
 
-		double[] x = Helper(lum, b); // 
+		float[] x = Helper(lum, b); // 
 		for (int j = 0; j < n; ++j)
 		result[j][i] = x[j];
 	}
 	return result;
 	} // MatrixInverse
 
-	public static int MatrixDecompose(double[][] m, out double[][] lum, out int[] perm)
+	public static int MatrixDecompose(float[][] m, out float[][] lum, out int[] perm)
 	{
 	// Crout's LU decomposition for matrix determinant and inverse
 	// stores combined lower & upper in lum[][]
@@ -57,12 +134,12 @@ public class Matrix {
 
 	for (int j = 0; j < n - 1; ++j) // process by column. note n-1 
 	{
-		double max = Math.Abs(lum[j][j]);
+		float max = Math.Abs(lum[j][j]);
 		int piv = j;
 
 		for (int i = j + 1; i < n; ++i) // find pivot index
 		{
-		double xij = Math.Abs(lum[i][j]);
+		float xij = Math.Abs(lum[i][j]);
 		if (xij > max)
 		{
 			max = xij;
@@ -72,7 +149,7 @@ public class Matrix {
 
 		if (piv != j)
 		{
-		double[] tmp = lum[piv]; // swap rows j, piv
+		float[] tmp = lum[piv]; // swap rows j, piv
 		lum[piv] = lum[j];
 		lum[j] = tmp;
 
@@ -83,12 +160,12 @@ public class Matrix {
 		toggle = -toggle;
 		}
 
-		double xjj = lum[j][j];
+		float xjj = lum[j][j];
 		if (xjj != 0.0)
 		{
 		for (int i = j + 1; i < n; ++i)
 		{
-			double xij = lum[i][j] / xjj;
+			float xij = lum[i][j] / xjj;
 			lum[i][j] = xij;
 			for (int k = j + 1; k < n; ++k)
 			lum[i][k] -= xij * lum[j][k];
@@ -100,15 +177,15 @@ public class Matrix {
 	return toggle;
 	} // MatrixDecompose
 
-	public static double[] Helper(double[][] luMatrix, double[] b) // helper
+	public static float[] Helper(float[][] luMatrix, float[] b) // helper
 	{
 	int n = luMatrix.Length;
-	double[] x = new double[n];
+	float[] x = new float[n];
 	b.CopyTo(x, 0);
 
 	for (int i = 1; i < n; ++i)
 	{
-		double sum = x[i];
+		float sum = x[i];
 		for (int j = 0; j < i; ++j)
 		sum -= luMatrix[i][j] * x[j];
 		x[i] = sum;
@@ -117,7 +194,7 @@ public class Matrix {
 	x[n - 1] /= luMatrix[n - 1][n - 1];
 	for (int i = n - 2; i >= 0; --i)
 	{
-		double sum = x[i];
+		float sum = x[i];
 		for (int j = i + 1; j < n; ++j)
 		sum -= luMatrix[i][j] * x[j];
 		x[i] = sum / luMatrix[i][i];
@@ -126,12 +203,12 @@ public class Matrix {
 	return x;
 	} // Helper
 
-	public static double MatrixDeterminant(double[][] matrix)
+	public static float MatrixDeterminant(float[][] matrix)
 	{
-	double[][] lum;
+	float[][] lum;
 	int[] perm;
 	int toggle = MatrixDecompose(matrix, out lum, out perm);
-	double result = toggle;
+	float result = toggle;
 	for (int i = 0; i < lum.Length; ++i)
 		result *= lum[i][i];
 	return result;
@@ -139,16 +216,16 @@ public class Matrix {
 
 	// ----------------------------------------------------------------
 
-	public static double[][] MatrixCreate(int rows, int cols)
+	public static float[][] MatrixCreate(int rows, int cols)
 	{
-	double[][] result = new double[rows][];
+	float[][] result = new float[rows][];
 	for (int i = 0; i < rows; ++i)
-		result[i] = new double[cols];
+		result[i] = new float[cols];
 	return result;
 	}
 
-	public static double[][] MatrixProduct(double[][] matrixA,
-	double[][] matrixB)
+	public static float[][] MatrixProduct(float[][] matrixA,
+	float[][] matrixB)
 	{
 	int aRows = matrixA.Length;
 	int aCols = matrixA[0].Length;
@@ -157,7 +234,7 @@ public class Matrix {
 	if (aCols != bRows)
 		throw new Exception("Non-conformable matrices");
 
-	double[][] result = MatrixCreate(aRows, bCols);
+	float[][] result = MatrixCreate(aRows, bCols);
 
 	for (int i = 0; i < aRows; ++i) // each row of A
 		for (int j = 0; j < bCols; ++j) // each col of B
@@ -167,7 +244,7 @@ public class Matrix {
 	return result;
 	}
 
-	public static string MatrixAsString(double[][] matrix)
+	public static string MatrixAsString(float[][] matrix)
 	{
 	string s = "";
 	for (int i = 0; i < matrix.Length; ++i)
@@ -179,17 +256,17 @@ public class Matrix {
 	return s;
 	}
 
-	public static double[][] ExtractLower(double[][] lum)
+	public static float[][] ExtractLower(float[][] lum)
 	{
 	// lower part of an LU Doolittle decomposition (dummy 1.0s on diagonal, 0.0s above)
 	int n = lum.Length;
-	double[][] result = MatrixCreate(n, n);
+	float[][] result = MatrixCreate(n, n);
 	for (int i = 0; i < n; ++i)
 	{
 		for (int j = 0; j < n; ++j)
 		{
 		if (i == j)
-			result[i][j] = 1.0;
+			result[i][j] = 1f;
 		else if (i > j)
 			result[i][j] = lum[i][j];
 		}
@@ -197,11 +274,11 @@ public class Matrix {
 	return result;
 	}
 
-	public static double[][] ExtractUpper(double[][] lum)
+	public static float[][] ExtractUpper(float[][] lum)
 	{
 	// upper part of an LU (lu values on diagional and above, 0.0s below)
 	int n = lum.Length;
-	double[][] result = MatrixCreate(n, n);
+	float[][] result = MatrixCreate(n, n);
 	for (int i = 0; i < n; ++i)
 	{
 		for (int j = 0; j < n; ++j)
