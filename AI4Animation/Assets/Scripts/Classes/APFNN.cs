@@ -15,15 +15,13 @@ public class APFNN {
 	public int HDim = 512;
 	public int YDim = 352;
 
-	private Matrix MLPXmean;
-	private Matrix MLPXstd;
-	private Matrix MLPYmean;
-	private Matrix MLPYstd;
-
 	private Matrix PFNNXmean;
 	private Matrix PFNNXstd;
 	private Matrix PFNNYmean;
 	private Matrix PFNNYstd;
+
+	private Matrix MLPXmean;
+	private Matrix MLPXstd;
 
 	private Matrix MLPW0, MLPW1, MLPW2;
 	private Matrix MLPb0, MLPb1, MLPb2;
@@ -49,57 +47,90 @@ public class APFNN {
 			return;
 		}
 
-		
+		PFNNXmean = Parameters.GetMatrix(0).Build();
+		PFNNXstd = Parameters.GetMatrix(1).Build();
+		PFNNYmean = Parameters.GetMatrix(2).Build();
+		PFNNYstd = Parameters.GetMatrix(3).Build();
+		MLPXmean = Parameters.GetMatrix(4).Build();
+		MLPXstd = Parameters.GetMatrix(5).Build();
 
+		MLPW0 = Parameters.GetMatrix(6).Build();
+		MLPb0 = Parameters.GetMatrix(7).Build();
+		MLPW1 = Parameters.GetMatrix(8).Build();
+		MLPb1 = Parameters.GetMatrix(9).Build();
+		MLPW2 = Parameters.GetMatrix(10).Build();
+		MLPb2 = Parameters.GetMatrix(11).Build();
+
+		CPa0 = new Matrix[4];
+		CPb0 = new Matrix[4];
+		CPa1 = new Matrix[4];
+		CPb1 = new Matrix[4];
+		CPa2 = new Matrix[4];
+		CPb2 = new Matrix[4];
+		for(int i=0; i<4; i++) {
+			CPa0[i] = Parameters.GetMatrix(12 + i*6 + 0).Build();
+			CPb0[i] = Parameters.GetMatrix(12 + i*6 + 1).Build();
+			CPa1[i] = Parameters.GetMatrix(12 + i*6 + 2).Build();
+			CPb1[i] = Parameters.GetMatrix(12 + i*6 + 3).Build();
+			CPa2[i] = Parameters.GetMatrix(12 + i*6 + 4).Build();
+			CPb2[i] = Parameters.GetMatrix(12 + i*6 + 5).Build();
+		}
+
+		MLPX = new Matrix(1, MLPDim);
+		MLPY = new Matrix(1, 4);
+
+		PFNNX = new Matrix(1, XDim);
+		PFNNY = new Matrix(1, YDim);
 	}
 
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		Parameters.StoreMatrix(Folder+"/Xmean.bin", XDim, 1);
-		Parameters.StoreMatrix(Folder+"/Xstd.bin", XDim, 1);
-		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
-		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
-		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", MLPDim, 1);
-		Parameters.StoreMatrix(Folder+"/Xstd_hands.bin", MLPDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xmean.bin", 1, XDim);
+		Parameters.StoreMatrix(Folder+"/Xstd.bin", 1, XDim);
+		Parameters.StoreMatrix(Folder+"/Ymean.bin", 1, YDim);
+		Parameters.StoreMatrix(Folder+"/Ystd.bin", 1, YDim);
+		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", 1, MLPDim);
+		Parameters.StoreMatrix(Folder+"/Xst_hands.bin", 1, MLPDim);
 
 		Parameters.StoreMatrix(Folder+"/wc0_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc0_b.bin", MLPDim, MLPDim);
+		Parameters.StoreMatrix(Folder+"/wc0_b.bin", 1, MLPDim);
 		Parameters.StoreMatrix(Folder+"/wc1_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc1_b.bin", MLPDim, MLPDim);
+		Parameters.StoreMatrix(Folder+"/wc1_b.bin", 1, MLPDim);
 		Parameters.StoreMatrix(Folder+"/wc2_w.bin", MLPDim, 4);
-		Parameters.StoreMatrix(Folder+"/wc2_b.bin", MLPDim, 4);
+		Parameters.StoreMatrix(Folder+"/wc2_b.bin", 1, 4);
 
 		for(int i=0; i<4; i++) {
-			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D3")+".bin", XDim, HDim);
-			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D3")+".bin", 1, HDim);
+			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D1")+".bin", XDim, HDim);
+			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D1")+".bin", 1, HDim);
 
-			Parameters.StoreMatrix(Folder+"/cp1_a"+i.ToString("D3")+".bin", HDim, HDim);
-			Parameters.StoreMatrix(Folder+"/cp1_b"+i.ToString("D3")+".bin", 1, HDim);
+			Parameters.StoreMatrix(Folder+"/cp1_a"+i.ToString("D1")+".bin", HDim, HDim);
+			Parameters.StoreMatrix(Folder+"/cp1_b"+i.ToString("D1")+".bin", 1, HDim);
 
-			Parameters.StoreMatrix(Folder+"/cp2_a"+i.ToString("D3")+".bin", HDim, YDim);
-			Parameters.StoreMatrix(Folder+"/cp2_b"+i.ToString("D3")+".bin", 1, YDim);
+			Parameters.StoreMatrix(Folder+"/cp2_a"+i.ToString("D1")+".bin", HDim, YDim);
+			Parameters.StoreMatrix(Folder+"/cp2_b"+i.ToString("D1")+".bin", 1, YDim);
 		}
 	}
 
 	public void SetMLPInput(int index, float value) {
-		MLPX.Values[index][0] = value; 
+		MLPX.Values[0][index] = value; 
 	}
 
 	public float GetMLPOutput(int index) {
-		return MLPY.Values[index][0];
+		return MLPY.Values[0][index];
 	}
 
 	public void SetPFNNInput(int index, float value) {
-		PFNNX.Values[index][0] = value;
+		PFNNX.Values[0][index] = value;
 	}
 
 	public float GetPFNNOutput(int index) {
-		return PFNNY.Values[index][0];
+		return PFNNY.Values[0][index];
 	}
 
 	public void Predict() {
 		//Process MLP
 		Matrix _MLPX = (MLPX - MLPXmean).PointwiseDivide(MLPXstd);
+
 		Matrix H0 = (_MLPX * MLPW0) + MLPb0; ELU(ref H0);
 		Matrix H1 = (H0 * MLPW1) + MLPb1; ELU(ref H1);
 		MLPY = (H1 * MLPW2) + MLPb2; SoftMax(ref MLPY);
@@ -112,12 +143,12 @@ public class APFNN {
 		Matrix PFNNb1 = new Matrix(1, HDim);
 		Matrix PFNNb2 = new Matrix(1, YDim);
 		for(int i=0; i<4; i++) {
-			PFNNW0 += CPa0[i] * MLPY.Values[i][0];
-			PFNNW1 += CPa1[i] * MLPY.Values[i][0];
-			PFNNW2 += CPa2[i] * MLPY.Values[i][0];
-			PFNNb0 += CPb0[i] * MLPY.Values[i][0];
-			PFNNb1 += CPb1[i] * MLPY.Values[i][0];
-			PFNNb2 += CPb2[i] * MLPY.Values[i][0];
+			PFNNW0 += CPa0[i] * MLPY.Values[0][i];
+			PFNNW1 += CPa1[i] * MLPY.Values[0][i];
+			PFNNW2 += CPa2[i] * MLPY.Values[0][i];
+			PFNNb0 += CPb0[i] * MLPY.Values[0][i];
+			PFNNb1 += CPb1[i] * MLPY.Values[0][i];
+			PFNNb2 += CPb2[i] * MLPY.Values[0][i];
 		}
 
 		//Process PFNN
@@ -129,18 +160,18 @@ public class APFNN {
 	}
 
 	private void ELU(ref Matrix m) {
-		for(int x=0; x<m.Values.Length; x++) {
-			m.Values[x][0] = System.Math.Max(m.Values[x][0], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[x][0], 0f)) - 1f;
+		for(int x=0; x<m.Values[0].Length; x++) {
+			m.Values[0][x] = System.Math.Max(m.Values[0][x], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[0][x], 0f)) - 1f;
 		}
 	}
 
 	private void SoftMax(ref Matrix m) {
 		float lower = 0f;
 		for(int x=0; x<m.Values.Length; x++) {
-			lower += (float)System.Math.Exp(m.Values[x][0]);
+			lower += (float)System.Math.Exp(m.Values[0][x]);
 		}
 		for(int x=0; x<m.Values.Length; x++) {
-			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]) / lower;
+			m.Values[0][x] = (float)System.Math.Exp(m.Values[0][x]) / lower;
 		}
 	}
 

@@ -21,7 +21,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public PFNN PFNN;
+	public APFNN APFNN;
 
 	public SerialIK[] IKSolvers = new SerialIK[0];
 
@@ -49,7 +49,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		PFNN = new PFNN();
+		APFNN = new APFNN();
 	}
 
 	void Awake() {
@@ -61,7 +61,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
-		PFNN.Initialise();
+		APFNN.Initialise();
 	}
 
 	void Start() {
@@ -165,7 +165,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Trajectory.Points[i].SetRise((1f-factor)*prev.GetRise() + factor*next.GetRise());
 		}
 
-		if(PFNN.Parameters != null) {
+		if(APFNN.Parameters != null) {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
@@ -175,29 +175,29 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				PFNN.SetInput(start + i*6 + 0, pos.x);
-				//PFNN.SetInput(start + i*6 + 1, pos.y);
-				PFNN.SetInput(start + i*6 + 1, 0f);
-				PFNN.SetInput(start + i*6 + 2, pos.z);
-				PFNN.SetInput(start + i*6 + 3, dir.x);
-				PFNN.SetInput(start + i*6 + 4, dir.y);
-				PFNN.SetInput(start + i*6 + 5, dir.z);
+				APFNN.SetPFNNInput(start + i*6 + 0, pos.x);
+				//APFNN.SetInput(start + i*6 + 1, pos.y);
+				APFNN.SetPFNNInput(start + i*6 + 1, 0f);
+				APFNN.SetPFNNInput(start + i*6 + 2, pos.z);
+				APFNN.SetPFNNInput(start + i*6 + 3, dir.x);
+				APFNN.SetPFNNInput(start + i*6 + 4, dir.y);
+				APFNN.SetPFNNInput(start + i*6 + 5, dir.z);
 			}
 			start += 6*PointSamples;
 
 			//Input Trajectory Heights
 			for(int i=0; i<PointSamples; i++) {
-				//PFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y);
-				//PFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y);
-				PFNN.SetInput(start + i*2 + 0, 0f);
-				PFNN.SetInput(start + i*2 + 1, 0f);
+				//APFNN.SetPFNNInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y);
+				//APFNN.SetPFNNInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y);
+				APFNN.SetPFNNInput(start + i*2 + 0, 0f);
+				APFNN.SetPFNNInput(start + i*2 + 1, 0f);
 			}
 			start += 2*PointSamples;
 
 			//Input Trajectory Styles
 			for (int i=0; i<PointSamples; i++) {
 				for(int j=0; j<GetSample(i).Styles.Length; j++) {
-					PFNN.SetInput(start + (i*GetSample(i).Styles.Length) + j, GetSample(i).Styles[j]);
+					APFNN.SetPFNNInput(start + (i*GetSample(i).Styles.Length) + j, GetSample(i).Styles[j]);
 				}
 			}
 			start += Controller.Styles.Length * PointSamples;
@@ -208,23 +208,100 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-				PFNN.SetInput(start + i*JointDimIn + 0, pos.x);
-				PFNN.SetInput(start + i*JointDimIn + 1, pos.y);
-				PFNN.SetInput(start + i*JointDimIn + 2, pos.z);
-				PFNN.SetInput(start + i*JointDimIn + 3, forward.x);
-				PFNN.SetInput(start + i*JointDimIn + 4, forward.y);
-				PFNN.SetInput(start + i*JointDimIn + 5, forward.z);
-				PFNN.SetInput(start + i*JointDimIn + 6, up.x);
-				PFNN.SetInput(start + i*JointDimIn + 7, up.y);
-				PFNN.SetInput(start + i*JointDimIn + 8, up.z);
-				PFNN.SetInput(start + i*JointDimIn + 9, vel.x);
-				PFNN.SetInput(start + i*JointDimIn + 10, vel.y);
-				PFNN.SetInput(start + i*JointDimIn + 11, vel.z);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 0, pos.x);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 1, pos.y);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 2, pos.z);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 3, forward.x);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 4, forward.y);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 5, forward.z);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 6, up.x);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 7, up.y);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 8, up.z);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 9, vel.x);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 10, vel.y);
+				APFNN.SetPFNNInput(start + i*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Joints.Length;
 
+			//Input MLP Values
+			int leftHand = Array.FindIndex(Joints, x => x.name == "LeftHand");
+			int leftHandSite = Array.FindIndex(Joints, x => x.name == "LeftHandSite");
+			int rightHand = Array.FindIndex(Joints, x => x.name == "RightHand");
+			int rightHandSite = Array.FindIndex(Joints, x => x.name == "RightHandSite");
+			Vector3 _pos, _forward, _up, _vel;
+			int _start;
+
+			_start = 0;
+			_pos = Positions[leftHand].GetRelativePositionTo(previousRoot);
+			_forward = Forwards[leftHand].GetRelativeDirectionTo(previousRoot);
+			_up = Ups[leftHand].GetRelativeDirectionTo(previousRoot);
+			_vel = Velocities[leftHand].GetRelativeDirectionTo(previousRoot);
+			APFNN.SetMLPInput(_start + 0, _pos.x);
+			APFNN.SetMLPInput(_start + 1, _pos.y);
+			APFNN.SetMLPInput(_start + 2, _pos.z);
+			APFNN.SetMLPInput(_start + 3, _forward.x);
+			APFNN.SetMLPInput(_start + 4, _forward.y);
+			APFNN.SetMLPInput(_start + 5, _forward.z);
+			APFNN.SetMLPInput(_start + 6, _up.x);
+			APFNN.SetMLPInput(_start + 7, _up.y);
+			APFNN.SetMLPInput(_start + 8, _up.z);
+			APFNN.SetMLPInput(_start + 9, _vel.x);
+			APFNN.SetMLPInput(_start + 10, _vel.y);
+			APFNN.SetMLPInput(_start + 11, _vel.z);
+			_start = 12;
+			_pos = Positions[leftHandSite].GetRelativePositionTo(previousRoot);
+			_forward = Forwards[leftHandSite].GetRelativeDirectionTo(previousRoot);
+			_up = Ups[leftHandSite].GetRelativeDirectionTo(previousRoot);
+			_vel = Velocities[leftHandSite].GetRelativeDirectionTo(previousRoot);
+			APFNN.SetMLPInput(_start + 0, _pos.x);
+			APFNN.SetMLPInput(_start + 1, _pos.y);
+			APFNN.SetMLPInput(_start + 2, _pos.z);
+			APFNN.SetMLPInput(_start + 3, _forward.x);
+			APFNN.SetMLPInput(_start + 4, _forward.y);
+			APFNN.SetMLPInput(_start + 5, _forward.z);
+			APFNN.SetMLPInput(_start + 6, _up.x);
+			APFNN.SetMLPInput(_start + 7, _up.y);
+			APFNN.SetMLPInput(_start + 8, _up.z);
+			APFNN.SetMLPInput(_start + 9, _vel.x);
+			APFNN.SetMLPInput(_start + 10, _vel.y);
+			APFNN.SetMLPInput(_start + 11, _vel.z);
+			_start = 24;
+			_pos = Positions[rightHand].GetRelativePositionTo(previousRoot);
+			_forward = Forwards[rightHand].GetRelativeDirectionTo(previousRoot);
+			_up = Ups[rightHand].GetRelativeDirectionTo(previousRoot);
+			_vel = Velocities[rightHand].GetRelativeDirectionTo(previousRoot);
+			APFNN.SetMLPInput(_start + 0, _pos.x);
+			APFNN.SetMLPInput(_start + 1, _pos.y);
+			APFNN.SetMLPInput(_start + 2, _pos.z);
+			APFNN.SetMLPInput(_start + 3, _forward.x);
+			APFNN.SetMLPInput(_start + 4, _forward.y);
+			APFNN.SetMLPInput(_start + 5, _forward.z);
+			APFNN.SetMLPInput(_start + 6, _up.x);
+			APFNN.SetMLPInput(_start + 7, _up.y);
+			APFNN.SetMLPInput(_start + 8, _up.z);
+			APFNN.SetMLPInput(_start + 9, _vel.x);
+			APFNN.SetMLPInput(_start + 10, _vel.y);
+			APFNN.SetMLPInput(_start + 11, _vel.z);
+			_start = 36;
+			_pos = Positions[rightHandSite].GetRelativePositionTo(previousRoot);
+			_forward = Forwards[rightHandSite].GetRelativeDirectionTo(previousRoot);
+			_up = Ups[rightHandSite].GetRelativeDirectionTo(previousRoot);
+			_vel = Velocities[rightHandSite].GetRelativeDirectionTo(previousRoot);
+			APFNN.SetMLPInput(_start + 0, _pos.x);
+			APFNN.SetMLPInput(_start + 1, _pos.y);
+			APFNN.SetMLPInput(_start + 2, _pos.z);
+			APFNN.SetMLPInput(_start + 3, _forward.x);
+			APFNN.SetMLPInput(_start + 4, _forward.y);
+			APFNN.SetMLPInput(_start + 5, _forward.z);
+			APFNN.SetMLPInput(_start + 6, _up.x);
+			APFNN.SetMLPInput(_start + 7, _up.y);
+			APFNN.SetMLPInput(_start + 8, _up.z);
+			APFNN.SetMLPInput(_start + 9, _vel.x);
+			APFNN.SetMLPInput(_start + 10, _vel.y);
+			APFNN.SetMLPInput(_start + 11, _vel.z);
+
 			//Predict
-			PFNN.Predict(Phase);
+			APFNN.Predict();
 
 			//Update Past Trajectory
 			for(int i=0; i<RootPointIndex; i++) {
@@ -240,8 +317,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Update Current Trajectory
 			int end = 6*4 + JointDimOut*Joints.Length;
-			Vector3 translationalVelocity = new Vector3(PFNN.GetOutput(end+0), 0f, PFNN.GetOutput(end+1));
-			float angularVelocity = PFNN.GetOutput(end+2);
+			Vector3 translationalVelocity = new Vector3(APFNN.GetPFNNOutput(end+0), 0f, APFNN.GetPFNNOutput(end+1));
+			float angularVelocity = APFNN.GetPFNNOutput(end+2);
 			float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
 			/*/
 			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[5], 0.25f));
@@ -267,15 +344,15 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
 				float factor = (float)(i % PointDensity) / PointDensity;
 
-				float prevPosX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
-				float prevPosZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
-				float prevDirX = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
-				float prevDirZ = PFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
+				float prevPosX = APFNN.GetPFNNOutput(start + (prevSampleIndex-6)*4 + 0);
+				float prevPosZ = APFNN.GetPFNNOutput(start + (prevSampleIndex-6)*4 + 1);
+				float prevDirX = APFNN.GetPFNNOutput(start + (prevSampleIndex-6)*4 + 2);
+				float prevDirZ = APFNN.GetPFNNOutput(start + (prevSampleIndex-6)*4 + 3);
 
-				float nextPosX = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 0);
-				float nextPosZ = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 1);
-				float nextDirX = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 2);
-				float nextDirZ = PFNN.GetOutput(start + (nextSampleIndex-6)*4 + 3);
+				float nextPosX = APFNN.GetPFNNOutput(start + (nextSampleIndex-6)*4 + 0);
+				float nextPosZ = APFNN.GetPFNNOutput(start + (nextSampleIndex-6)*4 + 1);
+				float nextDirX = APFNN.GetPFNNOutput(start + (nextSampleIndex-6)*4 + 2);
+				float nextDirZ = APFNN.GetPFNNOutput(start + (nextSampleIndex-6)*4 + 3);
 
 				float posX = (1f - factor) * prevPosX + factor * nextPosX;
 				float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
@@ -315,10 +392,10 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
-				Vector3 position = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 0), PFNN.GetOutput(start + i*JointDimOut + 1), PFNN.GetOutput(start + i*JointDimOut + 2));
-				Vector3 forward = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 3), PFNN.GetOutput(start + i*JointDimOut + 4), PFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
-				Vector3 up = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 6), PFNN.GetOutput(start + i*JointDimOut + 7), PFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
-				Vector3 velocity = new Vector3(PFNN.GetOutput(start + i*JointDimOut + 9), PFNN.GetOutput(start + i*JointDimOut + 10), PFNN.GetOutput(start + i*JointDimOut + 11));
+				Vector3 position = new Vector3(APFNN.GetPFNNOutput(start + i*JointDimOut + 0), APFNN.GetPFNNOutput(start + i*JointDimOut + 1), APFNN.GetPFNNOutput(start + i*JointDimOut + 2));
+				Vector3 forward = new Vector3(APFNN.GetPFNNOutput(start + i*JointDimOut + 3), APFNN.GetPFNNOutput(start + i*JointDimOut + 4), APFNN.GetPFNNOutput(start + i*JointDimOut + 5)).normalized;
+				Vector3 up = new Vector3(APFNN.GetPFNNOutput(start + i*JointDimOut + 6), APFNN.GetPFNNOutput(start + i*JointDimOut + 7), APFNN.GetPFNNOutput(start + i*JointDimOut + 8)).normalized;
+				Vector3 velocity = new Vector3(APFNN.GetPFNNOutput(start + i*JointDimOut + 9), APFNN.GetPFNNOutput(start + i*JointDimOut + 10), APFNN.GetPFNNOutput(start + i*JointDimOut + 11));
 				if(i==0 || i==1) {
 					position.x = 0f;
 					position.z = 0f;
@@ -374,10 +451,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			}
 			
 			//Update Skeleton
-			Character.FetchTransformations(Root);
-
-			//Update Phase
-			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);			
+			Character.FetchTransformations(Root);		
 		}
 	}
 
@@ -509,7 +583,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Inspector();
 			Target.Controller.Inspector();
 			Target.Character.Inspector(Target.Root);
-			Target.PFNN.Inspector();
+			Target.APFNN.Inspector();
 
 			if(GUI.changed) {
 				EditorUtility.SetDirty(Target);

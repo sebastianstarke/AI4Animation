@@ -136,11 +136,9 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\ParadeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\LutGen.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramRender.shader" />
-     <None Include="Assets\Plugins\MathNet.Numerics.xml" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
      <None Include="Assets\Palette\low poly medieval buildings\readme.txt" />
-     <None Include="Assets\Plugins\System.Threading.xml" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
@@ -163,7 +161,6 @@
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeHistogram.compute" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
      <None Include="Assets\Resources\Shaders\UnityGLTransparent.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
@@ -202,12 +199,6 @@
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="MathNet.Numerics">
- <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/MathNet.Numerics.dll</HintPath>
- </Reference>
- <Reference Include="System.Threading">
- <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/System.Threading.dll</HintPath>
  </Reference>
  <Reference Include="MeshSkinnerDemo1.0.1">
  <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/Winterdust/MeshSkinnerDemo1.0.1.dll</HintPath>

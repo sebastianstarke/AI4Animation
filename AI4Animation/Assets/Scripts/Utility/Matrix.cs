@@ -14,6 +14,14 @@ public class Matrix {
 		Values = values;
 	}
 
+	public int GetRows() {
+		return Values.Length;
+	}
+	
+	public int GetColumns() {
+		return Values[0].Length;
+	}
+
 	public static Matrix operator+ (Matrix a, Matrix b) {
 		Matrix result = new Matrix(a.Values.Length, a.Values[0].Length);
 		for(int i=0; i<result.Values.Length; i++) {

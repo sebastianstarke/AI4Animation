@@ -23,7 +23,7 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public PFNN PFNN;
 
-	public SerialIK[] IKSolvers;
+	public SerialIK[] IKSolvers = new SerialIK[0];
 
 	private Trajectory Trajectory;
 
