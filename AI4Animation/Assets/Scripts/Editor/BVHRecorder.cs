@@ -38,6 +38,8 @@ public class BVHRecorder : EditorWindow {
 		Data.StyleFunction = new BVHAnimation.BVHStyleFunction(Data);
 		Data.StyleFunction.SetStyle(BVHAnimation.BVHStyleFunction.STYLE.Quadruped);
 		
+		int index = 0;
+
 		while(Recording && Application.isPlaying) {
 			yield return new WaitForEndOfFrame();
 			//Frames
@@ -58,8 +60,8 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.Trajectory.Points, point);
 
 			//Phase Function
-			Utility.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase(), 2f*Mathf.PI));
-			Utility.Add(ref Data.PhaseFunction.Keys, false);
+			Utility.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase() / (2f*Mathf.PI), 1f));
+			Utility.Add(ref Data.PhaseFunction.Keys, index == 0 ? true : Data.PhaseFunction.Phase[index-1] > Data.PhaseFunction.Phase[index]);
 			Utility.Add(ref Data.PhaseFunction.Cycle, 0f);
 			Utility.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
 			Utility.Add(ref Data.PhaseFunction.Velocities, 0f);
@@ -76,22 +78,48 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
 
 			//Style Function
-			Utility.Add(ref Data.StyleFunction.Keys, false);
+			bool styleUpdate = false;
 			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
 				Utility.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query() == 1f ? true : false);
 				Utility.Add(ref Data.StyleFunction.Styles[i].Values, Animation.GetTrajectory().Points[60].Styles[i]);
+				if(index == 0) {
+					styleUpdate = true;
+				} else {
+					if(Data.StyleFunction.Styles[i].Flags[index-1] != Data.StyleFunction.Styles[i].Flags[index]) {
+						styleUpdate = true;
+					}
+				}
 			}
+			Utility.Add(ref Data.StyleFunction.Keys, styleUpdate);
+
+			index += 1;
 		}
+
+		//Setup
 		Data.TimeWindow = Data.GetTotalTime();
-
 		Data.Corrections = new Vector3[Animation.Character.Hierarchy.Length];
-		Data.ComputeSymmetry();
+		Data.DetectSymmetry();
 
+		//Postprocess
+		Data.PhaseFunction.Keys[index-1] = true;
+		Data.StyleFunction.Keys[index-1] = true;
+		Data.PhaseFunction.Recompute();
+		Data.StyleFunction.Recompute();
+
+		//Finish
 		Recording = false;
 	}
 
-	private void Generate() {
-		
+	private void Save() {
+		if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+".asset", typeof(BVHAnimation)) == null) {
+			AssetDatabase.CreateAsset(Data , "Assets/Project/"+Name+".asset");
+		} else {
+			int i = 1;
+			while(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
+				i += 1;
+			}
+			AssetDatabase.CreateAsset(Data, "Assets/Project/"+Name+" ("+i+").asset");
+		}
 	}
 
 	void OnGUI() {
@@ -132,15 +160,7 @@ public class BVHRecorder : EditorWindow {
 				}
 
 				if(Utility.GUIButton("Save", Utility.DarkGrey, Utility.White)) {
-					if(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+".asset", typeof(BVHAnimation)) == null) {
-						AssetDatabase.CreateAsset(Data , "Assets/Project/"+Name+".asset");
-					} else {
-						int i = 1;
-						while(AssetDatabase.LoadAssetAtPath("Assets/Project/"+Name+" ("+i+").asset", typeof(BVHAnimation)) != null) {
-							i += 1;
-						}
-						AssetDatabase.CreateAsset(Data, "Assets/Project/"+Name+" ("+i+").asset");
-					}
+					Save();
 				}
 
 			}

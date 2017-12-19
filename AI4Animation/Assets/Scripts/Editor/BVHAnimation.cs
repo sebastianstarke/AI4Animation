@@ -11,8 +11,6 @@ public class BVHAnimation : ScriptableObject {
 	public bool MirrorX, MirrorY, MirrorZ;
 
 	public float UnitScale = 100f;
-	//public Vector3 PositionOffset = Vector3.zero;
-	//public Vector3 RotationOffset = Vector3.zero;
 	public Vector3[] Corrections;
 	
 	public BVHFrame[] Frames = new BVHFrame[0];
@@ -179,7 +177,7 @@ public class BVHAnimation : ScriptableObject {
 
 		//Finalise
 		ComputeCorrections();
-		ComputeSymmetry();
+		DetectSymmetry();
 		ComputeFrames();
 		ComputeTrajectory();
 
@@ -387,7 +385,7 @@ public class BVHAnimation : ScriptableObject {
 		//
 	}
 
-	public void ComputeSymmetry() {
+	public void DetectSymmetry() {
 		Symmetry = new int[Character.Hierarchy.Length];
 		for(int i=0; i<Character.Hierarchy.Length; i++) {
 			string name = Character.Hierarchy[i].GetName();
@@ -429,6 +427,10 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void ComputeFrames() {
+		if(Data.Motions.Length == 0) {
+			Debug.Log("No motions available.");
+			return;
+		}
 		for(int i=0; i<Frames.Length; i++) {
 			Frames[i].Generate();
 		}
@@ -460,8 +462,6 @@ public class BVHAnimation : ScriptableObject {
 			BVHData.Bone info = Data.Bones[i];
 			Character.Segment parent = Character.Hierarchy[i].GetParent(Character.Hierarchy);
 			Matrix4x4 local = Matrix4x4.TRS(
-				//i == 0 ? PositionOffset : info.Offset / UnitScale,
-				//i == 0 ? Quaternion.Euler(RotationOffset) : Quaternion.identity, 
 				info.Offset / UnitScale,
 				Quaternion.identity,
 				Vector3.one
@@ -552,24 +552,6 @@ public class BVHAnimation : ScriptableObject {
 			ComputeTrajectory();
 		}
 	}
-
-	/*
-	private void SetPositionOffset(Vector3 value) {
-		if(PositionOffset != value) {
-			PositionOffset = value;
-			ComputeFrames();
-			ComputeTrajectory();
-		}
-	}
-
-	private void SetRotationOffset(Vector3 value) {
-		if(RotationOffset != value) {
-			RotationOffset = value;
-			ComputeFrames();
-			ComputeTrajectory();
-		}
-	}
-	*/
 
 	private void SetCorrection(int index, Vector3 correction) {
 		if(Corrections[index] != correction) {
@@ -761,13 +743,10 @@ public class BVHAnimation : ScriptableObject {
 				}
 
 				SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
-				//SetPositionOffset(EditorGUILayout.Vector3Field("Position Offset", PositionOffset));
-				//SetRotationOffset(EditorGUILayout.Vector3Field("Rotation Offset", RotationOffset));
 
-				EditorGUILayout.LabelField("Import Corrections");
-				if(Utility.GUIButton("Auto Correct", Utility.DarkGrey, Utility.White)) {
-					ComputeCorrections();
-				}
+				//if(Utility.GUIButton("Auto Correct", Utility.DarkGrey, Utility.White)) {
+				//	ComputeCorrections();
+				//}
 
 				for(int i=0; i<Character.Hierarchy.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
@@ -793,9 +772,6 @@ public class BVHAnimation : ScriptableObject {
 			Utility.SetGUIColor(Utility.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				if(Utility.GUIButton("Compute Symmetry", Utility.DarkGrey, Utility.White)) {
-					ComputeSymmetry();
-				}
 				Utility.SetGUIColor(Utility.DarkGrey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
@@ -810,6 +786,9 @@ public class BVHAnimation : ScriptableObject {
 						MirrorZ = !MirrorZ;
 					}
 					EditorGUILayout.EndHorizontal();
+				}
+				if(Utility.GUIButton("Auto Detect", Utility.DarkGrey, Utility.White)) {
+					DetectSymmetry();
 				}
 				string[] names = new string[Character.Hierarchy.Length];
 				for(int i=0; i<Character.Hierarchy.Length; i++) {
@@ -1046,8 +1025,6 @@ public class BVHAnimation : ScriptableObject {
 
 				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character.Hierarchy);
 				Local[i] = Matrix4x4.TRS(
-					//i == 0 ? Animation.PositionOffset + Quaternion.Euler(Animation.RotationOffset) * position / Animation.UnitScale : (position+info.Offset) / Animation.UnitScale,
-					//i == 0 ? Quaternion.Euler(Animation.RotationOffset) * rotation : rotation, 
 					i == 0 ? position / Animation.UnitScale : (position + info.Offset) / Animation.UnitScale,
 					rotation,
 					Vector3.one
@@ -1227,6 +1204,21 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 			return Animation.Frames[Animation.GetTotalFrames()-1];
+		}
+
+		public void Recompute() {
+			for(int i=0; i<Animation.Frames.Length; i++) {
+				if(IsKey(Animation.Frames[i])) {
+					Phase[i] = 1f;
+				}
+			}
+			BVHFrame A = Animation.Frames[0];
+			BVHFrame B = GetNextKey(A);
+			while(A != B) {
+				Interpolate(A, B);
+				A = B;
+				B = GetNextKey(A);
+			}
 		}
 
 		private void Interpolate(BVHFrame frame) {
@@ -1515,6 +1507,19 @@ public class BVHAnimation : ScriptableObject {
 				}
 
 				//Phase
+				/*
+				for(int i=1; i<Animation.Frames.Length; i++) {
+					BVHFrame A = Animation.Frames[i-1];
+					BVHFrame B = Animation.Frames[i];
+					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
+					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.White);
+					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+				}
+				*/
 				BVHFrame A = Animation.GetFrame(start);
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
@@ -1669,13 +1674,13 @@ public class BVHAnimation : ScriptableObject {
 					return;
 				}
 				Keys[frame.Index-1] = true;
-				Refresh();
+				Recompute();
 			} else {
 				if(!IsKey(frame)) {
 					return;
 				}
 				Keys[frame.Index-1] = false;
-				Refresh();
+				Recompute();
 			}
 		}
 
@@ -1705,16 +1710,7 @@ public class BVHAnimation : ScriptableObject {
 			return Animation.Frames[Animation.GetTotalFrames()-1];
 		}
 
-		private void SetTransition(float value) {
-			value = Mathf.Max(value, 0f);
-			if(Transition == value) {
-				return;
-			}
-			Transition = value;
-			Refresh();
-		}
-
-		private void Refresh() {
+		public void Recompute() {
 			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				if(Keys[i]) {
 					for(int j=0; j<Styles.Length; j++) {
@@ -1722,6 +1718,15 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 			}
+		}
+
+		private void SetTransition(float value) {
+			value = Mathf.Max(value, 0f);
+			if(Transition == value) {
+				return;
+			}
+			Transition = value;
+			Recompute();
 		}
 
 		private void Interpolate(BVHFrame frame, int dimension) {
