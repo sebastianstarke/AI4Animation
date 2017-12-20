@@ -58,7 +58,7 @@ public class BVHProcessor : EditorWindow {
 				/*
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						Animations[i].Recompute();
+						Animations[i].StyleFunction.SetTransition(0.1f);
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();

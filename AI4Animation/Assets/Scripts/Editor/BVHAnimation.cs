@@ -1609,7 +1609,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Reset() {
-			Transition = 0.25f;
+			Transition = 0.1f;
 			Keys = new bool[Animation.GetTotalFrames()];
 			Styles = new BVHStyle[0];
 		}
@@ -1720,7 +1720,7 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		private void SetTransition(float value) {
+		public void SetTransition(float value) {
 			value = Mathf.Max(value, 0f);
 			if(Transition == value) {
 				return;
