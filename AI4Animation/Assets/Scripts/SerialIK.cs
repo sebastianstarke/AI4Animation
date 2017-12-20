@@ -15,8 +15,8 @@ public class SerialIK : MonoBehaviour {
 
 	private int DoF;
 	private int Entries;
-	private float[][] Jacobian;
-	private float[] Gradient;
+	private Matrix Jacobian;
+	private Matrix Gradient;
 
 	private float Differential = 0.001f;
 
@@ -39,11 +39,8 @@ public class SerialIK : MonoBehaviour {
 			float[] solution = new float[3*Transforms.Length];
 			DoF = Transforms.Length * 3;
 			Entries = 3;
-			Jacobian = new float[Entries][];
-			for(int i=0; i<Entries; i++) {
-				Jacobian[i] = new float[DoF];
-			}
-			Gradient = new float[Entries];
+			Jacobian = new Matrix(Entries, DoF);
+			Gradient = new Matrix(Entries, 1);
 			for(int i=0; i<10; i++) {
 				Iterate(posture, solution);
 			}
@@ -99,9 +96,9 @@ public class SerialIK : MonoBehaviour {
 
 			//Quaternion deltaRotation = Quaternion.Inverse(tipRotation) * GetTipRotation();
 	
-			Jacobian[0][j] = deltaPosition.x;
-			Jacobian[1][j] = deltaPosition.y;
-			Jacobian[2][j] = deltaPosition.z;
+			Jacobian.Values[0][j] = deltaPosition.x;
+			Jacobian.Values[1][j] = deltaPosition.y;
+			Jacobian.Values[2][j] = deltaPosition.z;
 			//Jacobian[3,j] = deltaRotation.x / Differential;
 			//Jacobian[4,j] = deltaRotation.y / Differential;
 			//Jacobian[5,j] = deltaRotation.z / Differential;
@@ -113,9 +110,9 @@ public class SerialIK : MonoBehaviour {
 
 		//Quaternion gradientRotation = Quaternion.Inverse(tipRotation) * Goal.rotation;
 
-		Gradient[0] = gradientPosition.x;
-		Gradient[1] = gradientPosition.y;
-		Gradient[2] = gradientPosition.z;
+		Gradient.Values[0][0] = gradientPosition.x;
+		Gradient.Values[1][0] = gradientPosition.y;
+		Gradient.Values[2][0] = gradientPosition.z;
 		//Gradient[3] = gradientRotation.x;
 		//Gradient[4] = gradientRotation.y;
 		//Gradient[5] = gradientRotation.z;
@@ -125,34 +122,34 @@ public class SerialIK : MonoBehaviour {
 		if(Method == JacobianMethod.Transpose) {
 			for(int m=0; m<DoF; m++) {
 				for(int n=0; n<Entries; n++) {
-					variables[m] += Jacobian[n][m] * Gradient[n];
+					variables[m] += Jacobian.Values[n][m] * Gradient.Values[n][0];
 				}
 			}
 		}
 
 		//Jacobian Damped-Least-Squares
 		if(Method == JacobianMethod.DampedLeastSquares) {
-			float[][] DLS = DampedLeastSquares();
+			Matrix DLS = DampedLeastSquares();
 			for(int m=0; m<DoF; m++) {
 				for(int n=0; n<Entries; n++) {
-					variables[m] += DLS[m][n] * Gradient[n];
+					variables[m] += DLS.Values[m][n] * Gradient.Values[n][0];
 				}
 			}
 		}
 	}
 
-	private float[][] DampedLeastSquares() {
-		float[][] transpose = Matrix.MatrixCreate(DoF, Entries);
+	private Matrix DampedLeastSquares() {
+		Matrix transpose = new Matrix(DoF, Entries);
 		for(int m=0; m<Entries; m++) {
 			for(int n=0; n<DoF; n++) {
-				transpose[n][m] = Jacobian[m][n];
+				transpose.Values[n][m] = Jacobian.Values[m][n];
 			}
 		}
-		float[][] jTj = Matrix.MatrixProduct(transpose, Jacobian);
+		Matrix jTj = transpose * Jacobian;
 		for(int i=0; i<DoF; i++) {
-			jTj[i][i] += Damping*Damping;
+			jTj.Values[i][i] += Damping*Damping;
 		}
-		float[][] dls = Matrix.MatrixProduct(Matrix.MatrixInverse(jTj), transpose);
+		Matrix dls = jTj.GetInverse() * transpose;
 		return dls;
   	}
 

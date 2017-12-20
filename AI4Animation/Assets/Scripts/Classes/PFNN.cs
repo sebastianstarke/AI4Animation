@@ -8,9 +8,9 @@ public class PFNN {
 
 	public bool Inspect = false;
 
-	//public enum MODE { CONSTANT, LINEAR, CUBIC };
+	public enum MODE { Constant, Linear, Cubic };
 
-	//public MODE Mode = MODE.CONSTANT;
+	public MODE Mode = MODE.Constant;
 
 	public string Folder = string.Empty;
 	public int XDim = 504;
@@ -18,16 +18,6 @@ public class PFNN {
 	public int YDim = 352;
 
 	public NetworkParameters Parameters;
-
-	//private Vector<float> Xmean, Xstd;
-	//private Vector<float> Ymean, Ystd;
-
-	//private Matrix<float>[] W0, W1, W2;
-	//private Vector<float>[] b0, b1, b2;
-
-	//private Vector<float> X, Y;
-	//private Matrix<float> W0p, W1p, W2p;
-	//private Vector<float> b0p, b1p, b2p;
 
 	private Matrix Xmean, Xstd, Ymean, Ystd;
 
@@ -52,33 +42,65 @@ public class PFNN {
 		Ymean = Parameters.GetMatrix(2).Build();
 		Ystd = Parameters.GetMatrix(3).Build();
 
-		W0 = new Matrix[50];
-		W1 = new Matrix[50];
-		W2 = new Matrix[50];
-		b0 = new Matrix[50];
-		b1 = new Matrix[50];
-		b2 = new Matrix[50];
-		for(int i=0; i<50; i++) {
-			W0[i] = Parameters.GetMatrix(4 + i*6 + 0).Build();
-			W1[i] = Parameters.GetMatrix(4 + i*6 + 1).Build();
-			W2[i] = Parameters.GetMatrix(4 + i*6 + 2).Build();
-			b0[i] = Parameters.GetMatrix(4 + i*6 + 3).Build();
-			b1[i] = Parameters.GetMatrix(4 + i*6 + 4).Build();
-			b2[i] = Parameters.GetMatrix(4 + i*6 + 5).Build();
+		switch(Mode) {
+			case MODE.Constant:
+			W0 = new Matrix[50];
+			W1 = new Matrix[50];
+			W2 = new Matrix[50];
+			b0 = new Matrix[50];
+			b1 = new Matrix[50];
+			b2 = new Matrix[50];
+			for(int i=0; i<50; i++) {
+				W0[i] = Parameters.GetMatrix(4 + i*6 + 0).Build();
+				W1[i] = Parameters.GetMatrix(4 + i*6 + 1).Build();
+				W2[i] = Parameters.GetMatrix(4 + i*6 + 2).Build();
+				b0[i] = Parameters.GetMatrix(4 + i*6 + 3).Build();
+				b1[i] = Parameters.GetMatrix(4 + i*6 + 4).Build();
+				b2[i] = Parameters.GetMatrix(4 + i*6 + 5).Build();
+			}
+			break;
+
+			case MODE.Linear:
+			W0 = new Matrix[10];
+			W1 = new Matrix[10];
+			W2 = new Matrix[10];
+			b0 = new Matrix[10];
+			b1 = new Matrix[10];
+			b2 = new Matrix[10];
+			for(int i=0; i<50; i+=5) {
+				W0[i] = Parameters.GetMatrix(4 + i*6 + 0).Build();
+				W1[i] = Parameters.GetMatrix(4 + i*6 + 1).Build();
+				W2[i] = Parameters.GetMatrix(4 + i*6 + 2).Build();
+				b0[i] = Parameters.GetMatrix(4 + i*6 + 3).Build();
+				b1[i] = Parameters.GetMatrix(4 + i*6 + 4).Build();
+				b2[i] = Parameters.GetMatrix(4 + i*6 + 5).Build();
+			}
+			break;
+
+			case MODE.Cubic:
+			W0 = new Matrix[4];
+			W1 = new Matrix[4];
+			W2 = new Matrix[4];
+			b0 = new Matrix[4];
+			b1 = new Matrix[4];
+			b2 = new Matrix[4];
+			for(float i=0; i<50f; i+=12.5f) {
+				int index = Mathf.RoundToInt(i);
+				W0[index] = Parameters.GetMatrix(4 + index*6 + 0).Build();
+				W1[index] = Parameters.GetMatrix(4 + index*6 + 1).Build();
+				W2[index] = Parameters.GetMatrix(4 + index*6 + 2).Build();
+				b0[index] = Parameters.GetMatrix(4 + index*6 + 3).Build();
+				b1[index] = Parameters.GetMatrix(4 + index*6 + 4).Build();
+				b2[index] = Parameters.GetMatrix(4 + index*6 + 5).Build();
+			}
+			break;
+
+			default:
+			break;
 		}
 
 		X = new Matrix(XDim, 1);
 		Y = new Matrix(YDim, 1);
-
-		/*
-		W0p = Matrix<float>.Build.Dense(HDim, XDim);
-		W1p = Matrix<float>.Build.Dense(HDim, HDim);
-		W2p = Matrix<float>.Build.Dense(YDim, HDim);
-
-		b0p = Vector<float>.Build.Dense(HDim);
-		b1p = Vector<float>.Build.Dense(HDim);
-		b2p = Vector<float>.Build.Dense(YDim);
-		*/
 	}
 
 	public void LoadParameters() {
@@ -94,6 +116,13 @@ public class PFNN {
 			Parameters.StoreMatrix(Folder+"/b0_"+i.ToString("D3")+".bin", HDim, 1);
 			Parameters.StoreMatrix(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1);
 			Parameters.StoreMatrix(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
+		}
+	}
+
+	public void SetMode(MODE mode) {
+		if(Mode != mode) {
+			Mode = mode;
+			Initialise();
 		}
 	}
 
@@ -117,60 +146,61 @@ public class PFNN {
 	}
 
 	public void Predict(float phase) {
-		//float pamount;
-		//int pindex_0;
+		float pamount;
+		int pindex_0;
 		int pindex_1;
-		//int pindex_2;
-		//int pindex_3;
+		int pindex_2;
+		int pindex_3;
 
 		Matrix _X = (X - Xmean).PointwiseDivide(Xstd);
 		
-		//switch(Mode) {
-		//	case MODE.CONSTANT:
-				pindex_1 = (int)((phase / (2*M_PI)) * 50);
-				Matrix H0 = (W0[pindex_1] * _X) + b0[pindex_1]; ELU(ref H0);
-				Matrix H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
-				Y = (W2[pindex_1] * H1) + b2[pindex_1];
-		/*	break;
-			
-			case MODE.LINEAR:
-				//TODO: make fmod faster
-				pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
-				pindex_1 = (int)((phase / (2*M_PI)) * 10);
-				pindex_2 = ((pindex_1+1) % 10);
-				Linear(ref W0p, ref W0[pindex_1], ref W0[pindex_2], pamount);
-				Linear(ref W1p, ref W1[pindex_1], ref W1[pindex_2], pamount);
-				Linear(ref W2p, ref W2[pindex_1], ref W2[pindex_2], pamount);
-				Linear(ref b0p, ref b0[pindex_1], ref b0[pindex_2], pamount);
-				Linear(ref b1p, ref b1[pindex_1], ref b1[pindex_2], pamount);
-				Linear(ref b2p, ref b2[pindex_1], ref b2[pindex_2], pamount);
-				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
-				H1 = (W1p * H0) + b1p; ELU(ref H1);
-				Yp = (W2p * H1) + b2p;
+		switch(Mode) {
+			case MODE.Constant:
+			pindex_1 = (int)((phase / (2*M_PI)) * 50);
+			Matrix H0 = (W0[pindex_1] * _X) + b0[pindex_1]; ELU(ref H0);
+			Matrix H1 = (W1[pindex_1] * H0) + b1[pindex_1]; ELU(ref H1);
+			Y = (W2[pindex_1] * H1) + b2[pindex_1];
+			break;
+		
+			case MODE.Linear:
+			//NOT YET WORKING
+			//TODO: make fmod faster
+			pamount = Mathf.Repeat((phase / (2*M_PI)) * 10, 1.0f);
+			pindex_1 = (int)((phase / (2*M_PI)) * 10);
+			pindex_2 = ((pindex_1+1) % 10);
+			Matrix W0l = Linear(ref W0[pindex_1], ref W0[pindex_2], pamount);
+			Matrix W1l = Linear(ref W1[pindex_1], ref W1[pindex_2], pamount);
+			Matrix W2l = Linear(ref W2[pindex_1], ref W2[pindex_2], pamount);
+			Matrix b0l = Linear(ref b0[pindex_1], ref b0[pindex_2], pamount);
+			Matrix b1l = Linear(ref b1[pindex_1], ref b1[pindex_2], pamount);
+			Matrix b2l = Linear(ref b2[pindex_1], ref b2[pindex_2], pamount);
+			H0 = (W0l * _X) + b0l; ELU(ref H0);
+			H1 = (W1l * H0) + b1l; ELU(ref H1);
+			Y = (W2l * H1) + b2l;
 			break;
 			
-			case MODE.CUBIC:
-				//TODO: make fmod faster
-				pamount = Mathf.Repeat((phase / (2*M_PI)) * 4, 1.0f);
-				pindex_1 = (int)((phase / (2*M_PI)) * 4);
-				pindex_0 = ((pindex_1+3) % 4);
-				pindex_2 = ((pindex_1+1) % 4);
-				pindex_3 = ((pindex_1+2) % 4);
-				Cubic(ref W0p, ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
-				Cubic(ref W1p, ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
-				Cubic(ref W2p, ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
-				Cubic(ref b0p, ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
-				Cubic(ref b1p, ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
-				Cubic(ref b2p, ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
-				H0 = (W0p * _Xp) + b0p; ELU(ref H0);
-				H1 = (W1p * H0) + b1p; ELU(ref H1);
-				Yp = (W2p * H1) + b2p;
+			case MODE.Cubic:
+			//NOT YET WORKING
+			//TODO: make fmod faster
+			pamount = Mathf.Repeat((phase / (2*M_PI)) * 4, 1.0f);
+			pindex_1 = (int)((phase / (2*M_PI)) * 4);
+			pindex_0 = ((pindex_1+3) % 4);
+			pindex_2 = ((pindex_1+1) % 4);
+			pindex_3 = ((pindex_1+2) % 4);
+			Matrix W0c = Cubic(ref W0[pindex_0], ref W0[pindex_1], ref W0[pindex_2], ref W0[pindex_3], pamount);
+			Matrix W1c = Cubic(ref W1[pindex_0], ref W1[pindex_1], ref W1[pindex_2], ref W1[pindex_3], pamount);
+			Matrix W2c = Cubic(ref W2[pindex_0], ref W2[pindex_1], ref W2[pindex_2], ref W2[pindex_3], pamount);
+			Matrix b0c = Cubic(ref b0[pindex_0], ref b0[pindex_1], ref b0[pindex_2], ref b0[pindex_3], pamount);
+			Matrix b1c = Cubic(ref b1[pindex_0], ref b1[pindex_1], ref b1[pindex_2], ref b1[pindex_3], pamount);
+			Matrix b2c = Cubic(ref b2[pindex_0], ref b2[pindex_1], ref b2[pindex_2], ref b2[pindex_3], pamount);
+			H0 = (W0c * _X) + b0c; ELU(ref H0);
+			H1 = (W1c * H0) + b1c; ELU(ref H1);
+			Y = (W2c * H1) + b2c;
 			break;
 			
 			default:
 			break;
 		}
-		*/
 		
 		Y = (Y.PointwiseMultiply(Ystd)) + Ymean;
 	}
@@ -191,16 +221,16 @@ public class PFNN {
 		}
 	}
 
-	private void Linear(ref Matrix o, ref Matrix y0, ref Matrix y1, float mu) {
-		o = (1.0f-mu) * y0 + (mu) * y1;
+	private Matrix Linear(ref Matrix y0, ref Matrix y1, float mu) {
+		return (1.0f-mu) * y0 + (mu) * y1;
 	}
 
-	private void Cubic(ref Matrix o, ref Matrix y0, ref Matrix y1, ref Matrix y2, ref Matrix y3, float mu) {
-		o = (
+	private Matrix Cubic(ref Matrix y0, ref Matrix y1, ref Matrix y2, ref Matrix y3, float mu) {
+		return
 		(-0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3)*mu*mu*mu + 
 		(y0 - 2.5f*y1 + 2.0f*y2 - 0.5f*y3)*mu*mu + 
 		(-0.5f*y0 + 0.5f*y2)*mu + 
-		(y1));
+		(y1);
 	}
 
 	#if UNITY_EDITOR
@@ -215,6 +245,7 @@ public class PFNN {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Folder = EditorGUILayout.TextField("Folder", Folder);
+					Mode = (MODE)EditorGUILayout.EnumPopup("Mode", Mode);
 					XDim = EditorGUILayout.IntField("XDim", XDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);

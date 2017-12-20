@@ -1,5 +1,17 @@
 ﻿using System;
 
+public class Vector {
+	public float[] Values;
+
+	public Vector(int dim) {
+		Values = new float[dim];
+	}
+
+	public Vector(float[] values) {
+		Values = values;
+	}
+}
+
 public class Matrix {
 	public float[][] Values;
 
@@ -63,7 +75,11 @@ public class Matrix {
 	}
 
 	public static Matrix operator* (Matrix a, Matrix b) {
-		return new Matrix(Matrix.MatrixProduct(a.Values, b.Values));
+		return new Matrix(MatrixUtility.MatrixProduct(a.Values, b.Values));
+	}
+
+	public Matrix GetInverse() {
+		return new Matrix(MatrixUtility.MatrixInverse(Values));
 	}
 
 	public Matrix PointwiseMultiply(Matrix m) {
@@ -85,6 +101,9 @@ public class Matrix {
 		}
 		return result;
 	}
+}
+
+public static class MatrixUtility {
 
 	public static float[][] MatrixInverse(float[][] matrix)
 	{
