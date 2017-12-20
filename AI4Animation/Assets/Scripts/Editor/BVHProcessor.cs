@@ -41,6 +41,9 @@ public class BVHProcessor : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+				if(Utility.GUIButton("Style Distribution", Utility.DarkGrey, Utility.White)) {
+					PrintStyleDistribution();
+				}
 
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("Enable All", Utility.Grey, Utility.White)) {
@@ -309,6 +312,38 @@ public class BVHProcessor : EditorWindow {
 					}
 				}
 			}
+		}
+	}
+
+	private void PrintStyleDistribution() {
+		if(Animations.Length == 0) {
+			return;
+		}
+		string[] names = new string[Animations[0].StyleFunction.Styles.Length];
+		for(int i=0; i<names.Length; i++) {
+			names[i] = Animations[0].StyleFunction.Styles[i].Name;
+		}
+		int[] distribution = new int[Animations[0].StyleFunction.Styles.Length];
+		int totalFrames = 0;
+		for(int i=0; i<Animations.Length; i++) {
+			if(Use[i]) {
+				for(int s=0; s<Animations[i].Sequences.Length; s++) {
+					for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
+						int startIndex = Animations[i].Sequences[s].Start-1;
+						int endIndex = Animations[i].Sequences[s].End-1;
+						for(int j=startIndex; j<=endIndex; j++) {
+							totalFrames += 1;
+							for(int d=0; d<distribution.Length; d++) {
+								distribution[d] += Animations[i].StyleFunction.Styles[d].Flags[j] ? 1 : 0;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for(int i=0; i<names.Length; i++) {
+			Debug.Log("Name: " + names[i] + " Count: " + distribution[i] + " Ratio: " + (float)distribution[i] / (float)totalFrames);
 		}
 	}
 
