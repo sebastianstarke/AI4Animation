@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 public static class Utility {
 
@@ -23,6 +24,15 @@ public static class Utility {
 	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
 
 	private static Dictionary<PrimitiveType, Mesh> primitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
+
+	public static void Screenshot(string name, int x, int y, int width, int height) {
+    	Texture2D tex = new Texture2D(width, height);
+		tex.ReadPixels(new Rect(x, y, width, height), 0, 0);
+		tex.Apply();
+		byte[] bytes = tex.EncodeToPNG();
+    	File.WriteAllBytes(Application.dataPath.Substring(0, Application.dataPath.Length-6) + name + ".png", bytes);
+		Destroy(tex);
+	}
 
 	public static void SetFPS(int fps) {
 		#if UNITY_EDITOR

@@ -76,115 +76,114 @@ public class APFNN {
 			CPb2[i] = Parameters.GetMatrix(12 + i*6 + 5).Build();
 		}
 
-		MLPX = new Matrix(1, MLPDim);
-		MLPY = new Matrix(1, 4);
+		MLPX = new Matrix(MLPDim, 1);
+		MLPY = new Matrix(4, 1);
 
-		PFNNX = new Matrix(1, XDim);
-		PFNNY = new Matrix(1, YDim);
+		PFNNX = new Matrix(XDim, 1);
+		PFNNY = new Matrix(YDim, 1);
 	}
 
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
-		Parameters.StoreMatrix(Folder+"/Xmean.bin", 1, XDim);
-		Parameters.StoreMatrix(Folder+"/Xstd.bin", 1, XDim);
-		Parameters.StoreMatrix(Folder+"/Ymean.bin", 1, YDim);
-		Parameters.StoreMatrix(Folder+"/Ystd.bin", 1, YDim);
-		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", 1, MLPDim);
-		Parameters.StoreMatrix(Folder+"/Xst_hands.bin", 1, MLPDim);
+		Parameters.StoreMatrix(Folder+"/Xmean.bin", XDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xstd.bin", XDim, 1);
+		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
+		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", MLPDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xstd_hands.bin", MLPDim, 1);
 
 		Parameters.StoreMatrix(Folder+"/wc0_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc0_b.bin", 1, MLPDim);
+		Parameters.StoreMatrix(Folder+"/wc0_b.bin", MLPDim, 1);
+
 		Parameters.StoreMatrix(Folder+"/wc1_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc1_b.bin", 1, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc2_w.bin", MLPDim, 4);
-		Parameters.StoreMatrix(Folder+"/wc2_b.bin", 1, 4);
+		Parameters.StoreMatrix(Folder+"/wc1_b.bin", MLPDim, 1);
+		
+		Parameters.StoreMatrix(Folder+"/wc2_w.bin", 4, MLPDim);
+		Parameters.StoreMatrix(Folder+"/wc2_b.bin", 4, 1);
 
 		for(int i=0; i<4; i++) {
-			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D1")+".bin", XDim, HDim);
-			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D1")+".bin", 1, HDim);
+			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
+			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1);
 
 			Parameters.StoreMatrix(Folder+"/cp1_a"+i.ToString("D1")+".bin", HDim, HDim);
-			Parameters.StoreMatrix(Folder+"/cp1_b"+i.ToString("D1")+".bin", 1, HDim);
+			Parameters.StoreMatrix(Folder+"/cp1_b"+i.ToString("D1")+".bin", HDim, 1);
 
-			Parameters.StoreMatrix(Folder+"/cp2_a"+i.ToString("D1")+".bin", HDim, YDim);
-			Parameters.StoreMatrix(Folder+"/cp2_b"+i.ToString("D1")+".bin", 1, YDim);
+			Parameters.StoreMatrix(Folder+"/cp2_a"+i.ToString("D1")+".bin", YDim, HDim);
+			Parameters.StoreMatrix(Folder+"/cp2_b"+i.ToString("D1")+".bin", YDim, 1);
 		}
 	}
 
 	public void SetMLPInput(int index, float value) {
-		MLPX.Values[0][index] = value; 
+		MLPX.Values[index][0] = value; 
+	}
+
+	public float GetMLPInput(int index) {
+		return MLPX.Values[index][0];
 	}
 
 	public float GetMLPOutput(int index) {
-		return MLPY.Values[0][index];
+		return MLPY.Values[index][0];
 	}
 
 	public void SetPFNNInput(int index, float value) {
-		PFNNX.Values[0][index] = value;
+		PFNNX.Values[index][0] = value;
+	}
+
+	public float GetPFNNInput(int index) {
+		return PFNNX.Values[index][0];
 	}
 
 	public float GetPFNNOutput(int index) {
-		return PFNNY.Values[0][index];
+		return PFNNY.Values[index][0];
 	}
 
 	public void Predict() {
 		//Process MLP
 		Matrix _MLPX = (MLPX - MLPXmean).PointwiseDivide(MLPXstd);
-
-		Matrix H0 = (_MLPX * MLPW0) + MLPb0; ELU(ref H0);
-		Matrix H1 = (H0 * MLPW1) + MLPb1; ELU(ref H1);
-		MLPY = (H1 * MLPW2) + MLPb2; SoftMax(ref MLPY);
+		Matrix H0 = (MLPW0 * _MLPX) + MLPb0; ELU(ref H0);
+		Matrix H1 = (MLPW1 * H0) + MLPb1; ELU(ref H1);
+		MLPY = (MLPW2 * H1) + MLPb2; SoftMax(ref MLPY);
 
 		//Control Points
-		Matrix PFNNW0 = new Matrix(XDim, HDim);
+		Matrix PFNNW0 = new Matrix(HDim, XDim);
 		Matrix PFNNW1 = new Matrix(HDim, HDim);
-		Matrix PFNNW2 = new Matrix(HDim, YDim);
-		Matrix PFNNb0 = new Matrix(1, HDim);
-		Matrix PFNNb1 = new Matrix(1, HDim);
-		Matrix PFNNb2 = new Matrix(1, YDim);
+		Matrix PFNNW2 = new Matrix(YDim, HDim);
+		Matrix PFNNb0 = new Matrix(HDim, 1);
+		Matrix PFNNb1 = new Matrix(HDim, 1);
+		Matrix PFNNb2 = new Matrix(YDim, 1);
 		for(int i=0; i<4; i++) {
-			PFNNW0 += CPa0[i] * MLPY.Values[0][i];
-			PFNNW1 += CPa1[i] * MLPY.Values[0][i];
-			PFNNW2 += CPa2[i] * MLPY.Values[0][i];
-			PFNNb0 += CPb0[i] * MLPY.Values[0][i];
-			PFNNb1 += CPb1[i] * MLPY.Values[0][i];
-			PFNNb2 += CPb2[i] * MLPY.Values[0][i];
+			PFNNW0 += CPa0[i] * MLPY.Values[i][0];
+			PFNNW1 += CPa1[i] * MLPY.Values[i][0];
+			PFNNW2 += CPa2[i] * MLPY.Values[i][0];
+			PFNNb0 += CPb0[i] * MLPY.Values[i][0];
+			PFNNb1 += CPb1[i] * MLPY.Values[i][0];
+			PFNNb2 += CPb2[i] * MLPY.Values[i][0];
 		}
+
+		Debug.Log(MLPY.Values[0][0].ToString("F5") +  MLPY.Values[1][0].ToString("F5") + MLPY.Values[2][0].ToString("F5") + MLPY.Values[3][0].ToString("F5"));
 
 		//Process PFNN
 		Matrix _PFNNX = (PFNNX - PFNNXmean).PointwiseDivide(PFNNXstd);
-		H0 = (_PFNNX * PFNNW0) + PFNNb0; ELU(ref H0);
-		H1 = (H0 * PFNNW1) + PFNNb1; ELU(ref H1);
-		PFNNY = (H1 * PFNNW2) + PFNNb2;
+		H0 = (PFNNW0 * _PFNNX) + PFNNb0; ELU(ref H0);
+		H1 = (PFNNW1 * H0) + PFNNb1; ELU(ref H1);
+		PFNNY = (PFNNW2 * H1) + PFNNb2;
 		PFNNY = (PFNNY.PointwiseMultiply(PFNNYstd)) + PFNNYmean;
 	}
 
 	private void ELU(ref Matrix m) {
 		for(int x=0; x<m.Values[0].Length; x++) {
-			m.Values[0][x] = System.Math.Max(m.Values[0][x], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[0][x], 0f)) - 1f;
+			m.Values[x][0] = System.Math.Max(m.Values[x][0], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[x][0], 0f)) - 1f;
 		}
 	}
 
 	private void SoftMax(ref Matrix m) {
 		float lower = 0f;
 		for(int x=0; x<m.Values.Length; x++) {
-			lower += (float)System.Math.Exp(m.Values[0][x]);
+			lower += (float)System.Math.Exp(m.Values[x][0]);
 		}
 		for(int x=0; x<m.Values.Length; x++) {
-			m.Values[0][x] = (float)System.Math.Exp(m.Values[0][x]) / lower;
+			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]) / lower;
 		}
-	}
-
-	private void Linear(ref Matrix o, ref Matrix y0, ref Matrix y1, float mu) {
-		o = (1.0f-mu) * y0 + (mu) * y1;
-	}
-
-	private void Cubic(ref Matrix o, ref Matrix y0, ref Matrix y1, ref Matrix y2, ref Matrix y3, float mu) {
-		o = (
-		(-0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3)*mu*mu*mu + 
-		(y0 - 2.5f*y1 + 2.0f*y2 - 0.5f*y3)*mu*mu + 
-		(-0.5f*y0 + 0.5f*y2)*mu + 
-		(y1));
 	}
 
 	#if UNITY_EDITOR

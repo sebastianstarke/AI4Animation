@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SerialIK : MonoBehaviour {
 
-	public Transform Goal;
+	public Vector3 GoalPosition;
 	public Transform[] Transforms;
 
 	public enum JacobianMethod{Transpose, DampedLeastSquares};
@@ -25,12 +25,12 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	public void UpdateGoal() {
-		Goal.position = GetTipPosition();
-		Goal.rotation = GetTipRotation();
+		GoalPosition = GetTipPosition();
+		//GoalRotation = GetTipRotation();
 	}
 
 	public void ProcessIK() {
-		if(Goal == null || Transforms.Length == 0) {
+		if(Transforms.Length == 0) {
 			return;
 		}
 
@@ -49,9 +49,9 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	private bool RequireProcessing() {
-		float height = Utility.GetHeight(Goal.position, LayerMask.GetMask("Ground"));
+		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
 		//if(height > Goal.position.y - transform.root.position.y) {
-			Goal.position = new Vector3(Goal.position.x, height + (Goal.position.y - transform.root.position.y), Goal.position.z);
+			GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
 			return true;
 		//}
 		//return false;
@@ -106,7 +106,7 @@ public class SerialIK : MonoBehaviour {
 		}
 
 		//Gradient Vector
-		Vector3 gradientPosition = Step * (Goal.position - tipPosition);
+		Vector3 gradientPosition = Step * (GoalPosition - tipPosition);
 
 		//Quaternion gradientRotation = Quaternion.Inverse(tipRotation) * Goal.rotation;
 

@@ -25,6 +25,7 @@ public class BVHAnimation : ScriptableObject {
 	public bool ShowPreview = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
+	public bool ShowFlow = false;
 	public bool ShowZero = false;
 
 	public BVHFrame CurrentFrame = null;
@@ -34,6 +35,8 @@ public class BVHAnimation : ScriptableObject {
 	public float Timescale = 1f;
 	public float TimeWindow = 0f;
 	public System.DateTime Timestamp;
+
+	public bool TakeScreenshot = false;
 
 	public void EditorUpdate() {
 		if(Playing) {
@@ -595,10 +598,16 @@ public class BVHAnimation : ScriptableObject {
 			if(Utility.GUIButton("Show Preview", ShowPreview ? Utility.Green : Utility.Grey, ShowPreview ? Utility.Black : Utility.LightGrey)) {
 				ShowPreview = !ShowPreview;
 			}
+			if(Utility.GUIButton("Show Flow", ShowFlow ? Utility.Green : Utility.Grey, ShowFlow ? Utility.Black : Utility.LightGrey)) {
+				ShowFlow = !ShowFlow;
+			}
 			if(Utility.GUIButton("Show Zero", ShowZero ? Utility.Green : Utility.Grey, ShowZero ? Utility.Black : Utility.LightGrey)) {
 				ShowZero = !ShowZero;
 			}
 			EditorGUILayout.EndHorizontal();
+			if(Utility.GUIButton("Screenshot", Utility.Red, Utility.White)) {
+				TakeScreenshot = true;
+			}
 		}
 
 		/*
@@ -839,8 +848,66 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void Draw() {
+		if(ShowFlow) {
+			Matrix4x4[] matrices = ShowZero ? ExtractZero(ShowMirrored) : ExtractTransformations(CurrentFrame, ShowMirrored);
+			for(int i=0; i<Character.Hierarchy.Length; i++) {
+				Character.Hierarchy[i].SetTransformation(matrices[i]);
+			}
+			Character.Draw(Character.DRAWTYPE.Transparent, Utility.Blue, Utility.Yellow, 1f);
+
+			int steps = 5;
+			float timespan = 0.1f;
+
+			//Past
+			for(int i=1; i<=steps; i++) {
+				float timestamp = CurrentFrame.Timestamp - i*timespan/steps;
+				if(timestamp >= 0) {
+					Matrix4x4[] t = ExtractTransformations(GetFrame(timestamp), ShowMirrored);
+					for(int j=0; j<Character.Hierarchy.Length; j++) {
+						Character.Hierarchy[j].SetTransformation(t[j]);
+					}
+					Character.Draw(
+						Character.DRAWTYPE.Transparent,
+						Color.Lerp(Utility.Blue, Utility.Red, (float)i / (float)steps),
+						Utility.Yellow,
+						1f - (float)i / (float)(steps+1)
+						);
+				}
+			}
+
+			//Future
+			for(int i=1; i<=steps; i++) {
+				float timestamp = CurrentFrame.Timestamp + i*timespan/steps;
+				if(timestamp <= GetTotalTime()) {
+					Matrix4x4[] t = ExtractTransformations(GetFrame(timestamp), ShowMirrored);
+					for(int j=0; j<Character.Hierarchy.Length; j++) {
+						Character.Hierarchy[j].SetTransformation(t[j]);
+					}
+					Character.Draw(
+						Character.DRAWTYPE.Transparent,
+						Color.Lerp(Utility.Blue, Utility.Green, (float)i / (float)steps),
+						Utility.Yellow,
+						1f - (float)i / (float)(steps+1))
+						;
+				}
+			}
+
+			if(TakeScreenshot) {
+				float size = 1f;
+				Utility.Screenshot(
+					name + "_" + CurrentFrame.Index.ToString(),
+					Screen.width/2 - Mathf.RoundToInt(Screen.width*size/2),
+					Screen.height/2 - Mathf.RoundToInt(Screen.width*size/2),
+					Mathf.RoundToInt(Screen.width*size),
+					Mathf.RoundToInt(Screen.width*size)
+					);
+				TakeScreenshot = false;
+			}
+
+			return;
+		}
+
 		if(ShowPreview) {
-			float step = 1f;
 			UnityGL.Start();
 			for(int i=1; i<GetTotalFrames(); i++) {
 				Matrix4x4[] prevTransformations = ExtractTransformations(Frames[i-1], ShowMirrored);
@@ -848,6 +915,7 @@ public class BVHAnimation : ScriptableObject {
 				UnityGL.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
 			}
 			UnityGL.Finish();
+			float step = 1f;
 			for(float i=0f; i<=GetTotalTime(); i+=step) {
 				Matrix4x4[] t = ExtractTransformations(GetFrame(i), ShowMirrored);
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
@@ -858,8 +926,8 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		if(ShowTrajectory) {
-			Trajectory.Draw();
-		} else {
+		//	Trajectory.Draw();
+		//} else {
 			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
 

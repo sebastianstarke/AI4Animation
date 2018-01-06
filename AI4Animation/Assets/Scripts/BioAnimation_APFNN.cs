@@ -27,7 +27,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	private Trajectory Trajectory;
 
-	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 
@@ -66,10 +65,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
-	}
-
-	public float GetPhase() {
-		return Phase;
 	}
 
 	public Trajectory GetTrajectory() {
@@ -224,81 +219,16 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			start += JointDimIn*Joints.Length;
 
 			//Input MLP Values
-			int leftHand = Array.FindIndex(Joints, x => x.name == "LeftHand");
-			int leftHandSite = Array.FindIndex(Joints, x => x.name == "LeftHandSite");
-			int rightHand = Array.FindIndex(Joints, x => x.name == "RightHand");
-			int rightHandSite = Array.FindIndex(Joints, x => x.name == "RightHandSite");
-			Vector3 _pos, _forward, _up, _vel;
-			int _start;
+			int _index = 0;
+			for(int i=288; i<288+24; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
 
-			_start = 0;
-			_pos = Positions[leftHand].GetRelativePositionTo(previousRoot);
-			_forward = Forwards[leftHand].GetRelativeDirectionTo(previousRoot);
-			_up = Ups[leftHand].GetRelativeDirectionTo(previousRoot);
-			_vel = Velocities[leftHand].GetRelativeDirectionTo(previousRoot);
-			APFNN.SetMLPInput(_start + 0, _pos.x);
-			APFNN.SetMLPInput(_start + 1, _pos.y);
-			APFNN.SetMLPInput(_start + 2, _pos.z);
-			APFNN.SetMLPInput(_start + 3, _forward.x);
-			APFNN.SetMLPInput(_start + 4, _forward.y);
-			APFNN.SetMLPInput(_start + 5, _forward.z);
-			APFNN.SetMLPInput(_start + 6, _up.x);
-			APFNN.SetMLPInput(_start + 7, _up.y);
-			APFNN.SetMLPInput(_start + 8, _up.z);
-			APFNN.SetMLPInput(_start + 9, _vel.x);
-			APFNN.SetMLPInput(_start + 10, _vel.y);
-			APFNN.SetMLPInput(_start + 11, _vel.z);
-			_start = 12;
-			_pos = Positions[leftHandSite].GetRelativePositionTo(previousRoot);
-			_forward = Forwards[leftHandSite].GetRelativeDirectionTo(previousRoot);
-			_up = Ups[leftHandSite].GetRelativeDirectionTo(previousRoot);
-			_vel = Velocities[leftHandSite].GetRelativeDirectionTo(previousRoot);
-			APFNN.SetMLPInput(_start + 0, _pos.x);
-			APFNN.SetMLPInput(_start + 1, _pos.y);
-			APFNN.SetMLPInput(_start + 2, _pos.z);
-			APFNN.SetMLPInput(_start + 3, _forward.x);
-			APFNN.SetMLPInput(_start + 4, _forward.y);
-			APFNN.SetMLPInput(_start + 5, _forward.z);
-			APFNN.SetMLPInput(_start + 6, _up.x);
-			APFNN.SetMLPInput(_start + 7, _up.y);
-			APFNN.SetMLPInput(_start + 8, _up.z);
-			APFNN.SetMLPInput(_start + 9, _vel.x);
-			APFNN.SetMLPInput(_start + 10, _vel.y);
-			APFNN.SetMLPInput(_start + 11, _vel.z);
-			_start = 24;
-			_pos = Positions[rightHand].GetRelativePositionTo(previousRoot);
-			_forward = Forwards[rightHand].GetRelativeDirectionTo(previousRoot);
-			_up = Ups[rightHand].GetRelativeDirectionTo(previousRoot);
-			_vel = Velocities[rightHand].GetRelativeDirectionTo(previousRoot);
-			APFNN.SetMLPInput(_start + 0, _pos.x);
-			APFNN.SetMLPInput(_start + 1, _pos.y);
-			APFNN.SetMLPInput(_start + 2, _pos.z);
-			APFNN.SetMLPInput(_start + 3, _forward.x);
-			APFNN.SetMLPInput(_start + 4, _forward.y);
-			APFNN.SetMLPInput(_start + 5, _forward.z);
-			APFNN.SetMLPInput(_start + 6, _up.x);
-			APFNN.SetMLPInput(_start + 7, _up.y);
-			APFNN.SetMLPInput(_start + 8, _up.z);
-			APFNN.SetMLPInput(_start + 9, _vel.x);
-			APFNN.SetMLPInput(_start + 10, _vel.y);
-			APFNN.SetMLPInput(_start + 11, _vel.z);
-			_start = 36;
-			_pos = Positions[rightHandSite].GetRelativePositionTo(previousRoot);
-			_forward = Forwards[rightHandSite].GetRelativeDirectionTo(previousRoot);
-			_up = Ups[rightHandSite].GetRelativeDirectionTo(previousRoot);
-			_vel = Velocities[rightHandSite].GetRelativeDirectionTo(previousRoot);
-			APFNN.SetMLPInput(_start + 0, _pos.x);
-			APFNN.SetMLPInput(_start + 1, _pos.y);
-			APFNN.SetMLPInput(_start + 2, _pos.z);
-			APFNN.SetMLPInput(_start + 3, _forward.x);
-			APFNN.SetMLPInput(_start + 4, _forward.y);
-			APFNN.SetMLPInput(_start + 5, _forward.z);
-			APFNN.SetMLPInput(_start + 6, _up.x);
-			APFNN.SetMLPInput(_start + 7, _up.y);
-			APFNN.SetMLPInput(_start + 8, _up.z);
-			APFNN.SetMLPInput(_start + 9, _vel.x);
-			APFNN.SetMLPInput(_start + 10, _vel.y);
-			APFNN.SetMLPInput(_start + 11, _vel.z);
+			for(int i=348; i<348+24; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
 
 			//Predict
 			APFNN.Predict();
@@ -320,12 +250,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Vector3 translationalVelocity = new Vector3(APFNN.GetPFNNOutput(end+0), 0f, APFNN.GetPFNNOutput(end+1));
 			float angularVelocity = APFNN.GetPFNNOutput(end+2);
 			float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
-			/*/
-			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[5], 0.25f));
-			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[6], 0.25f));
-			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[7], 0.25f));
-			rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[8], 0.25f));
-			*/
+			
+			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[5], 0.25f));
+			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[6], 0.25f));
+			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[7], 0.25f));
+			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[8], 0.25f));
+			
 			Trajectory.Points[RootPointIndex].SetPosition((rest * translationalVelocity).GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
@@ -421,6 +351,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 
+			/*
 			//Motion Editing
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].UpdateGoal();
@@ -449,6 +380,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].ProcessIK();
 			}
+			*/
 			
 			//Update Skeleton
 			Character.FetchTransformations(Root);		
@@ -515,15 +447,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		if(Root == null) {
 			Root = transform;
 		}
-
-		UnityGL.Start();
-		UnityGL.DrawGUICircle(0.5f, 0.85f, 0.075f, Utility.Black.Transparent(0.5f));
-		Quaternion rotation = Quaternion.AngleAxis(-360f * Phase / (2f * Mathf.PI), Vector3.forward);
-		Vector2 a = rotation * new Vector2(-0.005f, 0f);
-		Vector2 b = rotation *new Vector3(0.005f, 0f);
-		Vector3 c = rotation * new Vector3(0f, 0.075f);
-		UnityGL.DrawGUITriangle(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y, 0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y, 0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y, Utility.Cyan);
-		UnityGL.Finish();
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {

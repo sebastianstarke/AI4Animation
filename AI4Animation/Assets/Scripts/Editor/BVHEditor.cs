@@ -40,7 +40,7 @@ public class BVHEditor : EditorWindow {
 		if(Animation == null) {
 			return;
 		}
-
+		
 		Animation.EditorUpdate();
 		SceneView.RepaintAll();
 
@@ -119,7 +119,7 @@ public class BVHEditor : EditorWindow {
 				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetRotation().GetMirror() : Animation.CurrentFrame.World[0].GetRotation();
 				rotation.x = 0f;
 				rotation.z = 0f;
-				rotation = Quaternion.Euler(0f, Animation.ShowMirrored ? Mathf.Repeat(FocusAngle + 180f, 360f) : FocusAngle, 0f) * rotation;
+				rotation = Quaternion.Euler(0f, Animation.ShowMirrored ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
 				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
 			}
 		}

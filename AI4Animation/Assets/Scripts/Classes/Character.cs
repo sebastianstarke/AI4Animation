@@ -294,13 +294,17 @@ public class Character {
 	}
 
 	public void Draw() {
+		Draw(DrawType, BoneColor, JointColor, 1f);
+	}
+
+	public void Draw(DRAWTYPE drawType, Color boneColor, Color jointColor, float alpha) {
 		UnityGL.Start();
 
 		if(DrawSkeleton) {
-			Material jointMaterial = new Material(GetMaterial());
-			Material boneMaterial = new Material(GetMaterial());
-			jointMaterial.color = JointColor;
-			boneMaterial.color = BoneColor;
+			Material jointMaterial = new Material(GetMaterial(drawType));
+			Material boneMaterial = new Material(GetMaterial(drawType));
+			jointMaterial.color = jointColor.Transparent(alpha);
+			boneMaterial.color = boneColor.Transparent(alpha);
 			Action<Segment, Segment> recursion = null;
 			recursion = new Action<Segment, Segment>((segment, parent) => {
 				if(segment == null) {
@@ -397,8 +401,8 @@ public class Character {
 		return BoneMesh;
 	}
 
-	private Material GetMaterial() {
-		switch(DrawType) {
+	private Material GetMaterial(DRAWTYPE drawType) {
+		switch(drawType) {
 			case DRAWTYPE.Diffuse:
 			if(DiffuseMaterial == null) {
 				DiffuseMaterial = (Material)Resources.Load("Materials/UnityGLDiffuse", typeof(Material));

@@ -61,7 +61,10 @@ public class BVHProcessor : EditorWindow {
 				/*
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						Animations[i].StyleFunction.SetTransition(0.1f);
+						for(int j=0; j<Animations[i].Sequences.Length; j++) {
+							Animations[i].Sequences[j].Export = 1;
+						}
+						//Animations[i].StyleFunction.SetTransition(0.1f);
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -249,7 +252,6 @@ public class BVHProcessor : EditorWindow {
 								line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
 								//Rotation
-								//line += FormatQuaternion(transformations[k].GetRotation().GetRelativeRotationTo(root).GetAbsolute().Log(), true, false);
 								line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
 								line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
 
