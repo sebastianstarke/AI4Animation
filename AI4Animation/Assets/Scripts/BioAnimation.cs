@@ -11,7 +11,6 @@ public class BioAnimation : MonoBehaviour {
 	public bool ShowTrajectory = true;
 	public bool ShowVelocities = true;
 
-	public float Bias = 2.5f;
 	public float TargetBlending = 0.25f;
 	public float StyleTransition = 0.25f;
 	public float TrajectoryCorrection = 1f;
@@ -137,7 +136,7 @@ public class BioAnimation : MonoBehaviour {
 
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				Bias * rescale * TargetVelocity,
+				PoolBias() * rescale * TargetVelocity,
 				scale_pos);
 
 			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
@@ -374,6 +373,15 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
+	private float PoolBias() {
+		float[] styles = Trajectory.Points[60].Styles;
+		float bias = 0f;
+		for(int i=0; i<styles.Length; i++) {
+			bias += styles[i] * Controller.Styles[i].Bias;
+		}
+		return bias;
+	}
+
 	private int GetJointIndex(string name) {
 		return System.Array.FindIndex(Joints, x => x.name == name);
 	}
@@ -536,7 +544,6 @@ public class BioAnimation : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Target.ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", Target.ShowTrajectory);
 						Target.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", Target.ShowVelocities);
-						Target.Bias = EditorGUILayout.FloatField("Bias", Target.Bias);
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 						Target.StyleTransition = EditorGUILayout.Slider("Style Transition", Target.StyleTransition, 0f, 1f);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);

@@ -63,6 +63,7 @@ public class Controller {
 	[System.Serializable]
 	public class Style {
 		public string Name;
+		public float Bias = 1f;
 		public KeyCode[] Keys = new KeyCode[0];
 
 		public float Query() {
@@ -118,6 +119,7 @@ public class Controller {
 					for(int i=0; i<Styles.Length; i++) {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Styles[i].Name = EditorGUILayout.TextField("Name", Styles[i].Name);
+							Styles[i].Bias = EditorGUILayout.FloatField("Bias", Styles[i].Bias);
 							Styles[i].SetKeyCount(EditorGUILayout.IntField("Keys", Styles[i].Keys.Length));
 							for(int j=0; j<Styles[i].Keys.Length; j++) {
 								Styles[i].Keys[j] = (KeyCode)EditorGUILayout.EnumPopup("Key", Styles[i].Keys[j]);
