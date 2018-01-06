@@ -529,12 +529,14 @@ public class BioAnimation : MonoBehaviour {
 					}
 				}
 
+				/*
 				if(Utility.GUIButton("Rebuild Hierarchy", Utility.DarkGreen, Utility.White)) {
 					Target.Character.BuildHierarchy(Target.Root);
 				}
 				if(Utility.GUIButton("Clear Hierarchy", Utility.DarkRed, Utility.White)) {
 					Utility.Clear(ref Target.Character.Hierarchy);
 				}
+				*/
 
 				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
