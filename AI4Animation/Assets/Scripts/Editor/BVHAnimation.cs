@@ -2063,7 +2063,7 @@ public class BVHAnimation : ScriptableObject {
 
 	public class BVHEvolution {
 		public static float AMPLITUDE = 10f;
-		public static float FREQUENCY = 5f;
+		public static float FREQUENCY = 2.5f;
 		public static float SHIFT = Mathf.PI;
 		public static float OFFSET = 10f;
 		public static float SLOPE = 5f;

@@ -249,21 +249,20 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			int end = 6*4 + JointDimOut*Joints.Length;
 			Vector3 translationalVelocity = new Vector3(APFNN.GetPFNNOutput(end+0), 0f, APFNN.GetPFNNOutput(end+1));
 			float angularVelocity = APFNN.GetPFNNOutput(end+2);
-			float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
 			
 			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[5], 0.25f));
 			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[6], 0.25f));
 			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[7], 0.25f));
 			//rest = Mathf.Min(rest, Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[8], 0.25f));
 			
-			Trajectory.Points[RootPointIndex].SetPosition((rest * translationalVelocity).GetRelativePositionFrom(currentRoot));
-			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
+			Trajectory.Points[RootPointIndex].SetPosition(translationalVelocity.GetRelativePositionFrom(currentRoot));
+			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (rest * translationalVelocity).GetRelativeDirectionFrom(nextRoot));
+				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + translationalVelocity.GetRelativeDirectionFrom(nextRoot));
 			}
 			start = 0;
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -350,8 +349,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].position = Positions[i];
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
-
-			/*
+			
 			//Motion Editing
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].UpdateGoal();
@@ -380,7 +378,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].ProcessIK();
 			}
-			*/
 			
 			//Update Skeleton
 			Character.FetchTransformations(Root);		

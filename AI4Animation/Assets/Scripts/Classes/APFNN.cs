@@ -160,7 +160,7 @@ public class APFNN {
 			PFNNb2 += CPb2[i] * MLPY.Values[i][0];
 		}
 
-		Debug.Log(MLPY.Values[0][0].ToString("F5") +  MLPY.Values[1][0].ToString("F5") + MLPY.Values[2][0].ToString("F5") + MLPY.Values[3][0].ToString("F5"));
+		//Debug.Log(MLPY.Values[0][0].ToString("F5") + " " +  MLPY.Values[1][0].ToString("F5") + " " + MLPY.Values[2][0].ToString("F5") + " " + MLPY.Values[3][0].ToString("F5"));
 
 		//Process PFNN
 		Matrix _PFNNX = (PFNNX - PFNNXmean).PointwiseDivide(PFNNXstd);
@@ -171,7 +171,7 @@ public class APFNN {
 	}
 
 	private void ELU(ref Matrix m) {
-		for(int x=0; x<m.Values[0].Length; x++) {
+		for(int x=0; x<m.Values.Length; x++) {
 			m.Values[x][0] = System.Math.Max(m.Values[x][0], 0f) + (float)System.Math.Exp(System.Math.Min(m.Values[x][0], 0f)) - 1f;
 		}
 	}
