@@ -30,7 +30,7 @@ public static class Utility {
 		tex.ReadPixels(new Rect(x, y, width, height), 0, 0);
 		tex.Apply();
 		byte[] bytes = tex.EncodeToPNG();
-    	File.WriteAllBytes(Application.dataPath.Substring(0, Application.dataPath.Length-6) + name + ".png", bytes);
+    	File.WriteAllBytes(name + ".png", bytes);
 		Destroy(tex);
 	}
 

@@ -36,7 +36,8 @@ public class BVHAnimation : ScriptableObject {
 	public float TimeWindow = 0f;
 	public System.DateTime Timestamp;
 
-	public bool TakeScreenshot = false;
+	public bool ExportScreenshots = false;
+	public bool SkipExportScreenshot = false;
 
 	public void EditorUpdate() {
 		if(Playing) {
@@ -605,8 +606,12 @@ public class BVHAnimation : ScriptableObject {
 				ShowZero = !ShowZero;
 			}
 			EditorGUILayout.EndHorizontal();
-			if(Utility.GUIButton("Screenshot", Utility.Red, Utility.White)) {
-				TakeScreenshot = true;
+			if(Utility.GUIButton(ExportScreenshots ? "Stop" : "Export Screenshots", Utility.DarkGrey, Utility.White)) {
+				ExportScreenshots = !ExportScreenshots;
+				SkipExportScreenshot = false;
+				if(ExportScreenshots) {
+					LoadFrame(1);
+				}
 			}
 		}
 
@@ -892,16 +897,50 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 
-			if(TakeScreenshot) {
-				float size = 1f;
-				Utility.Screenshot(
-					name + "_" + CurrentFrame.Index.ToString(),
-					Screen.width/2 - Mathf.RoundToInt(Screen.width*size/2),
-					Screen.height/2 - Mathf.RoundToInt(Screen.width*size/2),
-					Mathf.RoundToInt(Screen.width*size),
-					Mathf.RoundToInt(Screen.width*size)
-					);
-				TakeScreenshot = false;
+			if(ExportScreenshots) {
+				bool export = false;
+				for(int i=0; i<Sequences.Length; i++) {
+					export = export || CurrentFrame.Index >= Sequences[i].Start && CurrentFrame.Index <= Sequences[i].End;
+				}
+
+				if(export) {
+					if(!SkipExportScreenshot) {
+						Debug.Log("Exporting screenshot " + CurrentFrame.Index);
+						string folder = Application.dataPath.Substring(0, Application.dataPath.Length-6) + "Screenshots/" + name;
+						bool exists = System.IO.Directory.Exists(folder);
+						if(!exists) {
+							System.IO.Directory.CreateDirectory(folder);
+						}
+
+						float size = 1f;
+						Utility.Screenshot(
+							folder + "/" + CurrentFrame.Index.ToString(),
+							Screen.width/2 - Mathf.RoundToInt(Screen.width*size/2),
+							Screen.height/2 - Mathf.RoundToInt(Screen.width*size/2),
+							Mathf.RoundToInt(Screen.width*size),
+							Mathf.RoundToInt(Screen.width*size)
+							);
+
+						if(CurrentFrame.Index == GetTotalFrames()) {
+							Debug.Log("Finished exporting screenshots.");
+							ExportScreenshots = false;
+							SkipExportScreenshot = false;
+						} else {
+							SkipExportScreenshot = true;
+							LoadFrame(CurrentFrame.Index + 1);
+						}
+					} else {
+						SkipExportScreenshot = false;
+					}
+				} else {
+					if(CurrentFrame.Index == GetTotalFrames()) {
+						Debug.Log("Finished exporting screenshots.");
+						ExportScreenshots = false;
+						SkipExportScreenshot = false;
+					} else {
+						LoadFrame(CurrentFrame.Index + 1);
+					}
+				}
 			}
 
 			return;
