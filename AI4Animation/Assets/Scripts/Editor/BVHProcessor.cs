@@ -58,19 +58,19 @@ public class BVHProcessor : EditorWindow {
 				}
 				EditorGUILayout.EndHorizontal();
 
-				/*
+				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						for(int j=0; j<Animations[i].Sequences.Length; j++) {
 							Animations[i].Sequences[j].Export = 1;
 						}
-						//Animations[i].StyleFunction.SetTransition(0.1f);
+						Animations[i].PhaseFunction.SetVelocityThreshold(0.1f);
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
-				*/
+				
 				
 				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {

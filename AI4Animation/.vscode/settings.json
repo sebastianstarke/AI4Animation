@@ -3,8 +3,9 @@
 	"csharp.suppressDotnetInstallWarning": true,
 	"files.associations":
 	{
-		"*.bjs":"javascript",
-		"*.javascript":"javascript"
+		"*.bjs": "javascript",
+		"*.javascript": "javascript",
+		"iostream": "cpp"
 	},
 	"files.exclude":
 	{

@@ -89,6 +89,7 @@ public class APFNN {
 		Parameters.StoreMatrix(Folder+"/Xstd.bin", XDim, 1);
 		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
 		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
+
 		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", MLPDim, 1);
 		Parameters.StoreMatrix(Folder+"/Xstd_hands.bin", MLPDim, 1);
 

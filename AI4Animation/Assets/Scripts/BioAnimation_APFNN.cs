@@ -196,6 +196,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				}
 			}
 			start += Controller.Styles.Length * PointSamples;
+			//180
 
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Joints.Length; i++) {
@@ -218,29 +219,9 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			}
 			start += JointDimIn*Joints.Length;
 
-			//Input MLP Values
-			/* 12x4 ALL FEET POS ROT VEL
-			int _index = 0;
-			for(int i=300; i<312; i++) {
-				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
-				_index += 1;
-			}
-			for(int i=360; i<372; i++) {
-				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
-				_index += 1;
-			}
-			for(int i=408; i<420; i++) {
-				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
-				_index += 1;
-			}
-			for(int i=456; i<468; i++) {
-				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
-				_index += 1;
-			}
-			*/
-
-			/*
-			//12x4 VEL
+			//Input MLP Values	
+			//4*3 VEL
+			
 			int _index = 0;
 			for(int i=309; i<312; i++) {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
@@ -258,10 +239,10 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
 				_index += 1;
 			}
-			*/
-
+				
+			
 			/*
-			//12x4 POS VEL
+			//4*6 POS VEL
 			int _index = 0;
 			for(int i=300; i<303; i++) {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
@@ -289,7 +270,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
 				_index += 1;
 			}
-			
+
 			for(int i=456; i<459; i++) {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
 				_index += 1;
@@ -300,7 +281,80 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			}
 			*/
 
-			//24*4 All
+			/*
+			//8*6 POS VEL
+			int _index = 0;
+			for(int i=288; i<291; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=297; i<300; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=300; i<303; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=309; i<312; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			
+			for(int i=348; i<351; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=357; i<360; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=360; i<363; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=369; i<372; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+
+			for(int i=396; i<399; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=405; i<408; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=408; i<411; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=417; i<420; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+
+			for(int i=444; i<447; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=453; i<456; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=456; i<459; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=465; i<468; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			*/
+
+			/*
+			//4*12 All
 			int _index = 0;
 			for(int i=300; i<312; i++) {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
@@ -318,6 +372,28 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
 				_index += 1;
 			}
+			*/
+
+			//96
+			/*
+			int _index = 0;
+			for(int i=288; i<312; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=348; i<372; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=396; i<420; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			for(int i=444; i<468; i++) {
+				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
+				_index += 1;
+			}
+			*/
 			
 			//Predict
 			APFNN.Predict();
@@ -611,12 +687,14 @@ public class BioAnimation_APFNN : MonoBehaviour {
 					}
 				}
 
+				/*
 				if(Utility.GUIButton("Rebuild Hierarchy", Utility.DarkGreen, Utility.White)) {
 					Target.Character.BuildHierarchy(Target.Root);
 				}
 				if(Utility.GUIButton("Clear Hierarchy", Utility.DarkRed, Utility.White)) {
 					Utility.Clear(ref Target.Character.Hierarchy);
 				}
+				*/
 
 				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
