@@ -12,7 +12,7 @@ public class APFNN_Extern {
 
 	public string Folder = string.Empty;
 	
-	public int MLPDim = 12;
+	public int CDim = 12;
 	public int XDim = 504;
 	public int HDim = 512;
 	public int YDim = 352;
@@ -27,6 +27,12 @@ public class APFNN_Extern {
     private static extern IntPtr Delete(IntPtr obj);
     [DllImport("APFNN")]
     private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim);
+    [DllImport("APFNN")]
+    private static extern void SetValue(IntPtr obj, int index, int row, int col, float value);
+    [DllImport("APFNN")]
+    private static extern float GetValue(IntPtr obj, int index, int row, int col);
+    [DllImport("APFNN")]
+    private static extern void Predict(IntPtr obj);
 
 	public APFNN_Extern() {
 		Network = Create();
@@ -36,28 +42,6 @@ public class APFNN_Extern {
 		Delete(Network);
 	}
 
-	public void Initialise() {
-		if(Parameters == null) {
-			Debug.Log("Building PFNN failed because no parameters were loaded.");
-			return;
-		}
-		Initialise(Network, 12, 200, 200, 200);
-
-	}
-
-	//IntPtr RetrieveMatrix(int index) {
-		/*
-		NetworkParameters.FloatMatrix matrix = Parameters.GetMatrix(index);
-		IntPtr ptr = Create(matrix.Rows, matrix.Cols);
-		for(int i=0; i<matrix.Rows; i++) {
-			for(int j=0; j<matrix.Cols; j++) {
-				SetValue(ptr, i, j, matrix.Values[i].Values[j]);
-			}
-		}
-		return ptr;
-		*/
-	//}
-
 	public void LoadParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
 		Parameters.StoreMatrix(Folder+"/Xmean.bin", XDim, 1);
@@ -65,16 +49,16 @@ public class APFNN_Extern {
 		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
 		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
 
-		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", MLPDim, 1);
-		Parameters.StoreMatrix(Folder+"/Xstd_hands.bin", MLPDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xmean_hands.bin", CDim, 1);
+		Parameters.StoreMatrix(Folder+"/Xstd_hands.bin", CDim, 1);
 
-		Parameters.StoreMatrix(Folder+"/wc0_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc0_b.bin", MLPDim, 1);
+		Parameters.StoreMatrix(Folder+"/wc0_w.bin", CDim, CDim);
+		Parameters.StoreMatrix(Folder+"/wc0_b.bin", CDim, 1);
 
-		Parameters.StoreMatrix(Folder+"/wc1_w.bin", MLPDim, MLPDim);
-		Parameters.StoreMatrix(Folder+"/wc1_b.bin", MLPDim, 1);
+		Parameters.StoreMatrix(Folder+"/wc1_w.bin", CDim, CDim);
+		Parameters.StoreMatrix(Folder+"/wc1_b.bin", CDim, 1);
 		
-		Parameters.StoreMatrix(Folder+"/wc2_w.bin", 4, MLPDim);
+		Parameters.StoreMatrix(Folder+"/wc2_w.bin", 4, CDim);
 		Parameters.StoreMatrix(Folder+"/wc2_b.bin", 4, 1);
 
 		for(int i=0; i<4; i++) {
@@ -89,36 +73,52 @@ public class APFNN_Extern {
 		}
 	}
 
+	public void Initialise() {
+		if(Parameters == null) {
+			Debug.Log("Building PFNN failed because no parameters were loaded.");
+			return;
+		}
+		Initialise(Network, CDim, XDim, HDim, YDim);
+		for(int i=0; i<Parameters.Matrices.Length; i++) {
+			SetupMatrix(i);
+		}
+	}
+
+	private void SetupMatrix(int index) {
+		NetworkParameters.FloatMatrix matrix = Parameters.GetMatrix(index);
+		for(int i=0; i<matrix.Rows; i++) {
+			for(int j=0; j<matrix.Cols; j++) {
+				SetValue(Network, index, i, j, matrix.Values[i].Values[j]);
+			}
+		}	
+	}
+
 	public void SetMLPInput(int index, float value) {
-		//SetValue(MLPX, index, 0, value);
+		SetValue(Network, 36, index, 0, value);
 	}
 
 	public float GetMLPInput(int index) {
-		return 0f;
-		//return GetValue(MLPX, index, 0);
+		return GetValue(Network, 36, index, 0);
 	}
 
 	public float GetMLPOutput(int index) {
-		return 0f;
-		//return GetValue(MLPY, index, 0);
+		return GetValue(Network, 37, index, 0);
 	}
 
 	public void SetPFNNInput(int index, float value) {
-		//SetValue(PFNNX, index, 0, value);
+		SetValue(Network, 38, index, 0, value);
 	}
 
 	public float GetPFNNInput(int index) {
-		return 0f;
-		//return GetValue(PFNNX, index, 0);
+		return GetValue(Network, 38, index, 0);
 	}
 
 	public float GetPFNNOutput(int index) {
-		return 0f;
-		//return GetValue(PFNNY, index, 0);
+		return GetValue(Network, 39, index, 0);
 	}
 
 	public void Predict() {
-
+		Predict(Network);
 	}
 
 	#if UNITY_EDITOR
@@ -133,7 +133,7 @@ public class APFNN_Extern {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Folder = EditorGUILayout.TextField("Folder", Folder);
-					MLPDim = EditorGUILayout.IntField("MLPDim", MLPDim);
+					CDim = EditorGUILayout.IntField("CDim", CDim);
 					XDim = EditorGUILayout.IntField("XDim", XDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
