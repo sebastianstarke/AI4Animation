@@ -178,12 +178,15 @@ public class APFNN {
 	}
 
 	private void SoftMax(ref Matrix m) {
+		for(int x=0; x<m.Values.Length; x++) {
+			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]);
+		}
 		float lower = 0f;
 		for(int x=0; x<m.Values.Length; x++) {
-			lower += (float)System.Math.Exp(m.Values[x][0]);
+			lower += m.Values[x][0];
 		}
 		for(int x=0; x<m.Values.Length; x++) {
-			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]) / lower;
+			m.Values[x][0] /= lower;
 		}
 	}
 
