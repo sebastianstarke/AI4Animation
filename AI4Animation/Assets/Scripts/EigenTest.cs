@@ -5,7 +5,7 @@ using System;
 public class EigenTest : MonoBehaviour {
 
     void Start() {
-        /*
+        
         int dim = 100;
         int iter = 1;
 
@@ -29,17 +29,18 @@ public class EigenTest : MonoBehaviour {
         System.DateTime t3 = Utility.GetTimestamp();
         Performance(dim, dim, iter);
         Debug.Log("Time Eigen C++: " + Utility.GetElapsedTime(t3) + "s");
-        */
-
+        
+        /*
         System.DateTime t1 = Utility.GetTimestamp();
-        IntPtr a = Create(1000, 1000);
+        IntPtr a = Create(10000, 10000);
         SoftMax(a);
-        Debug.Log(Utility.GetElapsedTime(t1));
+        Debug.Log("Eigen: " + Utility.GetElapsedTime(t1));
 
         System.DateTime t2 = Utility.GetTimestamp();
-        Matrix b = new Matrix(1000, 1000);
+        Matrix b = new Matrix(10000, 10000);
         SoftMax(ref b);
-        Debug.Log(Utility.GetElapsedTime(t2));
+        Debug.Log("Unity: " + Utility.GetElapsedTime(t2));
+        */
     }
 
 	private void ELU(ref Matrix m) {
@@ -49,18 +50,15 @@ public class EigenTest : MonoBehaviour {
 	}
 
 	private void SoftMax(ref Matrix m) {
+        float lower = 0f;
 		for(int x=0; x<m.Values.Length; x++) {
 			m.Values[x][0] = (float)System.Math.Exp(m.Values[x][0]);
-		}
-		float lower = 0f;
-		for(int x=0; x<m.Values.Length; x++) {
-			lower += m.Values[x][0];
+            lower += m.Values[x][0];
 		}
 		for(int x=0; x<m.Values.Length; x++) {
 			m.Values[x][0] /= lower;
 		}
 	}
-
 
     [DllImport("Eigen")]
     private static extern IntPtr Create(int rows, int cols);

@@ -10,7 +10,7 @@ public class APFNN {
 
 	public string Folder = string.Empty;
 	
-	public int MLPDim = 48;
+	public int MLPDim = 12;
 	public int XDim = 504;
 	public int HDim = 512;
 	public int YDim = 352;
@@ -138,7 +138,7 @@ public class APFNN {
 		return PFNNY.Values[index][0];
 	}
 
-	public void Predict() {
+	public void Predict() {		
 		//Process MLP
 		Matrix _MLPX = (MLPX - MLPXmean).PointwiseDivide(MLPXstd);
 		Matrix H0 = (MLPW0 * _MLPX) + MLPb0; ELU(ref H0);

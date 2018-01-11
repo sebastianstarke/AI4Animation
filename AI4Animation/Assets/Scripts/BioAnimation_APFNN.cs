@@ -21,7 +21,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public APFNN APFNN;
+	public APFNN_Extern APFNN;
 
 	public SerialIK[] IKSolvers = new SerialIK[0];
 
@@ -48,7 +48,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		APFNN = new APFNN();
+		APFNN = new APFNN_Extern();
 	}
 
 	void Awake() {
@@ -239,7 +239,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				APFNN.SetMLPInput(_index, APFNN.GetPFNNInput(i));
 				_index += 1;
 			}
-				
 			
 			/*
 			//4*6 POS VEL
