@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SerialIK : MonoBehaviour {
+public class SerialIK_Eigen : MonoBehaviour {
 
 	public Vector3 GoalPosition;
 	public Transform[] Transforms;
@@ -12,12 +13,30 @@ public class SerialIK : MonoBehaviour {
 	[Range(0f, 1f)] public float Damping = 0.1f;
 	public int Iterations = 10;
 
-	private int DoF;
-	private int Entries;
-	private Matrix Jacobian;
-	private Matrix Gradient;
+	private IntPtr Solver;
 
-	private float Differential = 0.001f;
+    [DllImport("SerialIK")]
+    private static extern IntPtr Create();
+    [DllImport("SerialIK")]
+    private static extern IntPtr Delete(IntPtr obj);
+    [DllImport("SerialIK")]
+    private static extern void Initialise(IntPtr obj, int bones, int dof, int dimensions);
+    [DllImport("SerialIK")]
+    private static extern void Process(IntPtr obj, int iterations);
+    [DllImport("SerialIK")]
+    private static extern void SetValue(IntPtr obj, int matrix, int row, int col, float value);
+    [DllImport("SerialIK")]
+    private static extern void SetVariable(IntPtr obj, int index, float value);
+    [DllImport("SerialIK")]
+    private static extern float GetVariable(IntPtr obj, int index);
+
+	void Awake() {
+		Solver = Create();
+	}
+
+	void OnDestroy() {
+		Delete(Solver);
+	}
 
 	void Reset() {
 		Transforms = new Transform[1] {transform};
@@ -36,39 +55,50 @@ public class SerialIK : MonoBehaviour {
 			return;
 		}
 
+		Initialise(Solver, Transforms.Length, 3*Transforms.Length, 3);
+
 		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
 		GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
 
 		Matrix4x4[] sequence = GetSequence();
-		float[] solution = new float[3*Transforms.Length];
-		DoF = Transforms.Length * 3;
-		Entries = 3;
-		Jacobian = new Matrix(Entries, DoF);
-		Gradient = new Matrix(Entries, 1);
-		for(int i=0; i<Iterations; i++) {
-			Iterate(sequence, solution);
+		for(int i=0; i<sequence.Length; i++) {
+			for(int x=0; x<4; x++) {
+				for(int y=0; y<4; y++) {
+					SetValue(Solver, i, x, y, sequence[i][x,y]);
+				}
+			}
 		}
-		Assign(sequence);
+
+		for(int i=0; i<3*Transforms.Length; i++) {
+			SetVariable(Solver, i, 0f);
+		}
+
+		Process(Solver, Iterations);
+		
+		float[] solution = new float[3*Transforms.Length];
+		for(int i=0; i<3*Transforms.Length; i++) {
+			solution[i] = GetVariable(Solver, i);
+		}
+
+		Assign(sequence, solution);
 	}
 
-	private void Assign(Matrix4x4[] sequence) {
-		Transforms[0].position = sequence[0].GetPosition();
-		Transforms[0].rotation = sequence[0].GetRotation();
-		for(int i=1; i<Transforms.Length; i++) {
-			Transforms[i].localPosition = sequence[i].GetPosition();
-			Transforms[i].localRotation = sequence[i].GetRotation();
-		}
-	}
-	
-	private Matrix4x4 FK(Matrix4x4[] sequence, float[] variables) {
+	private void Assign(Matrix4x4[] sequence, float[] variables) {
 		Matrix4x4 result = Matrix4x4.identity;
 		for(int i=0; i<sequence.Length; i++) {
 			Matrix4x4 update = Matrix4x4.TRS(Vector3.zero, Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+2], Vector3.up), Vector3.one);
-			result = i == 0 ? sequence[i] * update : result * sequence[i] * update;
+			if(i == 0) {
+				result = sequence[i] * update;
+				Transforms[i].position = result.GetPosition();
+				Transforms[i].rotation = result.GetRotation();
+			} else {
+				result = result * sequence[i] * update;
+				Transforms[i].localPosition = result.GetPosition();
+				Transforms[i].localRotation = result.GetRotation();
+			}
 		}
-		return result;
 	}
-
+	
 	private Matrix4x4[] GetSequence() {
 		Matrix4x4[] sequence = new Matrix4x4[Transforms.Length];
 		sequence[0] = Transforms[0].GetWorldMatrix();
@@ -79,6 +109,7 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	private void Iterate(Matrix4x4[] sequence, float[] variables) {
+		/*
 		Matrix4x4 result = FK(sequence, variables);
 		Vector3 tipPosition = result.GetPosition();
 
@@ -108,9 +139,11 @@ public class SerialIK : MonoBehaviour {
 				variables[m] += DLS.Values[m][n] * Gradient.Values[n][0];
 			}
 		}
+		*/
 	}
 
 	private Matrix DampedLeastSquares() {
+		/*
 		Matrix transpose = new Matrix(DoF, Entries);
 		for(int m=0; m<Entries; m++) {
 			for(int n=0; n<DoF; n++) {
@@ -123,6 +156,8 @@ public class SerialIK : MonoBehaviour {
 		}
 		Matrix dls = jTj.GetInverse() * transpose;
 		return dls;
+		*/
+		return new Matrix(1, 1);
   	}
 
 }

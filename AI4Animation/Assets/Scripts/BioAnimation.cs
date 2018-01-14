@@ -75,22 +75,6 @@ public class BioAnimation : MonoBehaviour {
 		return Trajectory;
 	}
 
-	public Matrix4x4[] GetSkeleton(Matrix4x4 root) {
-		Matrix4x4[] skeleton = new Matrix4x4[Joints.Length];
-		for(int i=0; i<Joints.Length; i++) {
-			skeleton[i] = Matrix4x4.TRS(Joints[i].position, Joints[i].rotation, Vector3.one).GetRelativeTransformationTo(root);
-		}
-		return skeleton;
-	}
-
-	public Matrix4x4[] GetDeltaSkeleton(Matrix4x4[] from, Matrix4x4[] to) {
-		Matrix4x4[] delta = new Matrix4x4[from.Length];
-		for(int i=0; i<delta.Length; i++) {
-			delta[i] = from[i].inverse * to[i];
-		}
-		return delta;
-	}
-
 	public void AutoDetect() {
 		SetJointCount(0);
 		Action<Transform> recursion = null;

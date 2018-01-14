@@ -5,7 +5,7 @@ using System;
 public class EigenTest : MonoBehaviour {
 
     void Start() {
-        
+        /*
         int dim = 100;
         int iter = 1;
 
@@ -20,15 +20,16 @@ public class EigenTest : MonoBehaviour {
 
         System.DateTime t2 = Utility.GetTimestamp();
         Matrix a = new Matrix(dim, dim);
-        Matrix b = new Matrix(dim, dim);
-        for(int i=0; i<iter; i++) {
+        Matrix b = new Matrix(dim, dim);        for(int i=0; i<iter; i++) {
             Matrix c = a * b;
         }
+
         Debug.Log("Time Matrix C#: " + Utility.GetElapsedTime(t2) + "s");
 
         System.DateTime t3 = Utility.GetTimestamp();
         Performance(dim, dim, iter);
         Debug.Log("Time Eigen C++: " + Utility.GetElapsedTime(t3) + "s");
+        */
         
         /*
         System.DateTime t1 = Utility.GetTimestamp();

@@ -14,13 +14,12 @@ class APFNN {
 
     std::vector<MatrixXf*> References;
 
-	MatrixXf PFNNXmean;
-	MatrixXf PFNNXstd;
-	MatrixXf PFNNYmean;
-	MatrixXf PFNNYstd;
+    std::vector<int> ControlNeurons;
 
-	MatrixXf MLPXmean;
-	MatrixXf MLPXstd;
+	MatrixXf Xmean;
+	MatrixXf Xstd;
+	MatrixXf Ymean;
+	MatrixXf Ystd;
 
 	MatrixXf CW0, CW1, CW2;
 	MatrixXf Cb0, Cb1, Cb2;
@@ -28,8 +27,7 @@ class APFNN {
 	MatrixXf CPa0[4], CPa1[4], CPa2[4];
 	MatrixXf CPb0[4], CPb1[4], CPb2[4];
 
-    MatrixXf MLPX, MLPY;
-    MatrixXf PFNNX, PFNNY;
+    MatrixXf X, Y;
 
     int CDim, XDim, HDim, YDim;
 
@@ -39,13 +37,10 @@ class APFNN {
         HDim = hDim;
         YDim = yDim;
 
-        PFNNXmean = PFNNXmean.Zero(XDim, 1);
-        PFNNXstd = PFNNXstd.Zero(XDim, 1);
-        PFNNYmean = PFNNYmean.Zero(YDim, 1);
-        PFNNYstd = PFNNYstd.Zero(YDim, 1);
-
-        MLPXmean = MLPXmean.Zero(CDim, 1);
-        MLPXstd = MLPXstd.Zero(CDim, 1);
+        Xmean = Xmean.Zero(XDim, 1);
+        Xstd = Xstd.Zero(XDim, 1);
+        Ymean = Ymean.Zero(YDim, 1);
+        Ystd = Ystd.Zero(YDim, 1);
 
         CW0 = CW0.Zero(CDim, CDim);
         Cb0 = Cb0.Zero(CDim, 1);
@@ -63,18 +58,14 @@ class APFNN {
             CPb2[i] = CPb2[i].Zero(YDim, 1);
 		}
 
-        MLPX = MLPX.Zero(CDim, 1);
-        MLPY = MLPY.Zero(4, 1);
-        PFNNX = PFNNX.Zero(XDim, 1);
-        PFNNY = PFNNY.Zero(YDim, 1);
+        X = X.Zero(XDim, 1);
+        Y = Y.Zero(YDim, 1);
 
         References.resize(0);
-        References.push_back(&PFNNXmean);
-        References.push_back(&PFNNXstd);
-        References.push_back(&PFNNYmean);
-        References.push_back(&PFNNYstd);
-        References.push_back(&MLPXmean);
-        References.push_back(&MLPXstd);
+        References.push_back(&Xmean);
+        References.push_back(&Xstd);
+        References.push_back(&Ymean);
+        References.push_back(&Ystd);
         References.push_back(&CW0);
         References.push_back(&Cb0);
         References.push_back(&CW1);
@@ -89,26 +80,35 @@ class APFNN {
             References.push_back(&CPa2[i]);
             References.push_back(&CPb2[i]);
         }
-        References.push_back(&MLPX);
-        References.push_back(&MLPY);
-        References.push_back(&PFNNX);
-        References.push_back(&PFNNY);
+        References.push_back(&X);
+        References.push_back(&Y);
     }
 
-    public : void SetValue(int index, int row, int col, float value) {
-        (*References[index])(row, col) = value;
+    public : void SetValue(int matrix, int row, int col, float value) {
+        (*References[matrix])(row, col) = value;
     }
 
-    public : float GetValue(int index, int row, int col) {
-        return (*References[index])(row, col);
+    public : float GetValue(int matrix, int row, int col) {
+        return (*References[matrix])(row, col);
+    }
+
+    public : void AddControlNeuron(int index) {
+        ControlNeurons.push_back(index);
     }
 
     public : void Predict() {
+        //Normalise input
+        MatrixXf _X = (X - Xmean).cwiseQuotient(Xstd);
+
         //Process MLP
-        MLPY = (MLPX - MLPXmean).cwiseQuotient(MLPXstd);
-        MLPY = (CW0 * MLPY) + Cb0; ELU(MLPY);
-        MLPY = (CW1 * MLPY) + Cb1; ELU(MLPY);
-        MLPY = (CW2 * MLPY) + Cb2; SoftMax(MLPY);
+        MatrixXf _CX = MatrixXf::Zero(CDim, 1);
+        MatrixXf _CY = MatrixXf::Zero(4, 1);
+        for(uint i=0; i<ControlNeurons.size(); i++) {
+            _CX(i, 0) = _X(ControlNeurons[i], 0);
+        }
+        _CY = (CW0 * _CX) + Cb0; ELU(_CY);
+        _CY = (CW1 * _CY) + Cb1; ELU(_CY);
+        _CY = (CW2 * _CY) + Cb2; SoftMax(_CY);
 
         //Control Points
 		MatrixXf PFNNW0 = MatrixXf::Zero(HDim, XDim);
@@ -118,20 +118,21 @@ class APFNN {
 		MatrixXf PFNNb1 = MatrixXf::Zero(HDim, 1);
 		MatrixXf PFNNb2 = MatrixXf::Zero(YDim, 1);
 		for(int i=0; i<4; i++) {
-			PFNNW0 += CPa0[i] * MLPY(i, 0);
-			PFNNW1 += CPa1[i] * MLPY(i, 0);
-			PFNNW2 += CPa2[i] * MLPY(i, 0);
-			PFNNb0 += CPb0[i] * MLPY(i, 0);
-			PFNNb1 += CPb1[i] * MLPY(i, 0);
-			PFNNb2 += CPb2[i] * MLPY(i, 0);
+			PFNNW0 += CPa0[i] * _CY(i, 0);
+			PFNNW1 += CPa1[i] * _CY(i, 0);
+			PFNNW2 += CPa2[i] * _CY(i, 0);
+			PFNNb0 += CPb0[i] * _CY(i, 0);
+			PFNNb1 += CPb1[i] * _CY(i, 0);
+			PFNNb2 += CPb2[i] * _CY(i, 0);
 		}
 
         //Process PFNN
-        PFNNY = (PFNNX - PFNNXmean).cwiseQuotient(PFNNXstd);
-        PFNNY = (PFNNW0 * PFNNY) + PFNNb0; ELU(PFNNY);
-        PFNNY = (PFNNW1 * PFNNY) + PFNNb1; ELU(PFNNY);
-        PFNNY = (PFNNW2 * PFNNY) + PFNNb2;
-        PFNNY = PFNNY.cwiseProduct(PFNNYstd) + PFNNYmean;
+        Y = (PFNNW0 * _X) + PFNNb0; ELU(Y);
+        Y = (PFNNW1 * Y) + PFNNb1; ELU(Y);
+        Y = (PFNNW2 * Y) + PFNNb2;
+
+        //Renormalise output
+        Y = Y.cwiseProduct(Ystd) + Ymean;
     }
 
     void ELU(MatrixXf& m) {
@@ -168,12 +169,16 @@ extern "C" {
         obj->Initialise(cDim, xDim, hDim, yDim);
     }
 
-    void SetValue(APFNN* obj, int index, int row, int col, float value) {
-        obj->SetValue(index, row, col, value);
+    void SetValue(APFNN* obj, int matrix, int row, int col, float value) {
+        obj->SetValue(matrix, row, col, value);
     }
 
-    float GetValue(APFNN* obj, int index, int row, int col) {
-        return obj->GetValue(index, row, col);
+    float GetValue(APFNN* obj, int matrix, int row, int col) {
+        return obj->GetValue(matrix, row, col);
+    }
+
+    void AddControlNeuron(APFNN* obj, int index) {
+        obj->AddControlNeuron(index);
     }
 
     void Predict(APFNN* obj) {
