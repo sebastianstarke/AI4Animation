@@ -17,7 +17,6 @@ public class BioAnimation : MonoBehaviour {
 
 	public Transform Root;
 	public Transform[] Joints = new Transform[0];
-	public float[] Weights = new float[0];
 
 	public Controller Controller;
 	public Character Character;
@@ -405,8 +404,6 @@ public class BioAnimation : MonoBehaviour {
 	public void AddJoint(Transform joint) {
 		System.Array.Resize(ref Joints, Joints.Length+1);
 		Joints[Joints.Length-1] = joint;
-		System.Array.Resize(ref Weights, Weights.Length+1);
-		Weights[Weights.Length-1] = 1f;
 	}
 
 	public void SetJoint(int index, Transform t) {
@@ -420,7 +417,6 @@ public class BioAnimation : MonoBehaviour {
 		count = Mathf.Max(0, count);
 		if(Joints.Length != count) {
 			System.Array.Resize(ref Joints, count);
-			System.Array.Resize(ref Weights, count);
 		}
 	}
 
@@ -578,8 +574,6 @@ public class BioAnimation : MonoBehaviour {
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));
 							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField(Target.Joints[i], typeof(Transform), true));
-							EditorGUILayout.LabelField("Weight", GUILayout.Width(50f));
-							Target.Weights[i] = EditorGUILayout.Slider(Target.Weights[i], 0f, 1f);
 							EditorGUILayout.EndHorizontal();
 							Utility.ResetGUIColor();
 						}
