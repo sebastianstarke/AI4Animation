@@ -4,7 +4,7 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {Follow, Side, Front, Static}
+	public enum MODE {Follow, Side, Diagonal, Static}
 
 	public MODE Mode = MODE.Follow;
 	public Transform Target;
@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour {
 			SetMode(MODE.Side);
 		}
 		if(Input.GetKeyDown(KeyCode.F3)) {
-			SetMode(MODE.Front);
+			SetMode(MODE.Diagonal);
 		}
 		if(Input.GetKeyDown(KeyCode.F4)) {
 			SetMode(MODE.Static);
@@ -37,7 +37,7 @@ public class CameraController : MonoBehaviour {
 
 		//Determine final
 		transform.position = Target.position + Target.rotation * SelfOffset;
-		transform.LookAt(Target.position + TargetOffset);
+		transform.LookAt(Target.position + Target.rotation * TargetOffset);
 
 		//Lerp
 		transform.position = Vector3.Lerp(currentPosition, transform.position, 1f-Damping);
@@ -79,15 +79,15 @@ public class CameraController : MonoBehaviour {
 			break;
 
 			case MODE.Side:
-			EndSelfOffset = new Vector3(1.5f, 0.25f, 0f);
-			EndTargetOffset = new Vector3(0f, 0.25f, 0f);
+			EndSelfOffset = new Vector3(1.5f, 0.5f, 0.25f);
+			EndTargetOffset = new Vector3(0f, 0.5f, 0.25f);
 			EndDamping = 0.0f;
 			break;
 			
-			case MODE.Front:
-			EndSelfOffset = new Vector3(0f, 0.5f, 2.5f);
-			EndTargetOffset = new Vector3(0f, 0.5f, 0f);
-			EndDamping = 0.0f;
+			case MODE.Diagonal:
+			EndSelfOffset = new Vector3(-1.5f, 1f, -0.75f);
+			EndTargetOffset = new Vector3(0f, 0.5f, 1f);
+			EndDamping = 0.975f;
 			break;
 
 			case MODE.Static:
