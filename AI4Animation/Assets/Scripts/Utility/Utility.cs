@@ -22,6 +22,7 @@ public static class Utility {
 	public static Color Brown = new Color(0.5f, 0.25f, 0f, 1f);
 	public static Color Mustard = new Color(1f, 0.75f, 0.25f, 1f);
 	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
+	public static Color Purple = new Color(0.5f, 0f, 0.5f, 1f);
 
 	private static Dictionary<PrimitiveType, Mesh> primitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
 

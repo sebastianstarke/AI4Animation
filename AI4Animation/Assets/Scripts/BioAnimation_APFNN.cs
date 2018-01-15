@@ -20,7 +20,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public APFNN_Eigen APFNN;
+	public APFNN APFNN;
 
 	public SerialIK[] IKSolvers = new SerialIK[0];
 
@@ -47,7 +47,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		APFNN = new APFNN_Eigen();
+		APFNN = new APFNN();
 	}
 
 	void Awake() {
@@ -366,7 +366,11 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			}
 
 			//Update Skeleton
-			Character.FetchTransformations(Root);		
+			Character.FetchTransformations(Root);
+
+			for(int i=0; i<4; i++) {
+			//	Debug.Log(APFNN.GetControlPoint(i));
+			}
 		}
 	}
 
@@ -455,7 +459,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 							0.75f,
 							0.0075f,
 							0.05f,
-							new Color(0f, 1f, 1f, 0.5f)
+							Utility.Purple.Transparent(0.5f)
 						);
 					}
 				}

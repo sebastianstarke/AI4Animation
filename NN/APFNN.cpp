@@ -29,6 +29,8 @@ class APFNN {
 
     MatrixXf X, Y;
 
+    MatrixXf CP;
+
     int CDim, XDim, HDim, YDim;
 
     public : void Initialise(int cDim, int xDim, int hDim, int yDim) {
@@ -61,6 +63,8 @@ class APFNN {
         X = X.Zero(XDim, 1);
         Y = Y.Zero(YDim, 1);
 
+        CP = CP.Zero(4, 1);
+
         References.resize(0);
         References.push_back(&Xmean);
         References.push_back(&Xstd);
@@ -82,6 +86,7 @@ class APFNN {
         }
         References.push_back(&X);
         References.push_back(&Y);
+        References.push_back(&CP);
     }
 
     public : void SetValue(int matrix, int row, int col, float value) {
@@ -101,14 +106,13 @@ class APFNN {
         MatrixXf _X = (X - Xmean).cwiseQuotient(Xstd);
 
         //Process MLP
-        MatrixXf _CX = MatrixXf::Zero(CDim, 1);
-        MatrixXf _CY = MatrixXf::Zero(4, 1);
+        MatrixXf CN = MatrixXf::Zero(CDim, 1);
         for(uint i=0; i<ControlNeurons.size(); i++) {
-            _CX(i, 0) = _X(ControlNeurons[i], 0);
+            CN(i, 0) = _X(ControlNeurons[i], 0);
         }
-        _CY = (CW0 * _CX) + Cb0; ELU(_CY);
-        _CY = (CW1 * _CY) + Cb1; ELU(_CY);
-        _CY = (CW2 * _CY) + Cb2; SoftMax(_CY);
+        CP = (CW0 * CN) + Cb0; ELU(CP);
+        CP = (CW1 * CP) + Cb1; ELU(CP);
+        CP = (CW2 * CP) + Cb2; SoftMax(CP);
 
         //Control Points
 		MatrixXf PFNNW0 = MatrixXf::Zero(HDim, XDim);
@@ -118,12 +122,12 @@ class APFNN {
 		MatrixXf PFNNb1 = MatrixXf::Zero(HDim, 1);
 		MatrixXf PFNNb2 = MatrixXf::Zero(YDim, 1);
 		for(int i=0; i<4; i++) {
-			PFNNW0 += CPa0[i] * _CY(i, 0);
-			PFNNW1 += CPa1[i] * _CY(i, 0);
-			PFNNW2 += CPa2[i] * _CY(i, 0);
-			PFNNb0 += CPb0[i] * _CY(i, 0);
-			PFNNb1 += CPb1[i] * _CY(i, 0);
-			PFNNb2 += CPb2[i] * _CY(i, 0);
+			PFNNW0 += CPa0[i] * CP(i, 0);
+			PFNNW1 += CPa1[i] * CP(i, 0);
+			PFNNW2 += CPa2[i] * CP(i, 0);
+			PFNNb0 += CPb0[i] * CP(i, 0);
+			PFNNb1 += CPb1[i] * CP(i, 0);
+			PFNNb2 += CPb2[i] * CP(i, 0);
 		}
 
         //Process PFNN

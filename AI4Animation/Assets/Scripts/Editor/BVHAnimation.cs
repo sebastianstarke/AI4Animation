@@ -965,8 +965,6 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		if(ShowTrajectory) {
-		//	Trajectory.Draw();
-		//} else {
 			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
 
@@ -1000,7 +998,7 @@ public class BVHAnimation : ScriptableObject {
 					0.75f,
 					0.0075f,
 					0.05f,
-					new Color(0f, 1f, 1f, 0.5f)
+					Utility.Purple.Transparent(0.5f)
 				);				
 			}
 			UnityGL.Finish();
