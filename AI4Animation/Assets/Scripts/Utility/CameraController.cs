@@ -81,13 +81,13 @@ public class CameraController : MonoBehaviour {
 			case MODE.Side:
 			EndSelfOffset = new Vector3(1.5f, 0.25f, 0f);
 			EndTargetOffset = new Vector3(0f, 0.25f, 0f);
-			EndDamping = 0.1f;
+			EndDamping = 0.0f;
 			break;
 			
 			case MODE.Front:
 			EndSelfOffset = new Vector3(0f, 0.5f, 2.5f);
 			EndTargetOffset = new Vector3(0f, 0.5f, 0f);
-			EndDamping = 0.1f;
+			EndDamping = 0.0f;
 			break;
 
 			case MODE.Static:

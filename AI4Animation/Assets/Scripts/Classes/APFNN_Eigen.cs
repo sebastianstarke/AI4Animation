@@ -28,9 +28,9 @@ public class APFNN_Eigen {
     [DllImport("APFNN")]
     private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim);
     [DllImport("APFNN")]
-    private static extern void SetValue(IntPtr obj, int index, int row, int col, float value);
+    private static extern void SetValue(IntPtr obj, int matrix, int row, int col, float value);
     [DllImport("APFNN")]
-    private static extern float GetValue(IntPtr obj, int index, int row, int col);
+    private static extern float GetValue(IntPtr obj, int matrix, int row, int col);
     [DllImport("APFNN")]
     private static extern float AddControlNeuron(IntPtr obj, int index);
     [DllImport("APFNN")]

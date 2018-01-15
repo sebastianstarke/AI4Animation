@@ -11,6 +11,7 @@ public class SerialIK : MonoBehaviour {
 	[Range(0f, 1f)] public float Step = 1.0f;
 	[Range(0f, 1f)] public float Damping = 0.1f;
 
+	private int Bones;
 	private int DOF;
 	private int Dimensions;
 	private Matrix Jacobian;
@@ -25,7 +26,6 @@ public class SerialIK : MonoBehaviour {
 
 	public void UpdateGoal() {
 		GoalPosition = GetTipPosition();
-		//GoalRotation = GetTipRotation();
 	}
 
 	public void ProcessIK() {
@@ -36,20 +36,24 @@ public class SerialIK : MonoBehaviour {
 		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
 		GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
 
-		Matrix4x4[] posture = GetPosture();
-		float[] solution = new float[3*Transforms.Length];
-		DOF = Transforms.Length * 3;
+		Bones = Transforms.Length;
+		DOF = Bones * 3;
 		Dimensions = 3;
+
+		Matrix4x4[] posture = GetPosture();
+		float[] solution = new float[DOF];
 		Jacobian = new Matrix(Dimensions, DOF);
 		Gradient = new Matrix(Dimensions, 1);
+
 		for(int i=0; i<Iterations; i++) {
 			Iterate(posture, solution);
 		}
+
 		FK(posture, solution);
 	}
 	
 	private void FK(Matrix4x4[] posture, float[] variables) {
-		for(int i=0; i<Transforms.Length; i++) {
+		for(int i=0; i<Bones; i++) {
 			Quaternion update = Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+2], Vector3.up);
 			Transforms[i].localPosition = posture[i].GetPosition();
 			Transforms[i].localRotation = posture[i].GetRotation() * update;
@@ -57,8 +61,8 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	private Matrix4x4[] GetPosture() {
-		Matrix4x4[] posture = new Matrix4x4[Transforms.Length];
-		for(int i=0; i<posture.Length; i++) {
+		Matrix4x4[] posture = new Matrix4x4[Bones];
+		for(int i=0; i<Bones; i++) {
 			posture[i] = Transforms[i].GetLocalMatrix();
 		}
 		return posture;
@@ -68,14 +72,9 @@ public class SerialIK : MonoBehaviour {
 		return Transforms[Transforms.Length-1].position;
 	}
 
-	private Quaternion GetTipRotation() {
-		return Transforms[Transforms.Length-1].rotation;
-	}
-
 	private void Iterate(Matrix4x4[] posture, float[] variables) {
 		FK(posture, variables);
 		Vector3 tipPosition = GetTipPosition();
-		//Quaternion tipRotation = GetTipRotation();
 
 		//Jacobian
 		for(int j=0; j<DOF; j++) {
@@ -84,30 +83,16 @@ public class SerialIK : MonoBehaviour {
 			variables[j] -= Differential;
 
 			Vector3 deltaPosition = (GetTipPosition() - tipPosition) / Differential;
-
-			//Quaternion deltaRotation = Quaternion.Inverse(tipRotation) * GetTipRotation();
-	
 			Jacobian.Values[0][j] = deltaPosition.x;
 			Jacobian.Values[1][j] = deltaPosition.y;
 			Jacobian.Values[2][j] = deltaPosition.z;
-			//Jacobian[3,j] = deltaRotation.x / Differential;
-			//Jacobian[4,j] = deltaRotation.y / Differential;
-			//Jacobian[5,j] = deltaRotation.z / Differential;
-			//Jacobian[6,j] = deltaRotation.w / Differential;
 		}
 
 		//Gradient Vector
 		Vector3 gradientPosition = Step * (GoalPosition - tipPosition);
-
-		//Quaternion gradientRotation = Quaternion.Inverse(tipRotation) * Goal.rotation;
-
 		Gradient.Values[0][0] = gradientPosition.x;
 		Gradient.Values[1][0] = gradientPosition.y;
 		Gradient.Values[2][0] = gradientPosition.z;
-		//Gradient[3] = gradientRotation.x;
-		//Gradient[4] = gradientRotation.y;
-		//Gradient[5] = gradientRotation.z;
-		//Gradient[6] = gradientRotation.w;
 
 		//Jacobian Damped-Least-Squares
 		Matrix DLS = DampedLeastSquares();
