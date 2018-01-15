@@ -110,6 +110,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_APFNN.cs" />
+     <Compile Include="Assets\Scripts\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\Classes\APFNN.cs" />
      <Compile Include="Assets\Scripts\Classes\Character.cs" />
      <Compile Include="Assets\Scripts\Classes\Controller.cs" />

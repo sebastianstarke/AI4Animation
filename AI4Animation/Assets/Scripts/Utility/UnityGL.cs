@@ -351,6 +351,24 @@ public static class UnityGL {
 	}
 
 	//TODO FASTER
+	public static void DrawGUIQuad(float x, float y, float width, float height, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		x *= Screen.width;
+		y *= Screen.height;
+		width *= Screen.width;
+		height *= Screen.height;
+		SetProgram(PROGRAM.QUADS, SPACE.GUI);
+		GL.Color(color);
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(x, y, GetCamera().nearClipPlane + GUIOffset)));
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(x+width, y, GetCamera().nearClipPlane + GUIOffset)));
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(x+width, y+height, GetCamera().nearClipPlane + GUIOffset)));
+		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(x, y+height, GetCamera().nearClipPlane + GUIOffset)));
+	}
+
+	//TODO FASTER
 	public static void DrawGUITriangle(float xA, float yA, float xB, float yB, float xC, float yC, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
