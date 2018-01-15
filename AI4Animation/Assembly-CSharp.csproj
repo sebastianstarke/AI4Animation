@@ -145,6 +145,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
+     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
@@ -160,6 +161,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\COPYING.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />
+     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.cginc" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
