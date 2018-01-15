@@ -121,7 +121,6 @@
      <Compile Include="Assets\Scripts\Footprint.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\SerialIK.cs" />
-     <Compile Include="Assets\Scripts\SerialIK_Eigen.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />

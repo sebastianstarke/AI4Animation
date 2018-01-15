@@ -22,7 +22,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 	public Character Character;
 	public APFNN_Eigen APFNN;
 
-	public SerialIK_Eigen[] IKSolvers = new SerialIK_Eigen[0];
+	public SerialIK[] IKSolvers = new SerialIK[0];
 
 	private Trajectory Trajectory;
 
@@ -329,6 +329,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 			
+			
 			//Motion Editing
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].UpdateGoal();
@@ -357,7 +358,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].ProcessIK();
 			}
-			
+
 			//Update Skeleton
 			Character.FetchTransformations(Root);		
 		}
@@ -528,7 +529,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 						}
 						EditorGUILayout.EndHorizontal();
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (SerialIK_Eigen)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK_Eigen), true);
+							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
 						}
 
 						EditorGUI.BeginDisabledGroup(true);
