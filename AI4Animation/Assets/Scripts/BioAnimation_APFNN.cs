@@ -159,6 +159,11 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
+			//Fix for flat terrain
+			Transformations.SetPosition(
+				ref previousRoot, 
+				previousRoot.GetPosition() - new Vector3(0f, currentRoot.GetPosition().y - previousRoot.GetPosition().y, 0f)
+				);
 			
 			//Input Trajectory Positions / Directions
 			int start = 0;
@@ -170,7 +175,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				APFNN.SetInput(start + i*6 + 1, 0f);
 				APFNN.SetInput(start + i*6 + 2, pos.z);
 				APFNN.SetInput(start + i*6 + 3, dir.x);
-				APFNN.SetInput(start + i*6 + 4, dir.y);
+				APFNN.SetInput(start + i*6 + 4, 0f);
 				APFNN.SetInput(start + i*6 + 5, dir.z);
 			}
 			start += 6*PointSamples;
@@ -304,6 +309,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Vector3 forward = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 3), APFNN.GetOutput(start + i*JointDimOut + 4), APFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
 				Vector3 up = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 6), APFNN.GetOutput(start + i*JointDimOut + 7), APFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
 				Vector3 velocity = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 9), APFNN.GetOutput(start + i*JointDimOut + 10), APFNN.GetOutput(start + i*JointDimOut + 11));
+				/*
 				if(i==0 || i==1) {
 					position.x = 0f;
 					position.z = 0f;
@@ -314,6 +320,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 					position.x = 0f;
 					velocity.x = 0f;
 				}
+				*/
 				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
 				Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
@@ -328,7 +335,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].position = Positions[i];
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
-			
 			
 			//Motion Editing
 			for(int i=0; i<IKSolvers.Length; i++) {
