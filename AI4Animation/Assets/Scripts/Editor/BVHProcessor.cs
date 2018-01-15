@@ -58,13 +58,15 @@ public class BVHProcessor : EditorWindow {
 				}
 				EditorGUILayout.EndHorizontal();
 
+				EditorGUILayout.LabelField("Export Time: " + GetExportTime() + "s");
 				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						for(int j=0; j<Animations[i].Sequences.Length; j++) {
-							Animations[i].Sequences[j].Export = 1;
-						}
-						Animations[i].PhaseFunction.SetVelocityThreshold(0.1f);
+						//for(int j=0; j<Animations[i].Sequences.Length; j++) {
+						//	Animations[i].Sequences[j].Export = 1;
+						//}
+						//Animations[i].PhaseFunction.SetVelocityThreshold(0.1f);
+						Animations[i].Character.DrawType = Character.DRAWTYPE.Transparent;
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -301,9 +303,6 @@ public class BVHProcessor : EditorWindow {
 								line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 							}
 
-							//Feet offset function
-							//TODO
-
 							//Postprocess
 							line = line.Remove(line.Length-1);
 							line = line.Replace(",",".");
@@ -315,6 +314,20 @@ public class BVHProcessor : EditorWindow {
 				}
 			}
 		}
+	}
+
+	private float GetExportTime() {
+		float time = 0f;
+		for(int i=0; i<Animations.Length; i++) {
+			if(Use[i]) {
+				for(int s=0; s<Animations[i].Sequences.Length; s++) {
+					for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
+						time += Animations[i].Sequences[s].GetLength() * Animations[i].FrameTime;
+					}
+				}
+			}
+		}
+		return time;
 	}
 
 	private void PrintStyleDistribution() {

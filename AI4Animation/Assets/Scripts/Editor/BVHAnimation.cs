@@ -615,11 +615,12 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		/*
-		if(Utility.GUIButton("Recompute", Utility.Brown, Utility.White)) {
-			Recompute();
+		
+		if(Utility.GUIButton("Recompute Trajectory", Utility.Brown, Utility.White)) {
+			ComputeTrajectory();
 		}
 
+		/*
 		if(Utility.GUIButton("Reimport", Utility.Brown, Utility.White)) {
 			string path = EditorUtility.OpenFilePanel("BVH Editor", Application.dataPath, "bvh");
 			if(name != path.Substring(path.LastIndexOf("/")+1)) {
@@ -827,7 +828,7 @@ public class BVHAnimation : ScriptableObject {
 		root.rotation = skeleton.rotation;
 		skeleton.SetParent(root.transform);
 
-		BioAnimation animation = root.gameObject.AddComponent<BioAnimation>();
+		BioAnimation_PFNN animation = root.gameObject.AddComponent<BioAnimation_PFNN>();
 		animation.Joints = new Transform[Character.Hierarchy.Length];
 		int index = 0;
 		AssignJoints(skeleton, ref animation.Joints, ref index);
@@ -1031,6 +1032,9 @@ public class BVHAnimation : ScriptableObject {
 			} else {
 				End = Animation.GetTotalFrames()-60;
 			}
+		}
+		public int GetLength() {
+			return End-Start+1;
 		}
 	}
 

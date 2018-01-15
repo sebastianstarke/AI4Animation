@@ -8,7 +8,7 @@ public class BVHRecorder : EditorWindow {
 
 	public static EditorWindow Window;
 
-	public BioAnimation Animation;
+	public BioAnimation_PFNN Animation;
 	public string Name = "Animation";
 	public float FrameTime = 1f/60f;
 
@@ -142,7 +142,7 @@ public class BVHRecorder : EditorWindow {
 					return;
 				}
 
-				Animation = (BioAnimation)EditorGUILayout.ObjectField("Animation", Animation, typeof(BioAnimation), true);
+				Animation = (BioAnimation_PFNN)EditorGUILayout.ObjectField("Animation", Animation, typeof(BioAnimation_PFNN), true);
 				Name = EditorGUILayout.TextField("Name", Name);
 				FrameTime = EditorGUILayout.FloatField("Frame Time", FrameTime);
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-public class BioAnimation : MonoBehaviour {
+public class BioAnimation_PFNN : MonoBehaviour {
 
 	public bool Inspect = false;
 	public bool ShowTrajectory = true;
@@ -475,13 +475,13 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	#if UNITY_EDITOR
-	[CustomEditor(typeof(BioAnimation))]
-	public class BioAnimation_Editor : Editor {
+	[CustomEditor(typeof(BioAnimation_PFNN))]
+	public class BioAnimation_PFNN_Editor : Editor {
 
-		public BioAnimation Target;
+		public BioAnimation_PFNN Target;
 
 		void Awake() {
-			Target = (BioAnimation)target;
+			Target = (BioAnimation_PFNN)target;
 		}
 
 		public override void OnInspectorGUI() {

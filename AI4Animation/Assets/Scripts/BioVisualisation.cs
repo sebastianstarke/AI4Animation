@@ -7,7 +7,7 @@ public class BioVisualisation : MonoBehaviour {
 
 	private BioAnimation_APFNN Animation;
 
-	private int Frames = 60;
+	private int Frames = 120;
 	private Queue<float>[] CP;
 
 	void Awake() {
@@ -28,15 +28,13 @@ public class BioVisualisation : MonoBehaviour {
 		}
 	}
 
-	private void DrawControlPoint(float x, float y, float width, float height, int index, Color color) {
-		UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.Black.Transparent(0.75f));
-		int _index;
-		_index = 0;
+	private void DrawControlPoint(float x, float y, float width, float height, Queue<float> cp, Color color) {
+		int _index = 0;
 		float _x = 0f;
 		float _xPrev = 0f;
 		float _y = 0f;
 		float _yPrev = 0f;
-		foreach(float value in CP[index]) {
+		foreach(float value in cp) {
 			_x = x + (float)(_index)/(float)(Frames-1) * width;
 			_y = y - height + value*height;
 			if(_index > 0) {
@@ -58,14 +56,15 @@ public class BioVisualisation : MonoBehaviour {
 		UpdateData();
 
 		UnityGL.Start();
-		DrawControlPoint(0f, 1f, 0.25f, 0.1f, 0, Utility.Red);
-		DrawControlPoint(0f, 0.9f, 0.25f, 0.1f, 1, Utility.Green);
-		DrawControlPoint(0f, 0.8f, 0.25f, 0.1f, 2, Utility.Cyan);
-		DrawControlPoint(0f, 0.7f, 0.25f, 0.1f, 3, Utility.Orange);
-
-		UnityGL.DrawGUILine(0f, 0.9f, 0.25f, 0.9f, Utility.White);
-		UnityGL.DrawGUILine(0f, 0.8f, 0.25f, 0.8f, Utility.White);
-		UnityGL.DrawGUILine(0f, 0.7f, 0.25f, 0.7f, Utility.White);
+		float x = 0f;
+		float y = 1f;
+		float width = 0.25f;
+		float height = 0.1f;
+		UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.Black.Transparent(0.75f));
+		DrawControlPoint(x, y, width, height, CP[0], Utility.Red);
+		DrawControlPoint(x, y, width, height, CP[1], Utility.Green);
+		DrawControlPoint(x, y, width, height, CP[2], Utility.Cyan);
+		DrawControlPoint(x, y, width, height, CP[3], Utility.Orange);
 		UnityGL.Finish();
 	}
 
