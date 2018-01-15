@@ -16,8 +16,8 @@ public class SerialIK : MonoBehaviour {
 	private Matrix Jacobian;
 	private Matrix Gradient;
 
-	private float Differential = 0.001f;
-	private int Iterations = 10;
+	private float Differential = 0.01f;
+	private int Iterations = 5;
 
 	void Reset() {
 		Transforms = new Transform[1] {transform};
@@ -33,27 +33,19 @@ public class SerialIK : MonoBehaviour {
 			return;
 		}
 
-		if(RequireProcessing()) {
-			Matrix4x4[] posture = GetPosture();
-			float[] solution = new float[3*Transforms.Length];
-			DOF = Transforms.Length * 3;
-			Dimensions = 3;
-			Jacobian = new Matrix(Dimensions, DOF);
-			Gradient = new Matrix(Dimensions, 1);
-			for(int i=0; i<Iterations; i++) {
-				Iterate(posture, solution);
-			}
-			FK(posture, solution);
-		}
-	}
-
-	private bool RequireProcessing() {
 		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
-		//if(height > Goal.position.y - transform.root.position.y) {
-			GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
-			return true;
-		//}
-		//return false;
+		GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
+
+		Matrix4x4[] posture = GetPosture();
+		float[] solution = new float[3*Transforms.Length];
+		DOF = Transforms.Length * 3;
+		Dimensions = 3;
+		Jacobian = new Matrix(Dimensions, DOF);
+		Gradient = new Matrix(Dimensions, 1);
+		for(int i=0; i<Iterations; i++) {
+			Iterate(posture, solution);
+		}
+		FK(posture, solution);
 	}
 	
 	private void FK(Matrix4x4[] posture, float[] variables) {
