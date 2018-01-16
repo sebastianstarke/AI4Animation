@@ -4,33 +4,19 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {Follow, Side, Front, Diagonal, Static}
+	public enum MODE {SmoothFollow, ConstantView, Static}
 
-	public MODE Mode = MODE.Follow;
+	public MODE Mode = MODE.SmoothFollow;
 	public Transform Target;
 	public Vector3 SelfOffset = Vector3.zero;
 	public Vector3 TargetOffset = Vector3.zero;
 	[Range(0f, 1f)] public float Damping = 0.95f;
+	[Range(-180f, 180f)] public float Yaw = 0f;
+	[Range(-45f, 45f)] public float Pitch = 0f;
 	public float TransitionTime = 1f;
 	public float MinHeight = 1f;
 
 	void Update() {
-		if(Input.GetKeyDown(KeyCode.F1)) {
-			SetMode(MODE.Follow);
-		}
-		if(Input.GetKeyDown(KeyCode.F2)) {
-			SetMode(MODE.Side);
-		}
-		if(Input.GetKeyDown(KeyCode.F3)) {
-			SetMode(MODE.Front);
-		}
-		if(Input.GetKeyDown(KeyCode.F4)) {
-			SetMode(MODE.Diagonal);
-		}
-		if(Input.GetKeyDown(KeyCode.F5)) {
-			SetMode(MODE.Static);
-		}
-
 		if(Target == null) {
 			return;
 		}
@@ -39,8 +25,12 @@ public class CameraController : MonoBehaviour {
 		Quaternion currentRotation = transform.rotation;
 
 		//Determine final
-		transform.position = Target.position + Target.rotation * SelfOffset;
-		transform.LookAt(Target.position + Target.rotation * TargetOffset);
+		Vector3 _selfOffset = SelfOffset;
+		Vector3 _targetOffset = TargetOffset;
+		transform.position = Target.position + Target.rotation * _selfOffset;
+		transform.RotateAround(Target.position + Target.rotation * _targetOffset, Vector3.up, Yaw);
+		transform.RotateAround(Target.position + Target.rotation * _targetOffset, transform.right, Pitch);
+		transform.LookAt(Target.position + Target.rotation * _targetOffset);
 
 		//Lerp
 		transform.position = Vector3.Lerp(currentPosition, transform.position, 1f-Damping);
@@ -53,7 +43,7 @@ public class CameraController : MonoBehaviour {
 		}
 	}
 
-	private void SetMode(MODE mode) {
+	public void SetMode(MODE mode) {
 		if(Mode == mode) {
 			return;
 		}
@@ -75,33 +65,21 @@ public class CameraController : MonoBehaviour {
 		float EndDamping = 0f;
 
 		switch(Mode) {
-			case MODE.Follow:
+			case MODE.SmoothFollow:
 			EndSelfOffset = new Vector3(0f, 1f, -1.5f);
-			EndTargetOffset = new Vector3(0f, 0.5f, 0f);
+			EndTargetOffset = new Vector3(0f, 0.25f, 1f);
 			EndDamping = 0.975f;
 			break;
 
-			case MODE.Side:
+			case MODE.ConstantView:
 			EndSelfOffset = new Vector3(1.5f, 0.5f, 0.25f);
 			EndTargetOffset = new Vector3(0f, 0.5f, 0.25f);
 			EndDamping = 0.0f;
 			break;
-
-			case MODE.Front:
-			EndSelfOffset = new Vector3(0f, 0.5f, 2.0f);
-			EndTargetOffset = new Vector3(0f, 0.5f, 0f);
-			EndDamping = 0.0f;
-			break;
 			
-			case MODE.Diagonal:
-			EndSelfOffset = new Vector3(-1.5f, 1f, -0.75f);
-			EndTargetOffset = new Vector3(0f, 0.5f, 1f);
-			EndDamping = 0.975f;
-			break;
-
 			case MODE.Static:
-			EndSelfOffset = new Vector3(0f, 0f, 0f);
-			EndTargetOffset = new Vector3(0f, 0f, 0f);
+			//EndSelfOffset = new Vector3(0f, 0f, 0f);
+			//EndTargetOffset = new Vector3(0f, 0f, 0f);
 			EndDamping = 1f;
 			break;
 		}

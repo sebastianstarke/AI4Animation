@@ -127,10 +127,13 @@
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />
      <Compile Include="Assets\Scripts\Utility\Matrix.cs" />
+     <Compile Include="Assets\Scripts\Utility\Modify.cs" />
      <Compile Include="Assets\Scripts\Utility\Orbit.cs" />
      <Compile Include="Assets\Scripts\Utility\Perlin.cs" />
      <Compile Include="Assets\Scripts\Utility\Skinning.cs" />
+     <Compile Include="Assets\Scripts\Utility\Stick.cs" />
      <Compile Include="Assets\Scripts\Utility\Transformation.cs" />
+     <Compile Include="Assets\Scripts\Utility\Transparency.cs" />
      <Compile Include="Assets\Scripts\Utility\UnityGL.cs" />
      <Compile Include="Assets\Scripts\Utility\Utility.cs" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.shader" />
@@ -155,7 +158,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
-     <None Include="Assets\Resources\meshskinner231184512333218411000.txt" />
+     <None Include="Assets\Resources\meshskinner12526228033329972625.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />

@@ -34,7 +34,11 @@ public class SerialIK : MonoBehaviour {
 		}
 
 		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
-		GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
+		if(name=="Tail") {
+			GoalPosition.y = Mathf.Max(height, height + (GoalPosition.y - transform.root.position.y));
+		} else {
+			GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
+		}
 
 		Bones = Transforms.Length;
 		DOF = Bones * 3;
@@ -117,5 +121,11 @@ public class SerialIK : MonoBehaviour {
 		Matrix dls = jTj.GetInverse() * transpose;
 		return dls;
   	}
+
+	void OnRenderObject() {
+		UnityGL.Start();
+		UnityGL.DrawSphere(GoalPosition, 0.025f, Utility.Green.Transparent(0.5f));
+		UnityGL.Finish();
+	}
 
 }

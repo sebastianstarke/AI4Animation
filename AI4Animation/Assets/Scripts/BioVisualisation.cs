@@ -6,13 +6,21 @@ using UnityEngine.UI;
 [RequireComponent(typeof(BioAnimation_APFNN))]
 public class BioVisualisation : MonoBehaviour {
 
-	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Sprint, Jump, Sit, Lie;
+	public CameraController CameraController;
+
+	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Walk, Sprint, Jump, Sit, Lie, Stand;
 	public Color Active = Utility.Orange;
 	public Color Inactive = Utility.DarkGrey;
 
 	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics;
-	public Color Enabled = Utility.Cyan;
-	public Color Disabled = Utility.Grey; 
+	public Color VisualisationEnabled = Utility.Cyan;
+	public Color VisualisationDisabled = Utility.Grey;
+
+	public Button SmoothFollow, ConstantView, Static;
+	public Color CameraEnabled = Utility.Mustard;
+	public Color CameraDisabled = Utility.LightGrey;
+
+	public Slider Yaw, Pitch;
 
 	private int Frames = 150;
 	private Queue<float>[] CW;
@@ -29,12 +37,19 @@ public class BioVisualisation : MonoBehaviour {
 				CW[i].Enqueue(0f);
 			}
 		}
-		Skeleton.onClick.AddListener(ToggleSkeleton); UpdateColor(Skeleton, Animation.Character.DrawSkeleton);
-		Transforms.onClick.AddListener(ToggleTransforms); UpdateColor(Transforms, Animation.Character.DrawTransforms);
-		Velocities.onClick.AddListener(ToggleVelocities); UpdateColor(Velocities, Animation.ShowVelocities);
-		Trajectory.onClick.AddListener(ToggleTrajectory); UpdateColor(Trajectory, Animation.ShowTrajectory);
-		CyclicWeights.onClick.AddListener(ToggleCyclicWeights); UpdateColor(CyclicWeights, DrawCW);
-		InverseKinematics.onClick.AddListener(ToggleInverseKinematics); UpdateColor(InverseKinematics, Animation.SolveIK);
+		Skeleton.onClick.AddListener(ToggleSkeleton); UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
+		Transforms.onClick.AddListener(ToggleTransforms); UpdateColor(Transforms, Animation.Character.DrawTransforms ? VisualisationEnabled : VisualisationDisabled);
+		Velocities.onClick.AddListener(ToggleVelocities); UpdateColor(Velocities, Animation.ShowVelocities ? VisualisationEnabled : VisualisationDisabled);
+		Trajectory.onClick.AddListener(ToggleTrajectory); UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
+		CyclicWeights.onClick.AddListener(ToggleCyclicWeights); UpdateColor(CyclicWeights, DrawCW ? VisualisationEnabled : VisualisationDisabled);
+		InverseKinematics.onClick.AddListener(ToggleInverseKinematics); UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
+
+		SmoothFollow.onClick.AddListener(SetSmoothFollow); UpdateColor(SmoothFollow, CameraController.Mode == CameraController.MODE.SmoothFollow ? CameraEnabled : CameraDisabled);
+		ConstantView.onClick.AddListener(SetConstantView); UpdateColor(ConstantView, CameraController.Mode == CameraController.MODE.ConstantView ? CameraEnabled : CameraDisabled);
+		Static.onClick.AddListener(SetStatic); UpdateColor(Static, CameraController.Mode == CameraController.MODE.Static ? CameraEnabled : CameraDisabled);
+
+		Yaw.onValueChanged.AddListener(SetYaw);
+		Pitch.onValueChanged.AddListener(SetPitch);
 	}
 
 	private void UpdateData() {
@@ -59,6 +74,7 @@ public class BioVisualisation : MonoBehaviour {
 					_yPrev, 
 					_x,
 					_y,
+					2.5f,
 					color
 				);
 			}
@@ -68,42 +84,61 @@ public class BioVisualisation : MonoBehaviour {
 		}
 	}
 
-	public void UpdateColor(Button button, bool value) {
-		if(value) {
-			button.GetComponent<Image>().color = Enabled;
-		} else {
-			button.GetComponent<Image>().color = Disabled;
-		}
+	public void UpdateColor(Button button, Color color) {
+		button.GetComponent<Image>().color = color;
 	}
 
 	public void ToggleSkeleton() {
 		Animation.Character.DrawSkeleton = !Animation.Character.DrawSkeleton;
-		UpdateColor(Skeleton, Animation.Character.DrawSkeleton);
+		UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleTransforms() {
 		Animation.Character.DrawTransforms = !Animation.Character.DrawTransforms;
-		UpdateColor(Transforms, Animation.Character.DrawTransforms);
+		UpdateColor(Transforms, Animation.Character.DrawTransforms ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleVelocities() {
 		Animation.ShowVelocities = !Animation.ShowVelocities;
-		UpdateColor(Velocities, Animation.ShowVelocities);
+		UpdateColor(Velocities, Animation.ShowVelocities ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleTrajectory() {
 		Animation.ShowTrajectory = !Animation.ShowTrajectory;
-		UpdateColor(Trajectory, Animation.ShowTrajectory);
+		UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleCyclicWeights() {
 		DrawCW = !DrawCW;
-		UpdateColor(CyclicWeights, DrawCW);
+		UpdateColor(CyclicWeights, DrawCW ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleInverseKinematics() {
 		Animation.SolveIK = !Animation.SolveIK;
-		UpdateColor(InverseKinematics, Animation.SolveIK);
+		UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
+	}
+
+	public void SetSmoothFollow() {
+		CameraController.SetMode(CameraController.MODE.SmoothFollow);
+		UpdateColor(SmoothFollow, CameraEnabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraDisabled);
+	}
+
+	public void SetConstantView() {
+		CameraController.SetMode(CameraController.MODE.ConstantView);
+		UpdateColor(SmoothFollow, CameraDisabled); UpdateColor(ConstantView, CameraEnabled); UpdateColor(Static, CameraDisabled);
+	}
+
+	public void SetStatic() {
+		CameraController.SetMode(CameraController.MODE.Static);
+		UpdateColor(SmoothFollow, CameraDisabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraEnabled);
+	}
+
+	public void SetYaw(float value) {
+		CameraController.Yaw = value;
+	}
+
+	public void SetPitch(float value) {
+		CameraController.Pitch = value;
 	}
 
 	void OnGUI() {
@@ -138,26 +173,26 @@ public class BioVisualisation : MonoBehaviour {
 			TurnRight.GetComponent<Image>().color = Inactive;
 		}
 
-		if(Input.GetKey(KeyCode.LeftShift)) {
-			Sprint.GetComponent<Image>().color = Active;
+		if(!Animation.Controller.QueryAny()) {
+			UpdateStyle(Idle, true, 0);
 		} else {
-			Sprint.GetComponent<Image>().color = Inactive;
+			UpdateStyle(Idle, Animation.Controller.Styles[0].Query() != 0f, 0);
 		}
-		if(Input.GetKey(KeyCode.Space)) {
-			Jump.GetComponent<Image>().color = Active;
+		UpdateStyle(Walk, Animation.Controller.Styles[1].Query() != 0f && Animation.Controller.Styles[2].Query() == 0f, 1);
+		UpdateStyle(Sprint, Animation.Controller.Styles[2].Query() != 0f, 2);
+		UpdateStyle(Jump, Animation.Controller.Styles[3].Query() != 0f, 3);
+		UpdateStyle(Sit, Animation.Controller.Styles[4].Query() != 0f, 4);
+		UpdateStyle(Lie, Animation.Controller.Styles[5].Query() != 0f, 5);
+		UpdateStyle(Stand, Animation.Controller.Styles[6].Query() != 0f, 6);
+	}
+
+	private void UpdateStyle(Button button, bool active, int index) {
+		if(active) {
+			button.GetComponent<Image>().color = Active;
 		} else {
-			Jump.GetComponent<Image>().color = Inactive;
+			button.GetComponent<Image>().color = Inactive;
 		}
-		if(Input.GetKey(KeyCode.LeftControl)) {
-			Sit.GetComponent<Image>().color = Active;
-		} else {
-			Sit.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(KeyCode.LeftAlt)) {
-			Lie.GetComponent<Image>().color = Active;
-		} else {
-			Lie.GetComponent<Image>().color = Inactive;
-		}
+		button.GetComponentInChildren<Text>().text = (100f*Animation.GetTrajectory().Points[60].Styles[index]).ToString("F0")  + "%";
 	}
 
 	void OnRenderObject() {
@@ -169,12 +204,12 @@ public class BioVisualisation : MonoBehaviour {
 			float y = 0.15f;
 			float width = 0.95f;
 			float height = 0.1f;
-			float border = 0.005f;
-			UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black.Transparent(0.5f));
-			UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.Black.Transparent(0.75f));
+			float border = 0.0025f;
+			UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black);
+			UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.White);
 			DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
-			DrawControlPoint(x, y, width, height, CW[1], Utility.Green);
-			DrawControlPoint(x, y, width, height, CW[2], Utility.Cyan);
+			DrawControlPoint(x, y, width, height, CW[1], Utility.DarkGreen);
+			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
 			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
 			UnityGL.Finish();
 		}

@@ -104,7 +104,15 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
-			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
+			if(i==0) {
+				if(!Controller.QueryAny()) {
+					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], 1f, StyleTransition);
+				} else {
+					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
+				}
+			} else {
+				Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
+			}
 		}
 		//Only for current project
 		if(Controller.Styles.Length > 0) {
@@ -122,13 +130,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			float bias_dir = 1.25f;
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
-			float vel_boost = 2f;
 			
 			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				vel_boost * rescale * TargetVelocity,
+				PoolBias() * rescale * TargetVelocity,
 				scale_pos);
 
 			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
@@ -339,6 +346,31 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			
 			if(SolveIK) {
 				//Motion Editing
+				/*
+				float threshold = 0.001f;
+				if(Mathf.Abs(Velocities[10].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
+					IKSolvers[0].UpdateGoal();
+				} else {
+					//Positions[10] = IKSolvers[0].GoalPosition;
+				}
+				if(Mathf.Abs(Velocities[15].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
+					IKSolvers[1].UpdateGoal();
+				} else {
+					//Positions[15] = IKSolvers[1].GoalPosition;
+				}
+				if(Mathf.Abs(Velocities[19].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
+					IKSolvers[2].UpdateGoal();
+				} else {
+					//Positions[19] = IKSolvers[2].GoalPosition;
+				}
+				if(Mathf.Abs(Velocities[23].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
+					IKSolvers[3].UpdateGoal();
+				} else {
+					//Positions[23] = IKSolvers[3].GoalPosition;
+				}
+				IKSolvers[4].UpdateGoal();
+				*/
+
 				for(int i=0; i<IKSolvers.Length; i++) {
 					IKSolvers[i].UpdateGoal();
 				}
@@ -373,6 +405,15 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		}
 	}
 
+	private float PoolBias() {
+		float[] styles = Trajectory.Points[60].Styles;
+		float bias = 0f;
+		for(int i=0; i<styles.Length; i++) {
+			bias += styles[i] * Controller.Styles[i].Bias;
+		}
+		return bias;
+	}
+	
 	private int GetJointIndex(string name) {
 		return System.Array.FindIndex(Joints, x => x.name == name);
 	}

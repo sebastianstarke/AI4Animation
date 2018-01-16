@@ -60,6 +60,15 @@ public class Controller {
 		}
 	}
 
+	public bool QueryAny() {
+		for(int i=0; i<Styles.Length; i++) {
+			if(Styles[i].Query() != 0f) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	[System.Serializable]
 	public class Style {
 		public string Name;

@@ -21,7 +21,7 @@ public static class UnityGL {
 	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
 	private enum SPACE {NONE, SCENE, GUI}
 
-	private static float GUIOffset = 0.00001f;
+	private static float GUIOffset = 0.001f;
 
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
@@ -344,11 +344,36 @@ public static class UnityGL {
 		yStart *= Screen.height;
 		xEnd *= Screen.width;
 		yEnd *= Screen.height;
+		Vector3 start = GetCamera().ScreenToWorldPoint(new Vector3(xStart, yStart, GetCamera().nearClipPlane + GUIOffset));
+		Vector3 end = GetCamera().ScreenToWorldPoint(new Vector3(xEnd, yEnd, GetCamera().nearClipPlane + GUIOffset));
 		SetProgram(PROGRAM.LINES, SPACE.GUI);
 		GL.Color(color);
-		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xStart, yStart, GetCamera().nearClipPlane + GUIOffset)));
-		GL.Vertex(GetCamera().ScreenToWorldPoint(new Vector3(xEnd, yEnd, GetCamera().nearClipPlane + GUIOffset)));
+		GL.Vertex(start);
+		GL.Vertex(end);
 	}
+
+	//TODO FASTER
+    public static void DrawGUILine(float xStart, float yStart, float xEnd, float yEnd, float width, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		xStart *= Screen.width;
+		yStart *= Screen.height;
+		xEnd *= Screen.width;
+		yEnd *= Screen.height;
+		width /= Screen.width;
+		Vector3 start = GetCamera().ScreenToWorldPoint(new Vector3(xStart, yStart, GetCamera().nearClipPlane + GUIOffset));
+		Vector3 end = GetCamera().ScreenToWorldPoint(new Vector3(xEnd, yEnd, GetCamera().nearClipPlane + GUIOffset));
+		SetProgram(PROGRAM.QUADS, SPACE.GUI);
+		Vector3 dir = end-start;
+		Vector3 ortho = width/2f * (Quaternion.AngleAxis(90f, GetCamera().transform.forward) * dir).normalized;
+		GL.Color(color);
+        GL.Vertex(start+ortho);
+		GL.Vertex(start-ortho);
+		GL.Vertex(end-ortho);
+		GL.Vertex(end+ortho);
+    }
 
 	//TODO FASTER
 	public static void DrawGUIQuad(float x, float y, float width, float height, Color color) {
