@@ -16,7 +16,7 @@ public class BioVisualisation : MonoBehaviour {
 
 	private int Frames = 150;
 	private Queue<float>[] CW;
-	private bool DrawCW;
+	private bool DrawCW = true;
 
 	private BioAnimation_APFNN Animation;
 
@@ -30,10 +30,10 @@ public class BioVisualisation : MonoBehaviour {
 			}
 		}
 		Skeleton.onClick.AddListener(ToggleSkeleton);
-		Skeleton.onClick.AddListener(ToggleVelocities);
-		Skeleton.onClick.AddListener(ToggleTrajectory);
-		Skeleton.onClick.AddListener(ToggleCyclicWeights);
-		Skeleton.onClick.AddListener(ToggleInverseKinematics);
+		Velocities.onClick.AddListener(ToggleVelocities);
+		Trajectory.onClick.AddListener(ToggleTrajectory);
+		CyclicWeights.onClick.AddListener(ToggleCyclicWeights);
+		InverseKinematics.onClick.AddListener(ToggleInverseKinematics);
 	}
 
 	private void UpdateData() {
@@ -148,19 +148,21 @@ public class BioVisualisation : MonoBehaviour {
 	void OnRenderObject() {
 		UpdateData();
 
-		UnityGL.Start();
-		float x = 0.025f;
-		float y = 0.15f;
-		float width = 0.95f;
-		float height = 0.1f;
-		float border = 0.005f;
-		UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black.Transparent(0.5f));
-		UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.Black.Transparent(0.75f));
-		DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
-		DrawControlPoint(x, y, width, height, CW[1], Utility.Green);
-		DrawControlPoint(x, y, width, height, CW[2], Utility.Cyan);
-		DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
-		UnityGL.Finish();
+		if(DrawCW) {
+			UnityGL.Start();
+			float x = 0.025f;
+			float y = 0.15f;
+			float width = 0.95f;
+			float height = 0.1f;
+			float border = 0.005f;
+			UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black.Transparent(0.5f));
+			UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.Black.Transparent(0.75f));
+			DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
+			DrawControlPoint(x, y, width, height, CW[1], Utility.Green);
+			DrawControlPoint(x, y, width, height, CW[2], Utility.Cyan);
+			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
+			UnityGL.Finish();
+		}
 	}
 
 }

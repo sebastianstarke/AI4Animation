@@ -18,7 +18,6 @@ public class Character {
 	public Color BoneColor = Utility.Cyan;
 	public Color JointColor = Utility.Mustard;
 	public DRAWTYPE DrawType = DRAWTYPE.Transparent;
-	public bool DrawHierarchy = false;
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
 
@@ -339,17 +338,6 @@ public class Character {
 			Utility.Destroy(boneMaterial);
 		}
 
-		if(DrawHierarchy) {
-			Action<Segment> recursion = null;
-			recursion = new Action<Segment>((segment) => {
-				for(int i=0; i<segment.GetChildCount(); i++) {
-					UnityGL.DrawLine(segment.GetTransformation().GetPosition(), segment.GetChild(Hierarchy, i).GetTransformation().GetPosition(), 0.25f*BoneSize, 0.25f*BoneSize, Color.cyan, new Color(0f, 0.5f, 0.5f, 1f));
-					recursion(segment.GetChild(Hierarchy, i));
-				}
-			});
-			recursion(GetRoot());
-		}
-
 		if(DrawTransforms) {
 			Action<Segment> recursion = null;
 			recursion = new Action<Segment>((segment) => {
@@ -429,12 +417,11 @@ public class Character {
 
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					EditorGUILayout.LabelField("Hierarchy Nodes: " + Hierarchy.Length);
+					EditorGUILayout.LabelField("Skeleton Bones: " + Hierarchy.Length);
 					DrawType = (DRAWTYPE)EditorGUILayout.EnumPopup("Draw Type", DrawType);
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					JointColor = EditorGUILayout.ColorField("Joint Color", JointColor);
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
-					DrawHierarchy = EditorGUILayout.Toggle("Draw Hierarchy", DrawHierarchy);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
 					if(Utility.GUIButton("Clear", Utility.DarkRed, Utility.White)) {
