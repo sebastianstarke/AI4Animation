@@ -65,8 +65,7 @@ public class BVHProcessor : EditorWindow {
 						//for(int j=0; j<Animations[i].Sequences.Length; j++) {
 						//	Animations[i].Sequences[j].Export = 1;
 						//}
-						//Animations[i].PhaseFunction.SetVelocityThreshold(0.1f);
-						Animations[i].Character.DrawType = Character.DRAWTYPE.Transparent;
+						Animations[i].StyleFunction.SetTransition(0.25f);
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
