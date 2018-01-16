@@ -6,11 +6,11 @@ using UnityEngine.UI;
 [RequireComponent(typeof(BioAnimation_APFNN))]
 public class BioVisualisation : MonoBehaviour {
 
-	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight;
+	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Sprint, Jump, Sit, Lie;
 	public Color Active = Utility.Orange;
 	public Color Inactive = Utility.DarkGrey;
 
-	public Button Skeleton, Velocities, Trajectory, CyclicWeights, InverseKinematics;
+	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics;
 	public Color Enabled = Utility.Cyan;
 	public Color Disabled = Utility.Grey; 
 
@@ -29,11 +29,12 @@ public class BioVisualisation : MonoBehaviour {
 				CW[i].Enqueue(0f);
 			}
 		}
-		Skeleton.onClick.AddListener(ToggleSkeleton);
-		Velocities.onClick.AddListener(ToggleVelocities);
-		Trajectory.onClick.AddListener(ToggleTrajectory);
-		CyclicWeights.onClick.AddListener(ToggleCyclicWeights);
-		InverseKinematics.onClick.AddListener(ToggleInverseKinematics);
+		Skeleton.onClick.AddListener(ToggleSkeleton); UpdateColor(Skeleton, Animation.Character.DrawSkeleton);
+		Transforms.onClick.AddListener(ToggleTransforms); UpdateColor(Transforms, Animation.Character.DrawTransforms);
+		Velocities.onClick.AddListener(ToggleVelocities); UpdateColor(Velocities, Animation.ShowVelocities);
+		Trajectory.onClick.AddListener(ToggleTrajectory); UpdateColor(Trajectory, Animation.ShowTrajectory);
+		CyclicWeights.onClick.AddListener(ToggleCyclicWeights); UpdateColor(CyclicWeights, DrawCW);
+		InverseKinematics.onClick.AddListener(ToggleInverseKinematics); UpdateColor(InverseKinematics, Animation.SolveIK);
 	}
 
 	private void UpdateData() {
@@ -67,49 +68,42 @@ public class BioVisualisation : MonoBehaviour {
 		}
 	}
 
+	public void UpdateColor(Button button, bool value) {
+		if(value) {
+			button.GetComponent<Image>().color = Enabled;
+		} else {
+			button.GetComponent<Image>().color = Disabled;
+		}
+	}
+
 	public void ToggleSkeleton() {
 		Animation.Character.DrawSkeleton = !Animation.Character.DrawSkeleton;
-		if(Animation.Character.DrawSkeleton) {
-			Skeleton.GetComponent<Image>().color = Enabled;
-		} else {
-			Skeleton.GetComponent<Image>().color = Disabled;
-		}
+		UpdateColor(Skeleton, Animation.Character.DrawSkeleton);
+	}
+
+	public void ToggleTransforms() {
+		Animation.Character.DrawTransforms = !Animation.Character.DrawTransforms;
+		UpdateColor(Transforms, Animation.Character.DrawTransforms);
 	}
 
 	public void ToggleVelocities() {
 		Animation.ShowVelocities = !Animation.ShowVelocities;
-		if(Animation.ShowVelocities) {
-			Velocities.GetComponent<Image>().color = Enabled;
-		} else {
-			Velocities.GetComponent<Image>().color = Disabled;
-		}
+		UpdateColor(Velocities, Animation.ShowVelocities);
 	}
 
 	public void ToggleTrajectory() {
 		Animation.ShowTrajectory = !Animation.ShowTrajectory;
-		if(Animation.ShowTrajectory) {
-			Trajectory.GetComponent<Image>().color = Enabled;
-		} else {
-			Trajectory.GetComponent<Image>().color = Disabled;
-		}
+		UpdateColor(Trajectory, Animation.ShowTrajectory);
 	}
 
 	public void ToggleCyclicWeights() {
 		DrawCW = !DrawCW;
-		if(DrawCW) {
-			CyclicWeights.GetComponent<Image>().color = Enabled;
-		} else {
-			CyclicWeights.GetComponent<Image>().color = Disabled;
-		}
+		UpdateColor(CyclicWeights, DrawCW);
 	}
 
 	public void ToggleInverseKinematics() {
 		Animation.SolveIK = !Animation.SolveIK;
-		if(Animation.SolveIK) {
-			InverseKinematics.GetComponent<Image>().color = Enabled;
-		} else {
-			InverseKinematics.GetComponent<Image>().color = Disabled;
-		}
+		UpdateColor(InverseKinematics, Animation.SolveIK);
 	}
 
 	void OnGUI() {
@@ -142,6 +136,27 @@ public class BioVisualisation : MonoBehaviour {
 			TurnRight.GetComponent<Image>().color = Active;
 		} else {
 			TurnRight.GetComponent<Image>().color = Inactive;
+		}
+
+		if(Input.GetKey(KeyCode.LeftShift)) {
+			Sprint.GetComponent<Image>().color = Active;
+		} else {
+			Sprint.GetComponent<Image>().color = Inactive;
+		}
+		if(Input.GetKey(KeyCode.Space)) {
+			Jump.GetComponent<Image>().color = Active;
+		} else {
+			Jump.GetComponent<Image>().color = Inactive;
+		}
+		if(Input.GetKey(KeyCode.LeftControl)) {
+			Sit.GetComponent<Image>().color = Active;
+		} else {
+			Sit.GetComponent<Image>().color = Inactive;
+		}
+		if(Input.GetKey(KeyCode.LeftAlt)) {
+			Lie.GetComponent<Image>().color = Active;
+		} else {
+			Lie.GetComponent<Image>().color = Inactive;
 		}
 	}
 

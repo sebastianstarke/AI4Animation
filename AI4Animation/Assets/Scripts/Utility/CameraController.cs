@@ -4,7 +4,7 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {Follow, Side, Diagonal, Static}
+	public enum MODE {Follow, Side, Front, Diagonal, Static}
 
 	public MODE Mode = MODE.Follow;
 	public Transform Target;
@@ -22,9 +22,12 @@ public class CameraController : MonoBehaviour {
 			SetMode(MODE.Side);
 		}
 		if(Input.GetKeyDown(KeyCode.F3)) {
-			SetMode(MODE.Diagonal);
+			SetMode(MODE.Front);
 		}
 		if(Input.GetKeyDown(KeyCode.F4)) {
+			SetMode(MODE.Diagonal);
+		}
+		if(Input.GetKeyDown(KeyCode.F5)) {
 			SetMode(MODE.Static);
 		}
 
@@ -81,6 +84,12 @@ public class CameraController : MonoBehaviour {
 			case MODE.Side:
 			EndSelfOffset = new Vector3(1.5f, 0.5f, 0.25f);
 			EndTargetOffset = new Vector3(0f, 0.5f, 0.25f);
+			EndDamping = 0.0f;
+			break;
+
+			case MODE.Front:
+			EndSelfOffset = new Vector3(0f, 0.5f, 2.0f);
+			EndTargetOffset = new Vector3(0f, 0.5f, 0f);
 			EndDamping = 0.0f;
 			break;
 			
