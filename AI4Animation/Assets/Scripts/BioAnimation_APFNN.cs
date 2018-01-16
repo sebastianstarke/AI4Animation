@@ -22,6 +22,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 	public Character Character;
 	public APFNN APFNN;
 
+	public bool SolveIK = true;
 	public SerialIK[] IKSolvers = new SerialIK[0];
 
 	private Trajectory Trajectory;
@@ -336,41 +337,39 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 			
-			//Motion Editing
-			for(int i=0; i<IKSolvers.Length; i++) {
-				IKSolvers[i].UpdateGoal();
-			}
+			if(SolveIK) {
+				//Motion Editing
+				for(int i=0; i<IKSolvers.Length; i++) {
+					IKSolvers[i].UpdateGoal();
+				}
 
-			Transform spine = Array.Find(Joints, x => x.name == "Spine1");
-			Transform neck = Array.Find(Joints, x => x.name == "Neck");
-			Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
-			Transform rightShoulder = Array.Find(Joints, x => x.name == "RightShoulder");
-			Vector3 spinePosition = spine.position;
-			Vector3 neckPosition = neck.position;
-			Vector3 leftShoulderPosition = leftShoulder.position;
-			Vector3 rightShoulderPosition = rightShoulder.position;
-			float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
-			float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
-			float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
-			float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
+				Transform spine = Array.Find(Joints, x => x.name == "Spine1");
+				Transform neck = Array.Find(Joints, x => x.name == "Neck");
+				Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
+				Transform rightShoulder = Array.Find(Joints, x => x.name == "RightShoulder");
+				Vector3 spinePosition = spine.position;
+				Vector3 neckPosition = neck.position;
+				Vector3 leftShoulderPosition = leftShoulder.position;
+				Vector3 rightShoulderPosition = rightShoulder.position;
+				float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
+				float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
+				float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
+				float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
 
-			spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
+				spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
 
-			spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - Root.position.y), spinePosition.z);
-			neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z);
-			leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - Root.position.y), leftShoulderPosition.z);
-			rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - Root.position.y), rightShoulderPosition.z);
+				spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - Root.position.y), spinePosition.z);
+				neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z);
+				leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - Root.position.y), leftShoulderPosition.z);
+				rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - Root.position.y), rightShoulderPosition.z);
 
-			for(int i=0; i<IKSolvers.Length; i++) {
-				IKSolvers[i].ProcessIK();
+				for(int i=0; i<IKSolvers.Length; i++) {
+					IKSolvers[i].ProcessIK();
+				}
 			}
 
 			//Update Skeleton
 			Character.FetchTransformations(Root);
-
-			for(int i=0; i<4; i++) {
-			//	Debug.Log(APFNN.GetControlPoint(i));
-			}
 		}
 	}
 
@@ -414,6 +413,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		/*
 		float height = 0.05f;
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -425,6 +425,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
+		*/
 	}
 
 	void OnRenderObject() {
@@ -538,6 +539,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 							Utility.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
+						Target.SolveIK = EditorGUILayout.Toggle("Solve IK", Target.SolveIK);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
 							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
 						}
