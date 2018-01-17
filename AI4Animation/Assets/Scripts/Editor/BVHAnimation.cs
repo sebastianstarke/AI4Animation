@@ -620,6 +620,11 @@ public class BVHAnimation : ScriptableObject {
 			ComputeTrajectory();
 		}
 
+		if(Utility.GUIButton("Recompute Values", Utility.Brown, Utility.White)) {
+			PhaseFunction.ComputeValues();
+			MirroredPhaseFunction.ComputeValues();
+		}
+
 		/*
 		if(Utility.GUIButton("Reimport", Utility.Brown, Utility.White)) {
 			string path = EditorUtility.OpenFilePanel("BVH Editor", Application.dataPath, "bvh");
@@ -1158,6 +1163,11 @@ public class BVHAnimation : ScriptableObject {
 			velocity /= frames.Length;
 			return velocity;
 		}
+
+		public float ComputeRootVelocity() {
+			Vector3 vel = ComputeVelocity(0, 1f);
+			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z);
+		}
 	}
 
 	[System.Serializable]
@@ -1179,6 +1189,9 @@ public class BVHAnimation : ScriptableObject {
 		public float VelocityThreshold;
 		public float[] Velocities;
 		public float[] NormalisedVelocities;
+
+		public float[] RootVelocities;
+		public float[] NormalisedRootVelocities;
 
 		public float HeightThreshold;
 		public float[] Heights;
@@ -1373,7 +1386,7 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		private void ComputeValues() {
+		public void ComputeValues() {
 			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				Heights[i] = 0f;
 				Velocities[i] = 0f;
@@ -1423,6 +1436,24 @@ public class BVHAnimation : ScriptableObject {
 			}
 			for(int i=0; i<Velocities.Length; i++) {
 				NormalisedVelocities[i] = Utility.Normalise(Velocities[i], min, max, 0f, 1f);
+			}
+
+
+			RootVelocities = new float[Animation.GetTotalFrames()];
+			NormalisedRootVelocities = new float[Animation.GetTotalFrames()];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<Animation.GetTotalFrames(); i++) {
+				RootVelocities[i] = Animation.Frames[i].ComputeRootVelocity() / Animation.FrameTime;
+				if(RootVelocities[i] < min) {
+					min = RootVelocities[i];
+				}
+				if(RootVelocities[i] > max) {
+					max = RootVelocities[i];
+				}
+			}
+			for(int i=0; i<RootVelocities.Length; i++) {
+				NormalisedRootVelocities[i] = Utility.Normalise(RootVelocities[i], min, max, 0f, 1f);
 			}
 		}
 
@@ -1507,7 +1538,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 				EditorGUILayout.EndScrollView();
 
-				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeVelocity(0, VelocitySmoothing).magnitude / Animation.FrameTime);
+				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeRootVelocity() / Animation.FrameTime);
 				SetVelocitySmoothing(EditorGUILayout.FloatField("Velocity Smoothing", VelocitySmoothing));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
 				SetHeightThreshold(EditorGUILayout.FloatField("Height Threshold", HeightThreshold));
@@ -1558,19 +1589,6 @@ public class BVHAnimation : ScriptableObject {
 				int end = Animation.GetFrame(endTime).Index;
 				int elements = end-start;
 
-				//TODO REMOVE LATER
-				if(NormalisedVelocities == null) {
-					NormalisedVelocities = new float[Animation.GetTotalFrames()];
-				} else if(NormalisedVelocities.Length == 0) {
-					NormalisedVelocities = new float[Animation.GetTotalFrames()];
-				}
-				if(NormalisedCycle == null) {
-					NormalisedCycle = new float[Animation.GetTotalFrames()];
-				} else if(NormalisedCycle.Length == 0) {
-					NormalisedCycle = new float[Animation.GetTotalFrames()];
-				}
-				//
-
 				Vector3 prevPos = Vector3.zero;
 				Vector3 newPos = Vector3.zero;
 				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
@@ -1604,6 +1622,15 @@ public class BVHAnimation : ScriptableObject {
 					UnityGL.DrawLine(prevPos, newPos, Utility.Red);
 				}
 				*/
+
+				//Root Velocity
+				for(int i=1; i<elements; i++) {
+					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
+					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start-1] * rect.height;
+					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
+					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start] * rect.height;
+					UnityGL.DrawLine(prevPos, newPos, Utility.Cyan);
+				}
 				
 				//Cycle
 				if(ShowCycle) {

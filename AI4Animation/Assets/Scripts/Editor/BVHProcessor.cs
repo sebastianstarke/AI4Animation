@@ -41,6 +41,9 @@ public class BVHProcessor : EditorWindow {
 				if(Utility.GUIButton("Export Data", Utility.DarkGrey, Utility.White)) {
 					ExportData();
 				}
+				if(Utility.GUIButton("Export Root Velocities", Utility.DarkGrey, Utility.White)) {
+					ExportRootVelocities();
+				}
 				if(Utility.GUIButton("Style Distribution", Utility.DarkGrey, Utility.White)) {
 					PrintStyleDistribution();
 				}
@@ -62,6 +65,9 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
+						BVHAnimation animation = Animations[i];
+						animation.PhaseFunction.ComputeValues();
+						animation.MirroredPhaseFunction.ComputeValues();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -114,6 +120,55 @@ public class BVHProcessor : EditorWindow {
 					Use[i] = true;
 				}
 			}
+		}
+	}
+
+	private void ExportRootVelocities() {
+		if(Animations.Length == 0) {
+			Debug.Log("No animations specified.");
+			return;
+		}
+		
+		System.Collections.Generic.List<float>[] velocities = new System.Collections.Generic.List<float>[Animations[0].StyleFunction.Styles.Length];
+		for(int i=0; i<velocities.Length; i++) {
+			velocities[i] = new System.Collections.Generic.List<float>();
+		}
+		for(int i=0; i<Animations.Length; i++) {
+			if(Use[i]) {
+				for(int s=0; s<Animations[i].Sequences.Length; s++) {
+					int startIndex = Animations[i].Sequences[s].Start;
+					int endIndex = Animations[i].Sequences[s].End;
+					for(int j=startIndex; j<=endIndex; j++) {
+						BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
+						for(int v=0; v<velocities.Length; v++) {
+							if(Animations[i].StyleFunction.GetFlag(frame, v)) {
+								velocities[v].Add(Animations[i].PhaseFunction.RootVelocities[frame.Index-1]);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		for(int v=0; v<velocities.Length; v++) {
+			Debug.Log(Animations[0].StyleFunction.Styles[v].Name + ": " + "Mean: " + Utility.ComputeMean(velocities[v].ToArray()) + " StdDev: " + Utility.ComputeSigma(velocities[v].ToArray()));
+			/*
+			string name = Animations[0].StyleFunction.Styles[v].Name;
+			string filename = string.Empty;
+			if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
+				filename = Application.dataPath+"/Project/"+name;
+			} else {
+				int i = 1;
+				while(File.Exists(Application.dataPath+"/Project/"+name+" ("+i+").txt")) {
+					i += 1;
+				}
+				filename = Application.dataPath+"/Project/"+name+" ("+i+")";
+			}
+
+			StreamWriter data = File.CreateText(filename+".txt");
+			data.WriteLine(FormatArray(velocities[v].ToArray()));
+			data.Close();
+			*/
 		}
 	}
 

@@ -24,9 +24,12 @@ public class SerialIK : MonoBehaviour {
 		Transforms = new Transform[1] {transform};
 	}
 
+	//public void UpdateGoal(Matrix4x4 rootVelocity) {
 	public void UpdateGoal() {
 		//Vector3 newGoal = GetTipPosition();
+		//float relativeVelocity = (GoalPosition - newGoal).GetRelativeDirectionTo(rootVelocity).magnitude;
 		//if(Mathf.Abs(newGoal.y - GoalPosition.y) > 0.01f) {
+		//if(Vector3.Magnitude(GoalPosition - newGoal) > 0.005f || newGoal.y > 0.01f) {
 		//	GoalPosition = newGoal;
 		//}
 		GoalPosition = GetTipPosition();

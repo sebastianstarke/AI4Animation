@@ -395,6 +395,14 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Update Skeleton
 			Character.FetchTransformations(Root);
+
+			/*
+			for(int i=0; i<Character.Hierarchy.Length; i++) {
+				Positions[i] = Character.Hierarchy[i].GetTransformation().GetPosition();
+				Forwards[i] = Character.Hierarchy[i].GetTransformation().GetForward();
+				Ups[i] = Character.Hierarchy[i].GetTransformation().GetUp();
+			}
+			*/
 		}
 	}
 
