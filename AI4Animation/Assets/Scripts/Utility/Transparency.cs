@@ -25,13 +25,15 @@ public class Transparency : MonoBehaviour {
 	private void ApplyRecursively(Transform t) {
 		Renderer renderer = t.GetComponent<Renderer>();
 		if(renderer != null) {
-			Color color = renderer.material.color;
-			renderer.material.SetColor("_Color", new Vector4(color.r, color.g, color.b, Alpha));
-			if(Alpha == 1f) {
-          	 	ChangeRenderMode(renderer.material, RenderingMode.Opaque);
-			} else {
-				ChangeRenderMode(renderer.material, RenderingMode.Transparent);
-			}
+            if(renderer.material.HasProperty("_Color")) {
+                Color color = renderer.material.color;
+                renderer.material.SetColor("_Color", new Vector4(color.r, color.g, color.b, Alpha));
+                if(Alpha == 1f) {
+                    ChangeRenderMode(renderer.material, RenderingMode.Opaque);
+                } else {
+                    ChangeRenderMode(renderer.material, RenderingMode.Transparent);
+                }
+            }
 		}
 		for(int i=0; i<t.childCount; i++) {
 			ApplyRecursively(t.GetChild(i));

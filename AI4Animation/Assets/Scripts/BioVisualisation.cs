@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(BioAnimation_APFNN))]
 public class BioVisualisation : MonoBehaviour {
 
 	public CameraController CameraController;
@@ -12,7 +11,7 @@ public class BioVisualisation : MonoBehaviour {
 	public Color Active = Utility.Orange;
 	public Color Inactive = Utility.DarkGrey;
 
-	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics;
+	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics, MotionTrails;
 	public Color VisualisationEnabled = Utility.Cyan;
 	public Color VisualisationDisabled = Utility.Grey;
 
@@ -21,6 +20,9 @@ public class BioVisualisation : MonoBehaviour {
 	public Color CameraDisabled = Utility.LightGrey;
 
 	public Slider Yaw, Pitch;
+
+	public bool DrawTrails = false;
+	public Trail[] Trails = new Trail[0];
 
 	private int Frames = 150;
 	private Queue<float>[] CW;
@@ -43,6 +45,7 @@ public class BioVisualisation : MonoBehaviour {
 		Trajectory.onClick.AddListener(ToggleTrajectory); UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
 		CyclicWeights.onClick.AddListener(ToggleCyclicWeights); UpdateColor(CyclicWeights, DrawCW ? VisualisationEnabled : VisualisationDisabled);
 		InverseKinematics.onClick.AddListener(ToggleInverseKinematics); UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
+		MotionTrails.onClick.AddListener(ToggleMotionTrails); UpdateColor(MotionTrails, DrawTrails ? VisualisationEnabled : VisualisationDisabled);
 
 		SmoothFollow.onClick.AddListener(SetSmoothFollow); UpdateColor(SmoothFollow, CameraController.Mode == CameraController.MODE.SmoothFollow ? CameraEnabled : CameraDisabled);
 		ConstantView.onClick.AddListener(SetConstantView); UpdateColor(ConstantView, CameraController.Mode == CameraController.MODE.ConstantView ? CameraEnabled : CameraDisabled);
@@ -114,6 +117,11 @@ public class BioVisualisation : MonoBehaviour {
 		UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
 	}
 
+	public void ToggleMotionTrails() {
+		DrawTrails = !DrawTrails;
+		UpdateColor(MotionTrails, DrawTrails ? VisualisationEnabled : VisualisationDisabled);
+	}
+
 	public void SetSmoothFollow() {
 		CameraController.SetMode(CameraController.MODE.SmoothFollow);
 		UpdateColor(SmoothFollow, CameraEnabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraDisabled);
@@ -155,14 +163,23 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	private void UpdateColor(Button button, Color color) {
+		if(button == null) {
+			return;
+		}
 		button.GetComponent<Image>().color = color;
 	}
 
 	private void UpdateControl(Button button, bool active) {
+		if(button == null) {
+			return;
+		}
 		UpdateColor(button, active ? Active : Inactive);
 	}
 
 	private void UpdateStyle(Button button, int index) {
+		if(button == null) {
+			return;
+		}
 		float activation = Animation.GetTrajectory().Points[60].Styles[index];
 		button.GetComponent<Image>().color = Color.Lerp(Inactive, Active, activation);
 		button.GetComponentInChildren<Text>().text = (100f*activation).ToString("F0")  + "%";
@@ -184,6 +201,41 @@ public class BioVisualisation : MonoBehaviour {
 			DrawControlPoint(x, y, width, height, CW[1], Utility.DarkGreen);
 			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
 			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
+			UnityGL.Finish();
+		}
+
+		for(int i=0; i<Trails.Length; i++) {
+			Trails[i].Update(Frames);
+			if(DrawTrails) {
+				Trails[i].Draw(0.01f, new Color(0f, 1f, 2f/3f, 1f));
+			}
+		}
+	}
+
+	[System.Serializable]
+	public class Trail {
+		public Transform Target;
+
+		private Queue<Vector3> Positions = new Queue<Vector3>();
+
+		public void Update(int length) {
+			while(Positions.Count >= length) {
+				Positions.Dequeue();
+			}
+			Positions.Enqueue(Target.position);
+		}
+
+		public void Draw(float width, Color color) {
+			UnityGL.Start();
+			int index = 0;
+			Vector3 previous = Vector3.zero;
+			foreach(Vector3 position in Positions) {
+				if(index > 1) {
+					UnityGL.DrawLine(previous, position, width, color);
+				}
+				previous = position;
+				index += 1;
+			}
 			UnityGL.Finish();
 		}
 	}

@@ -117,6 +117,7 @@
      <Compile Include="Assets\Scripts\Classes\PFNN.cs" />
      <Compile Include="Assets\Scripts\Classes\Trajectory.cs" />
      <Compile Include="Assets\Scripts\Footprint.cs" />
+     <Compile Include="Assets\Scripts\MotionTrail.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\SerialIK.cs" />
      <Compile Include="Assets\Scripts\Trash\APFNN_Matrix.cs" />
@@ -148,6 +149,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
+     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
@@ -184,6 +186,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
+     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
