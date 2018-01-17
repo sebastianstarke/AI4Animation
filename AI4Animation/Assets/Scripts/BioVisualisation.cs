@@ -84,10 +84,6 @@ public class BioVisualisation : MonoBehaviour {
 		}
 	}
 
-	public void UpdateColor(Button button, Color color) {
-		button.GetComponent<Image>().color = color;
-	}
-
 	public void ToggleSkeleton() {
 		Animation.Character.DrawSkeleton = !Animation.Character.DrawSkeleton;
 		UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
@@ -142,57 +138,34 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		if(Input.GetKey(Animation.Controller.MoveForward)) {
-			StraightForward.GetComponent<Image>().color = Active;
-		} else {
-			StraightForward.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(Animation.Controller.MoveBackward)) {
-			StraightBack.GetComponent<Image>().color = Active;
-		} else {
-			StraightBack.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(Animation.Controller.MoveLeft)) {
-			StraightLeft.GetComponent<Image>().color = Active;
-		} else {
-			StraightLeft.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(Animation.Controller.MoveRight)) {
-			StraightRight.GetComponent<Image>().color = Active;
-		} else {
-			StraightRight.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(Animation.Controller.TurnLeft)) {
-			TurnLeft.GetComponent<Image>().color = Active;
-		} else {
-			TurnLeft.GetComponent<Image>().color = Inactive;
-		}
-		if(Input.GetKey(Animation.Controller.TurnRight)) {
-			TurnRight.GetComponent<Image>().color = Active;
-		} else {
-			TurnRight.GetComponent<Image>().color = Inactive;
-		}
+		UpdateControl(StraightForward, Input.GetKey(Animation.Controller.MoveForward));
+		UpdateControl(StraightBack, Input.GetKey(Animation.Controller.MoveBackward));
+		UpdateControl(StraightLeft, Input.GetKey(Animation.Controller.MoveLeft));
+		UpdateControl(StraightRight, Input.GetKey(Animation.Controller.MoveRight));
+		UpdateControl(TurnLeft, Input.GetKey(Animation.Controller.TurnLeft));
+		UpdateControl(TurnRight, Input.GetKey(Animation.Controller.TurnRight));
 
-		if(!Animation.Controller.QueryAny()) {
-			UpdateStyle(Idle, true, 0);
-		} else {
-			UpdateStyle(Idle, Animation.Controller.Styles[0].Query() != 0f, 0);
-		}
-		UpdateStyle(Walk, Animation.Controller.Styles[1].Query() != 0f && Animation.Controller.Styles[2].Query() == 0f, 1);
-		UpdateStyle(Sprint, Animation.Controller.Styles[2].Query() != 0f, 2);
-		UpdateStyle(Jump, Animation.Controller.Styles[3].Query() != 0f, 3);
-		UpdateStyle(Sit, Animation.Controller.Styles[4].Query() != 0f, 4);
-		UpdateStyle(Lie, Animation.Controller.Styles[5].Query() != 0f, 5);
-		UpdateStyle(Stand, Animation.Controller.Styles[6].Query() != 0f, 6);
+		UpdateStyle(Idle, 0);
+		UpdateStyle(Walk, 1);
+		UpdateStyle(Sprint, 2);
+		UpdateStyle(Jump, 3);
+		UpdateStyle(Sit, 4);
+		UpdateStyle(Lie, 5);
+		UpdateStyle(Stand, 6);
 	}
 
-	private void UpdateStyle(Button button, bool active, int index) {
-		if(active) {
-			button.GetComponent<Image>().color = Active;
-		} else {
-			button.GetComponent<Image>().color = Inactive;
-		}
-		button.GetComponentInChildren<Text>().text = (100f*Animation.GetTrajectory().Points[60].Styles[index]).ToString("F0")  + "%";
+	private void UpdateColor(Button button, Color color) {
+		button.GetComponent<Image>().color = color;
+	}
+
+	private void UpdateControl(Button button, bool active) {
+		UpdateColor(button, active ? Active : Inactive);
+	}
+
+	private void UpdateStyle(Button button, int index) {
+		float activation = Animation.GetTrajectory().Points[60].Styles[index];
+		button.GetComponent<Image>().color = Color.Lerp(Inactive, Active, activation);
+		button.GetComponentInChildren<Text>().text = (100f*activation).ToString("F0")  + "%";
 	}
 
 	void OnRenderObject() {

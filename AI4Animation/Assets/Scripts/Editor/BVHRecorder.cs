@@ -80,7 +80,7 @@ public class BVHRecorder : EditorWindow {
 			//Style Function
 			bool styleUpdate = false;
 			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
-				Utility.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query() == 1f ? true : false);
+				Utility.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query());
 				Utility.Add(ref Data.StyleFunction.Styles[i].Values, Animation.GetTrajectory().Points[60].Styles[i]);
 				if(index == 0) {
 					styleUpdate = true;

@@ -96,15 +96,16 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
-			Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query(), StyleTransition);
-		}
-		//Only for current project
-		if(Controller.Styles.Length > 0) {
-			if(Controller.Styles[2].Query() == 1f) {
-				Trajectory.Points[RootPointIndex].Styles[1] = 1f - Trajectory.Points[RootPointIndex].Styles[2];
+			if(i==0) {
+				if(!Controller.QueryAny()) {
+					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], 1f, StyleTransition);
+				} else {
+					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query() ? 1f : 0f, StyleTransition);
+				}
+			} else {
+				Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query() ? 1f : 0f, StyleTransition);
 			}
 		}
-		//
 
 		//Predict Future Trajectory
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];

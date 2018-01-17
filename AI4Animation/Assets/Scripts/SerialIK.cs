@@ -25,6 +25,10 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	public void UpdateGoal() {
+		//Vector3 newGoal = GetTipPosition();
+		//if(Mathf.Abs(newGoal.y - GoalPosition.y) > 0.01f) {
+		//	GoalPosition = newGoal;
+		//}
 		GoalPosition = GetTipPosition();
 	}
 

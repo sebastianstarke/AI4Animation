@@ -62,10 +62,6 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						//for(int j=0; j<Animations[i].Sequences.Length; j++) {
-						//	Animations[i].Sequences[j].Export = 1;
-						//}
-						Animations[i].StyleFunction.SetTransition(0.25f);
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();

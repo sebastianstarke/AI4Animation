@@ -62,7 +62,7 @@ public class Controller {
 
 	public bool QueryAny() {
 		for(int i=0; i<Styles.Length; i++) {
-			if(Styles[i].Query() != 0f) {
+			if(Styles[i].Query()) {
 				return true;
 			}
 		}
@@ -74,29 +74,44 @@ public class Controller {
 		public string Name;
 		public float Bias = 1f;
 		public KeyCode[] Keys = new KeyCode[0];
+		public bool[] Negations = new bool[0];
 
-		public float Query() {
+		public bool Query() {
 			if(Keys.Length == 0) {
-				return 0f;
+				return false;
 			}
 
-			//OR
+			bool active = false;
+
 			for(int i=0; i<Keys.Length; i++) {
-				if(Keys[i] == KeyCode.None) {
-					if(!Input.anyKey) {
-						return 1f;
-					}
-				} else {
-					if(Input.GetKey(Keys[i])) {
-						return 1f;
+				if(!Negations[i]) {
+					if(Keys[i] == KeyCode.None) {
+						if(!Input.anyKey) {
+							active = true;
+						}
+					} else {
+						if(Input.GetKey(Keys[i])) {
+							active = true;
+						}
 					}
 				}
 			}
 
-			//AND
-			//(TODO)
+			for(int i=0; i<Keys.Length; i++) {
+				if(Negations[i]) {
+					if(Keys[i] == KeyCode.None) {
+						if(!Input.anyKey) {
+							active = false;
+						}
+					} else {
+						if(Input.GetKey(Keys[i])) {
+							active = false;
+						}
+					}
+				}
+			}
 
-			return 0f;
+			return active;
 		}
 
 		public void SetKeyCount(int count) {
@@ -126,12 +141,24 @@ public class Controller {
 					TurnRight = (KeyCode)EditorGUILayout.EnumPopup("Turn Right", TurnRight);
 					SetStyleCount(EditorGUILayout.IntField("Styles", Styles.Length));
 					for(int i=0; i<Styles.Length; i++) {
+						Utility.SetGUIColor(Utility.Grey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
 							Styles[i].Name = EditorGUILayout.TextField("Name", Styles[i].Name);
 							Styles[i].Bias = EditorGUILayout.FloatField("Bias", Styles[i].Bias);
 							Styles[i].SetKeyCount(EditorGUILayout.IntField("Keys", Styles[i].Keys.Length));
+
+							//FIX
+							if(Styles[i].Negations.Length != Styles[i].Keys.Length) {
+								System.Array.Resize(ref Styles[i].Negations, Styles[i].Keys.Length);
+							}
+							//
+
 							for(int j=0; j<Styles[i].Keys.Length; j++) {
+								EditorGUILayout.BeginHorizontal();
 								Styles[i].Keys[j] = (KeyCode)EditorGUILayout.EnumPopup("Key", Styles[i].Keys[j]);
+								Styles[i].Negations[j] = EditorGUILayout.Toggle("Negate", Styles[i].Negations[j]);
+								EditorGUILayout.EndHorizontal();
 							}
 						}
 					}

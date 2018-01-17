@@ -1507,6 +1507,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 				EditorGUILayout.EndScrollView();
 
+				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeVelocity(0, VelocitySmoothing).magnitude / Animation.FrameTime);
 				SetVelocitySmoothing(EditorGUILayout.FloatField("Velocity Smoothing", VelocitySmoothing));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
 				SetHeightThreshold(EditorGUILayout.FloatField("Height Threshold", HeightThreshold));
