@@ -65,9 +65,10 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						//BVHAnimation animation = Animations[i];
-						//animation.PhaseFunction.ComputeValues();
-						//animation.MirroredPhaseFunction.ComputeValues();
+						BVHAnimation animation = Animations[i];
+						//animation.Character.BoneColor = Utility.Black;
+						//animation.StyleFunction.SetTransition(0.1f);
+						animation.ShowTrajectory = true;
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();

@@ -15,7 +15,7 @@ public class Character {
 	public Segment[] Hierarchy = new Segment[0];
 
 	public float BoneSize = 0.025f;
-	public Color BoneColor = Utility.Cyan;
+	public Color BoneColor = Utility.Black;
 	public Color JointColor = Utility.Mustard;
 	public DRAWTYPE DrawType = DRAWTYPE.Transparent;
 	public bool DrawSkeleton = true;

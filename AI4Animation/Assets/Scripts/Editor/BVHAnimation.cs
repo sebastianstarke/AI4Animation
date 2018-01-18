@@ -180,7 +180,6 @@ public class BVHAnimation : ScriptableObject {
 		Sequences = new BVHSequence[0];
 
 		//Finalise
-		ComputeCorrections();
 		DetectSymmetry();
 		ComputeFrames();
 		ComputeTrajectory();
@@ -192,7 +191,6 @@ public class BVHAnimation : ScriptableObject {
 	/*
 	public void Recompute() {
 		GenerateCharacter();
-		ComputeCorrections();
 		ComputeSymmetry();
 		ComputeFrames();
 		ComputeTrajectory();
@@ -369,7 +367,7 @@ public class BVHAnimation : ScriptableObject {
 		Character.BuildHierarchy(names, parents);
 	}
 
-	public void ComputeCorrections() {
+	public void AssignDogCorrections() {
 		Corrections = new Vector3[Character.Hierarchy.Length];
 		//Only for stupid dog bvh...
 		for(int i=0; i<Character.Hierarchy.Length; i++) {
@@ -445,7 +443,7 @@ public class BVHAnimation : ScriptableObject {
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].World[0].GetPosition(), mask);
-			//Vector3 rootDir = Frames[i].Rotations[0] * Vector3.forward;
+			//Vector3 rootDir = Frames[i].World[0].GetRotation() * Vector3.forward;
 			
 			//HARDCODED FOR DOG
 			int hipIndex = Character.FindSegment("Hips").GetIndex();
@@ -453,7 +451,7 @@ public class BVHAnimation : ScriptableObject {
 			Vector3 rootDir = Frames[i].World[neckIndex].GetPosition() - Frames[i].World[hipIndex].GetPosition();
 			rootDir.y = 0f;
 			rootDir = rootDir.normalized;
-			
+
 			Trajectory.Points[i].SetPosition(rootPos);
 			Trajectory.Points[i].SetDirection(rootDir);
 			Trajectory.Points[i].Postprocess();
@@ -477,7 +475,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 		if(mirrored) {
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
-				transformations[i] = transformations[i].GetMirror();
+				transformations[i] = transformations[i].GetMirror(GetMirrorAxis());
 			}
 		}
 		return transformations;
@@ -486,7 +484,7 @@ public class BVHAnimation : ScriptableObject {
 	public Matrix4x4[] ExtractTransformations(BVHFrame frame, bool mirrored) {
 		Matrix4x4[] transformations = new Matrix4x4[Character.Hierarchy.Length];
 		for(int i=0; i<transformations.Length; i++) {
-			transformations[i] = mirrored ? frame.World[Symmetry[i]].GetMirror() : frame.World[i];
+			transformations[i] = mirrored ? frame.World[Symmetry[i]].GetMirror(GetMirrorAxis()) : frame.World[i];
 		}
 		return transformations;
 	}
@@ -494,7 +492,7 @@ public class BVHAnimation : ScriptableObject {
 	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing=0f) {
 		Vector3[] velocities = new Vector3[Character.Hierarchy.Length];
 		for(int i=0; i<velocities.Length; i++) {
-			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).GetMirror() : frame.ComputeVelocity(i, smoothing);
+			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).GetMirror(GetMirrorAxis()) : frame.ComputeVelocity(i, smoothing);
 		}
 		return velocities;
 	}
@@ -539,14 +537,27 @@ public class BVHAnimation : ScriptableObject {
 
 		if(mirrored) {
 			for(int i=0; i<12; i++) {
-				trajectory.Points[i].SetPosition(trajectory.Points[i].GetPosition().GetMirror());
-				trajectory.Points[i].SetDirection(trajectory.Points[i].GetDirection().GetMirror());
-				trajectory.Points[i].SetLeftsample(trajectory.Points[i].GetLeftSample().GetMirror());
-				trajectory.Points[i].SetRightSample(trajectory.Points[i].GetRightSample().GetMirror());
+				trajectory.Points[i].SetPosition(trajectory.Points[i].GetPosition().GetMirror(GetMirrorAxis()));
+				trajectory.Points[i].SetDirection(trajectory.Points[i].GetDirection().GetMirror(GetMirrorAxis()));
+				trajectory.Points[i].SetLeftsample(trajectory.Points[i].GetLeftSample().GetMirror(GetMirrorAxis()));
+				trajectory.Points[i].SetRightSample(trajectory.Points[i].GetRightSample().GetMirror(GetMirrorAxis()));
 			}
 		}
 
 		return trajectory;
+	}
+
+	public Vector3 GetMirrorAxis() {
+		if(MirrorX) {
+			return Vector3.right;
+		}
+		if(MirrorY) {
+			return Vector3.up;
+		}
+		if(MirrorZ) {
+			return Vector3.forward;
+		}
+		return Vector3.zero;
 	}
 
 	private void SetUnitScale(float unitScale) {
@@ -764,9 +775,9 @@ public class BVHAnimation : ScriptableObject {
 
 				SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
 
-				//if(Utility.GUIButton("Auto Correct", Utility.DarkGrey, Utility.White)) {
-				//	ComputeCorrections();
-				//}
+				if(Utility.GUIButton("Assign Dog Corrections", Utility.DarkGrey, Utility.White)) {
+					AssignDogCorrections();
+				}
 
 				for(int i=0; i<Character.Hierarchy.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
@@ -798,12 +809,18 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Mirror X", MirrorX ? Utility.Cyan : Utility.Grey, MirrorX ? Utility.Black : Utility.LightGrey)) {
 						MirrorX = !MirrorX;
+						MirrorY = false;
+						MirrorZ = false;
 					}
 					if(Utility.GUIButton("Mirror Y", MirrorY ? Utility.Cyan : Utility.Grey, MirrorY ? Utility.Black : Utility.LightGrey)) {
 						MirrorY = !MirrorY;
+						MirrorX = false;
+						MirrorZ = false;
 					}
 					if(Utility.GUIButton("Mirror Z", MirrorZ ? Utility.Cyan : Utility.Grey, MirrorZ ? Utility.Black : Utility.LightGrey)) {
 						MirrorZ = !MirrorZ;
+						MirrorX = false;
+						MirrorY = false;
 					}
 					EditorGUILayout.EndHorizontal();
 				}
@@ -1765,7 +1782,6 @@ public class BVHAnimation : ScriptableObject {
 					AddStyle("Run");
 					AddStyle("Crouch");
 					AddStyle("Jump");
-					AddStyle("Sit");
 					break;
 
 					case STYLE.Quadruped:

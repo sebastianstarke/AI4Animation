@@ -85,23 +85,19 @@ public static class Transformations {
 		return to.inverse.MultiplyVector(direction);
 	}
 
-	public static Matrix4x4 GetMirror(this Matrix4x4 matrix) {
-		matrix[2, 3] *= -1f; //Pos
-		matrix[0, 2] *= -1f; //Rot
-		matrix[1, 2] *= -1f; //Rot
-		matrix[2, 0] *= -1f; //Rot
-		matrix[2, 1] *= -1f; //Rot
-		return matrix;
-	}
-
-	public static Matrix4x4 GetMirror(this Matrix4x4 matrix, Vector3 axisPos) {
-		if(axisPos == Vector3.right) {
+	public static Matrix4x4 GetMirror(this Matrix4x4 matrix, Vector3 axis) {
+		if(axis == Vector3.right) {
 			matrix[0, 3] *= -1f; //Pos
+			matrix[0, 1] *= -1f; //Rot
+			matrix[0, 2] *= -1f; //Rot
+			matrix[1, 0] *= -1f; //Rot
+			matrix[2, 0] *= -1f; //Rot
 		}
-		if(axisPos == Vector3.up) {
-			matrix[1, 3] *= -1f; //Pos
+		if(axis == Vector3.up) {
+			Debug.Log("Mirroring against Y-plane not yet implemented");
+		//	matrix[1, 3] *= -1f; //Pos
 		}
-		if(axisPos == Vector3.forward) {
+		if(axis == Vector3.forward) {
 			matrix[2, 3] *= -1f; //Pos
 			matrix[0, 2] *= -1f; //Rot
 			matrix[1, 2] *= -1f; //Rot
@@ -111,15 +107,33 @@ public static class Transformations {
 		return matrix;
 	}
 
-	public static Vector3 GetMirror(this Vector3 vector) {
-		vector.z *= -1f;
+	public static Vector3 GetMirror(this Vector3 vector, Vector3 axis) {
+		if(axis == Vector3.right) {
+			vector.x *= -1f;
+		}
+		if(axis == Vector3.up) {
+			vector.y *= -1f;
+		}
+		if(axis == Vector3.forward) {
+			vector.z *= -1f;
+		}
 		return vector;
 	}
 
-	public static Quaternion GetMirror(this Quaternion quaternion) {
+	public static Quaternion GetMirror(this Quaternion quaternion, Vector3 axis) {
 		Quaternion mirror = quaternion;
-		mirror.z *= -1f;
-		mirror.w *= -1f;
+		if(axis == Vector3.right) {
+			mirror.x *= -1f;
+			mirror.w *= -1f;
+		}
+		if(axis == Vector3.up) {
+			mirror.y *= -1f;
+			mirror.w *= -1f;
+		}
+		if(axis == Vector3.forward) {
+			mirror.z *= -1f;
+			mirror.w *= -1f;
+		}
 		return Quaternion.Slerp(quaternion, mirror, 1f);
 	}
 
