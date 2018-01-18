@@ -1798,15 +1798,19 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void AddStyle(string name = "Style") {
-			System.Array.Resize(ref Styles, Styles.Length+1);
-			Styles[Styles.Length-1] = new BVHStyle(name, Animation.GetTotalFrames());
+			Utility.Add(ref Styles, new BVHStyle(name, Animation.GetTotalFrames()));
 		}
 
 		public void RemoveStyle() {
-			if(Styles.Length == 0) {
-				return;
-			}
-			System.Array.Resize(ref Styles, Styles.Length-1);
+			Utility.Shrink(ref Styles);
+		}
+
+		public void RemoveStyle(string name) {
+			Utility.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
+		}
+
+		public BVHStyle GetStyle(string name) {
+			return System.Array.Find(Styles, x => x.Name == name);
 		}
 
 		public void SetFlag(BVHFrame frame, int dimension, bool value) {

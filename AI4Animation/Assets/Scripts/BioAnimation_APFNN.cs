@@ -252,6 +252,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			int end = 6*4 + JointDimOut*Joints.Length;
 			Vector3 translationalVelocity = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
 			float angularVelocity = APFNN.GetOutput(end+2);
+			//Debug.Log(translationalVelocity.magnitude * 60f);
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalVelocity.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
