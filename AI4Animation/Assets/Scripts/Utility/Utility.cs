@@ -74,6 +74,10 @@ public static class Utility {
 		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
 	}
 
+	public static float Exponential01(float value) {
+		return Mathf.Pow(2f, Mathf.Clamp(value, 0f, 1f)) - 1f;
+	}
+
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
 		if(valueMax-valueMin != 0f) {
 			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;

@@ -11,7 +11,10 @@ public static class Transformations {
 	}
 
 	public static void SetPosition(ref Matrix4x4 matrix, Vector3 position) {
-		matrix = Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
+		matrix[0,3] = position.x;
+		matrix[1,3] = position.y;
+		matrix[2,3] = position.z;
+		//matrix = Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
 	}
 
 	public static void SetRotation(ref Matrix4x4 matrix, Quaternion rotation) {
@@ -23,7 +26,8 @@ public static class Transformations {
 	}
 
 	public static Vector3 GetPosition(this Matrix4x4 matrix) {
-		return matrix.GetColumn(3);
+		return new Vector3(matrix[0,3], matrix[1,3], matrix[2,3]);
+		//return matrix.GetColumn(3);
 	}
 	
 	public static Quaternion GetRotation(this Matrix4x4 matrix) {
@@ -35,15 +39,18 @@ public static class Transformations {
 	}
 
 	public static Vector3 GetRight(this Matrix4x4 matrix) {
-		return matrix.GetColumn(0);
+		return new Vector3(matrix[0,0], matrix[1,0], matrix[2,0]);
+		//return matrix.GetColumn(0);
 	}
 
 	public static Vector3 GetUp(this Matrix4x4 matrix) {
-		return matrix.GetColumn(1);
+		return new Vector3(matrix[0,1], matrix[1,1], matrix[2,1]);
+		//return matrix.GetColumn(1);
 	}
 
 	public static Vector3 GetForward(this Matrix4x4 matrix) {
-		return matrix.GetColumn(2);
+		return new Vector3(matrix[0,2], matrix[1,2], matrix[2,2]);
+		//return matrix.GetColumn(2);
 	}
 
 	public static Matrix4x4 GetRelativeTransformationFrom(this Matrix4x4 matrix, Matrix4x4 from) {

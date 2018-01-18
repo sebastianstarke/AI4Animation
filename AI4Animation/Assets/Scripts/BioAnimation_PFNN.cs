@@ -320,6 +320,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 
+			/*
 			//Motion Editing
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].UpdateGoal();
@@ -348,6 +349,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].ProcessIK();
 			}
+			*/
 			
 			//Update Skeleton
 			Character.FetchTransformations(Root);

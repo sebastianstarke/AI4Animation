@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SerialIK : MonoBehaviour {
 
-	public Vector3 GoalPosition;
+	public Vector3 Goal;
 	public Transform[] Transforms;
 
 	[Range(0f, 1f)] public float Step = 1.0f;
@@ -24,27 +24,9 @@ public class SerialIK : MonoBehaviour {
 		Transforms = new Transform[1] {transform};
 	}
 
-	//public void UpdateGoal(Matrix4x4 rootVelocity) {
-	public void UpdateGoal() {
-		//Vector3 newGoal = GetTipPosition();
-		//float relativeVelocity = (GoalPosition - newGoal).GetRelativeDirectionTo(rootVelocity).magnitude;
-		//if(Mathf.Abs(newGoal.y - GoalPosition.y) > 0.01f) {
-		//if(Vector3.Magnitude(GoalPosition - newGoal) > 0.005f || newGoal.y > 0.01f) {
-		//	GoalPosition = newGoal;
-		//}
-		GoalPosition = GetTipPosition();
-	}
-
 	public void ProcessIK() {
 		if(Transforms.Length == 0) {
 			return;
-		}
-
-		float height = Utility.GetHeight(GoalPosition, LayerMask.GetMask("Ground"));
-		if(name=="Tail") {
-			GoalPosition.y = Mathf.Max(height, height + (GoalPosition.y - transform.root.position.y));
-		} else {
-			GoalPosition.y = height + (GoalPosition.y - transform.root.position.y);
 		}
 
 		Bones = Transforms.Length;
@@ -63,6 +45,10 @@ public class SerialIK : MonoBehaviour {
 		FK(posture, solution);
 	}
 	
+	public Vector3 GetTipPosition() {
+		return Transforms[Transforms.Length-1].position;
+	}
+
 	private void FK(Matrix4x4[] posture, float[] variables) {
 		for(int i=0; i<Bones; i++) {
 			Quaternion update = Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+2], Vector3.up);
@@ -77,10 +63,6 @@ public class SerialIK : MonoBehaviour {
 			posture[i] = Transforms[i].GetLocalMatrix();
 		}
 		return posture;
-	}
-
-	private Vector3 GetTipPosition() {
-		return Transforms[Transforms.Length-1].position;
 	}
 
 	private void Iterate(Matrix4x4[] posture, float[] variables) {
@@ -100,7 +82,7 @@ public class SerialIK : MonoBehaviour {
 		}
 
 		//Gradient Vector
-		Vector3 gradientPosition = Step * (GoalPosition - tipPosition);
+		Vector3 gradientPosition = Step * (Goal - tipPosition);
 		Gradient.Values[0][0] = gradientPosition.x;
 		Gradient.Values[1][0] = gradientPosition.y;
 		Gradient.Values[2][0] = gradientPosition.z;
@@ -131,7 +113,7 @@ public class SerialIK : MonoBehaviour {
 
 	void OnRenderObject() {
 		//UnityGL.Start();
-		//UnityGL.DrawSphere(GoalPosition, 0.025f, Utility.Green.Transparent(0.5f));
+		//UnityGL.DrawSphere(Goal, 0.025f, Utility.Green.Transparent(0.5f));
 		//UnityGL.Finish();
 	}
 

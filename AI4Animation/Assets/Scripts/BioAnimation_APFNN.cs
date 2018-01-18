@@ -61,6 +61,11 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
 		APFNN.Initialise();
+		if(name == "Wolf_APFNN_FullRoot") {
+			for(int i=189; i<192; i++) {
+				APFNN.AddControlNeuron(i);
+			}
+		}
 		for(int i=309; i<312; i++) {
 			APFNN.AddControlNeuron(i);
 		}
@@ -159,23 +164,24 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		if(APFNN.Parameters != null) {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
 			//Fix for flat terrain
 			Transformations.SetPosition(
-				ref previousRoot, 
-				previousRoot.GetPosition() - new Vector3(0f, currentRoot.GetPosition().y - previousRoot.GetPosition().y, 0f)
-				);
-			
+				ref currentRoot,
+				new Vector3(currentRoot.GetPosition().x, 0f, currentRoot.GetPosition().z)
+			);
+			//
+
 			//Input Trajectory Positions / Directions
 			int start = 0;
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				APFNN.SetInput(start + i*6 + 0, pos.x);
-				//APFNN.SetInput(start + i*6 + 1, pos.y);
+				//APFNN.SetInput(start + i*6 + 1, pos.y); //Fix for flat terrain
 				APFNN.SetInput(start + i*6 + 1, 0f);
 				APFNN.SetInput(start + i*6 + 2, pos.z);
 				APFNN.SetInput(start + i*6 + 3, dir.x);
+				//APFNN.SetInput(start + i*6 + 4, dir.y); //Fix for flat terrain
 				APFNN.SetInput(start + i*6 + 4, 0f);
 				APFNN.SetInput(start + i*6 + 5, dir.z);
 			}
@@ -183,8 +189,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Input Trajectory Heights
 			for(int i=0; i<PointSamples; i++) {
-				//APFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y);
-				//APFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y);
+				//APFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y); //Fix for flat terrain
+				//APFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y); //Fix for flat terrain
 				APFNN.SetInput(start + i*2 + 0, 0f);
 				APFNN.SetInput(start + i*2 + 1, 0f);
 			}
@@ -200,6 +206,13 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//180
 
 			//Input Previous Bone Positions / Velocities
+			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
+			//Fix for flat terrain
+			Transformations.SetPosition(
+				ref previousRoot,
+				new Vector3(previousRoot.GetPosition().x, 0f, previousRoot.GetPosition().z)
+			);
+			//
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
@@ -244,6 +257,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
+			//Fix for flat terrain
+			Transformations.SetPosition(
+				ref nextRoot,
+				new Vector3(nextRoot.GetPosition().x, 0f, nextRoot.GetPosition().z)
+			);
+			//
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -310,18 +329,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Vector3 forward = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 3), APFNN.GetOutput(start + i*JointDimOut + 4), APFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
 				Vector3 up = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 6), APFNN.GetOutput(start + i*JointDimOut + 7), APFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
 				Vector3 velocity = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 9), APFNN.GetOutput(start + i*JointDimOut + 10), APFNN.GetOutput(start + i*JointDimOut + 11));
-				/*
-				if(i==0 || i==1) {
-					position.x = 0f;
-					position.z = 0f;
-					velocity.x = 0f;
-					velocity.z = 0f;
-				}
-				if(i==3) {
-					position.x = 0f;
-					velocity.x = 0f;
-				}
-				*/
+				
 				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
 				Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
@@ -337,37 +345,40 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 			
-			if(SolveIK) {
-				//Motion Editing
-				/*
-				float threshold = 0.001f;
-				if(Mathf.Abs(Velocities[10].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
-					IKSolvers[0].UpdateGoal();
-				} else {
-					//Positions[10] = IKSolvers[0].GoalPosition;
-				}
-				if(Mathf.Abs(Velocities[15].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
-					IKSolvers[1].UpdateGoal();
-				} else {
-					//Positions[15] = IKSolvers[1].GoalPosition;
-				}
-				if(Mathf.Abs(Velocities[19].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
-					IKSolvers[2].UpdateGoal();
-				} else {
-					//Positions[19] = IKSolvers[2].GoalPosition;
-				}
-				if(Mathf.Abs(Velocities[23].GetRelativeDirectionFrom(currentRoot).magnitude) >= threshold) {
-					IKSolvers[3].UpdateGoal();
-				} else {
-					//Positions[23] = IKSolvers[3].GoalPosition;
-				}
-				IKSolvers[4].UpdateGoal();
-				*/
-
+			if(SolveIK) {			
+				//Foot Sliding
 				for(int i=0; i<IKSolvers.Length; i++) {
-					IKSolvers[i].UpdateGoal();
+					if(IKSolvers[i].name != "Tail") {
+						float threshold = 6f / 60f;
+						Vector3 goal = IKSolvers[i].GetTipPosition();
+						float delta = (goal - IKSolvers[i].Goal).magnitude;
+						float weight = Utility.Exponential01(delta / threshold);
+						IKSolvers[i].Goal = Vector3.Lerp(IKSolvers[i].Goal, goal, weight);
+					}
 				}
+				for(int i=0; i<IKSolvers.Length; i++) {
+					if(IKSolvers[i].name != "Tail") {
+						IKSolvers[i].ProcessIK();
+					}
+				}
+				for(int i=0; i<Joints.Length; i++) {
+					Positions[i] = Joints[i].position;
+				}
+			}
 
+			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
+
+			if(SolveIK) {
+				//Terrain Motion Editing
+				for(int i=0; i<IKSolvers.Length; i++) {
+					IKSolvers[i].Goal = IKSolvers[i].GetTipPosition();
+					float height = Utility.GetHeight(IKSolvers[i].Goal, LayerMask.GetMask("Ground"));
+					if(IKSolvers[i].name == "Tail") {
+						IKSolvers[i].Goal.y = Mathf.Max(height, height + (IKSolvers[i].Goal.y - transform.position.y));
+					} else {
+						IKSolvers[i].Goal.y = height + (IKSolvers[i].Goal.y - transform.position.y);
+					}
+				}
 				Transform spine = Array.Find(Joints, x => x.name == "Spine1");
 				Transform neck = Array.Find(Joints, x => x.name == "Neck");
 				Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
@@ -380,34 +391,23 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
 				float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
 				float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
-
 				spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
-
 				spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - Root.position.y), spinePosition.z);
 				neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - Root.position.y), neckPosition.z);
 				leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - Root.position.y), leftShoulderPosition.z);
 				rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - Root.position.y), rightShoulderPosition.z);
-
 				for(int i=0; i<IKSolvers.Length; i++) {
 					IKSolvers[i].ProcessIK();
 				}
 			}
 
 			//Update Skeleton
-			Character.FetchTransformations(Root);
-
-			/*
-			for(int i=0; i<Character.Hierarchy.Length; i++) {
-				Positions[i] = Character.Hierarchy[i].GetTransformation().GetPosition();
-				Forwards[i] = Character.Hierarchy[i].GetTransformation().GetForward();
-				Ups[i] = Character.Hierarchy[i].GetTransformation().GetUp();
-			}
-			*/
+			Character.FetchTransformations(Root);			
 		}
 	}
 
 	private float PoolBias() {
-		float[] styles = Trajectory.Points[60].Styles;
+		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
 		for(int i=0; i<styles.Length; i++) {
 			bias += styles[i] * Controller.Styles[i].Bias;
@@ -455,7 +455,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		/*
+		
 		float height = 0.05f;
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -467,7 +467,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
-		*/
+		
 	}
 
 	void OnRenderObject() {
@@ -551,15 +551,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 						Target.Character.BuildHierarchy(Target.Root);
 					}
 				}
-
-				/*
-				if(Utility.GUIButton("Rebuild Hierarchy", Utility.DarkGreen, Utility.White)) {
-					Target.Character.BuildHierarchy(Target.Root);
-				}
-				if(Utility.GUIButton("Clear Hierarchy", Utility.DarkRed, Utility.White)) {
-					Utility.Clear(ref Target.Character.Hierarchy);
-				}
-				*/
 
 				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
 					Target.Inspect = !Target.Inspect;
