@@ -53,7 +53,7 @@ public class BVHRecorder : EditorWindow {
 			point.SetTransformation(Animation.GetTrajectory().Points[60].GetTransformation());
 			point.SetLeftsample(Animation.GetTrajectory().Points[60].GetLeftSample());
 			point.SetRightSample(Animation.GetTrajectory().Points[60].GetRightSample());
-			point.SetRise(Animation.GetTrajectory().Points[60].GetRise());
+			point.SetSlope(Animation.GetTrajectory().Points[60].GetSlope());
 			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
 				point.Styles[i] = Animation.GetTrajectory().Points[60].Styles[i];
 			}

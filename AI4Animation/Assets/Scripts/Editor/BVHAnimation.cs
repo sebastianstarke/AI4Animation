@@ -454,6 +454,7 @@ public class BVHAnimation : ScriptableObject {
 
 			Trajectory.Points[i].SetPosition(rootPos);
 			Trajectory.Points[i].SetDirection(rootDir);
+			Trajectory.Points[i].SetVelocity(Frames[i].ComputeRootVelocity());
 			Trajectory.Points[i].Postprocess();
 		}
 	}
@@ -508,7 +509,8 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
 			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
 			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
-			trajectory.Points[i].SetRise(Trajectory.Points[index-1].GetRise());
+			trajectory.Points[i].SetVelocity(Trajectory.Points[index-1].GetVelocity());
+			trajectory.Points[i].SetSlope(Trajectory.Points[index-1].GetSlope());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}
@@ -519,7 +521,8 @@ public class BVHAnimation : ScriptableObject {
 		trajectory.Points[6].SetDirection(Trajectory.Points[frame.Index-1].GetDirection());
 		trajectory.Points[6].SetLeftsample(Trajectory.Points[frame.Index-1].GetLeftSample());
 		trajectory.Points[6].SetRightSample(Trajectory.Points[frame.Index-1].GetRightSample());
-		trajectory.Points[6].SetRise(Trajectory.Points[frame.Index-1].GetRise());
+		trajectory.Points[6].SetVelocity(Trajectory.Points[frame.Index-1].GetVelocity());
+		trajectory.Points[6].SetSlope(Trajectory.Points[frame.Index-1].GetSlope());
 		//Future
 		for(int i=7; i<12; i++) {
 			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, GetTotalTime());
@@ -529,7 +532,8 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
 			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
 			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
-			trajectory.Points[i].SetRise(Trajectory.Points[index-1].GetRise());
+			trajectory.Points[i].SetVelocity(Trajectory.Points[index-1].GetVelocity());
+			trajectory.Points[i].SetSlope(Trajectory.Points[index-1].GetSlope());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
 			}

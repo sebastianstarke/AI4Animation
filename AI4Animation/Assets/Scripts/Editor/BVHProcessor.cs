@@ -65,23 +65,8 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						/*
 						BVHAnimation animation = Animations[i];
-						BVHAnimation.BVHStyle walk = animation.StyleFunction.GetStyle("Walk");
-						BVHAnimation.BVHStyle pace = animation.StyleFunction.GetStyle("Pace");
-						BVHAnimation.BVHStyle trot = animation.StyleFunction.GetStyle("Trot");
-						BVHAnimation.BVHStyle canter = animation.StyleFunction.GetStyle("Canter");
-						for(int j=0; j<animation.GetTotalFrames(); j++) {
-							if(walk.Flags[j] || pace.Flags[j] || trot.Flags[j] || canter.Flags[j]) {
-								walk.Flags[j] = true;
-							}
-						}
-						walk.Name = "Move";
-						animation.StyleFunction.RemoveStyle("Pace");
-						animation.StyleFunction.RemoveStyle("Trot");
-						animation.StyleFunction.RemoveStyle("Canter");
-						animation.StyleFunction.Recompute();
-						*/
+						animation.ComputeTrajectory();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();

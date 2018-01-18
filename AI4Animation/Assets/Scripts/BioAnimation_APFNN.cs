@@ -158,7 +158,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
 			Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 			Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
-			Trajectory.Points[i].SetRise((1f-factor)*prev.GetRise() + factor*next.GetRise());
+			Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 		}
 
 		if(APFNN.Parameters != null) {
@@ -242,7 +242,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
-				Trajectory.Points[i].SetRise(Trajectory.Points[i+1].GetRise());
+				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[i+1].Styles[j];
 				}
@@ -321,7 +321,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
-				Trajectory.Points[i].SetRise((1f-factor)*prev.GetRise() + factor*next.GetRise());
+				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
 
 			//Compute Posture

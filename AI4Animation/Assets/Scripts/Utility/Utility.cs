@@ -254,7 +254,7 @@ public static class Utility {
 		return height;
 	}
 
-	public static float GetRise(Vector3 origin, LayerMask mask) {
+	public static float GetSlope(Vector3 origin, LayerMask mask) {
 		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
 		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
 		if(upHits.Length == 0 && downHits.Length == 0) {

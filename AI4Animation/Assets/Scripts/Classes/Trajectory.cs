@@ -48,7 +48,8 @@ public class Trajectory {
 		[SerializeField] private Matrix4x4 Transformation;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
-		[SerializeField] private float Rise;
+		[SerializeField] private float Velocity;
+		[SerializeField] private float Slope;
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
@@ -56,7 +57,8 @@ public class Trajectory {
 			Transformation = Matrix4x4.identity;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
-			Rise = 0f;
+			Velocity = 0f;
+			Slope = 0f;
 			Styles = new float[styles];
 		}
 
@@ -116,12 +118,20 @@ public class Trajectory {
 			return RightSample;
 		}
 
-		public void SetRise(float rise) {
-			Rise = rise;
+		public void SetVelocity(float velocity) {
+			Velocity = velocity;
 		}
 
-		public float GetRise() {
-			return Rise;
+		public float GetVelocity() {
+			return Velocity;
+		}
+
+		public void SetSlope(float slope) {
+			Slope = slope;
+		}
+
+		public float GetSlope() {
+			return Slope;
 		}
 
 		public void Postprocess() {
@@ -132,7 +142,7 @@ public class Trajectory {
 			position.y = Utility.GetHeight(Transformation.GetPosition(), mask);
 			SetPosition(position);
 
-			Rise = Utility.GetRise(position, mask);
+			Slope = Utility.GetSlope(position, mask);
 
 			Vector3 ortho = Quaternion.Euler(0f, 90f, 0f) * direction;
 			RightSample = position + Trajectory.Width * ortho.normalized;
@@ -158,15 +168,21 @@ public class Trajectory {
 		}
 
 		//Directions
-		Color transparentDirection = new Color(Utility.Orange.r, Utility.Orange.g, Utility.Orange.b, 0.75f);
+		Color transparentDirection = Utility.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
 		}
 
-		//Rises
-		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
+		//Velocities
+		Color transparentVelocity = Utility.Green.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetRise() * Vector3.up, 0.025f, 0f, transparentRise);
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection(), 0.025f, 0f, transparentVelocity);
+		}
+
+		//Slopes
+		Color transparentSlope = Utility.Blue.Transparent(0.75f);
+		for(int i=0; i<Points.Length; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
 		}
 
 		//Positions
@@ -175,41 +191,5 @@ public class Trajectory {
 		}
 		UnityGL.Finish();
 	}
-
-	/*
-	public void Draw(int start, int end, int step=1) {
-		UnityGL.Start();
-		//Connections
-		for(int i=start; i<=end-step; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Utility.Black);
-		}
-
-		//Projections
-		for(int i=start; i<=end; i+=step) {
-			Vector3 right = Points[i].GetRightSample();
-			Vector3 left = Points[i].GetLeftSample();
-			UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
-			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
-		}
-
-		//Directions
-		Color transparentDirection = new Color(Utility.Orange.r, Utility.Orange.g, Utility.Orange.b, 0.75f);
-		for(int i=start; i<=end; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
-		}
-
-		//Rises
-		Color transparentRise = new Color(Utility.Blue.r, Utility.Blue.g, Utility.Blue.b, 0.75f);
-		for(int i=start; i<=end; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].Rise * Vector3.up, 0.025f, 0f, transparentRise);
-		}
-
-		//Positions
-		for(int i=start; i<=end; i+=step) {
-			UnityGL.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
-		}
-		UnityGL.Finish();
-	}
-	*/
 
 }
