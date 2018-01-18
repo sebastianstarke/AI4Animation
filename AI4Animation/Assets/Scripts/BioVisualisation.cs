@@ -113,7 +113,7 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	public void ToggleInverseKinematics() {
-		Animation.SolveIK = !Animation.SolveIK;
+		Animation.UseIK(!Animation.SolveIK);
 		UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
 	}
 

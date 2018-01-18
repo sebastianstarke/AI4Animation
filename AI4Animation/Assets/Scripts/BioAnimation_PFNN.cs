@@ -458,7 +458,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 					if(segment != null) {
 						UnityGL.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + Velocities[i]/Time.deltaTime,
+							Joints[i].position + Velocities[i] * 60f,
 							0.75f,
 							0.0075f,
 							0.05f,

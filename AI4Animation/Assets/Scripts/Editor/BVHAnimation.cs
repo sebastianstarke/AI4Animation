@@ -454,7 +454,7 @@ public class BVHAnimation : ScriptableObject {
 
 			Trajectory.Points[i].SetPosition(rootPos);
 			Trajectory.Points[i].SetDirection(rootDir);
-			Trajectory.Points[i].SetVelocity(Frames[i].ComputeRootVelocity());
+			Trajectory.Points[i].SetVelocity(Frames[i].ComputeMotionVelocity());
 			Trajectory.Points[i].Postprocess();
 		}
 	}
@@ -1021,7 +1021,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				UnityGL.DrawArrow(
 					transformations[i].GetPosition(),
-					transformations[i].GetPosition() + velocities[i]/FrameTime,
+					transformations[i].GetPosition() + velocities[i] / FrameTime,
 					0.75f,
 					0.0075f,
 					0.05f,
@@ -1185,9 +1185,9 @@ public class BVHAnimation : ScriptableObject {
 			return velocity;
 		}
 
-		public float ComputeRootVelocity() {
+		public float ComputeMotionVelocity() {
 			Vector3 vel = ComputeVelocity(0, 1f);
-			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z);
+			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z) / Animation.FrameTime;
 		}
 	}
 
@@ -1465,7 +1465,7 @@ public class BVHAnimation : ScriptableObject {
 			min = float.MaxValue;
 			max = float.MinValue;
 			for(int i=0; i<Animation.GetTotalFrames(); i++) {
-				RootVelocities[i] = Animation.Frames[i].ComputeRootVelocity() / Animation.FrameTime;
+				RootVelocities[i] = Animation.Frames[i].ComputeMotionVelocity();
 				if(RootVelocities[i] < min) {
 					min = RootVelocities[i];
 				}
@@ -1559,7 +1559,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 				EditorGUILayout.EndScrollView();
 
-				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeRootVelocity() / Animation.FrameTime);
+				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeMotionVelocity());
 				SetVelocitySmoothing(EditorGUILayout.FloatField("Velocity Smoothing", VelocitySmoothing));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
 				SetHeightThreshold(EditorGUILayout.FloatField("Height Threshold", HeightThreshold));

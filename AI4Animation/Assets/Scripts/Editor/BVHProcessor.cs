@@ -213,10 +213,8 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + "TrajectoryPositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-		}
-		for(int i=1; i<=12; i++) {
+			labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
 		}
@@ -225,11 +223,9 @@ public class BVHProcessor : EditorWindow {
 				labels.WriteLine(index + " " + Animations[0].StyleFunction.Styles[j-1].Name + i); index += 1;
 			}
 		}
-		labels.WriteLine(index + " " + "Phase"); index += 1;
-		labels.WriteLine(index + " " + "RootTranslationalVelocityX"); index += 1;
-		labels.WriteLine(index + " " + "RootTranslationalVelocityZ"); index += 1;
-		labels.WriteLine(index + " " + "RootAngularVelocity"); index += 1;
-		labels.WriteLine(index + " " + "PhaseChange"); index += 1;
+		labels.WriteLine(index + " " + "TranslationalOffsetX"); index += 1;
+		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
+		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 		
 		labels.Close();
 	}
@@ -313,10 +309,9 @@ public class BVHProcessor : EditorWindow {
 							//Trajectory data
 							for(int k=0; k<12; k++) {
 								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-								line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
-							}
-
-							for(int k=0; k<12; k++) {
+								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
+								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
+								line += FormatValue(trajectory.Points[k].GetVelocity());
 								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
 								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
 							}
@@ -325,12 +320,14 @@ public class BVHProcessor : EditorWindow {
 								line += FormatArray(trajectory.Points[k].Styles);
 							}
 
+							/*
 							//Phase
 							if(mirrored) {
 								line += FormatValue(Animations[i].MirroredPhaseFunction.GetPhase(frame));
 							} else {
 								line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
 							}
+							*/
 
 							//Translational and angular root velocity
 							Vector3 position = trajectory.Points[6].GetPosition();
@@ -345,12 +342,14 @@ public class BVHProcessor : EditorWindow {
 							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 							line += FormatValue(rotationOffset);
 
+							/*
 							//Phase change
 							if(mirrored) {
 								line += FormatValue(GetPhaseChange(Animations[i].MirroredPhaseFunction.GetPhase(prevFrame), Animations[i].MirroredPhaseFunction.GetPhase(frame)));
 							} else {
 								line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
 							}
+							*/
 
 							//Postprocess
 							line = line.Remove(line.Length-1);

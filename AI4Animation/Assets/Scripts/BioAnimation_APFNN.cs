@@ -88,6 +88,15 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		return Trajectory;
 	}
 
+	public void UseIK(bool value) {
+		SolveIK = value;
+		if(SolveIK) {
+			for(int i=0; i<IKSolvers.Length; i++) {
+				IKSolvers[i].Goal = IKSolvers[i].GetTipPosition();
+			}
+		}
+	}
+
 	public void AutoDetect() {
 		SetJointCount(0);
 		Action<Transform> recursion = null;
@@ -252,7 +261,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			int end = 6*4 + JointDimOut*Joints.Length;
 			Vector3 translationalVelocity = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
 			float angularVelocity = APFNN.GetOutput(end+2);
-			//Debug.Log(translationalVelocity.magnitude * 60f);
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalVelocity.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
@@ -346,14 +354,21 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
 			
-			if(SolveIK) {			
+			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
+
+			if(SolveIK) {
 				//Foot Sliding
+				float heightThreshold = 0.05f;
+				float velocityThreshold = 1f/60f;
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
-						float threshold = 6f / 60f;
 						Vector3 goal = IKSolvers[i].GetTipPosition();
-						float delta = (goal - IKSolvers[i].Goal).magnitude;
-						float weight = Utility.Exponential01(delta / threshold);
+						IKSolvers[i].Goal.y = goal.y;
+						float velocityDelta = (goal - IKSolvers[i].Goal).magnitude;
+						float velocityWeight = Utility.Exponential01(velocityDelta / velocityThreshold);
+						float heightDelta = goal.y;
+						float heightWeight = Utility.Exponential01(heightDelta / heightThreshold);
+						float weight = Mathf.Min(velocityWeight, heightWeight);
 						IKSolvers[i].Goal = Vector3.Lerp(IKSolvers[i].Goal, goal, weight);
 					}
 				}
@@ -367,8 +382,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				}
 			}
 
-			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
-
+			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
+			
 			if(SolveIK) {
 				//Terrain Motion Editing
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -401,7 +416,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 					IKSolvers[i].ProcessIK();
 				}
 			}
-
+			
 			//Update Skeleton
 			Character.FetchTransformations(Root);			
 		}
@@ -499,7 +514,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 					if(segment != null) {
 						UnityGL.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + Velocities[i]/Time.deltaTime,
+							Joints[i].position + Velocities[i] * 60f,
 							0.75f,
 							0.0075f,
 							0.05f,
