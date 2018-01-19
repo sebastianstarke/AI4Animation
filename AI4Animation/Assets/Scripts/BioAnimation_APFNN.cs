@@ -114,8 +114,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 	void Update() {	
 		//Update Target Direction / Velocity
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
-		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
-		
+		TargetVelocity = Vector3.Lerp(TargetVelocity, PoolBias() * (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
+
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			if(i==0) {
@@ -138,15 +138,15 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
 			
-			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
+			float bias = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				PoolBias() * rescale * TargetVelocity,
+				bias * TargetVelocity,
 				scale_pos);
 
 			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
-
+			Trajectory.Points[i].SetVelocity(TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
 			}
@@ -165,6 +165,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 			Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
+			Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
 			Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 			Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 			Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -249,6 +250,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			for(int i=0; i<RootPointIndex; i++) {
 				Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
+				Trajectory.Points[i].SetVelocity(Trajectory.Points[i+1].GetVelocity());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
 				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
@@ -259,11 +261,11 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Update Current Trajectory
 			int end = 6*4 + JointDimOut*Joints.Length;
-			Vector3 translationalVelocity = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
-			float angularVelocity = APFNN.GetOutput(end+2);
+			Vector3 translationalOffset = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
+			float angularOffset = APFNN.GetOutput(end+2);
 			
-			Trajectory.Points[RootPointIndex].SetPosition(translationalVelocity.GetRelativePositionFrom(currentRoot));
-			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularVelocity, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
+			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
+			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			//Fix for flat terrain
@@ -275,7 +277,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + translationalVelocity.GetRelativeDirectionFrom(nextRoot));
+				Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + translationalOffset.GetRelativeDirectionFrom(nextRoot));
 			}
 			start = 0;
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -327,10 +329,13 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
+				Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
+
+			Trajectory.Points[RootPointIndex].SetVelocity((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Current Smoothed Root Velocity
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
@@ -358,10 +363,10 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 			if(SolveIK) {
 				//Foot Sliding
-				float heightThreshold = 0.05f;
-				float velocityThreshold = 1f/60f;
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
+						float heightThreshold = i==0 || i==1 ? 1f/30f : 2f/30f;
+						float velocityThreshold = 1f/60f;
 						Vector3 goal = IKSolvers[i].GetTipPosition();
 						IKSolvers[i].Goal.y = goal.y;
 						float velocityDelta = (goal - IKSolvers[i].Goal).magnitude;
@@ -426,7 +431,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
 		for(int i=0; i<styles.Length; i++) {
-			bias += styles[i] * Controller.Styles[i].Bias;
+			bias = Mathf.Max(bias, styles[i] * Controller.Styles[i].Bias);
 		}
 		return bias;
 	}

@@ -36,6 +36,14 @@ public class Trajectory {
 		}
 	}
 
+	public Point GetFirst() {
+		return Points[0];
+	}
+
+	public Point GetLast() {
+		return Points[Points.Length-1];
+	}
+
 	public void Postprocess() {
 		for(int i=0; i<Points.Length; i++) {
 			Points[i].Postprocess();
@@ -167,18 +175,18 @@ public class Trajectory {
 			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
 		}
 
+		//Velocities
+		Color transparentVelocity = Utility.DarkGreen.Transparent(0.25f);
+		for(int i=0; i<Points.Length; i+=step) {
+			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection(), 0.025f, 0f, transparentVelocity);
+		}
+
 		//Directions
 		Color transparentDirection = Utility.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
 		}
-
-		//Velocities
-		Color transparentVelocity = Utility.Green.Transparent(0.75f);
-		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection(), 0.025f, 0f, transparentVelocity);
-		}
-
+		
 		//Slopes
 		Color transparentSlope = Utility.Blue.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
