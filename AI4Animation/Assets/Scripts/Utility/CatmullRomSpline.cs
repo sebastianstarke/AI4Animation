@@ -1,24 +1,89 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//#if UNITY_EDITOR
+//using UnityEditor;
+//#endif
+
 public class CatmullRomSpline : MonoBehaviour {
+
+	public BioAnimation_APFNN Target;
 
 	public Trajectory Trajectory;
 	public Transform[] ControlPoints;
+
+	void Update() {
+		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
+		Trajectory.Point[] future = GetFutureTrajectory(pivot);
+
+		Trajectory trajectory = Target.GetTrajectory();
+		for(int i=0; i<future.Length; i++) {
+			trajectory.Points[60+i+1].SetTransformation(future[i].GetTransformation());
+			trajectory.Points[60+i+1].SetVelocity(Mathf.Min(0.25f, Vector3.Distance(Target.transform.position, future[future.Length-1].GetPosition())));
+			//TODO: INTERPOLATION
+		}
+		for(int i=60; i<trajectory.Points.Length; i++) {
+			trajectory.Points[i].Styles[1] = 1f;
+		}
+	}
 
 	void OnRenderObject() {
 		if(IsInvalid()) {
 			return;
 		}
 
-		Create();
+		if(HasChanged()) {
+			Create();
+		}
 		Trajectory.Draw(10);
+		
+		UnityGL.Start();
+		for(int i=0; i<ControlPoints.Length; i++) {
+			UnityGL.DrawSphere(ControlPoints[i].position, 0.05f, Utility.Cyan.Transparent(0.75f));
+		}
+		UnityGL.Finish();
+
+		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
+		Trajectory.Point[] future = GetFutureTrajectory(pivot);
+		UnityGL.Start();
+		UnityGL.DrawSphere(pivot.GetPosition(), 0.05f, Utility.DarkRed.Transparent(0.75f));
+		for(int i=0; i<future.Length; i++) {
+			UnityGL.DrawSphere(future[i].GetPosition(), 0.025f, Utility.DarkGreen.Transparent(0.75f));
+		}
+		UnityGL.Finish();
+
+		for(int i=0; i<ControlPoints.Length; i++) {
+			ControlPoints[i].hasChanged = false;
+		}
 	}
 
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
 			OnRenderObject();
 		}
+	}
+
+	public Trajectory.Point GetClosestTrajectoryPoint(Vector3 position) {
+		int index = 0;
+		float distance = Vector3.Distance(position, Trajectory.Points[0].GetPosition());
+		for(int i=1; i<Trajectory.Points.Length; i++) {
+			float d = Vector3.Distance(position, Trajectory.Points[i].GetPosition());
+			if(d <= distance) {
+				index = i;
+				distance = d;
+			}
+		}
+		return Trajectory.Points[index];
+	}
+
+	public Trajectory.Point[] GetFutureTrajectory(Trajectory.Point pivot) {
+		Trajectory.Point[] future = new Trajectory.Point[50];
+		for(int i=0; i<50; i++) {
+			int index = pivot.GetIndex() + i + 1;
+			index = index % Trajectory.Points.Length;
+			future[i] = Trajectory.Points[index];
+		}
+		return future;
 	}
 
 	private bool IsInvalid() {
@@ -33,9 +98,17 @@ public class CatmullRomSpline : MonoBehaviour {
 		return false;
 	}
 
+	private bool HasChanged() {
+		for(int i=0; i<ControlPoints.Length; i++) {
+			if(ControlPoints[i].hasChanged) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void Create() {
 		Trajectory = new Trajectory(ControlPoints.Length * 60, 0);
-		//UnityGL.Start();
 		for(int pos=0; pos<ControlPoints.Length; pos++) {
 			Vector3 p0 = ControlPoints[ClampListPos(pos - 1)].position;
 			Vector3 p1 = ControlPoints[pos].position;
@@ -48,15 +121,9 @@ public class CatmullRomSpline : MonoBehaviour {
 				Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
 				Trajectory.Points[pos * 60 + i -1].SetPosition(newPos);
 				Trajectory.Points[pos * 60 + i -1].SetDirection(newPos-lastPos);
-				//UnityGL.DrawLine(lastPos, newPos, Color.white);
 				lastPos = newPos;
-				//UnityGL.DrawCircle(newPos, 0.01f, Color.black);
 			}
 		}
-		for(int i=0; i<ControlPoints.Length; i++) {
-			//UnityGL.DrawCircle(ControlPoints[i].position, 0.025f, Color.cyan);
-		}
-		//UnityGL.Finish();
 	}
 
 	private int ClampListPos(int pos) {
@@ -79,4 +146,37 @@ public class CatmullRomSpline : MonoBehaviour {
 		Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
 		return pos;
 	}
+
+	/*
+	#if UNITY_EDITOR
+	[CustomEditor(typeof(CatmullRomSpline))]
+	public class CatmullRomSpline_Editor : Editor {
+
+		public CatmullRomSpline Target;
+
+		void Awake() {
+			Target = (CatmullRomSpline)target;
+		}
+
+		public override void OnInspectorGUI() {
+			Undo.RecordObject(Target, Target.name);
+
+			Inspector();
+
+			if(GUI.changed) {
+				EditorUtility.SetDirty(Target);
+			}
+		}
+
+		private void Inspector() {			
+			Utility.SetGUIColor(Utility.Grey);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+
+			}
+		}
+	}
+	#endif
+	*/
+	
 }

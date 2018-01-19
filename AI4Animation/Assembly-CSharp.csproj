@@ -109,6 +109,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_APFNN.cs" />
+     <Compile Include="Assets\Scripts\BioAnimation_APFNN_Latent.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\Classes\APFNN.cs" />
@@ -168,26 +169,27 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.cginc" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
-     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeHistogram.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
      <None Include="Assets\Resources\Shaders\UnityGLTransparent.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
      <None Include="Assets\Palette\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
+     <None Include="Assets\Project\Parameters\AWNN\Baselines\baseline\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA.shader" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemo1.0.1.xml" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
+     <None Include="Assets\Project\Parameters\AWNN\Baselines\baseline_mlp\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
+     <None Include="Assets\Project\Parameters\AWNN\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
