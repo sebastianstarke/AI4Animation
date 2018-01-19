@@ -90,10 +90,22 @@ class APFNN {
     }
 
     public : void SetValue(int matrix, int row, int col, float value) {
+        if((uint)matrix >= References.size()) {
+            return;
+        }
+        if(row > (*References[matrix]).rows() || col > (*References[matrix]).cols()) {
+            return;
+        }
         (*References[matrix])(row, col) = value;
     }
 
     public : float GetValue(int matrix, int row, int col) {
+        if((uint)matrix >= References.size()) {
+            return 0.0f;
+        }
+        if(row > (*References[matrix]).rows() || col > (*References[matrix]).cols()) {
+            return 0.0f;
+        }
         return (*References[matrix])(row, col);
     }
 

@@ -109,7 +109,6 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_APFNN.cs" />
-     <Compile Include="Assets\Scripts\BioAnimation_APFNN_Combined.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\Classes\APFNN.cs" />
@@ -127,6 +126,7 @@
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />
      <Compile Include="Assets\Scripts\Utility\Matrix.cs" />
      <Compile Include="Assets\Scripts\Utility\Modify.cs" />
