@@ -8,7 +8,7 @@ public class BVHRecorder : EditorWindow {
 
 	public static EditorWindow Window;
 
-	public BioAnimation_PFNN Animation;
+	public BioAnimation_APFNN Animation;
 	public string Name = "Animation";
 	public float FrameTime = 1f/60f;
 
@@ -36,7 +36,10 @@ public class BVHRecorder : EditorWindow {
 		Data.PhaseFunction = new BVHAnimation.BVHPhaseFunction(Data);
 		Data.MirroredPhaseFunction = new BVHAnimation.BVHPhaseFunction(Data);
 		Data.StyleFunction = new BVHAnimation.BVHStyleFunction(Data);
-		Data.StyleFunction.SetStyle(BVHAnimation.BVHStyleFunction.STYLE.Quadruped);
+		for(int i=0; i<Animation.Controller.Styles.Length; i++) {
+			Data.StyleFunction.AddStyle(Animation.Controller.Styles[i].Name);
+		}
+		//Data.StyleFunction.SetStyle(BVHAnimation.BVHStyleFunction.STYLE.Quadruped);
 		
 		int index = 0;
 
@@ -60,6 +63,7 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.Trajectory.Points, point);
 
 			//Phase Function
+			/*
 			Utility.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase() / (2f*Mathf.PI), 1f));
 			Utility.Add(ref Data.PhaseFunction.Keys, index == 0 ? true : Data.PhaseFunction.Phase[index-1] > Data.PhaseFunction.Phase[index]);
 			Utility.Add(ref Data.PhaseFunction.Cycle, 0f);
@@ -67,6 +71,16 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.PhaseFunction.Velocities, 0f);
 			Utility.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
 			Utility.Add(ref Data.PhaseFunction.Heights, 0f);
+			*/
+			Utility.Add(ref Data.PhaseFunction.Phase, 0f);
+			Utility.Add(ref Data.PhaseFunction.Keys, false);
+			Utility.Add(ref Data.PhaseFunction.Cycle, 0f);
+			Utility.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
+			Utility.Add(ref Data.PhaseFunction.Velocities, 0f);
+			Utility.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
+			Utility.Add(ref Data.PhaseFunction.Heights, 0f);
+			Utility.Add(ref Data.PhaseFunction.RootVelocities, 0f);
+			Utility.Add(ref Data.PhaseFunction.NormalisedRootVelocities, 0f);
 
 			//Mirrored Phase Function
 			Utility.Add(ref Data.MirroredPhaseFunction.Phase, 0f);
@@ -76,6 +90,8 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.MirroredPhaseFunction.Velocities, 0f);
 			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedVelocities, 0f);
 			Utility.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.RootVelocities, 0f);
+			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedRootVelocities, 0f);
 
 			//Style Function
 			bool styleUpdate = false;
@@ -142,7 +158,7 @@ public class BVHRecorder : EditorWindow {
 					return;
 				}
 
-				Animation = (BioAnimation_PFNN)EditorGUILayout.ObjectField("Animation", Animation, typeof(BioAnimation_PFNN), true);
+				Animation = (BioAnimation_APFNN)EditorGUILayout.ObjectField("Animation", Animation, typeof(BioAnimation_APFNN), true);
 				Name = EditorGUILayout.TextField("Name", Name);
 				FrameTime = EditorGUILayout.FloatField("Frame Time", FrameTime);
 

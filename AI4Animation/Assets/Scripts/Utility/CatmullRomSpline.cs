@@ -18,11 +18,16 @@ public class CatmullRomSpline : MonoBehaviour {
 
 		Trajectory trajectory = Target.GetTrajectory();
 		for(int i=0; i<future.Length; i++) {
-			trajectory.Points[60+i+1].SetTransformation(future[i].GetTransformation());
-			trajectory.Points[60+i+1].SetVelocity(Mathf.Min(0.25f, Vector3.Distance(Target.transform.position, future[future.Length-1].GetPosition())));
-			//TODO: INTERPOLATION
+			float weight = (float)(i+1) / (float)future.Length;
+			Trajectory.Point point = trajectory.Points[60+i+1];
+			point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
+			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
+			//trajectory.Points[60+i+1].SetTransformation(future[i].GetTransformation());
+			point.SetVelocity(Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition()));
+			//point.SetVelocity(Mathf.Min(0.5f, Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition())));
 		}
 		for(int i=60; i<trajectory.Points.Length; i++) {
+			trajectory.Points[i].Styles[0] = 0f;
 			trajectory.Points[i].Styles[1] = 1f;
 		}
 	}

@@ -621,6 +621,7 @@ public class BVHAnimation : ScriptableObject {
 				ShowZero = !ShowZero;
 			}
 			EditorGUILayout.EndHorizontal();
+			/*
 			if(Utility.GUIButton(ExportScreenshots ? "Stop" : "Export Screenshots", Utility.DarkGrey, Utility.White)) {
 				ExportScreenshots = !ExportScreenshots;
 				SkipExportScreenshot = false;
@@ -628,6 +629,7 @@ public class BVHAnimation : ScriptableObject {
 					LoadFrame(1);
 				}
 			}
+			*/
 		}
 
 		
@@ -635,10 +637,12 @@ public class BVHAnimation : ScriptableObject {
 			ComputeTrajectory();
 		}
 
+		/*
 		if(Utility.GUIButton("Recompute Values", Utility.Brown, Utility.White)) {
 			PhaseFunction.ComputeValues();
 			MirroredPhaseFunction.ComputeValues();
 		}
+		*/
 
 		/*
 		if(Utility.GUIButton("Reimport", Utility.Brown, Utility.White)) {
@@ -757,6 +761,7 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
+		
 		Utility.SetGUIColor(Utility.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -793,7 +798,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 		}
-	
+
 		Utility.SetGUIColor(Utility.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -845,6 +850,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 			}
 		}
+		
 	}
 
 	private void ExportSkeleton() {
@@ -1234,6 +1240,9 @@ public class BVHAnimation : ScriptableObject {
 
 			Velocities = new float[Animation.GetTotalFrames()];
 			NormalisedVelocities = new float[Animation.GetTotalFrames()];
+
+			RootVelocities = new float[Animation.GetTotalFrames()];
+			NormalisedRootVelocities = new float[Animation.GetTotalFrames()];
 
 			Heights = new float[Animation.GetTotalFrames()];
 		}
@@ -1790,8 +1799,7 @@ public class BVHAnimation : ScriptableObject {
 
 					case STYLE.Quadruped:
 					AddStyle("Idle");
-					AddStyle("Walk");
-					AddStyle("Sprint");
+					AddStyle("Move");
 					AddStyle("Jump");
 					AddStyle("Sit");
 					AddStyle("Lie");
@@ -1906,8 +1914,10 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		private void MakeConstant(int dimension, BVHFrame previous, BVHFrame next) {
-			int start = previous == null ? 1 : previous.Index;
-			int end = next == null ? Animation.GetTotalFrames() : next.Index-1;
+			//int start = previous == null ? 1 : previous.Index;
+			//int end = next == null ? Animation.GetTotalFrames() : next.Index-1;
+			int start = previous.Index;
+			int end = next.Index;
 			for(int i=start; i<end; i++) {
 				Styles[dimension].Flags[i] = Styles[dimension].Flags[start-1];
 				Styles[dimension].Values[i] = Styles[dimension].Flags[start-1] ? 1f : 0f;

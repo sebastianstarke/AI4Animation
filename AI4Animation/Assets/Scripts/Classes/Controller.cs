@@ -75,6 +75,7 @@ public class Controller {
 		public float Bias = 1f;
 		public KeyCode[] Keys = new KeyCode[0];
 		public bool[] Negations = new bool[0];
+		public Multiplier[] Multipliers = new Multiplier[0];
 
 		public bool Query() {
 			if(Keys.Length == 0) {
@@ -118,7 +119,22 @@ public class Controller {
 			count = Mathf.Max(count, 0);
 			if(Keys.Length != count) {
 				System.Array.Resize(ref Keys, count);
+				System.Array.Resize(ref Negations, count);
 			}
+		}
+
+		public void AddMultiplier() {
+			Utility.Add(ref Multipliers, new Multiplier());
+		}
+
+		public void RemoveMultiplier() {
+			Utility.Shrink(ref Multipliers);
+		}
+
+		[System.Serializable]
+		public class Multiplier {
+			public KeyCode Key;
+			public float Value;
 		}
 	}
 
@@ -148,17 +164,27 @@ public class Controller {
 							Styles[i].Bias = EditorGUILayout.FloatField("Bias", Styles[i].Bias);
 							Styles[i].SetKeyCount(EditorGUILayout.IntField("Keys", Styles[i].Keys.Length));
 
-							//FIX
-							if(Styles[i].Negations.Length != Styles[i].Keys.Length) {
-								System.Array.Resize(ref Styles[i].Negations, Styles[i].Keys.Length);
-							}
-							//
-
 							for(int j=0; j<Styles[i].Keys.Length; j++) {
 								EditorGUILayout.BeginHorizontal();
 								Styles[i].Keys[j] = (KeyCode)EditorGUILayout.EnumPopup("Key", Styles[i].Keys[j]);
 								Styles[i].Negations[j] = EditorGUILayout.Toggle("Negate", Styles[i].Negations[j]);
 								EditorGUILayout.EndHorizontal();
+							}
+
+							for(int j=0; j<Styles[i].Multipliers.Length; j++) {
+								Utility.SetGUIColor(Color.grey);
+								using(new GUILayout.VerticalScope ("Box")) {
+									Utility.ResetGUIColor();
+									Styles[i].Multipliers[j].Key = (KeyCode)EditorGUILayout.EnumPopup("Key", Styles[i].Multipliers[j].Key);
+									Styles[i].Multipliers[j].Value = EditorGUILayout.FloatField("Value", Styles[i].Multipliers[j].Value);
+								}
+							}
+							
+							if(Utility.GUIButton("Add Multiplier", Utility.DarkGrey, Utility.White)) {
+								Styles[i].AddMultiplier();
+							}
+							if(Utility.GUIButton("Remove Multiplier", Utility.DarkGrey, Utility.White)) {
+								Styles[i].RemoveMultiplier();
 							}
 						}
 					}
