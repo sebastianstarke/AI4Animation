@@ -115,7 +115,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 			//Update Trajectory Correction
-			//TrajectoryCorrection = 1f; //TargetVelocity.magnitude;
+			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
 			//Update Style
 			for(int i=0; i<Controller.Styles.Length; i++) {

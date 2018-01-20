@@ -125,7 +125,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 		//Update Trajectory Correction
-		TrajectoryCorrection = TargetVelocity.magnitude;
+		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
