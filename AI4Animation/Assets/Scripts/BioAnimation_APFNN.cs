@@ -132,12 +132,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	void Update() {	
 		if(TrajectoryControl) {
-			//Update Target Direction / Velocity
+			//Update Target Direction / Velocity 
 			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 			//Update Trajectory Correction
-			TrajectoryCorrection = TargetVelocity.magnitude;
+			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
 			//Update Style
 			for(int i=0; i<Controller.Styles.Length; i++) {
@@ -315,6 +315,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			int end = 6*4 + JointDimOut*Joints.Length;
 			Vector3 translationalOffset = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
 			float angularOffset = APFNN.GetOutput(end+2);
+
+			//translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.01f);
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());

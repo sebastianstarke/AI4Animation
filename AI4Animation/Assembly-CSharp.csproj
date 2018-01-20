@@ -133,6 +133,7 @@
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />
      <Compile Include="Assets\Scripts\Utility\Matrix.cs" />
      <Compile Include="Assets\Scripts\Utility\Modify.cs" />
+     <Compile Include="Assets\Scripts\Utility\MouseDrag.cs" />
      <Compile Include="Assets\Scripts\Utility\Orbit.cs" />
      <Compile Include="Assets\Scripts\Utility\Perlin.cs" />
      <Compile Include="Assets\Scripts\Utility\Skinning.cs" />
@@ -183,7 +184,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
-     <None Include="Assets\Project\Parameters\Baselines\baseline_mlp\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
      <None Include="Assets\Project\Parameters\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />

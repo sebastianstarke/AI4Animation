@@ -44,6 +44,8 @@ public class BioAnimation_MLP : MonoBehaviour {
 	private const int JointDimIn = 12;
 	private const int JointDimOut = 12;
 
+	private float Phase = 0f;
+
 	void Reset() {
 		Root = transform;
 		Controller = new Controller();
@@ -113,7 +115,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 			//Update Trajectory Correction
-			TrajectoryCorrection = TargetVelocity.magnitude;
+			//TrajectoryCorrection = 1f; //TargetVelocity.magnitude;
 
 			//Update Style
 			for(int i=0; i<Controller.Styles.Length; i++) {
@@ -245,6 +247,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 				MLP.SetInput(start + i*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Joints.Length;
+
+			if(name == "Wolf_MLP_P")  {
+				MLP.SetInput(start, Phase); start += 1;
+			}
 			
 			//Predict
 			MLP.Predict();
@@ -428,7 +434,12 @@ public class BioAnimation_MLP : MonoBehaviour {
 			}
 			
 			//Update Skeleton
-			Character.FetchTransformations(Root);			
+			Character.FetchTransformations(Root);
+
+			if(name == "Wolf_MLP_P") {
+				//Update Phase
+				Phase = Mathf.Repeat(Phase + MLP.GetOutput(end+3), 1f);
+			}	
 		}
 	}
 
@@ -505,6 +516,17 @@ public class BioAnimation_MLP : MonoBehaviour {
 	void OnRenderObject() {
 		if(Root == null) {
 			Root = transform;
+		}
+
+		if(name == "Wolf_MLP_P") {
+			UnityGL.Start();
+			UnityGL.DrawGUICircle(0.5f, 0.85f, 0.075f, Utility.Black.Transparent(0.5f));
+			Quaternion rotation = Quaternion.AngleAxis(-360f * Phase, Vector3.forward);
+			Vector2 a = rotation * new Vector2(-0.005f, 0f);
+			Vector2 b = rotation *new Vector3(0.005f, 0f);
+			Vector3 c = rotation * new Vector3(0f, 0.075f);
+			UnityGL.DrawGUITriangle(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y, 0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y, 0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y, Utility.Cyan);
+			UnityGL.Finish();
 		}
 
 		if(ShowTrajectory) {

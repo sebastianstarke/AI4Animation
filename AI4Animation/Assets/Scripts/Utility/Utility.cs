@@ -242,12 +242,12 @@ public static class Utility {
 		}
 		float height = float.MinValue;
 		for(int i=0; i<downHits.Length; i++) {
-			if(downHits[i].point.y > height) {
+			if(downHits[i].point.y > height && !downHits[i].collider.isTrigger) {
 				height = downHits[i].point.y;
 			}
 		}
 		for(int i=0; i<upHits.Length; i++) {
-			if(upHits[i].point.y > height) {
+			if(upHits[i].point.y > height && !upHits[i].collider.isTrigger) {
 				height = upHits[i].point.y;
 			}
 		}
@@ -263,13 +263,13 @@ public static class Utility {
 		Vector3 normal = Vector3.up;
 		float height = float.MinValue;
 		for(int i=0; i<downHits.Length; i++) {
-			if(downHits[i].point.y > height) {
+			if(downHits[i].point.y > height && !downHits[i].collider.isTrigger) {
 				height = downHits[i].point.y;
 				normal = downHits[i].normal;
 			}
 		}
 		for(int i=0; i<upHits.Length; i++) {
-			if(upHits[i].point.y > height) {
+			if(upHits[i].point.y > height && !upHits[i].collider.isTrigger) {
 				height = upHits[i].point.y;
 				normal = upHits[i].normal;
 			}
@@ -286,13 +286,13 @@ public static class Utility {
 		Vector3 normal = Vector3.up;
 		float height = float.MinValue;
 		for(int i=0; i<downHits.Length; i++) {
-			if(downHits[i].point.y > height) {
+			if(downHits[i].point.y > height && !downHits[i].collider.isTrigger) {
 				height = downHits[i].point.y;
 				normal = downHits[i].normal;
 			}
 		}
 		for(int i=0; i<upHits.Length; i++) {
-			if(upHits[i].point.y > height) {
+			if(upHits[i].point.y > height && !upHits[i].collider.isTrigger) {
 				height = upHits[i].point.y;
 				normal = upHits[i].normal;
 			}
