@@ -8,8 +8,6 @@ public class MouseDrag : MonoBehaviour {
 
 	public float Sensitivity = 10f;
 
-	public bool LockX, LockY, LockZ;
-
 	private Vector2 LastMousePosition;
 
 	void Awake() {
@@ -36,15 +34,6 @@ public class MouseDrag : MonoBehaviour {
 		if(Translate) {
 			float screenDistance = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
 			Vector3 newPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDistance));
-			if(LockX) {
-				newPosition.x = transform.position.x;
-			}
-			if(LockY) {
-				newPosition.y = transform.position.y;
-			}
-			if(LockZ) {
-				newPosition.z = transform.position.z;
-			}
 			transform.position = newPosition;
 		}
 

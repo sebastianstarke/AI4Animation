@@ -4,7 +4,7 @@ using System.Collections;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {SmoothFollow, ConstantView, Static}
+	public enum MODE {SmoothFollow, ConstantView, Static, Free}
 
 	public MODE Mode = MODE.SmoothFollow;
 	public Transform Target;
@@ -81,6 +81,10 @@ public class CameraController : MonoBehaviour {
 			//EndSelfOffset = new Vector3(0f, 0f, 0f);
 			//EndTargetOffset = new Vector3(0f, 0f, 0f);
 			EndDamping = 1f;
+			break;
+
+			case MODE.Free:
+
 			break;
 		}
 

@@ -131,6 +131,7 @@
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />
+     <Compile Include="Assets\Scripts\Utility\GamePad.cs" />
      <Compile Include="Assets\Scripts\Utility\Matrix.cs" />
      <Compile Include="Assets\Scripts\Utility\Modify.cs" />
      <Compile Include="Assets\Scripts\Utility\MouseDrag.cs" />

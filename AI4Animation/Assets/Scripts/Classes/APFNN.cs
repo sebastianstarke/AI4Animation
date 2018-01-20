@@ -93,22 +93,37 @@ public class APFNN {
 	}
 
 	public void SetInput(int index, float value) {
+		if(Parameters == null) {
+			return;
+		}
 		SetValue(Network, 34, index, 0, value);
 	}
 
 	public float GetOutput(int index) {
+		if(Parameters == null) {
+			return 0f;
+		}
 		return GetValue(Network, 35, index, 0);
 	}
 
 	public void AddControlNeuron(int index) {
+		if(Parameters == null) {
+			return;
+		}
 		AddControlNeuron(Network, index);
 	}
 
 	public float GetControlPoint(int index) {
+		if(Parameters == null) {
+			return 0f;
+		}
 		return GetValue(Network, 36, index, 0);
 	}
 
 	public void Predict() {
+		if(Parameters == null) {
+			return;
+		}
 		Predict(Network);
 	}
 

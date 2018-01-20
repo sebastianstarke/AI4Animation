@@ -7,7 +7,7 @@ using System.Collections;
 
 public class CatmullRomSpline : MonoBehaviour {
 
-	public BioAnimation_MLP Target;
+	public BioAnimation_APFNN Target;
 
 	public float Correction = 0f;
 
@@ -21,12 +21,17 @@ public class CatmullRomSpline : MonoBehaviour {
 		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
 
+		Target.SetTargetDirection((future[future.Length-1].GetPosition() - Target.transform.position).normalized);
+		Target.SetTargetVelocity(future[future.Length-1].GetPosition() - pivot.GetPosition());
+		
 		Trajectory trajectory = Target.GetTrajectory();
 		for(int i=0; i<future.Length; i++) {
 			float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = trajectory.Points[60+i+1];
 			point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
+			//point.SetDirection(future[i].GetDirection());
 			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
+			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
 			point.SetVelocity(Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition()));
 		}
 		for(int i=60; i<trajectory.Points.Length; i++) {
@@ -41,6 +46,9 @@ public class CatmullRomSpline : MonoBehaviour {
 		}
 
 		if(HasChanged()) {
+			for(int i=0; i<ControlPoints.Length; i++) {
+				ControlPoints[i].position = Utility.ProjectGround(ControlPoints[i].position, LayerMask.GetMask("Ground"));
+			}
 			Create();
 		}
 		Trajectory.Draw(10);
@@ -132,6 +140,7 @@ public class CatmullRomSpline : MonoBehaviour {
 				lastPos = newPos;
 			}
 		}
+		Trajectory.Postprocess();
 	}
 
 	private int ClampListPos(int pos) {

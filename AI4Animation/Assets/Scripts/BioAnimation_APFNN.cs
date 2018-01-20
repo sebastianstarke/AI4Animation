@@ -133,12 +133,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	void Update() {	
 		if(TrajectoryControl) {
-			//Update Target Direction / Velocity 
-			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
-			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
-
 			//Update Bias
 			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
+
+			//Update Target Direction / Velocity 
+			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
+			TargetVelocity = Vector3.Lerp(TargetVelocity, Bias * (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 			//Update Trajectory Correction
 			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
@@ -169,12 +169,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 				trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 					Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-					scale * Bias * TargetVelocity,
+					scale * TargetVelocity,
 					scale_pos);
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
+				Trajectory.Points[i].SetVelocity(TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
@@ -212,7 +212,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//
 
 			int start = 0;
-			if(name == "Wolf_APFNN_Velocity") {
+			if(name == "Wolf_APFNN_Velocity" || name == "Wolf_APFNN_Final") {
 				//Input Trajectory Positions / Directions
 				for(int i=0; i<PointSamples; i++) {
 					Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
@@ -491,13 +491,19 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
 		for(int i=0; i<styles.Length; i++) {
-			float multiplier = Controller.Styles[i].Bias;
+			float max = 0f;
 			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
 				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
-					multiplier = Mathf.Max(multiplier, Controller.Styles[i].Bias * Controller.Styles[i].Multipliers[j].Value);
+					max = Mathf.Max(max, Controller.Styles[i].Multipliers[j].Value);
 				}
 			}
-			bias = Mathf.Max(bias, styles[i] * multiplier);
+			float multiplier = 1f;
+			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
+				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
+					multiplier = Mathf.Min(max, multiplier*Controller.Styles[i].Multipliers[j].Value);
+				}
+			}
+			bias = Mathf.Max(bias, multiplier * styles[i]);
 		}
 		return bias;
 	}
@@ -541,8 +547,16 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		}
 	}
 
+	public void SetTargetDirection(Vector3 direction) {
+		TargetDirection = direction;
+	}
+
+	public void SetTargetVelocity(Vector3 velocity) {
+		TargetVelocity = velocity;
+	}
+
 	void OnGUI() {
-		
+		/*
 		float height = 0.05f;
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -554,7 +568,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
-		
+		*/
 	}
 
 	void OnRenderObject() {

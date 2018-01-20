@@ -5,9 +5,15 @@ using UnityEngine.UI;
 
 public class BioVisualisation : MonoBehaviour {
 
+	public bool Show = true;
+
 	public CameraController CameraController;
 
-	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Walk, Sprint, Jump, Sit, Lie, Stand;
+	public GameObject Canvas;
+
+	public Button CanvasToggle;
+
+	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Move, Jump, Sit, Lie, Stand;
 	public Color Active = Utility.Orange;
 	public Color Inactive = Utility.DarkGrey;
 
@@ -53,6 +59,8 @@ public class BioVisualisation : MonoBehaviour {
 
 		Yaw.onValueChanged.AddListener(SetYaw);
 		Pitch.onValueChanged.AddListener(SetPitch);
+
+		CanvasToggle.onClick.AddListener(ToggleShow);
 	}
 
 	private void UpdateData() {
@@ -144,8 +152,17 @@ public class BioVisualisation : MonoBehaviour {
 	public void SetPitch(float value) {
 		CameraController.Pitch = value;
 	}
+	
+	public void ToggleShow() {
+		Show = !Show;
+	}
 
 	void OnGUI() {
+		Canvas.SetActive(Show);
+		if(!Show) {
+			return;
+		}
+		
 		UpdateControl(StraightForward, Input.GetKey(Animation.Controller.MoveForward));
 		UpdateControl(StraightBack, Input.GetKey(Animation.Controller.MoveBackward));
 		UpdateControl(StraightLeft, Input.GetKey(Animation.Controller.MoveLeft));
@@ -154,12 +171,11 @@ public class BioVisualisation : MonoBehaviour {
 		UpdateControl(TurnRight, Input.GetKey(Animation.Controller.TurnRight));
 
 		UpdateStyle(Idle, 0);
-		UpdateStyle(Walk, 1);
-		UpdateStyle(Sprint, 2);
-		UpdateStyle(Jump, 3);
-		UpdateStyle(Sit, 4);
-		UpdateStyle(Lie, 5);
-		UpdateStyle(Stand, 6);
+		UpdateStyle(Move, 1);
+		UpdateStyle(Jump, 2);
+		UpdateStyle(Sit, 3);
+		UpdateStyle(Lie, 4);
+		UpdateStyle(Stand, 5);
 	}
 
 	private void UpdateColor(Button button, Color color) {
@@ -187,6 +203,10 @@ public class BioVisualisation : MonoBehaviour {
 
 	void OnRenderObject() {
 		UpdateData();
+
+		if(!Show) {
+			return;
+		}
 
 		if(DrawCW) {
 			UnityGL.Start();

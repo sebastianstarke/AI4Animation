@@ -213,7 +213,7 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + "TrajectoryPositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
@@ -310,7 +310,9 @@ public class BVHProcessor : EditorWindow {
 							//Trajectory data
 							for(int k=0; k<12; k++) {
 								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-								line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
+								//line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
+								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
+								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
 								line += FormatValue(trajectory.Points[k].GetVelocity());
 								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
 								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);

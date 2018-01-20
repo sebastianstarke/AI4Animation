@@ -98,6 +98,9 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		//Update Bias
 		Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
+		//Update Trajectory Correction
+		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
+
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			if(i==0) {

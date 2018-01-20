@@ -127,24 +127,31 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 
 		//Update Bias
 		Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
+		Bias = 1f;
+
+		//Update Trajectory Correction
+		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
 			if(Controller.Styles[i].Query()) {
 				if(i==0) {
-					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.037f, 0.016f, 0.110f, 0.798f, 0.039f};
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.025f, 0.014f, 0.009f, 0.004f, 0.948f};
 				}
 				if(i==1) {
-					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.163f, 0.054f, 0.170f, 0.557f, 0.057f};
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.214f, 0.023f, 0.041f, 0.040f, 0.682f};
 				}
 				if(i==2) {
-					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.164f, 0.343f, 0.072f, 0.386f, 0.035f};
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {1.000f, 0.000f, 0.000f, 0.000f, 0.000f};
 				}
 				if(i==3) {
-					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.111f, 0.778f, 0.051f, 0.055f, 0.005f};
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.001f, 0.000f, 0.959f, 0.003f, 0.038f};
 				}
 				if(i==4) {
-					Trajectory.Points[RootPointIndex].Styles = new float[5] {0f, 1f, 0f, 0f, 0f};
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.193f, 0.061f, 0.010f, 0.029f, 0.706f};
+				}
+				if(i==5) {
+					Trajectory.Points[RootPointIndex].Styles = new float[5] {0.869f, 0.023f, 0.032f, 0.018f, 0.058f};
 				}
 			}
 		}
@@ -204,55 +211,21 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 			//
 
 			int start = 0;
-			if(name == "Wolf_APFNN_Combined") {
-				//Input Trajectory Positions / Directions
-				for(int i=0; i<PointSamples; i++) {
-					Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
-					Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-					float vel = GetSample(i).GetVelocity();
-					APFNN.SetInput(start + i*8 + 0, pos.x);
-					APFNN.SetInput(start + i*8 + 1, 0f); //pos y
-					APFNN.SetInput(start + i*8 + 2, pos.z);
-					APFNN.SetInput(start + i*8 + 3, dir.x);
-					APFNN.SetInput(start + i*8 + 4, dir.z);
-					APFNN.SetInput(start + i*8 + 5, vel);
-					APFNN.SetInput(start + i*8 + 6, 0f); //left height
-					APFNN.SetInput(start + i*8 + 7, 0f); //right height
-				}
-				start += 8*PointSamples;
-
-				//Input Trajectory Styles
-				for (int i=0; i<PointSamples; i++) {
-					for(int j=0; j<GetSample(i).Styles.Length; j++) {
-						APFNN.SetInput(start + i*GetSample(i).Styles.Length + j, GetSample(i).Styles[j]);
-					}
-				}
-				start += Controller.Styles.Length * PointSamples;
-			} else {
-				//Input Trajectory Positions / Directions
-				for(int i=0; i<PointSamples; i++) {
-					Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
-					Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-					APFNN.SetInput(start + i*6 + 0, pos.x);
-					//APFNN.SetInput(start + i*6 + 1, pos.y); //Fix for flat terrain
-					APFNN.SetInput(start + i*6 + 1, 0f);
-					APFNN.SetInput(start + i*6 + 2, pos.z);
-					APFNN.SetInput(start + i*6 + 3, dir.x);
-					//APFNN.SetInput(start + i*6 + 4, dir.y); //Fix for flat terrain
-					APFNN.SetInput(start + i*6 + 4, 0f);
-					APFNN.SetInput(start + i*6 + 5, dir.z);
-				}
-				start += 6*PointSamples;
-
-				//Input Trajectory Heights
-				for(int i=0; i<PointSamples; i++) {
-					//APFNN.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y); //Fix for flat terrain
-					//APFNN.SetInput(start + i*2 + 1, GetSample(i).GetRightSample().y - currentRoot.GetPosition().y); //Fix for flat terrain
-					APFNN.SetInput(start + i*2 + 0, 0f);
-					APFNN.SetInput(start + i*2 + 1, 0f);
-				}
-				start += 2*PointSamples;
+			//Input Trajectory Positions / Directions / Velocity / Heights
+			for(int i=0; i<PointSamples; i++) {
+				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
+				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
+				float vel = GetSample(i).GetVelocity();
+				APFNN.SetInput(start + i*8 + 0, pos.x);
+				APFNN.SetInput(start + i*8 + 1, 0f); //pos y
+				APFNN.SetInput(start + i*8 + 2, pos.z);
+				APFNN.SetInput(start + i*8 + 3, dir.x);
+				APFNN.SetInput(start + i*8 + 4, dir.z);
+				APFNN.SetInput(start + i*8 + 5, vel);
+				APFNN.SetInput(start + i*8 + 6, 0f); //left height
+				APFNN.SetInput(start + i*8 + 7, 0f); //right height
 			}
+			start += 8*PointSamples;
 
 			//Input Previous Bone Positions / Velocities
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
