@@ -29,6 +29,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
+	private float Bias;
 
 	private Vector3[] Positions = new Vector3[0];
 	private Vector3[] Forwards = new Vector3[0];
@@ -90,11 +91,12 @@ public class BioAnimation_PFNN : MonoBehaviour {
 	}
 
 	void Update() {	
-		//Update Target Direction / Velocity
+		//Update Target Direction / Velocity 
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
-		
-		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
+
+		//Update Bias
+		Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
 		//Update Style
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -118,14 +120,16 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
 			
-			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
+			float scale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
 			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				PoolBias() * rescale * TargetVelocity,
+				scale * Bias * TargetVelocity,
 				scale_pos);
 
 			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
+
+			Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];

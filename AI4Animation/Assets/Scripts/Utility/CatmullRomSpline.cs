@@ -7,12 +7,17 @@ using System.Collections;
 
 public class CatmullRomSpline : MonoBehaviour {
 
-	public BioAnimation_APFNN Target;
+	public BioAnimation_MLP Target;
+
+	public float Correction = 0f;
 
 	public Trajectory Trajectory;
 	public Transform[] ControlPoints;
 
 	void Update() {
+		Target.TrajectoryCorrection = Correction;
+		Target.TrajectoryControl = false;
+
 		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
 
@@ -22,9 +27,7 @@ public class CatmullRomSpline : MonoBehaviour {
 			Trajectory.Point point = trajectory.Points[60+i+1];
 			point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
 			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
-			//trajectory.Points[60+i+1].SetTransformation(future[i].GetTransformation());
 			point.SetVelocity(Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition()));
-			//point.SetVelocity(Mathf.Min(0.5f, Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition())));
 		}
 		for(int i=60; i<trajectory.Points.Length; i++) {
 			trajectory.Points[i].Styles[0] = 0f;

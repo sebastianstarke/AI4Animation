@@ -30,6 +30,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
+	private float Bias;
 
 	private Vector3[] Positions = new Vector3[0];
 	private Vector3[] Forwards = new Vector3[0];
@@ -110,12 +111,12 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 	void Update() {	
 		if(TrajectoryControl) {
-			//Update Target Direction / Velocity
+			//Update Target Direction / Velocity 
 			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
-			//Update Trajectory Correction
-			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
+			//Update Bias
+			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
 			//Update Style
 			for(int i=0; i<Controller.Styles.Length; i++) {
@@ -133,8 +134,6 @@ public class BioAnimation_MLP : MonoBehaviour {
 			//Predict Future Trajectory
 			Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
 			trajectory_positions_blend[RootPointIndex] = Trajectory.Points[RootPointIndex].GetTransformation().GetPosition();
-			float bias = PoolBias();
-			//Debug.Log(bias);
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				float bias_pos = 0.75f;
 				float bias_dir = 1.25f;
@@ -145,12 +144,12 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 				trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 					Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-					scale * bias * TargetVelocity,
+					scale * Bias * TargetVelocity,
 					scale_pos);
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetVelocity(bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
+				Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
@@ -272,7 +271,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			int end = 6*4 + JointDimOut*Joints.Length;
 			Vector3 translationalOffset = new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
 			float angularOffset = MLP.GetOutput(end+2);
-			
+
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();

@@ -30,6 +30,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
+	private float Bias;
 
 	private Vector3[] Positions = new Vector3[0];
 	private Vector3[] Forwards = new Vector3[0];
@@ -136,6 +137,9 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
+			//Update Bias
+			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
+
 			//Update Trajectory Correction
 			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
@@ -155,7 +159,6 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//Predict Future Trajectory
 			Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
 			trajectory_positions_blend[RootPointIndex] = Trajectory.Points[RootPointIndex].GetTransformation().GetPosition();
-			float bias = PoolBias();
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				float bias_pos = 0.75f;
 				float bias_dir = 1.25f;
@@ -166,12 +169,12 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 				trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
 					Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-					scale * bias * TargetVelocity,
+					scale * Bias * TargetVelocity,
 					scale_pos);
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetVelocity(bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
+				Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
@@ -316,7 +319,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			Vector3 translationalOffset = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
 			float angularOffset = APFNN.GetOutput(end+2);
 
-			//translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.01f);
+			translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
+			angularOffset *= Utility.Exponential01(Mathf.Abs(angularOffset) / 0.01f);
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
