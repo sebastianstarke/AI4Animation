@@ -280,7 +280,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 			//Update Current Trajectory
 			int end = 6*4 + JointDimOut*Joints.Length;
-			Vector3 translationalOffset = 1.25f * new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
+			Vector3 translationalOffset = new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
 			float angularOffset = MLP.GetOutput(end+2);
 
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));

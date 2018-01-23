@@ -15,6 +15,8 @@ public class CatmullRomSpline : MonoBehaviour {
 	public Trajectory Trajectory;
 	public Transform[] ControlPoints;
 
+	public bool DrawGUI = true;
+
 	private bool Visualise = true;
 
 	private List<Vector3> Positions = new List<Vector3>();
@@ -57,6 +59,7 @@ public class CatmullRomSpline : MonoBehaviour {
 			targetTrajectory.Points[i].Styles[1] = 1f;
 		}
 
+		/*
 		for(int i=0; i<Feet.Length; i++) {
 			float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
 			float velocityThreshold = i==0 || i==1 ? 0.015f : 0.015f;
@@ -76,6 +79,7 @@ public class CatmullRomSpline : MonoBehaviour {
 		p.y = 0f;
 		OffsetErrors.Add(p.magnitude);
 		AngleErrors.Add(Mathf.Abs(Vector3.SignedAngle(pivot.GetDirection(), targetTrajectory.Points[60].GetDirection(), Vector3.up)));
+		*/
 	}
 
 	void OnRenderObject() {
@@ -215,25 +219,30 @@ public class CatmullRomSpline : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		if(!DrawGUI) {
+			return;
+		}
 		GUI.color = Color.black;
-		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.825f, 0.1f, 0.025f), "Add CP")) {
+		if(GUI.Button(Utility.GetGUIRect(0f, 0, 0.05f, 0.025f), "Add CP")) {
 			AddControlPoint();
 		}
-		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.85f, 0.1f, 0.025f), "Remove CP")) {
+		if(GUI.Button(Utility.GetGUIRect(0f, 0.025f, 0.05f, 0.025f), "Remove CP")) {
 			RemoveControlPoint();
 		}
-		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.875f, 0.1f, 0.025f), "Visualise")) {
+		if(GUI.Button(Utility.GetGUIRect(0f, 0.05f, 0.05f, 0.025f), "Visualise")) {
 			Visualise = !Visualise;
 		}
-		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.9f, 0.1f, 0.025f), "Reset")) {
+		/*
+		if(GUI.Button(Utility.GetGUIRect(0f, 0.075f, 0.05f, 0.025f), "Reset")) {
 			Positions.Clear();
 			OffsetErrors.Clear();
 			AngleErrors.Clear();
 			Slidings.Clear();
 		}
-		GUI.Label(Utility.GetGUIRect(0.025f, 0.925f, 0.2f, 0.025f), "Average Offset Error: " + Utility.ComputeMean(OffsetErrors.ToArray()));
-		GUI.Label(Utility.GetGUIRect(0.025f, 0.95f, 0.2f, 0.025f), "Average Angle Error: " + Utility.ComputeMean(AngleErrors.ToArray()));
-		GUI.Label(Utility.GetGUIRect(0.025f, 0.975f, 0.2f, 0.025f), "Average Sliding: " + Utility.ComputeMean(Slidings.ToArray()));
+		*/
+		//GUI.Label(Utility.GetGUIRect(0.025f, 0.925f, 0.2f, 0.025f), "Average Offset Error: " + Utility.ComputeMean(OffsetErrors.ToArray()));
+		//GUI.Label(Utility.GetGUIRect(0.025f, 0.95f, 0.2f, 0.025f), "Average Angle Error: " + Utility.ComputeMean(AngleErrors.ToArray()));
+		//GUI.Label(Utility.GetGUIRect(0.025f, 0.975f, 0.2f, 0.025f), "Average Sliding: " + Utility.ComputeMean(Slidings.ToArray()));
 	}
 
 	private Transform AddControlPoint() {
