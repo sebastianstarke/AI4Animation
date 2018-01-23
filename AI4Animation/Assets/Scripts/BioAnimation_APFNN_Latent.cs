@@ -127,7 +127,6 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 
 		//Update Bias
 		Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
-		Bias = 1f;
 
 		//Update Trajectory Correction
 		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
@@ -381,6 +380,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 			
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
+			/*
 			if(SolveIK) {
 				//Foot Sliding
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -408,9 +408,11 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 					//Ups[i] = Joints[i].up;
 				}
 			}
+			*/
 
 			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
 			
+			/*
 			if(SolveIK) {
 				//Terrain Motion Editing
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -443,6 +445,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 					IKSolvers[i].ProcessIK();
 				}
 			}
+			*/
 			
 			//Update Skeleton
 			Character.FetchTransformations(Root);			

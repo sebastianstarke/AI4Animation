@@ -25,21 +25,21 @@ public class BioVisualisation : MonoBehaviour {
 	public Color CameraEnabled = Utility.Mustard;
 	public Color CameraDisabled = Utility.LightGrey;
 
-	public Slider Yaw, Pitch;
+	public Slider Yaw, Pitch, FOV;
 
 	public bool DrawTrails = false;
 	public Trail[] Trails = new Trail[0];
 
 	private int Frames = 150;
 	private Queue<float>[] CW;
-	private bool DrawCW = true;
+	public bool DrawCW = true;
 
 	private BioAnimation_APFNN Animation;
 
 	void Awake() {
 		Animation = GetComponent<BioAnimation_APFNN>();
-		CW = new Queue<float>[4];
-		for(int i=0; i<4; i++) {
+		CW = new Queue<float>[Animation.APFNN.ControlWeights];
+		for(int i=0; i<CW.Length; i++) {
 			CW[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
 				CW[i].Enqueue(0f);
@@ -59,8 +59,15 @@ public class BioVisualisation : MonoBehaviour {
 
 		Yaw.onValueChanged.AddListener(SetYaw);
 		Pitch.onValueChanged.AddListener(SetPitch);
+		FOV.onValueChanged.AddListener(SetFOV);
 
 		CanvasToggle.onClick.AddListener(ToggleShow);
+	}
+
+	void Start() {
+		SetYaw(0f);
+		SetPitch(0f);
+		SetFOV(1f);
 	}
 
 	private void UpdateData() {
@@ -147,10 +154,17 @@ public class BioVisualisation : MonoBehaviour {
 
 	public void SetYaw(float value) {
 		CameraController.Yaw = value;
+		Yaw.transform.Find("Text").GetComponent<Text>().text = "YAW: " + Mathf.RoundToInt(value);
 	}
 
 	public void SetPitch(float value) {
 		CameraController.Pitch = value;
+		Pitch.transform.Find("Text").GetComponent<Text>().text = "PITCH: " + Mathf.RoundToInt(value);
+	}
+
+	public void SetFOV(float value) {
+		CameraController.FOV = Mathf.RoundToInt(value*10f) / 10f;
+		FOV.transform.Find("Text").GetComponent<Text>().text = "FOV: " + value.ToString("F1");
 	}
 	
 	public void ToggleShow() {
@@ -162,7 +176,7 @@ public class BioVisualisation : MonoBehaviour {
 		if(!Show) {
 			return;
 		}
-		
+
 		UpdateControl(StraightForward, Input.GetKey(Animation.Controller.MoveForward));
 		UpdateControl(StraightBack, Input.GetKey(Animation.Controller.MoveBackward));
 		UpdateControl(StraightLeft, Input.GetKey(Animation.Controller.MoveLeft));
@@ -197,6 +211,10 @@ public class BioVisualisation : MonoBehaviour {
 			return;
 		}
 		float activation = Animation.GetTrajectory().Points[60].Styles[index];
+		//if(index == 1) {
+		//	activation += Animation.GetTrajectory().Points[60].Styles[index+1];
+		//	activation = Mathf.Clamp(activation, 0f, 1f);
+		//}
 		button.GetComponent<Image>().color = Color.Lerp(Inactive, Active, activation);
 		button.GetComponentInChildren<Text>().text = (100f*activation).ToString("F0")  + "%";
 	}
@@ -217,10 +235,17 @@ public class BioVisualisation : MonoBehaviour {
 			float border = 0.0025f;
 			UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black);
 			UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.White);
+
+			Color[] colors = Utility.GetRainbowColors(Animation.APFNN.ControlWeights);
+			for(int i=0; i<colors.Length; i++) {
+				DrawControlPoint(x, y, width, height, CW[i], colors[i]);
+			}
+			/*
 			DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
 			DrawControlPoint(x, y, width, height, CW[1], Utility.DarkGreen);
 			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
 			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
+			*/
 			UnityGL.Finish();
 		}
 

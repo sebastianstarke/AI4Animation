@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {SmoothFollow, ConstantView, Static, Free}
+	public enum MODE {SmoothFollow, ConstantView, Static}
 
 	public MODE Mode = MODE.SmoothFollow;
 	public Transform Target;
@@ -13,11 +14,29 @@ public class CameraController : MonoBehaviour {
 	[Range(0f, 1f)] public float Damping = 0.95f;
 	[Range(-180f, 180f)] public float Yaw = 0f;
 	[Range(-45f, 45f)] public float Pitch = 0f;
+	[Range(0f, 10f)] public float FOV = 1f;
 	public float TransitionTime = 1f;
 	public float MinHeight = 1f;
 
+	private float Velocity = 5f;
+	private float AngularVelocity = 5f;
+	private float ZoomVelocity = 10;
+	private float Sensitivity = 1f;
+	private Vector2 MousePosition;
+	private Vector2 LastMousePosition;
+	private Vector3 DeltaRotation;
+	private Quaternion ZeroRotation;
+
+	void Start() {
+		//SetMode(Mode);
+	}
+
 	void Update() {
 		if(Target == null) {
+			return;
+		}
+
+		if(Mode == MODE.Static) {
 			return;
 		}
 
@@ -25,7 +44,7 @@ public class CameraController : MonoBehaviour {
 		Quaternion currentRotation = transform.rotation;
 
 		//Determine final
-		Vector3 _selfOffset = SelfOffset;
+		Vector3 _selfOffset = FOV * SelfOffset;
 		Vector3 _targetOffset = TargetOffset;
 		transform.position = Target.position + Target.rotation * _selfOffset;
 		transform.RotateAround(Target.position + Target.rotation * _targetOffset, Vector3.up, Yaw);
@@ -43,10 +62,57 @@ public class CameraController : MonoBehaviour {
 		}
 	}
 
-	public void SetMode(MODE mode) {
-		if(Mode == mode) {
-			return;
+	void LateUpdate() {
+		if(Mode == MODE.Static) {
+			MousePosition = GetNormalizedMousePosition();
+
+			if(EventSystem.current != null) {
+				if(!Input.GetKey(KeyCode.Mouse0)) {
+					EventSystem.current.SetSelectedGameObject(null);
+				}
+				if(EventSystem.current.currentSelectedGameObject == null) {
+					UpdateStaticCamera();
+				}
+			} else {
+				UpdateStaticCamera();
+			}
+
+			LastMousePosition = MousePosition;
 		}
+	}
+
+	private void UpdateStaticCamera() {
+		//Translation
+		Vector3 direction = Vector3.zero;
+		if(Input.GetKey(KeyCode.LeftArrow)) {
+			direction.x -= 1f;
+		}
+		if(Input.GetKey(KeyCode.RightArrow)) {
+			direction.x += 1f;
+		}
+		if(Input.GetKey(KeyCode.UpArrow)) {
+			direction.z += 1f;
+		}
+		if(Input.GetKey(KeyCode.DownArrow)) {
+			direction.z -= 1f;
+		}
+		transform.position += Velocity*Sensitivity*Time.deltaTime*(transform.rotation*direction);
+
+		//Zoom
+		if(Input.mouseScrollDelta.y != 0) {
+			transform.position += ZoomVelocity*Sensitivity*Time.deltaTime*Input.mouseScrollDelta.y*transform.forward;
+		}
+
+		//Rotation
+		MousePosition = GetNormalizedMousePosition();
+		if(Input.GetMouseButton(0)) {
+			DeltaRotation += 1000f*AngularVelocity*Sensitivity*Time.deltaTime*new Vector3(GetNormalizedDeltaMousePosition().x, GetNormalizedDeltaMousePosition().y, 0f);
+			transform.rotation = ZeroRotation * Quaternion.Euler(-DeltaRotation.y, DeltaRotation.x, 0f);
+		}
+	}
+
+
+	public void SetMode(MODE mode) {
 		Mode = mode;
 		StopAllCoroutines();
 		StartCoroutine(LerpMode());
@@ -78,13 +144,12 @@ public class CameraController : MonoBehaviour {
 			break;
 			
 			case MODE.Static:
-			//EndSelfOffset = new Vector3(0f, 0f, 0f);
-			//EndTargetOffset = new Vector3(0f, 0f, 0f);
+			Vector3 euler = transform.rotation.eulerAngles;
+			transform.rotation = Quaternion.Euler(0f, euler.y, 0f);
+			ZeroRotation = transform.rotation;
+			MousePosition = GetNormalizedMousePosition();
+			LastMousePosition = GetNormalizedMousePosition();
 			EndDamping = 1f;
-			break;
-
-			case MODE.Free:
-
 			break;
 		}
 
@@ -100,6 +165,15 @@ public class CameraController : MonoBehaviour {
 		TargetOffset = EndTargetOffset;
 		Damping = EndDamping;
 	
+	}
+
+	private Vector2 GetNormalizedMousePosition() {
+		Vector2 ViewPortPosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+		return new Vector2(ViewPortPosition.x, ViewPortPosition.y);
+	}
+
+	private Vector2 GetNormalizedDeltaMousePosition() {
+		return MousePosition - LastMousePosition;
 	}
 
 }

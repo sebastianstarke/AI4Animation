@@ -23,7 +23,7 @@ public class MotionTrail : MonoBehaviour {
 	void Update() {
 		if(Utility.GetElapsedTime(Timestamp) >= TimeDifference) {
 			Timestamp = Utility.GetTimestamp();
-			if(Instances.Count >= TrailLength) {
+			while(Instances.Count >= TrailLength) {
 				Utility.Destroy(Instances.Dequeue());
 			}
 			Instances.Enqueue(CreateInstance());
@@ -31,7 +31,7 @@ public class MotionTrail : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		/*
+		
 		UnityGL.Start();
 		int index = 0;
 		GameObject previous = null;
@@ -39,12 +39,29 @@ public class MotionTrail : MonoBehaviour {
 			index += 1;
 			instance.GetComponent<Transparency>().SetTransparency(0.25f);
 			if(index > 1) {
-				//UnityGL.DrawLine(previous.transform.position, instance.transform.position, 10f, Utility.Red);
+				UnityGL.DrawSphere(instance.transform.position, 0.025f, Utility.Magenta.Transparent(0.8f));
 			}
 			previous = instance;
 		}
 		UnityGL.Finish();
-		*/
+	}
+
+	void OnGUI() {
+		GUI.color = Color.black;
+		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.125f, 0.1f, 0.025f), "Trail +")) {
+			TrailLength += 1;
+		}
+		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.15f, 0.1f, 0.025f), "Trail -")) {
+			TrailLength -= 1;
+		}
+		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.175f, 0.1f, 0.025f), "Time +")) {
+			TimeDifference += 0.1f;
+		}
+		if(GUI.Button(Utility.GetGUIRect(0.025f, 0.2f, 0.1f, 0.025f), "Time -")) {
+			TimeDifference -= 0.1f;
+		}
+		GUI.Label(Utility.GetGUIRect(0.025f, 0.125f, 0.1f, 0.025f), "Trail: " + TrailLength);
+		GUI.Label(Utility.GetGUIRect(0.025f, 0.15f, 0.1f, 0.025f), "Time: " + TimeDifference);
 	}
 
 	private GameObject CreatePrototype() {
@@ -71,7 +88,7 @@ public class MotionTrail : MonoBehaviour {
 				if(c is Renderer) {
 					Renderer r = (Renderer)c;
 					if(!r.material.HasProperty("_Color")) {
-						Utility.Destroy(c);
+					//	Utility.Destroy(c);
 					}
 				} else {
 					Utility.Destroy(c);

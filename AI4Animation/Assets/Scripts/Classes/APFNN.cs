@@ -16,6 +16,7 @@ public class APFNN {
 	public int XDim = 504;
 	public int HDim = 512;
 	public int YDim = 352;
+	public int ControlWeights = 4;
 
 	public NetworkParameters Parameters;
 	
@@ -26,7 +27,7 @@ public class APFNN {
     [DllImport("APFNN")]
     private static extern IntPtr Delete(IntPtr obj);
     [DllImport("APFNN")]
-    private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim);
+    private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim, int controlWeights);
     [DllImport("APFNN")]
     private static extern void SetValue(IntPtr obj, int matrix, int row, int col, float value);
     [DllImport("APFNN")]
@@ -57,10 +58,10 @@ public class APFNN {
 		Parameters.StoreMatrix(Folder+"/wc1_w.bin", CDim, CDim);
 		Parameters.StoreMatrix(Folder+"/wc1_b.bin", CDim, 1);
 		
-		Parameters.StoreMatrix(Folder+"/wc2_w.bin", 4, CDim);
-		Parameters.StoreMatrix(Folder+"/wc2_b.bin", 4, 1);
+		Parameters.StoreMatrix(Folder+"/wc2_w.bin", ControlWeights, CDim);
+		Parameters.StoreMatrix(Folder+"/wc2_b.bin", ControlWeights, 1);
 
-		for(int i=0; i<4; i++) {
+		for(int i=0; i<ControlWeights; i++) {
 			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
 			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1);
 
@@ -77,7 +78,7 @@ public class APFNN {
 			Debug.Log("Building PFNN failed because no parameters were loaded.");
 			return;
 		}
-		Initialise(Network, CDim, XDim, HDim, YDim);
+		Initialise(Network, CDim, XDim, HDim, YDim, ControlWeights);
 		for(int i=0; i<Parameters.Matrices.Length; i++) {
 			SetupMatrix(i);
 		}
@@ -96,14 +97,14 @@ public class APFNN {
 		if(Parameters == null) {
 			return;
 		}
-		SetValue(Network, 34, index, 0, value);
+		SetValue(Network, 10+ControlWeights*6, index, 0, value);
 	}
 
 	public float GetOutput(int index) {
 		if(Parameters == null) {
 			return 0f;
 		}
-		return GetValue(Network, 35, index, 0);
+		return GetValue(Network, 10+ControlWeights*6+1, index, 0);
 	}
 
 	public void AddControlNeuron(int index) {
@@ -117,7 +118,7 @@ public class APFNN {
 		if(Parameters == null) {
 			return 0f;
 		}
-		return GetValue(Network, 36, index, 0);
+		return GetValue(Network, 10+ControlWeights*6+2, index, 0);
 	}
 
 	public void Predict() {
@@ -143,6 +144,7 @@ public class APFNN {
 					XDim = EditorGUILayout.IntField("XDim", XDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
+					ControlWeights = EditorGUILayout.IntField("Control Weights", ControlWeights);
 					EditorGUILayout.BeginHorizontal();
 					if(GUILayout.Button("Load Parameters")) {
 						LoadParameters();

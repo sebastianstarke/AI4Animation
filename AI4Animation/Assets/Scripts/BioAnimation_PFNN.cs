@@ -13,6 +13,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 
 	public float TargetBlending = 0.25f;
 	public float StyleTransition = 0.25f;
+	public bool TrajectoryControl = true;
 	public float TrajectoryCorrection = 1f;
 
 	public Transform Root;
@@ -90,71 +91,73 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		recursion(Root);
 	}
 
-	void Update() {	
-		//Update Target Direction / Velocity 
-		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
-		TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
+	void Update() {
+		if(TrajectoryControl) {
+			//Update Target Direction / Velocity 
+			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
+			TargetVelocity = Vector3.Lerp(TargetVelocity, (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
-		//Update Bias
-		Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
+			//Update Bias
+			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
-		//Update Trajectory Correction
-		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
+			//Update Trajectory Correction
+			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
-		//Update Style
-		for(int i=0; i<Controller.Styles.Length; i++) {
-			if(i==0) {
-				if(!Controller.QueryAny()) {
-					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], 1f, StyleTransition);
+			//Update Style
+			for(int i=0; i<Controller.Styles.Length; i++) {
+				if(i==0) {
+					if(!Controller.QueryAny()) {
+						Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], 1f, StyleTransition);
+					} else {
+						Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query() ? 1f : 0f, StyleTransition);
+					}
 				} else {
 					Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query() ? 1f : 0f, StyleTransition);
 				}
-			} else {
-				Trajectory.Points[RootPointIndex].Styles[i] = Utility.Interpolate(Trajectory.Points[RootPointIndex].Styles[i], Controller.Styles[i].Query() ? 1f : 0f, StyleTransition);
 			}
-		}
 
-		//Predict Future Trajectory
-		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
-		trajectory_positions_blend[RootPointIndex] = Trajectory.Points[RootPointIndex].GetTransformation().GetPosition();
-		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-			float bias_pos = 0.75f;
-			float bias_dir = 1.25f;
-			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
-			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
-			
-			float scale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
+			//Predict Future Trajectory
+			Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
+			trajectory_positions_blend[RootPointIndex] = Trajectory.Points[RootPointIndex].GetTransformation().GetPosition();
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				float bias_pos = 0.75f;
+				float bias_dir = 1.25f;
+				float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
+				float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
+				
+				float scale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
-			trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
-				Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
-				scale * Bias * TargetVelocity,
-				scale_pos);
+				trajectory_positions_blend[i] = trajectory_positions_blend[i-1] + Vector3.Lerp(
+					Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition(), 
+					scale * Bias * TargetVelocity,
+					scale_pos);
 
-			Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
+				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-			Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
+				Trajectory.Points[i].SetVelocity(Bias * TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
 
-			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
-				Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
+				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
+					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
+				}
 			}
-		}
-		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-			Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
-		}
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
+			}
 
-		for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
-			Trajectory.Points[i].Postprocess();
-		}
-		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-			Trajectory.Point prev = GetPreviousSample(i);
-			Trajectory.Point next = GetNextSample(i);
-			float factor = (float)(i % PointDensity) / PointDensity;
+			for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
+				Trajectory.Points[i].Postprocess();
+			}
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				Trajectory.Point prev = GetPreviousSample(i);
+				Trajectory.Point next = GetNextSample(i);
+				float factor = (float)(i % PointDensity) / PointDensity;
 
-			Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
-			Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-			Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
-			Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
-			Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
+				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
+				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
+				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
+				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
+				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
+			}
 		}
 
 		if(PFNN.Parameters != null) {
@@ -416,7 +419,16 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		}
 	}
 
+	public void SetTargetDirection(Vector3 direction) {
+		TargetDirection = direction;
+	}
+
+	public void SetTargetVelocity(Vector3 velocity) {
+		TargetVelocity = velocity;
+	}
+
 	void OnGUI() {
+		/*
 		float height = 0.05f;
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -428,13 +440,15 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
+		*/
 	}
 
 	void OnRenderObject() {
 		if(Root == null) {
 			Root = transform;
 		}
-
+		
+		/*
 		UnityGL.Start();
 		UnityGL.DrawGUICircle(0.5f, 0.85f, 0.075f, Utility.Black.Transparent(0.5f));
 		Quaternion rotation = Quaternion.AngleAxis(-360f * Phase / (2f * Mathf.PI), Vector3.forward);
@@ -443,6 +457,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		Vector3 c = rotation * new Vector3(0f, 0.075f);
 		UnityGL.DrawGUITriangle(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y, 0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y, 0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y, Utility.Cyan);
 		UnityGL.Finish();
+		*/
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {

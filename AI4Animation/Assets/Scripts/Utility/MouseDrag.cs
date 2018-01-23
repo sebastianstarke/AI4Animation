@@ -31,6 +31,10 @@ public class MouseDrag : MonoBehaviour {
 	}
 
 	void OnMouseDrag() {
+		if(EventSystem.current != null) {
+			EventSystem.current.SetSelectedGameObject(gameObject);
+		}
+
 		if(Translate) {
 			float screenDistance = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
 			Vector3 newPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDistance));

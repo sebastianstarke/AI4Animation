@@ -169,28 +169,34 @@ public class Trajectory {
 
 		//Projections
 		for(int i=0; i<Points.Length; i+=step) {
-			Vector3 right = Points[i].GetRightSample();
-			Vector3 left = Points[i].GetLeftSample();
-			UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
-			UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
+		//	Vector3 right = Points[i].GetRightSample();
+		//	Vector3 left = Points[i].GetLeftSample();
+		//	UnityGL.DrawCircle(right, 0.01f, Utility.Yellow);
+		//	UnityGL.DrawCircle(left, 0.01f, Utility.Yellow);
 		}
 
 		//Velocities
 		Color transparentVelocity = Utility.DarkGreen.Transparent(0.25f);
 		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection(), 0.025f, 0f, transparentVelocity);
+			Vector3 start = Points[i].GetPosition();
+			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
+			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
+			UnityGL.DrawLine(start, end, 0.025f, 0f, transparentVelocity);
 		}
 
 		//Directions
 		Color transparentDirection = Utility.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f * Points[i].GetDirection(), 0.025f, 0f, transparentDirection);
+			Vector3 start = Points[i].GetPosition();
+			Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
+			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
+			UnityGL.DrawLine(start, end, 0.025f, 0f, transparentDirection);
 		}
 		
 		//Slopes
 		Color transparentSlope = Utility.Blue.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-			UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
+		//	UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
 		}
 
 		//Positions

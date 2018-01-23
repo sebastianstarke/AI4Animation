@@ -318,7 +318,7 @@ public class Character {
 						jointMaterial
 					);
 					float distance = Vector3.Distance(parent.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition());
-					if(distance > 0.001f) {
+					if(distance > 0.05f) {
 						UnityGL.DrawMesh(
 							GetBoneMesh(),
 							parent.GetTransformation().GetPosition(),

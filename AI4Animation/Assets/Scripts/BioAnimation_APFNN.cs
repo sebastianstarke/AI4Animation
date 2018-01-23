@@ -131,7 +131,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		recursion(Root);
 	}
 
-	void Update() {	
+	void Update() {
 		if(TrajectoryControl) {
 			//Update Bias
 			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
@@ -212,7 +212,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//
 
 			int start = 0;
-			if(name == "Wolf_APFNN_Velocity" || name == "Wolf_APFNN_Final") {
+			if(name == "Wolf_APFNN_Velocity" || name =="Wolf_APFNN_8CWVelocity" || name == "Wolf_APFNN_Synthetic") {
 				//Input Trajectory Positions / Directions
 				for(int i=0; i<PointSamples; i++) {
 					Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
@@ -424,7 +424,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
 						float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
-						float velocityThreshold = i==0 || i== 1 ? 0.015f : 0.015f;
+						float velocityThreshold = i==0 || i== 1 ? 0.025f : 0.025f;
 						Vector3 goal = IKSolvers[i].GetTipPosition();
 						IKSolvers[i].Goal.y = goal.y;
 						float velocityDelta = (goal - IKSolvers[i].Goal).magnitude;
@@ -491,19 +491,19 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
 		for(int i=0; i<styles.Length; i++) {
+			float _bias = Controller.Styles[i].Bias;
 			float max = 0f;
 			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
 				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
-					max = Mathf.Max(max, Controller.Styles[i].Multipliers[j].Value);
+					max = Mathf.Max(max, Controller.Styles[i].Bias * Controller.Styles[i].Multipliers[j].Value);
 				}
 			}
-			float multiplier = 1f;
 			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
 				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
-					multiplier = Mathf.Min(max, multiplier*Controller.Styles[i].Multipliers[j].Value);
+					_bias = Mathf.Min(max, _bias * Controller.Styles[i].Multipliers[j].Value);
 				}
 			}
-			bias = Mathf.Max(bias, multiplier * styles[i]);
+			bias += styles[i] * _bias;
 		}
 		return bias;
 	}

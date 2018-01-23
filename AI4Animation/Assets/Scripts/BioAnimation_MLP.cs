@@ -109,6 +109,14 @@ public class BioAnimation_MLP : MonoBehaviour {
 		recursion(Root);
 	}
 
+	public void SetTargetDirection(Vector3 direction) {
+		TargetDirection = direction;
+	}
+
+	public void SetTargetVelocity(Vector3 velocity) {
+		TargetVelocity = velocity;
+	}
+
 	void Update() {	
 		if(TrajectoryControl) {
 			//Update Target Direction / Velocity 
@@ -272,7 +280,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 			//Update Current Trajectory
 			int end = 6*4 + JointDimOut*Joints.Length;
-			Vector3 translationalOffset = new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
+			Vector3 translationalOffset = 1.25f * new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
 			float angularOffset = MLP.GetOutput(end+2);
 
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
@@ -372,6 +380,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
+			/*
 			if(SolveIK) {
 				//Foot Sliding
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -399,9 +408,11 @@ public class BioAnimation_MLP : MonoBehaviour {
 					//Ups[i] = Joints[i].up;
 				}
 			}
+			*/
 
 			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
 			
+			/*
 			if(SolveIK) {
 				//Terrain Motion Editing
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -434,6 +445,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 					IKSolvers[i].ProcessIK();
 				}
 			}
+			*/
 			
 			//Update Skeleton
 			Character.FetchTransformations(Root);
@@ -500,7 +512,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		
+		/*
 		float height = 0.05f;
 		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
@@ -512,7 +524,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
 			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
-		
+		*/
 	}
 
 	void OnRenderObject() {

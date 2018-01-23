@@ -44,8 +44,8 @@ public class BVHProcessor : EditorWindow {
 				if(Utility.GUIButton("Export Root Velocities", Utility.DarkGrey, Utility.White)) {
 					ExportRootVelocities();
 				}
-				if(Utility.GUIButton("Style Distribution", Utility.DarkGrey, Utility.White)) {
-					PrintStyleDistribution();
+				if(Utility.GUIButton("Data Distribution", Utility.DarkGrey, Utility.White)) {
+					PrintDataDistribution();
 				}
 
 				EditorGUILayout.BeginHorizontal();
@@ -66,7 +66,9 @@ public class BVHProcessor : EditorWindow {
                 if(Utility.GUIButton("Fix Data", Utility.DarkGreen, Utility.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
-						animation.ComputeTrajectory();
+						//animation.ComputeTrajectory();
+						animation.Character.BoneColor = Utility.Cyan;
+						animation.Character.JointColor = Utility.Mustard;
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -150,8 +152,8 @@ public class BVHProcessor : EditorWindow {
 		}
 
 		for(int v=0; v<velocities.Length; v++) {
-			Debug.Log(Animations[0].StyleFunction.Styles[v].Name + ": " + "Mean: " + Utility.ComputeMean(velocities[v].ToArray()) + " StdDev: " + Utility.ComputeSigma(velocities[v].ToArray()));
-			/*
+			//Debug.Log(Animations[0].StyleFunction.Styles[v].Name + ": " + "Mean: " + Utility.ComputeMean(velocities[v].ToArray()) + " StdDev: " + Utility.ComputeSigma(velocities[v].ToArray()));
+			
 			string name = Animations[0].StyleFunction.Styles[v].Name;
 			string filename = string.Empty;
 			if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
@@ -167,7 +169,7 @@ public class BVHProcessor : EditorWindow {
 			StreamWriter data = File.CreateText(filename+".txt");
 			data.WriteLine(FormatArray(velocities[v].ToArray()));
 			data.Close();
-			*/
+			
 		}
 	}
 
@@ -380,7 +382,7 @@ public class BVHProcessor : EditorWindow {
 		return time;
 	}
 
-	private void PrintStyleDistribution() {
+	private void PrintDataDistribution() {
 		if(Animations.Length == 0) {
 			return;
 		}
@@ -407,8 +409,10 @@ public class BVHProcessor : EditorWindow {
 			}
 		}
 		
+		Debug.Log("Total Frames: " + totalFrames);
+		Debug.Log("Total Time: " + totalFrames * Animations[0].FrameTime);
 		for(int i=0; i<names.Length; i++) {
-			Debug.Log("Name: " + names[i] + " Count: " + distribution[i] + " Ratio: " + (float)distribution[i] / (float)totalFrames);
+			Debug.Log("Name: " + names[i] + " Frames: " + distribution[i] + " Time: " + distribution[i] * Animations[0].FrameTime + "s" + " Ratio: " + 100f*((float)distribution[i] / (float)totalFrames) + "%");
 		}
 	}
 

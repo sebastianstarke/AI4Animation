@@ -24,20 +24,21 @@ class APFNN {
 	MatrixXf CW0, CW1, CW2;
 	MatrixXf Cb0, Cb1, Cb2;
 
-	MatrixXf CPa0[4], CPa1[4], CPa2[4];
-	MatrixXf CPb0[4], CPb1[4], CPb2[4];
+	std::vector<MatrixXf> CPa0, CPa1, CPa2;
+	std::vector<MatrixXf> CPb0, CPb1, CPb2;
 
     MatrixXf X, Y;
 
     MatrixXf CP;
 
-    int CDim, XDim, HDim, YDim;
+    int CDim, XDim, HDim, YDim, ControlWeights;
 
-    public : void Initialise(int cDim, int xDim, int hDim, int yDim) {
+    public : void Initialise(int cDim, int xDim, int hDim, int yDim, int controlWeights) {
         CDim = cDim;
         XDim = xDim;
         HDim = hDim;
         YDim = yDim;
+        ControlWeights = controlWeights;
 
         Xmean = Xmean.Zero(XDim, 1);
         Xstd = Xstd.Zero(XDim, 1);
@@ -48,10 +49,16 @@ class APFNN {
         Cb0 = Cb0.Zero(CDim, 1);
         CW1 = CW1.Zero(CDim, CDim);
         Cb1 = Cb1.Zero(CDim, 1);
-        CW2 = CW2.Zero(4, CDim);
-        Cb2 = Cb2.Zero(4, 1);
+        CW2 = CW2.Zero(ControlWeights, CDim);
+        Cb2 = Cb2.Zero(ControlWeights, 1);
 
-		for(int i=0; i<4; i++) {
+        CPa0.resize(ControlWeights);
+        CPa1.resize(ControlWeights);
+        CPa2.resize(ControlWeights);
+        CPb0.resize(ControlWeights);
+        CPb1.resize(ControlWeights);
+        CPb2.resize(ControlWeights);
+		for(int i=0; i<ControlWeights; i++) {
             CPa0[i] = CPa0[i].Zero(HDim, XDim);
             CPb0[i] = CPb0[i].Zero(HDim, 1);
             CPa1[i] = CPa1[i].Zero(HDim, HDim);
@@ -63,7 +70,7 @@ class APFNN {
         X = X.Zero(XDim, 1);
         Y = Y.Zero(YDim, 1);
 
-        CP = CP.Zero(4, 1);
+        CP = CP.Zero(ControlWeights, 1);
 
         References.resize(0);
         References.push_back(&Xmean);
@@ -76,7 +83,7 @@ class APFNN {
         References.push_back(&Cb1);
         References.push_back(&CW2);
         References.push_back(&Cb2);
-        for(int i=0; i<4; i++) {
+        for(int i=0; i<ControlWeights; i++) {
             References.push_back(&CPa0[i]);
             References.push_back(&CPb0[i]);
             References.push_back(&CPa1[i]);
@@ -133,7 +140,7 @@ class APFNN {
 		MatrixXf PFNNb0 = MatrixXf::Zero(HDim, 1);
 		MatrixXf PFNNb1 = MatrixXf::Zero(HDim, 1);
 		MatrixXf PFNNb2 = MatrixXf::Zero(YDim, 1);
-		for(int i=0; i<4; i++) {
+		for(int i=0; i<ControlWeights; i++) {
 			PFNNW0 += CPa0[i] * CP(i, 0);
 			PFNNW1 += CPa1[i] * CP(i, 0);
 			PFNNW2 += CPa2[i] * CP(i, 0);
@@ -181,8 +188,8 @@ extern "C" {
         delete obj;
     }
 
-    void Initialise(APFNN* obj, int cDim, int xDim, int hDim, int yDim) {
-        obj->Initialise(cDim, xDim, hDim, yDim);
+    void Initialise(APFNN* obj, int cDim, int xDim, int hDim, int yDim, int controlWeights) {
+        obj->Initialise(cDim, xDim, hDim, yDim, controlWeights);
     }
 
     void SetValue(APFNN* obj, int matrix, int row, int col, float value) {
