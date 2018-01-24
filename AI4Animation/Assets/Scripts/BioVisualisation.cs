@@ -172,9 +172,9 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		GameObject.Find("Trajectory_Circle").GetComponent<CatmullRomSpline>().DrawGUI = Show;
-		GameObject.Find("Trajectory_Square").GetComponent<CatmullRomSpline>().DrawGUI = Show;
-		GameObject.Find("Trajectory_Slalom").GetComponent<CatmullRomSpline>().DrawGUI = Show;
+		//GameObject.Find("Trajectory_Circle").GetComponent<CatmullRomSpline>().DrawGUI = Show;
+		//GameObject.Find("Trajectory_Square").GetComponent<CatmullRomSpline>().DrawGUI = Show;
+		//GameObject.Find("Trajectory_Slalom").GetComponent<CatmullRomSpline>().DrawGUI = Show;
 		Canvas.SetActive(Show);
 		if(!Show) {
 			return;

@@ -15,6 +15,7 @@ class APFNN {
     std::vector<MatrixXf*> References;
 
     std::vector<int> ControlNeurons;
+    std::vector<bool> IgnoreNeurons;
 
 	MatrixXf Xmean;
 	MatrixXf Xstd;
@@ -118,6 +119,11 @@ class APFNN {
 
     public : void AddControlNeuron(int index) {
         ControlNeurons.push_back(index);
+        IgnoreNeurons.push_back(false);
+    }
+
+    public : void IgnoreControlNeuron(int index, bool value) {
+        IgnoreNeurons[index] = value;
     }
 
     public : void Predict() {
@@ -141,12 +147,14 @@ class APFNN {
 		MatrixXf PFNNb1 = MatrixXf::Zero(HDim, 1);
 		MatrixXf PFNNb2 = MatrixXf::Zero(YDim, 1);
 		for(int i=0; i<ControlWeights; i++) {
-			PFNNW0 += CPa0[i] * CP(i, 0);
-			PFNNW1 += CPa1[i] * CP(i, 0);
-			PFNNW2 += CPa2[i] * CP(i, 0);
-			PFNNb0 += CPb0[i] * CP(i, 0);
-			PFNNb1 += CPb1[i] * CP(i, 0);
-			PFNNb2 += CPb2[i] * CP(i, 0);
+            if(!IgnoreNeurons[i]) {
+                PFNNW0 += CPa0[i] * CP(i, 0);
+                PFNNW1 += CPa1[i] * CP(i, 0);
+                PFNNW2 += CPa2[i] * CP(i, 0);
+                PFNNb0 += CPb0[i] * CP(i, 0);
+                PFNNb1 += CPb1[i] * CP(i, 0);
+                PFNNb2 += CPb2[i] * CP(i, 0);
+            }
 		}
 
         //Process PFNN
@@ -202,6 +210,10 @@ extern "C" {
 
     void AddControlNeuron(APFNN* obj, int index) {
         obj->AddControlNeuron(index);
+    }
+
+    void IgnoreControlNeuron(APFNN* obj, int index, bool value) {
+        obj->IgnoreControlNeuron(index, value);
     }
 
     void Predict(APFNN* obj) {

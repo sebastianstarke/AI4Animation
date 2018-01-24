@@ -13,7 +13,7 @@ public class CatmullRomSpline : MonoBehaviour {
 	[Range(0f, 1f)] public float Correction = 1f;
 
 	public Trajectory Trajectory;
-	public Transform[] ControlPoints;
+	public Transform[] ControlPoints = new Transform[0];
 
 	public bool DrawGUI = true;
 
@@ -26,6 +26,8 @@ public class CatmullRomSpline : MonoBehaviour {
 	private int[] Feet = new int[4] {10, 15, 19, 23};
 	private Vector3[] LastFeetPositions = new Vector3[4];
 
+	private int Current = 0;
+
 	void Start() {
 		for(int i=0; i<Feet.Length; i++) {
 			LastFeetPositions[i] = Target.Joints[i].position;
@@ -36,7 +38,7 @@ public class CatmullRomSpline : MonoBehaviour {
 		Target.TrajectoryCorrection = Correction;
 		Target.TrajectoryControl = false;
 
-		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
+		Trajectory.Point pivot = Trajectory.Points[Current];//GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
 
 		//Target.SetTargetDirection((future[future.Length-1].GetPosition() - Target.transform.position).normalized);
@@ -57,6 +59,11 @@ public class CatmullRomSpline : MonoBehaviour {
 		for(int i=60; i<targetTrajectory.Points.Length; i++) {
 			targetTrajectory.Points[i].Styles[0] = 0f;
 			targetTrajectory.Points[i].Styles[1] = 1f;
+		}
+
+		Current += 1;
+		if(Current == Trajectory.Points.Length) {
+			Current = 0;
 		}
 
 		/*
@@ -105,9 +112,12 @@ public class CatmullRomSpline : MonoBehaviour {
 
 		if(Visualise) {
 			UnityGL.Start();
-			for(int i=0; i<ControlPoints.Length; i++) {
-				UnityGL.DrawSphere(ControlPoints[i].position, 0.05f, Utility.Cyan.Transparent(0.75f));
+			for(int i=10; i<Trajectory.Points.Length-60; i+=10) {
+				UnityGL.DrawLine(Trajectory.Points[i-10].GetPosition(), Trajectory.Points[i].GetPosition(), 0.075f, Utility.Magenta);
 			}
+			//for(int i=0; i<ControlPoints.Length; i++) {
+			//	UnityGL.DrawSphere(ControlPoints[i].position, 0.05f, Utility.Cyan.Transparent(0.75f));
+			//}
 			UnityGL.Finish();
 		}
 
@@ -179,7 +189,7 @@ public class CatmullRomSpline : MonoBehaviour {
 
 	private void Create() {
 		Trajectory = new Trajectory(ControlPoints.Length * 60, 0);
-		for(int pos=0; pos<ControlPoints.Length; pos++) {
+		for(int pos=0; pos<ControlPoints.Length-1; pos++) {
 			Vector3 p0 = ControlPoints[ClampListPos(pos - 1)].position;
 			Vector3 p1 = ControlPoints[pos].position;
 			Vector3 p2 = ControlPoints[ClampListPos(pos + 1)].position;
@@ -219,6 +229,7 @@ public class CatmullRomSpline : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		/*
 		if(!DrawGUI) {
 			return;
 		}
@@ -232,6 +243,7 @@ public class CatmullRomSpline : MonoBehaviour {
 		if(GUI.Button(Utility.GetGUIRect(0f, 0.05f, 0.05f, 0.025f), "Visualise")) {
 			Visualise = !Visualise;
 		}
+		*/
 		/*
 		if(GUI.Button(Utility.GetGUIRect(0f, 0.075f, 0.05f, 0.025f), "Reset")) {
 			Positions.Clear();

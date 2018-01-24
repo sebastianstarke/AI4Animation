@@ -35,6 +35,8 @@ public class APFNN {
     [DllImport("APFNN")]
     private static extern float AddControlNeuron(IntPtr obj, int index);
     [DllImport("APFNN")]
+    private static extern float IgnoreControlNeuron(IntPtr obj, int index, bool value);
+    [DllImport("APFNN")]
     private static extern void Predict(IntPtr obj);
 
 	public APFNN() {
@@ -112,6 +114,13 @@ public class APFNN {
 			return;
 		}
 		AddControlNeuron(Network, index);
+	}
+
+	public void IgnoreControlNeuron(int index, bool value) {
+		if(Parameters == null) {
+			return;
+		}
+		IgnoreControlNeuron(Network, index, value);
 	}
 
 	public float GetControlPoint(int index) {
