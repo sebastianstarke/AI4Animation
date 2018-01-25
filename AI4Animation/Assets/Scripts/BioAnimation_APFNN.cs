@@ -420,7 +420,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
 			if(SolveIK) {
-				//Foot Sliding
+				//Step #1
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
 						float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
@@ -450,7 +450,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
 			
 			if(SolveIK) {
-				//Terrain Motion Editing
+				//Step #2
 				for(int i=0; i<IKSolvers.Length; i++) {
 					IKSolvers[i].Goal = IKSolvers[i].GetTipPosition();
 					float height = Utility.GetHeight(IKSolvers[i].Goal, LayerMask.GetMask("Ground"));

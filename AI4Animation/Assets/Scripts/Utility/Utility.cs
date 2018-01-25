@@ -75,7 +75,8 @@ public static class Utility {
 	}
 
 	public static float Exponential01(float value) {
-		return Mathf.Pow(2f, Mathf.Clamp(value, 0f, 1f)) - 1f;
+		float basis = 2f;
+		return (Mathf.Pow(basis, Mathf.Clamp(value, 0f, 1f)) - 1f) / (basis-1f);
 	}
 
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {

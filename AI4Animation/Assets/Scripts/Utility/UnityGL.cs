@@ -53,6 +53,8 @@ public static class UnityGL {
 		CirclePoints = new Vector3[CircleResolution];
 		SpherePoints = new Vector3[4 * SphereResolution * SphereResolution];
 
+		UpdateData();
+
 		Initialised = true;
 	}
 
@@ -62,14 +64,14 @@ public static class UnityGL {
 		ViewRotation = GetCamera().transform.rotation;
 
 		//Triangle
-		IsocelesTrianglePoints[0] = ViewRotation * new Vector3(-0.5f, 0.5f, 0f);
-		IsocelesTrianglePoints[1] = ViewRotation * new Vector3(0.5f, 0.5f, 0f);
-		IsocelesTrianglePoints[2] = ViewRotation * new Vector3(0f, -0.5f, 0f);
+		IsocelesTrianglePoints[0] = new Vector3(-0.5f, 0.5f, 0f);
+		IsocelesTrianglePoints[1] = new Vector3(0.5f, 0.5f, 0f);
+		IsocelesTrianglePoints[2] = new Vector3(0f, -0.5f, 0f);
 
 		//Circle
 		for(int i=0; i<CircleResolution; i++) {
 			float angle = 2f * Mathf.PI * (float)i / ((float)CircleResolution-1f);
-			CirclePoints[i] = ViewRotation * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+			CirclePoints[i] = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
 		}
 
 		//Sphere
@@ -142,7 +144,7 @@ public static class UnityGL {
 			Debug.Log("Drawing has not been finished yet.");
 		} else {
 			Initialise();
-			UpdateData();
+			//UpdateData();
 			Drawing = true;
 		}
 	}
@@ -270,9 +272,9 @@ public static class UnityGL {
 		}
 		SetProgram(PROGRAM.TRIANGLES, SPACE.SCENE);
         GL.Color(color);
-        GL.Vertex(center + radius*IsocelesTrianglePoints[0]);
-		GL.Vertex(center + radius*IsocelesTrianglePoints[1]);
-		GL.Vertex(center + radius*IsocelesTrianglePoints[2]);
+        GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[0]));
+		GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[1]));
+		GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[2]));
 	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
@@ -284,8 +286,8 @@ public static class UnityGL {
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
 			GL.Vertex(center);
-			GL.Vertex(center + radius*CirclePoints[i]);
-			GL.Vertex(center + radius*CirclePoints[i+1]);
+			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i]));
+			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i+1]));
 		}
 	}
 
