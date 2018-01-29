@@ -12,7 +12,6 @@ public static class UnityGL {
 	private static PROGRAM Program = PROGRAM.NONE;
 
 	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
-	private enum SPACE {NONE, SCENE, GUI}
 
 	private static float GUIOffset = 0.001f;
 
@@ -148,6 +147,9 @@ public static class UnityGL {
 		GL.Vertex(end);
 	}
 
+	//------------------------------------------------------------------------------------------
+	//SCENE DRAWING FUNCTIONS
+	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color startColor, Color endColor) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
@@ -358,11 +360,14 @@ public static class UnityGL {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.NONE, SceneMaterial);
+		SetProgram(PROGRAM.NONE, material);
 		material.SetPass(0);
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
+	//------------------------------------------------------------------------------------------
+	//GUI DRAWING FUNCTIONS
+	//------------------------------------------------------------------------------------------
 	public static void DrawGUILine(float xStart, float yStart, float xEnd, float yEnd, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
@@ -463,6 +468,9 @@ public static class UnityGL {
 		}
 	}
 	
+	//------------------------------------------------------------------------------------------
+	//UTILITY FUNCTIONS
+	//------------------------------------------------------------------------------------------
 	private static Camera GetCamera() {
 		if(Camera.current != null) {
 			return Camera.current;
@@ -496,6 +504,5 @@ public static class UnityGL {
 		Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
 		return pos;
 	}
-
 
 }
