@@ -19,7 +19,6 @@ public static class UnityGL {
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
 
-	private static Vector3[] IsocelesTrianglePoints;
 	private static int CircleResolution = 10;
 	private static Vector3[] CirclePoints;
 	private static int SphereResolution = 10;
@@ -49,12 +48,6 @@ public static class UnityGL {
 		GUIMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 		GUIMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 		GUIMaterial.SetInt("_ZWrite", 0);
-
-		//Isoceles Triangle
-		IsocelesTrianglePoints = new Vector3[3];
-		IsocelesTrianglePoints[0] = new Vector3(-0.5f, 0.5f, 0f);
-		IsocelesTrianglePoints[1] = new Vector3(0.5f, 0.5f, 0f);
-		IsocelesTrianglePoints[2] = new Vector3(0f, -0.5f, 0f);
 
 		//Circle
 		CirclePoints = new Vector3[CircleResolution];
@@ -167,12 +160,12 @@ public static class UnityGL {
 		GL.Vertex(end);
 	}
 
-    public static void DrawLine(Vector3 start, Vector3 end, float width, Color color, Material material = null) {
+    public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.QUADS, material == null ? SceneMaterial : material);
+		SetProgram(PROGRAM.QUADS, SceneMaterial);
 		Vector3 dir = (end-start).normalized;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
@@ -250,6 +243,18 @@ public static class UnityGL {
 		GL.Vertex(c);
 	}
 
+	public static void DrawTriangle(Vector3 center, float radius, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
+        GL.Color(color);
+        GL.Vertex(center + ViewRotation*(radius*new Vector3(-0.5f, 0.5f, 0f)));
+		GL.Vertex(center + ViewRotation*(radius*new Vector3(0.5f, 0.5f, 0f)));
+		GL.Vertex(center + ViewRotation*(radius*new Vector3(0f, -0.5f, 0f)));
+	}
+
 	public static void DrawQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
@@ -263,17 +268,19 @@ public static class UnityGL {
 		GL.Vertex(b);
 	}
 
-	public static void DrawIsocelesTriangle(Vector3 center, float radius, Color color) {
+	public static void DrawQuad(Vector3 center, float width, float height, Color color) {
 		if(!Drawing) {
 			Debug.Log("Drawing has not yet been started.");
 			return;
 		}
-		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
+		SetProgram(PROGRAM.QUADS, SceneMaterial);
         GL.Color(color);
-        GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[0]));
-		GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[1]));
-		GL.Vertex(center + radius*(ViewRotation*IsocelesTrianglePoints[2]));
+        GL.Vertex(center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f)));
+		GL.Vertex(center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f)));
+		GL.Vertex(center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f)));
+        GL.Vertex(center + ViewRotation*(new Vector3(-0.5f*width, 0.5f*height, 0f)));
 	}
+
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
 		if(!Drawing) {
@@ -322,6 +329,28 @@ public static class UnityGL {
 		Vector3 pivot = start + tipPivot * (end-start);
 		DrawLine(start, pivot, shaftWidth, color);
 		DrawLine(pivot, end, tipWidth, 0f, color);
+	}
+
+	public static void DrawSpline(Vector3[] controlPoints, int sampling, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		Vector3[] points = GetCatmullRomSpline(controlPoints, sampling);
+		for(int i=1; i<points.Length; i++) {
+			DrawLine(points[i-1], points[i], color);
+		}
+	}
+
+	public static void DrawSpline(Vector3[] controlPoints, int sampling, float width, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		Vector3[] points = GetCatmullRomSpline(controlPoints, sampling);
+		for(int i=1; i<points.Length; i++) {
+			DrawLine(points[i-1], points[i], width, color);
+		}
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {
@@ -441,5 +470,32 @@ public static class UnityGL {
 			return Camera.main;
 		}
 	}
+
+	private static Vector3[] GetCatmullRomSpline(Vector3[] controlPoints, int sampling) {
+		int cp = controlPoints.Length;
+		int s = sampling;
+		Vector3[] points = new Vector3[cp*s];
+		for(int pos=0; pos<cp; pos++) {
+			Vector3 p0 = controlPoints[(int)Mathf.Repeat(pos-1, controlPoints.Length)];
+			Vector3 p1 = controlPoints[pos];
+			Vector3 p2 = controlPoints[(int)Mathf.Repeat(pos+1, controlPoints.Length)];
+			Vector3 p3 = controlPoints[(int)Mathf.Repeat(pos+2, controlPoints.Length)];
+			for(int i=1; i<=s; i++) {
+				float t = i / (float)(s-1);
+				points[pos * s + i - 1] = GetCatmullRomPosition(t, p0, p1, p2, p3);
+			}
+		}
+		return points;
+	}
+
+	private static Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3) {
+		Vector3 a = 2f * p1;
+		Vector3 b = p2 - p0;
+		Vector3 c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
+		Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
+		Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
+		return pos;
+	}
+
 
 }
