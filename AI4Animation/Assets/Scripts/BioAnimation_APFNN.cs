@@ -424,7 +424,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
 						float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
-						float velocityThreshold = i==0 || i== 1 ? 0.025f : 0.025f;
+						float velocityThreshold = i==0 || i==1 ? 0.025f : 0.025f;
 						Vector3 goal = IKSolvers[i].GetTipPosition();
 						IKSolvers[i].Goal.y = goal.y;
 						float velocityDelta = (goal - IKSolvers[i].Goal).magnitude;

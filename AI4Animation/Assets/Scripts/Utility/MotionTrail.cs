@@ -31,17 +31,16 @@ public class MotionTrail : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		
 		UnityGL.Start();
 		int index = 0;
-		GameObject previous = null;
+		//GameObject previous = null;
 		foreach(GameObject instance in Instances) {
 			index += 1;
 			instance.GetComponent<Transparency>().SetTransparency(0.25f);
 			if(index > 1) {
 				UnityGL.DrawSphere(instance.transform.position, 0.025f, Utility.Magenta.Transparent(0.8f));
 			}
-			previous = instance;
+			//previous = instance;
 		}
 		UnityGL.Finish();
 	}

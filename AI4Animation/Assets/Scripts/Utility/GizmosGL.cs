@@ -17,8 +17,8 @@ public class GizmosGL : MonoBehaviour {
 	private static GLCall[] Calls = new GLCall[32];
 	private static Vector3[] Vertices = new Vector3[1024];
 
-	private static PROGRAM Program = PROGRAM.NONE;
-	private static SPACE Space = SPACE.NONE;
+	//private static PROGRAM Program = PROGRAM.NONE;
+	//private static SPACE Space = SPACE.NONE;
 
 	private static Material SceneMaterial;
 
@@ -43,12 +43,7 @@ public class GizmosGL : MonoBehaviour {
 		Initialised = true;
 	}
 
-	void Update() {
-		DrawLine(Vector3.one, 2f*Vector3.one, Color.green);
-		Debug.Log(CallIndex);
-	}
-
-	void OnRenderObject() {
+	void OnPostRender() {
 		Initialise();
 
 		int index = 0;
@@ -77,7 +72,7 @@ public class GizmosGL : MonoBehaviour {
 
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
-			OnRenderObject();
+			OnPostRender();
 		}
 	}
 

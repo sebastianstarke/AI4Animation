@@ -194,7 +194,7 @@ public class Trajectory {
 		}
 		
 		//Slopes
-		Color transparentSlope = Utility.Blue.Transparent(0.75f);
+		//Color transparentSlope = Utility.Blue.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 		//	UnityGL.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
 		}

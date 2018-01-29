@@ -20,9 +20,9 @@ public class CatmullRomSpline : MonoBehaviour {
 	private bool Visualise = true;
 
 	private List<Vector3> Positions = new List<Vector3>();
-	private List<float> OffsetErrors = new List<float>();
-	private List<float> AngleErrors = new List<float>();
-	private List<float> Slidings = new List<float>();
+	//private List<float> OffsetErrors = new List<float>();
+	//private List<float> AngleErrors = new List<float>();
+	//private List<float> Slidings = new List<float>();
 	private int[] Feet = new int[4] {10, 15, 19, 23};
 	private Vector3[] LastFeetPositions = new Vector3[4];
 
@@ -195,9 +195,9 @@ public class CatmullRomSpline : MonoBehaviour {
 			Vector3 p2 = ControlPoints[ClampListPos(pos + 1)].position;
 			Vector3 p3 = ControlPoints[ClampListPos(pos + 2)].position;
 			Vector3 lastPos = p1;
-			int loops = 60;
-			for(int i=1; i<=loops; i++) {
-				float t = i / (float)loops;
+			int sampling = 60;
+			for(int i=1; i<=sampling; i++) {
+				float t = i / (float)sampling;
 				Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
 				Trajectory.Points[pos * 60 + i -1].SetPosition(newPos);
 				Trajectory.Points[pos * 60 + i -1].SetDirection(newPos-lastPos);
