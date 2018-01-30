@@ -212,7 +212,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 			//
 
 			int start = 0;
-			if(name == "Wolf_APFNN_Velocity" || name =="Wolf_APFNN_8CWVelocity" || name == "Wolf_APFNN_Synthetic") {
+			if(name == "Wolf_APFNN_Velocity" || name =="Wolf_APFNN_8CWVelocity" || name == "Wolf_APFNN_Synthetic" || name == "Wolf_APFNN_Velocity_13") {
 				//Input Trajectory Positions / Directions
 				for(int i=0; i<PointSamples; i++) {
 					Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
