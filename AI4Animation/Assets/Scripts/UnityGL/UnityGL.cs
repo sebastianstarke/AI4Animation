@@ -283,6 +283,51 @@ public static class UnityGL {
         GL.Vertex(center + ViewRotation*(new Vector3(-0.5f*width, 0.5f*height, 0f)));
 	}
 
+	public static void DrawWireQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		DrawLine(a, b, color);
+		DrawLine(b, d, color);
+		DrawLine(d, c, color);
+		DrawLine(c, a, color);
+	}
+
+	public static void DrawWireQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, float thickness, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		DrawLine(a, b, thickness, color);
+		DrawLine(b, d, thickness, color);
+		DrawLine(d, c, thickness, color);
+		DrawLine(c, a, thickness, color);
+	}
+
+	public static void DrawWireQuad(Vector3 center, float width, float height, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
+		Vector3 b = center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f));
+		Vector3 c = center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f));
+        Vector3 d = center + ViewRotation*(new Vector3(-0.5f*width, 0.5f*height, 0f));
+		DrawWireQuad(d, a, c, b, color);
+	}
+
+	public static void DrawWireQuad(Vector3 center, float width, float height, float thickness, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
+		Vector3 b = center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f));
+		Vector3 c = center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f));
+        Vector3 d = center + ViewRotation*(new Vector3(-0.5f*width, 0.5f*height, 0f));
+		DrawWireQuad(d, a, c, b, thickness, color);
+	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
 		if(!Drawing) {
@@ -295,6 +340,26 @@ public static class UnityGL {
 			GL.Vertex(center);
 			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i]));
 			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i+1]));
+		}
+	}
+
+	public static void DrawWireCircle(Vector3 center, float radius, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		for(int i=1; i<CircleResolution; i++) {
+			DrawLine(center + radius*(ViewRotation*CirclePoints[i-1]), center + radius*(ViewRotation*CirclePoints[i]), color);
+		}
+	}
+
+	public static void DrawWireCircle(Vector3 center, float radius, float thickness, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		for(int i=1; i<CircleResolution; i++) {
+			DrawLine(center + radius*(ViewRotation*CirclePoints[i-1]), center + radius*(ViewRotation*CirclePoints[i]), thickness, color);
 		}
 	}
 
@@ -317,6 +382,27 @@ public static class UnityGL {
 				index += 4;
 			}
 		}
+	}
+
+	public static void DrawCube(Vector3 center, Quaternion rotation, float size, Color color) {
+		if(!Drawing) {
+			Debug.Log("Drawing has not yet been started.");
+			return;
+		}
+		Vector3 p1 = center + new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 p2 = center + new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 p3 = center + new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 p4 = center + new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p5 = center + new Vector3(-size/2f, size/2f, -size/2f);
+		Vector3 p6 = center + new Vector3(size/2f, size/2f, -size/2f);
+		Vector3 p7 = center + new Vector3(-size/2f, size/2f, size/2f);
+		Vector3 p8 = center + new Vector3(size/2f, size/2f, size/2f);
+		DrawQuad(p1, p2, p3, p4, color);
+		DrawQuad(p1, p2, p5, p6, color);
+		DrawQuad(p5, p6, p7, p8, color);
+		DrawQuad(p4, p3, p8, p7, color);
+		DrawQuad(p2, p4, p6, p8, color);
+		DrawQuad(p1, p3, p5, p7, color);
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
