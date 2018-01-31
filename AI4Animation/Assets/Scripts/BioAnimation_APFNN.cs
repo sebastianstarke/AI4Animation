@@ -98,6 +98,9 @@ public class BioAnimation_APFNN : MonoBehaviour {
 		for(int i=rf; i<rf+3; i++) {
 			APFNN.AddControlNeuron(i);
 		}
+		if(name == "Wolf_APFNN_Velocity_13") {
+			APFNN.AddControlNeuron(6*8 + 5);
+		}
 	}
 
 	void Start() {
@@ -200,6 +203,8 @@ public class BioAnimation_APFNN : MonoBehaviour {
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
 		}
+
+		//Debug.Log(Trajectory.Points[60].GetVelocity());
 
 		if(APFNN.Parameters != null) {
 			//Calculate Root

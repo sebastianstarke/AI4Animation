@@ -126,8 +126,8 @@
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GizmosGLTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
-     <Compile Include="Assets\Scripts\Trash\UnityGLTest.cs" />
      <Compile Include="Assets\Scripts\UnityGL\UnityGL.cs" />
+     <Compile Include="Assets\Scripts\UnityGL\UnityGLTest.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />

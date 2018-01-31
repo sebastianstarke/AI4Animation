@@ -18,9 +18,9 @@ public static class UnityGL {
 	private static Vector3 ViewPosition = Vector3.zero;
 	private static Quaternion ViewRotation = Quaternion.identity;
 
-	private static int CircleResolution = 10;
+	private static int CircleResolution = 16;
 	private static Vector3[] CirclePoints;
-	private static int SphereResolution = 10;
+	private static int SphereResolution = 16;
 	private static Vector3[] SpherePoints;
 
 	private static Material CurrentMaterial;
@@ -137,10 +137,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES, SceneMaterial);
 		GL.Color(color);
 		GL.Vertex(start);
@@ -151,10 +148,7 @@ public static class UnityGL {
 	//SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color startColor, Color endColor) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES, SceneMaterial);
 		GL.Color(startColor);
 		GL.Vertex(start);
@@ -163,10 +157,7 @@ public static class UnityGL {
 	}
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
 		Vector3 dir = (end-start).normalized;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
@@ -180,10 +171,7 @@ public static class UnityGL {
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
 		Vector3 dir = (end-start).normalized;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
@@ -197,10 +185,7 @@ public static class UnityGL {
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color startColor, Color endColor) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
 		Vector3 dir = (end-start).normalized;
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
@@ -215,10 +200,7 @@ public static class UnityGL {
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color startColor, Color endColor) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
 		Vector3 dir = (end-start).normalized;
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
@@ -234,10 +216,7 @@ public static class UnityGL {
 
 
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
         GL.Color(color);
         GL.Vertex(a);
@@ -246,10 +225,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawTriangle(Vector3 center, float radius, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
         GL.Color(color);
         GL.Vertex(center + ViewRotation*(radius*new Vector3(-0.5f, 0.5f, 0f)));
@@ -258,10 +234,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
         GL.Color(color);
         GL.Vertex(a);
@@ -271,10 +244,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawQuad(Vector3 center, float width, float height, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS, SceneMaterial);
         GL.Color(color);
         GL.Vertex(center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f)));
@@ -284,10 +254,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawWireQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		DrawLine(a, b, color);
 		DrawLine(b, d, color);
 		DrawLine(d, c, color);
@@ -295,10 +262,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawWireQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, float thickness, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		DrawLine(a, b, thickness, color);
 		DrawLine(b, d, thickness, color);
 		DrawLine(d, c, thickness, color);
@@ -306,10 +270,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawWireQuad(Vector3 center, float width, float height, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
 		Vector3 b = center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f));
 		Vector3 c = center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f));
@@ -318,10 +279,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawWireQuad(Vector3 center, float width, float height, float thickness, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
 		Vector3 b = center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f));
 		Vector3 c = center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f));
@@ -330,10 +288,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
@@ -344,51 +299,56 @@ public static class UnityGL {
 	}
 
 	public static void DrawWireCircle(Vector3 center, float radius, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		for(int i=1; i<CircleResolution; i++) {
 			DrawLine(center + radius*(ViewRotation*CirclePoints[i-1]), center + radius*(ViewRotation*CirclePoints[i]), color);
 		}
 	}
 
 	public static void DrawWireCircle(Vector3 center, float radius, float thickness, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		for(int i=1; i<CircleResolution; i++) {
 			DrawLine(center + radius*(ViewRotation*CirclePoints[i-1]), center + radius*(ViewRotation*CirclePoints[i]), thickness, color);
 		}
 	}
 
 	public static void DrawSphere(Vector3 center, float radius, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
-		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
+		if(Return()) {return;}
+		SetProgram(PROGRAM.QUADS, SceneMaterial);
         GL.Color(color);
 		int index = 0;
 		for(int i=0; i<SphereResolution; i++) {
 			for(int j=0; j<SphereResolution; j++) {
 				GL.Vertex(center + radius*SpherePoints[index+0]);
 				GL.Vertex(center + radius*SpherePoints[index+2]);
-				GL.Vertex(center + radius*SpherePoints[index+1]);
 				GL.Vertex(center + radius*SpherePoints[index+3]);
 				GL.Vertex(center + radius*SpherePoints[index+1]);
-				GL.Vertex(center + radius*SpherePoints[index+2]);
 				index += 4;
 			}
 		}
 	}
 
-	public static void DrawCube(Vector3 center, Quaternion rotation, float size, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
+	public static void DrawWireSphere(Vector3 center, float radius, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.LINES, SceneMaterial);
+        GL.Color(color);
+		int index = 0;
+		for(int i=0; i<SphereResolution; i++) {
+			index += 2*SphereResolution;
+			Vector3 a = center + 1.02f*radius*SpherePoints[index+0];
+			Vector3 b = center + 1.02f*radius*SpherePoints[index+2];
+			GL.Vertex(a);
+			GL.Vertex(b);
+			GL.Vertex(new Vector3(a.z, a.x, a.y));
+			GL.Vertex(new Vector3(b.z, b.x, b.y));
+			GL.Vertex(new Vector3(a.y, a.z, a.x));
+			GL.Vertex(new Vector3(b.y, b.z, b.x));
+			index += 2*SphereResolution;
 		}
+	}
+
+	public static void DrawCube(Vector3 center, Quaternion rotation, float size, Color color) {
+		if(Return()) {return;}
 		Vector3 p1 = center + new Vector3(-size/2f, -size/2f, -size/2f);
 		Vector3 p2 = center + new Vector3(size/2f, -size/2f, -size/2f);
 		Vector3 p3 = center + new Vector3(-size/2f, -size/2f, size/2f);
@@ -405,25 +365,54 @@ public static class UnityGL {
 		DrawQuad(p1, p3, p5, p7, color);
 	}
 
+	public static void DrawWireCube(Vector3 center, Quaternion rotation, float size, Color color) {
+		if(Return()) {return;}
+		Vector3 p1 = center + new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 p2 = center + new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 p3 = center + new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 p4 = center + new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p5 = center + new Vector3(-size/2f, size/2f, -size/2f);
+		Vector3 p6 = center + new Vector3(size/2f, size/2f, -size/2f);
+		Vector3 p7 = center + new Vector3(-size/2f, size/2f, size/2f);
+		Vector3 p8 = center + new Vector3(size/2f, size/2f, size/2f);
+		DrawLine(p1, p2, color); DrawLine(p2, p4, color);
+		DrawLine(p4, p3, color); DrawLine(p3, p1, color);
+		DrawLine(p5, p6, color); DrawLine(p6, p8, color);
+		DrawLine(p5, p7, color); DrawLine(p7, p8, color);
+		DrawLine(p1, p5, color); DrawLine(p2, p6, color);
+		DrawLine(p3, p7, color); DrawLine(p4, p8, color);
+	}
+
+	public static void DrawWiredCube(Vector3 center, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawCube(center, rotation, size, cubeColor);
+		DrawWireCube(center, rotation, size, wireColor);
+	}
+
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		if(tipPivot < 0f || tipPivot > 1f) {
 			Debug.Log("The tip pivot must be specified between 0 and 1.");
-			return;
+			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
 		}
 		Vector3 pivot = start + tipPivot * (end-start);
 		DrawLine(start, pivot, shaftWidth, color);
 		DrawLine(pivot, end, tipWidth, 0f, color);
 	}
 
-	public static void DrawSpline(Vector3[] controlPoints, int sampling, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
+	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color shaftColor, Color tipColor) {
+		if(Return()) {return;}
+		if(tipPivot < 0f || tipPivot > 1f) {
+			Debug.Log("The tip pivot must be specified between 0 and 1.");
+			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
 		}
+		Vector3 pivot = start + tipPivot * (end-start);
+		DrawLine(start, pivot, shaftWidth, shaftColor);
+		DrawLine(pivot, end, tipWidth, 0f, tipColor);
+	}
+
+	public static void DrawSpline(Vector3[] controlPoints, int sampling, Color color) {
+		if(Return()) {return;}
 		Vector3[] points = GetCatmullRomSpline(controlPoints, sampling);
 		for(int i=1; i<points.Length; i++) {
 			DrawLine(points[i-1], points[i], color);
@@ -431,10 +420,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawSpline(Vector3[] controlPoints, int sampling, float width, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		Vector3[] points = GetCatmullRomSpline(controlPoints, sampling);
 		for(int i=1; i<points.Length; i++) {
 			DrawLine(points[i-1], points[i], width, color);
@@ -442,10 +428,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		SetProgram(PROGRAM.NONE, material);
 		material.SetPass(0);
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
@@ -455,10 +438,7 @@ public static class UnityGL {
 	//GUI DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawGUILine(float xStart, float yStart, float xEnd, float yEnd, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		xStart *= Screen.width;
 		yStart *= Screen.height;
 		xEnd *= Screen.width;
@@ -473,10 +453,7 @@ public static class UnityGL {
 	}
 
     public static void DrawGUILine(float xStart, float yStart, float xEnd, float yEnd, float width, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		xStart *= Screen.width;
 		yStart *= Screen.height;
 		xEnd *= Screen.width;
@@ -496,10 +473,7 @@ public static class UnityGL {
     }
 
 	public static void DrawGUIQuad(float x, float y, float width, float height, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		x *= Screen.width;
 		y *= Screen.height;
 		width *= Screen.width;
@@ -514,10 +488,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawGUITriangle(float xA, float yA, float xB, float yB, float xC, float yC, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		xA *= Screen.width;
 		yA *= Screen.height;
 		xB *= Screen.width;
@@ -533,10 +504,7 @@ public static class UnityGL {
 	}
 
 	public static void DrawGUICircle(float xCenter, float yCenter, float radius, Color color) {
-		if(!Drawing) {
-			Debug.Log("Drawing has not yet been started.");
-			return;
-		}
+		if(Return()) {return;}
 		xCenter *= Screen.width;
 		yCenter *= Screen.height;
 		radius *= Screen.height;
@@ -589,6 +557,16 @@ public static class UnityGL {
 		Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
 		Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
 		return pos;
+	}
+
+	private static bool Return() {
+		if(!Drawing) {
+			Debug.Log("Drawing has not been started yet.");
+			return true;
+		} else {
+			return false;
+		}
+		//return !Drawing;
 	}
 
 }
