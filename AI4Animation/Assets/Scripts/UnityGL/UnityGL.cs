@@ -38,8 +38,8 @@ public static class UnityGL {
 		SceneMaterial.hideFlags = HideFlags.HideAndDontSave;
 		SceneMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
 		SceneMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-		SceneMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-		SceneMaterial.SetInt("_ZWrite", 1);
+		SceneMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
+		SceneMaterial.SetInt("_ZWrite", 0);
 
 		GUIMaterial = new Material(colorShader);
 		GUIMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -136,6 +136,9 @@ public static class UnityGL {
 		}
 	}
 
+	//------------------------------------------------------------------------------------------
+	//SCENE DRAWING FUNCTIONS
+	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
 		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES, SceneMaterial);
@@ -144,9 +147,6 @@ public static class UnityGL {
 		GL.Vertex(end);
 	}
 
-	//------------------------------------------------------------------------------------------
-	//SCENE DRAWING FUNCTIONS
-	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color startColor, Color endColor) {
 		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES, SceneMaterial);
@@ -164,10 +164,10 @@ public static class UnityGL {
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 		
 		GL.Color(color);
-        GL.Vertex(start+orthoStart);
-		GL.Vertex(start-orthoStart);
-		GL.Vertex(end-orthoEnd);
 		GL.Vertex(end+orthoEnd);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(start+orthoStart);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
@@ -178,10 +178,10 @@ public static class UnityGL {
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 
 		GL.Color(color);
-        GL.Vertex(start+orthoStart);
-		GL.Vertex(start-orthoStart);
-		GL.Vertex(end-orthoEnd);
 		GL.Vertex(end+orthoEnd);
+		GL.Vertex(end-orthoEnd);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(start+orthoStart);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color startColor, Color endColor) {
@@ -191,12 +191,12 @@ public static class UnityGL {
 		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
 		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 
-		GL.Color(startColor);
-        GL.Vertex(start+orthoStart);
-		GL.Vertex(start-orthoStart);
 		GL.Color(endColor);
-		GL.Vertex(end-orthoEnd);
 		GL.Vertex(end+orthoEnd);
+		GL.Vertex(end-orthoEnd);
+		GL.Color(startColor);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(start+orthoStart);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color startColor, Color endColor) {
@@ -206,12 +206,12 @@ public static class UnityGL {
 		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
 		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 
-		GL.Color(startColor);
-        GL.Vertex(start+orthoStart);
-		GL.Vertex(start-orthoStart);
 		GL.Color(endColor);
-		GL.Vertex(end-orthoEnd);
 		GL.Vertex(end+orthoEnd);
+		GL.Vertex(end-orthoEnd);
+		GL.Color(startColor);
+		GL.Vertex(start-orthoStart);
+		GL.Vertex(start+orthoStart);
     }
 
 
@@ -261,14 +261,6 @@ public static class UnityGL {
 		DrawLine(c, a, color);
 	}
 
-	public static void DrawWireQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, float thickness, Color color) {
-		if(Return()) {return;}
-		DrawLine(a, b, thickness, color);
-		DrawLine(b, d, thickness, color);
-		DrawLine(d, c, thickness, color);
-		DrawLine(c, a, thickness, color);
-	}
-
 	public static void DrawWireQuad(Vector3 center, float width, float height, Color color) {
 		if(Return()) {return;}
 		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
@@ -278,13 +270,16 @@ public static class UnityGL {
 		DrawWireQuad(d, a, c, b, color);
 	}
 
-	public static void DrawWireQuad(Vector3 center, float width, float height, float thickness, Color color) {
+	public static void DrawWiredQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color quadColor, Color wireColor) {
 		if(Return()) {return;}
-		Vector3 a = center + ViewRotation*(new Vector3(-0.5f*width, -0.5f*height, 0f));
-		Vector3 b = center + ViewRotation*(new Vector3(0.5f*width, -0.5f*height, 0f));
-		Vector3 c = center + ViewRotation*(new Vector3(0.5f*width, 0.5f*height, 0f));
-        Vector3 d = center + ViewRotation*(new Vector3(-0.5f*width, 0.5f*height, 0f));
-		DrawWireQuad(d, a, c, b, thickness, color);
+		DrawQuad(a, b, c, d, quadColor);
+		DrawWireQuad(a, b, c, d, wireColor);
+	}
+
+	public static void DrawWiredQuad(Vector3 center, float width, float height, Color quadColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawQuad(center, width, height, quadColor);
+		DrawWireQuad(center, width, height, wireColor);
 	}
 
 	public static void DrawCircle(Vector3 center, float radius, Color color) {
@@ -292,8 +287,8 @@ public static class UnityGL {
 		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
         GL.Color(color);
 		for(int i=0; i<CircleResolution-1; i++) {
-			GL.Vertex(center);
 			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i]));
+			GL.Vertex(center);
 			GL.Vertex(center + radius*(ViewRotation*CirclePoints[i+1]));
 		}
 	}
@@ -305,11 +300,10 @@ public static class UnityGL {
 		}
 	}
 
-	public static void DrawWireCircle(Vector3 center, float radius, float thickness, Color color) {
+	public static void DrawWiredCircle(Vector3 center, float radius, Color circleColor, Color wireColor) {
 		if(Return()) {return;}
-		for(int i=1; i<CircleResolution; i++) {
-			DrawLine(center + radius*(ViewRotation*CirclePoints[i-1]), center + radius*(ViewRotation*CirclePoints[i]), thickness, color);
-		}
+		DrawCircle(center, radius, circleColor);
+		DrawWireCircle(center, radius, wireColor);
 	}
 
 	public static void DrawSphere(Vector3 center, float radius, Color color) {
@@ -335,8 +329,8 @@ public static class UnityGL {
 		int index = 0;
 		for(int i=0; i<SphereResolution; i++) {
 			index += 2*SphereResolution;
-			Vector3 a = center + 1.02f*radius*SpherePoints[index+0];
-			Vector3 b = center + 1.02f*radius*SpherePoints[index+2];
+			Vector3 a = center + radius*SpherePoints[index+0];
+			Vector3 b = center + radius*SpherePoints[index+2];
 			GL.Vertex(a);
 			GL.Vertex(b);
 			GL.Vertex(new Vector3(a.z, a.x, a.y));
@@ -347,34 +341,40 @@ public static class UnityGL {
 		}
 	}
 
+	public static void DrawWiredSphere(Vector3 center, float radius, Color sphereColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawSphere(center, radius, sphereColor);
+		DrawWireSphere(center, radius, wireColor);
+	}
+
 	public static void DrawCube(Vector3 center, Quaternion rotation, float size, Color color) {
 		if(Return()) {return;}
-		Vector3 p1 = center + new Vector3(-size/2f, -size/2f, -size/2f);
-		Vector3 p2 = center + new Vector3(size/2f, -size/2f, -size/2f);
-		Vector3 p3 = center + new Vector3(-size/2f, -size/2f, size/2f);
-		Vector3 p4 = center + new Vector3(size/2f, -size/2f, size/2f);
-		Vector3 p5 = center + new Vector3(-size/2f, size/2f, -size/2f);
-		Vector3 p6 = center + new Vector3(size/2f, size/2f, -size/2f);
-		Vector3 p7 = center + new Vector3(-size/2f, size/2f, size/2f);
-		Vector3 p8 = center + new Vector3(size/2f, size/2f, size/2f);
-		DrawQuad(p1, p2, p3, p4, color);
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = center + A; Vector3 p2 = center + B;
+		Vector3 p3 = center + C; Vector3 p4 = center + D;
+		Vector3 p5 = center - D; Vector3 p6 = center - C;
+		Vector3 p7 = center - B; Vector3 p8 = center - A;
+		DrawQuad(p2, p1, p4, p3, color);
 		DrawQuad(p1, p2, p5, p6, color);
 		DrawQuad(p5, p6, p7, p8, color);
 		DrawQuad(p4, p3, p8, p7, color);
 		DrawQuad(p2, p4, p6, p8, color);
-		DrawQuad(p1, p3, p5, p7, color);
+		DrawQuad(p3, p1, p7, p5, color);
 	}
 
 	public static void DrawWireCube(Vector3 center, Quaternion rotation, float size, Color color) {
 		if(Return()) {return;}
-		Vector3 p1 = center + new Vector3(-size/2f, -size/2f, -size/2f);
-		Vector3 p2 = center + new Vector3(size/2f, -size/2f, -size/2f);
-		Vector3 p3 = center + new Vector3(-size/2f, -size/2f, size/2f);
-		Vector3 p4 = center + new Vector3(size/2f, -size/2f, size/2f);
-		Vector3 p5 = center + new Vector3(-size/2f, size/2f, -size/2f);
-		Vector3 p6 = center + new Vector3(size/2f, size/2f, -size/2f);
-		Vector3 p7 = center + new Vector3(-size/2f, size/2f, size/2f);
-		Vector3 p8 = center + new Vector3(size/2f, size/2f, size/2f);
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = center + A; Vector3 p2 = center + B;
+		Vector3 p3 = center + C; Vector3 p4 = center + D;
+		Vector3 p5 = center - D; Vector3 p6 = center - C;
+		Vector3 p7 = center - B; Vector3 p8 = center - A;
 		DrawLine(p1, p2, color); DrawLine(p2, p4, color);
 		DrawLine(p4, p3, color); DrawLine(p3, p1, color);
 		DrawLine(p5, p6, color); DrawLine(p6, p8, color);
@@ -385,8 +385,64 @@ public static class UnityGL {
 
 	public static void DrawWiredCube(Vector3 center, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
 		if(Return()) {return;}
-		DrawCube(center, rotation, size, cubeColor);
-		DrawWireCube(center, rotation, size, wireColor);
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = center + A; Vector3 p2 = center + B;
+		Vector3 p3 = center + C; Vector3 p4 = center + D;
+		Vector3 p5 = center - D; Vector3 p6 = center - C;
+		Vector3 p7 = center - B; Vector3 p8 = center - A;
+		DrawQuad(p2, p1, p4, p3, cubeColor);
+		DrawQuad(p1, p2, p5, p6, cubeColor);
+		DrawQuad(p5, p6, p7, p8, cubeColor);
+		DrawQuad(p4, p3, p8, p7, cubeColor);
+		DrawQuad(p2, p4, p6, p8, cubeColor);
+		DrawQuad(p3, p1, p7, p5, cubeColor);
+		DrawLine(p1, p2, wireColor); DrawLine(p2, p4, wireColor);
+		DrawLine(p4, p3, wireColor); DrawLine(p3, p1, wireColor);
+		DrawLine(p5, p6, wireColor); DrawLine(p6, p8, wireColor);
+		DrawLine(p5, p7, wireColor); DrawLine(p7, p8, wireColor);
+		DrawLine(p1, p5, wireColor); DrawLine(p2, p6, wireColor);
+		DrawLine(p3, p7, wireColor); DrawLine(p4, p8, wireColor);
+	}
+
+	public static void DrawCone(Vector3 center, float width, float height, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
+        GL.Color(color);
+		for(int i=0; i<CircleResolution-1; i++) {
+			Vector3 a = center + width * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y);
+			Vector3 b = center + width * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y);
+			GL.Vertex(center);
+			GL.Vertex(a);
+			GL.Vertex(b);
+
+			GL.Vertex(a);
+			GL.Vertex(center + new Vector3(0f, height, 0f));
+			GL.Vertex(b);
+		}
+	}
+
+	public static void DrawWireCone(Vector3 center, float width, float height, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.LINES, SceneMaterial);
+        GL.Color(color);
+		for(int i=0; i<CircleResolution-1; i++) {
+			Vector3 a = center + width * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y);
+			Vector3 b = center + width * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y);
+			GL.Vertex(a);
+			GL.Vertex(b);
+
+			GL.Vertex(a);
+			GL.Vertex(center + new Vector3(0f, height, 0f));
+		}
+	}
+
+	public static void DrawWiredCone(Vector3 center, float width, float height, Color coneColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawCone(center, width, height, coneColor);
+		DrawWireCone(center, width, height, wireColor);
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {

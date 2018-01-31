@@ -4,13 +4,30 @@ using UnityEngine;
 
 public class UnityGLTest : MonoBehaviour {
 
-
-
 	void OnDrawGizmos() {
+		if(!Application.isPlaying) {
+			Draw();
+		}
+	}
+
+	void OnRenderObject() {
+		Draw();
+	}
+
+	void Draw() {
 		UnityGL.Start();
-		//UnityGL.DrawWiredCube(Vector3.one, Quaternion.identity, 2f, Color.red.Transparent(0.5f), Color.black);
-		UnityGL.DrawSphere(Vector3.one, 0.5f, Color.red.Transparent(0.25f));
-		UnityGL.DrawWireSphere(Vector3.one, 0.5f, Color.black);
+
+		//UnityGL.DrawWiredCube(Vector3.one, Quaternion.identity, 0.5f, Color.cyan.Transparent(0.4f), Color.black);
+		UnityGL.DrawArrow(Vector3.one + new Vector3(1f, 0f, 0f), 2f*Vector3.one, 0.75f, 0.025f, 0.1f, Color.black, Color.magenta);
+
+		UnityGL.DrawWiredSphere(Vector3.one + Vector3.one, 0.5f, Color.cyan.Transparent(0.5f), Color.white);
+		UnityGL.DrawWiredSphere(Vector3.one, 0.6f, Color.red.Transparent(0.25f), Color.black);
+		UnityGL.DrawWiredCube(Vector3.one, Quaternion.identity, 0.8f, Color.cyan.Transparent(.5f), Color.black);
+
+		UnityGL.DrawWiredCone(Vector3.one + new Vector3(-1f, 0f, 0f), 0.5f, 1f, Color.red.Transparent(0.5f), Color.black);
+
+		//UnityGL.DrawWiredCircle(new Vector3(3f, 1f, 0f), 1f, Color.green, Color.black);
+
 		UnityGL.Finish();
 	}
 
