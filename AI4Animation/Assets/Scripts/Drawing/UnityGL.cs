@@ -25,6 +25,9 @@ public static class UnityGL {
 
 	private static Material CurrentMaterial;
 
+	//private static Material UnityGLTransparent;
+	//private static Mesh SphereMesh;
+
 	static void Initialise() {
 		if(Initialised) {
 			return;
@@ -39,7 +42,8 @@ public static class UnityGL {
 		SceneMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
 		SceneMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 		SceneMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
-		SceneMaterial.SetInt("_ZWrite", 0);
+		SceneMaterial.SetInt("_ZWrite", 1);
+		SceneMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
 		GUIMaterial = new Material(colorShader);
 		GUIMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -78,6 +82,10 @@ public static class UnityGL {
 			}
 		}
 
+		//Meshes
+		//SphereMesh = Utility.GetPrimitiveMesh(PrimitiveType.Sphere);
+		//UnityGLTransparent = (Material)Resources.Load("Materials/UnityGLTransparent", typeof(Material));
+
 		Initialised = true;
 	}
 
@@ -86,7 +94,7 @@ public static class UnityGL {
 	}
 
 	private static Vector3 SphereVertex(float u, float v) {
-		return new Vector3(Mathf.Cos(u)*Mathf.Sin(v), Mathf.Cos(v), Mathf.Sin(u)*Mathf.Sin(v));
+		return 0.5f * new Vector3(Mathf.Cos(u)*Mathf.Sin(v), Mathf.Cos(v), Mathf.Sin(u)*Mathf.Sin(v));
 	}
 
 	private static void SetProgram(PROGRAM program, Material material) {
@@ -137,7 +145,7 @@ public static class UnityGL {
 	}
 
 	//------------------------------------------------------------------------------------------
-	//SCENE DRAWING FUNCTIONS
+	//2D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
 		if(Return()) {return;}
@@ -306,145 +314,6 @@ public static class UnityGL {
 		DrawWireCircle(center, radius, wireColor);
 	}
 
-	public static void DrawSphere(Vector3 center, float radius, Color color) {
-		if(Return()) {return;}
-		SetProgram(PROGRAM.QUADS, SceneMaterial);
-        GL.Color(color);
-		int index = 0;
-		for(int i=0; i<SphereResolution; i++) {
-			for(int j=0; j<SphereResolution; j++) {
-				GL.Vertex(center + radius*SpherePoints[index+0]);
-				GL.Vertex(center + radius*SpherePoints[index+2]);
-				GL.Vertex(center + radius*SpherePoints[index+3]);
-				GL.Vertex(center + radius*SpherePoints[index+1]);
-				index += 4;
-			}
-		}
-	}
-
-	public static void DrawWireSphere(Vector3 center, float radius, Color color) {
-		if(Return()) {return;}
-		SetProgram(PROGRAM.LINES, SceneMaterial);
-        GL.Color(color);
-		int index = 0;
-		for(int i=0; i<SphereResolution; i++) {
-			index += 2*SphereResolution;
-			Vector3 a = center + radius*SpherePoints[index+0];
-			Vector3 b = center + radius*SpherePoints[index+2];
-			GL.Vertex(a);
-			GL.Vertex(b);
-			GL.Vertex(new Vector3(a.z, a.x, a.y));
-			GL.Vertex(new Vector3(b.z, b.x, b.y));
-			GL.Vertex(new Vector3(a.y, a.z, a.x));
-			GL.Vertex(new Vector3(b.y, b.z, b.x));
-			index += 2*SphereResolution;
-		}
-	}
-
-	public static void DrawWiredSphere(Vector3 center, float radius, Color sphereColor, Color wireColor) {
-		if(Return()) {return;}
-		DrawSphere(center, radius, sphereColor);
-		DrawWireSphere(center, radius, wireColor);
-	}
-
-	public static void DrawCube(Vector3 center, Quaternion rotation, float size, Color color) {
-		if(Return()) {return;}
-		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
-		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
-		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
-		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
-		Vector3 p1 = center + A; Vector3 p2 = center + B;
-		Vector3 p3 = center + C; Vector3 p4 = center + D;
-		Vector3 p5 = center - D; Vector3 p6 = center - C;
-		Vector3 p7 = center - B; Vector3 p8 = center - A;
-		DrawQuad(p2, p1, p4, p3, color);
-		DrawQuad(p1, p2, p5, p6, color);
-		DrawQuad(p5, p6, p7, p8, color);
-		DrawQuad(p4, p3, p8, p7, color);
-		DrawQuad(p2, p4, p6, p8, color);
-		DrawQuad(p3, p1, p7, p5, color);
-	}
-
-	public static void DrawWireCube(Vector3 center, Quaternion rotation, float size, Color color) {
-		if(Return()) {return;}
-		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
-		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
-		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
-		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
-		Vector3 p1 = center + A; Vector3 p2 = center + B;
-		Vector3 p3 = center + C; Vector3 p4 = center + D;
-		Vector3 p5 = center - D; Vector3 p6 = center - C;
-		Vector3 p7 = center - B; Vector3 p8 = center - A;
-		DrawLine(p1, p2, color); DrawLine(p2, p4, color);
-		DrawLine(p4, p3, color); DrawLine(p3, p1, color);
-		DrawLine(p5, p6, color); DrawLine(p6, p8, color);
-		DrawLine(p5, p7, color); DrawLine(p7, p8, color);
-		DrawLine(p1, p5, color); DrawLine(p2, p6, color);
-		DrawLine(p3, p7, color); DrawLine(p4, p8, color);
-	}
-
-	public static void DrawWiredCube(Vector3 center, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
-		if(Return()) {return;}
-		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
-		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
-		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
-		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
-		Vector3 p1 = center + A; Vector3 p2 = center + B;
-		Vector3 p3 = center + C; Vector3 p4 = center + D;
-		Vector3 p5 = center - D; Vector3 p6 = center - C;
-		Vector3 p7 = center - B; Vector3 p8 = center - A;
-		DrawQuad(p2, p1, p4, p3, cubeColor);
-		DrawQuad(p1, p2, p5, p6, cubeColor);
-		DrawQuad(p5, p6, p7, p8, cubeColor);
-		DrawQuad(p4, p3, p8, p7, cubeColor);
-		DrawQuad(p2, p4, p6, p8, cubeColor);
-		DrawQuad(p3, p1, p7, p5, cubeColor);
-		DrawLine(p1, p2, wireColor); DrawLine(p2, p4, wireColor);
-		DrawLine(p4, p3, wireColor); DrawLine(p3, p1, wireColor);
-		DrawLine(p5, p6, wireColor); DrawLine(p6, p8, wireColor);
-		DrawLine(p5, p7, wireColor); DrawLine(p7, p8, wireColor);
-		DrawLine(p1, p5, wireColor); DrawLine(p2, p6, wireColor);
-		DrawLine(p3, p7, wireColor); DrawLine(p4, p8, wireColor);
-	}
-
-	public static void DrawCone(Vector3 center, float width, float height, Color color) {
-		if(Return()) {return;}
-		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
-        GL.Color(color);
-		for(int i=0; i<CircleResolution-1; i++) {
-			Vector3 a = center + width * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y);
-			Vector3 b = center + width * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y);
-			GL.Vertex(center);
-			GL.Vertex(a);
-			GL.Vertex(b);
-
-			GL.Vertex(a);
-			GL.Vertex(center + new Vector3(0f, height, 0f));
-			GL.Vertex(b);
-		}
-	}
-
-	public static void DrawWireCone(Vector3 center, float width, float height, Color color) {
-		if(Return()) {return;}
-		SetProgram(PROGRAM.LINES, SceneMaterial);
-        GL.Color(color);
-		for(int i=0; i<CircleResolution-1; i++) {
-			Vector3 a = center + width * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y);
-			Vector3 b = center + width * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y);
-			GL.Vertex(a);
-			GL.Vertex(b);
-
-			GL.Vertex(a);
-			GL.Vertex(center + new Vector3(0f, height, 0f));
-		}
-	}
-
-	public static void DrawWiredCone(Vector3 center, float width, float height, Color coneColor, Color wireColor) {
-		if(Return()) {return;}
-		DrawCone(center, width, height, coneColor);
-		DrawWireCone(center, width, height, wireColor);
-	}
-
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
 		if(Return()) {return;}
 		if(tipPivot < 0f || tipPivot > 1f) {
@@ -481,6 +350,152 @@ public static class UnityGL {
 		for(int i=1; i<points.Length; i++) {
 			DrawLine(points[i-1], points[i], width, color);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------
+	//3D SCENE DRAWING FUNCTIONS
+	//------------------------------------------------------------------------------------------
+	public static void DrawCube(Vector3 position, Quaternion rotation, float size, Color color) {
+		if(Return()) {return;}
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = position + A; Vector3 p2 = position + B;
+		Vector3 p3 = position + C; Vector3 p4 = position + D;
+		Vector3 p5 = position - D; Vector3 p6 = position - C;
+		Vector3 p7 = position - B; Vector3 p8 = position - A;
+		DrawQuad(p2, p1, p4, p3, color);
+		DrawQuad(p1, p2, p5, p6, color);
+		DrawQuad(p5, p6, p7, p8, color);
+		DrawQuad(p4, p3, p8, p7, color);
+		DrawQuad(p2, p4, p6, p8, color);
+		DrawQuad(p3, p1, p7, p5, color);
+	}
+
+	public static void DrawWireCube(Vector3 position, Quaternion rotation, float size, Color color) {
+		if(Return()) {return;}
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = position + A; Vector3 p2 = position + B;
+		Vector3 p3 = position + C; Vector3 p4 = position + D;
+		Vector3 p5 = position - D; Vector3 p6 = position - C;
+		Vector3 p7 = position - B; Vector3 p8 = position - A;
+		DrawLine(p1, p2, color); DrawLine(p2, p4, color);
+		DrawLine(p4, p3, color); DrawLine(p3, p1, color);
+		DrawLine(p5, p6, color); DrawLine(p6, p8, color);
+		DrawLine(p5, p7, color); DrawLine(p7, p8, color);
+		DrawLine(p1, p5, color); DrawLine(p2, p6, color);
+		DrawLine(p3, p7, color); DrawLine(p4, p8, color);
+	}
+
+	public static void DrawWiredCube(Vector3 position, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
+		if(Return()) {return;}
+		Vector3 A = rotation*new Vector3(-size/2f, -size/2f, -size/2f);
+		Vector3 B = rotation*new Vector3(size/2f, -size/2f, -size/2f);
+		Vector3 C = rotation*new Vector3(-size/2f, -size/2f, size/2f);
+		Vector3 D = rotation*new Vector3(size/2f, -size/2f, size/2f);
+		Vector3 p1 = position + A; Vector3 p2 = position + B;
+		Vector3 p3 = position + C; Vector3 p4 = position + D;
+		Vector3 p5 = position - D; Vector3 p6 = position - C;
+		Vector3 p7 = position - B; Vector3 p8 = position - A;
+		DrawQuad(p2, p1, p4, p3, cubeColor);
+		DrawQuad(p1, p2, p5, p6, cubeColor);
+		DrawQuad(p5, p6, p7, p8, cubeColor);
+		DrawQuad(p4, p3, p8, p7, cubeColor);
+		DrawQuad(p2, p4, p6, p8, cubeColor);
+		DrawQuad(p3, p1, p7, p5, cubeColor);
+		DrawLine(p1, p2, wireColor); DrawLine(p2, p4, wireColor);
+		DrawLine(p4, p3, wireColor); DrawLine(p3, p1, wireColor);
+		DrawLine(p5, p6, wireColor); DrawLine(p6, p8, wireColor);
+		DrawLine(p5, p7, wireColor); DrawLine(p7, p8, wireColor);
+		DrawLine(p1, p5, wireColor); DrawLine(p2, p6, wireColor);
+		DrawLine(p3, p7, wireColor); DrawLine(p4, p8, wireColor);
+	}
+
+	public static void DrawSphere(Vector3 position, float size, Color color) {
+		if(Return()) {return;}
+		
+		SetProgram(PROGRAM.QUADS, SceneMaterial);
+        GL.Color(color);
+		int index = 0;
+		for(int i=0; i<SphereResolution; i++) {
+			for(int j=0; j<SphereResolution; j++) {
+				GL.Vertex(position + size*SpherePoints[index+0]);
+				GL.Vertex(position + size*SpherePoints[index+2]);
+				GL.Vertex(position + size*SpherePoints[index+3]);
+				GL.Vertex(position + size*SpherePoints[index+1]);
+				index += 4;
+			}
+		}
+		
+		//Color prevColor = UnityGLTransparent.color;
+		//UnityGLTransparent.color = color;
+		//DrawMesh(SphereMesh, position, Quaternion.identity, size*Vector3.one, UnityGLTransparent);
+		//UnityGLTransparent.color = prevColor;
+	}
+
+	public static void DrawWireSphere(Vector3 position, float size, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.LINES, SceneMaterial);
+        GL.Color(color);
+		int index = 0;
+		for(int i=0; i<SphereResolution; i++) {
+			index += 2*SphereResolution;
+			Vector3 a = position + size*SpherePoints[index+0];
+			Vector3 b = position + size*SpherePoints[index+2];
+			GL.Vertex(a);
+			GL.Vertex(b);
+			GL.Vertex(new Vector3(a.z, a.x, a.y));
+			GL.Vertex(new Vector3(b.z, b.x, b.y));
+			GL.Vertex(new Vector3(a.y, a.z, a.x));
+			GL.Vertex(new Vector3(b.y, b.z, b.x));
+			index += 2*SphereResolution;
+		}
+	}
+
+	public static void DrawWiredSphere(Vector3 center, float size, Color sphereColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawSphere(center, size, sphereColor);
+		DrawWireSphere(center, size, wireColor);
+	}
+
+	public static void DrawCone(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.TRIANGLES, SceneMaterial);
+        GL.Color(color);
+		for(int i=0; i<CircleResolution-1; i++) {
+			Vector3 a = position + width * (rotation * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y));
+			Vector3 b = position + width * (rotation * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y));
+			GL.Vertex(position);
+			GL.Vertex(a);
+			GL.Vertex(b);
+			GL.Vertex(a);
+			GL.Vertex(position + rotation * new Vector3(0f, height, 0f));
+			GL.Vertex(b);
+		}
+	}
+
+	public static void DrawWireCone(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.LINES, SceneMaterial);
+        GL.Color(color);
+		for(int i=0; i<CircleResolution-1; i++) {
+			Vector3 a = position + width * (rotation * new Vector3(CirclePoints[i].x, CirclePoints[i].z, CirclePoints[i].y));
+			Vector3 b = position + width * (rotation * new Vector3(CirclePoints[i+1].x, CirclePoints[i+1].z, CirclePoints[i+1].y));
+			GL.Vertex(a);
+			GL.Vertex(b);
+			GL.Vertex(a);
+			GL.Vertex(position + rotation * new Vector3(0f, height, 0f));
+		}
+	}
+
+	public static void DrawWiredCone(Vector3 position, Quaternion rotation, float width, float height, Color coneColor, Color wireColor) {
+		if(Return()) {return;}
+		DrawCone(position, rotation, width, height, coneColor);
+		DrawWireCone(position, rotation, width, height, wireColor);
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material) {

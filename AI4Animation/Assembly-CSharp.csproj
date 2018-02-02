@@ -120,14 +120,15 @@
      <Compile Include="Assets\Scripts\Classes\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\Classes\PFNN.cs" />
      <Compile Include="Assets\Scripts\Classes\Trajectory.cs" />
+     <Compile Include="Assets\Scripts\Drawing\DrawingDemo.cs" />
+     <Compile Include="Assets\Scripts\Drawing\DrawingLibrary.cs" />
+     <Compile Include="Assets\Scripts\Drawing\UnityGL.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GizmosGLTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
-     <Compile Include="Assets\Scripts\UnityGL\UnityGL.cs" />
-     <Compile Include="Assets\Scripts\UnityGL\UnityGLTest.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />

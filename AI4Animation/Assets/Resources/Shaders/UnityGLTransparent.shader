@@ -1,7 +1,7 @@
 ﻿ Shader "UnityGL/Transparent" {
  Properties {
      _Color ("Color" , Color) = (1,1,1,1)
-     _Power ("Power", Float) = 1.0
+     _Power ("Power", Float) = 0.0
      _MainTex ("Base (RGB)", 2D) = "white" {}
  }
  SubShader {
@@ -9,7 +9,7 @@
              Name "Behind"
              Tags { "RenderType"="transparent" "Queue" = "Transparent" }
              Blend SrcAlpha OneMinusSrcAlpha
-             ZTest Always
+             ZTest LEqual
              Cull Back
              ZWrite On
              LOD 200                    

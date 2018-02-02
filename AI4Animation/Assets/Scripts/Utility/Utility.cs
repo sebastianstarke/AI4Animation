@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Reflection;
@@ -25,8 +24,6 @@ public static class Utility {
 	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
 	public static Color Purple = new Color(0.5f, 0f, 0.5f, 1f);
 
-	private static Dictionary<PrimitiveType, Mesh> primitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
-
 	public static void Screenshot(string name, int x, int y, int width, int height) {
     	Texture2D tex = new Texture2D(width, height);
 		tex.ReadPixels(new Rect(x, y, width, height), 0, 0);
@@ -51,23 +48,6 @@ public static class Utility {
 
 	public static double GetElapsedTime(System.DateTime timestamp) {
 		return (System.DateTime.Now-timestamp).Duration().TotalSeconds;
-	}
-
-	public static Mesh GetPrimitiveMesh(PrimitiveType type) {
-		if(!primitiveMeshes.ContainsKey(type)) {
-			CreatePrimitiveMesh(type);
-		}
-		return primitiveMeshes[type];
-	}
-
-	private static Mesh CreatePrimitiveMesh(PrimitiveType type) {
-		GameObject gameObject = GameObject.CreatePrimitive(type);
-		gameObject.GetComponent<MeshRenderer>().enabled = false;
-		Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
-		Destroy(gameObject);
-
-		primitiveMeshes[type] = mesh;
-		return mesh;
 	}
 
 	public static Color Transparent(this Color color, float opacity) {
