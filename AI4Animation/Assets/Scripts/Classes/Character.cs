@@ -377,7 +377,7 @@ public class Character {
 
 	private Mesh GetJointMesh() {
 		if(JointMesh == null) {
-			JointMesh = (Mesh)Resources.Load("Meshes/Sphere", typeof(Mesh));
+			JointMesh = (Mesh)Resources.Load("Meshes/Joint", typeof(Mesh));
 		}
 		return JointMesh;
 	}
