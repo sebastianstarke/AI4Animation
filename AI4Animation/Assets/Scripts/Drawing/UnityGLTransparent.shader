@@ -9,7 +9,7 @@
              Name "Behind"
              Tags { "RenderType"="transparent" "Queue" = "Transparent" }
              Blend SrcAlpha OneMinusSrcAlpha
-             ZTest LEqual
+             ZTest Always
              Cull Back
              ZWrite On
              LOD 200                    
