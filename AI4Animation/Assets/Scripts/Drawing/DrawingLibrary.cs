@@ -214,22 +214,14 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
-		if(Return()) {return;};
-		if(tipPivot < 0f || tipPivot > 1f) {
-			Debug.Log("The tip pivot must be specified between 0 and 1.");
-			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
-		}
+		tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
 		Vector3 pivot = start + tipPivot * (end-start);
 		DrawLine(start, pivot, shaftWidth, color);
 		DrawLine(pivot, end, tipWidth, 0f, color);
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color shaftColor, Color tipColor) {
-		if(Return()) {return;};
-		if(tipPivot < 0f || tipPivot > 1f) {
-			Debug.Log("The tip pivot must be specified between 0 and 1.");
-			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
-		}
+		tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
 		Vector3 pivot = start + tipPivot * (end-start);
 		DrawLine(start, pivot, shaftWidth, shaftColor);
 		DrawLine(pivot, end, tipWidth, 0f, tipColor);
@@ -353,9 +345,7 @@ public static class DrawingLibrary {
 	//GUI DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawGUILine(Vector2 start, Vector2 end, Color color) {
-		if(Camera != Camera.main) {
-			return;
-		}
+		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES);
 		start.x *= Screen.width;
@@ -370,9 +360,7 @@ public static class DrawingLibrary {
 	}
 
     public static void DrawGUILine(Vector2 start, Vector2 end, float width, Color color) {
-		if(Camera != Camera.main) {
-			return;
-		}
+		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS);
 		GL.Color(color);
@@ -392,9 +380,7 @@ public static class DrawingLibrary {
     }
 
 	public static void DrawGUITriangle(Vector2 a, Vector2 b, Vector2 c, Color color) {
-		if(Camera != Camera.main) {
-			return;
-		}
+		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES);
 		GL.Color(color);
@@ -410,9 +396,7 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawGUIRectangle(Vector2 center, float width, float height, Color color) {
-		if(Camera != Camera.main) {
-			return;
-		}
+		if(Camera != Camera.main) {return;}
 		DrawMesh(
 			QuadMesh, 
 			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
@@ -423,9 +407,7 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawGUICircle(Vector2 center, float size, Color color) {
-		if(Camera != Camera.main) {
-			return;
-		}
+		if(Camera != Camera.main) {return;}
 		DrawMesh(
 			CircleMesh, 
 			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
