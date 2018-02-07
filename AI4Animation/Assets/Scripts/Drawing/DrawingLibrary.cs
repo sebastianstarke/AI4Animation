@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class DrawingLibrary {
+public static class Drawing {
 
 	private static int Resolution = 30;
 
 	private static Mesh Initialised;
 
-	private static bool Drawing;
+	private static bool Active;
 
 	private static Material GLMaterial;
 	private static Material MeshMaterial;
@@ -42,34 +42,34 @@ public static class DrawingLibrary {
 	//CONTROL FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void Begin() {
-		if(Drawing) {
-			Debug.Log("Drawing has not yet been ended.");
+		if(Active) {
+			Debug.Log("Drawing is still active. Call 'End' to stop.");
 		} else {
 			Initialise();
 			Camera = GetCamera();
 			ViewPosition = Camera.transform.position;
 			ViewRotation = Camera.transform.rotation;
-			Drawing = true;
+			Active = true;
 		}
 	}
 
 	public static void End() {
-		if(Drawing) {
+		if(Active) {
 			SetProgram(PROGRAM.NONE);
 			Camera = null;
 			ViewPosition = Vector3.zero;
 			ViewRotation = Quaternion.identity;
-			Drawing = false;
+			Active = false;
 		} else {
-			Debug.Log("Drawing has not been begun yet.");
+			Debug.Log("Drawing is not active. Call 'Begin()' first.");
 		}
 	}
 
 	private static bool Return() {
-		if(!Drawing) {
-			Debug.Log("Drawing has not been begun yet.");
+		if(!Active) {
+			Debug.Log("Drawing is not active. Call 'Begin()' first.");
 		}
-		return !Drawing;
+		return !Active;
 	}
 
 	static void Initialise() {
@@ -348,15 +348,13 @@ public static class DrawingLibrary {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
 		start.x *= Screen.width;
 		start.y *= Screen.height;
 		end.x *= Screen.width;
 		end.y *= Screen.height;
-		Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset));
-		Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset));
-		GL.Color(color);
-		GL.Vertex(p1);
-		GL.Vertex(p2);
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset)));
 	}
 
     public static void DrawGUILine(Vector2 start, Vector2 end, float width, Color color) {
@@ -368,53 +366,51 @@ public static class DrawingLibrary {
 		start.y *= Screen.height;
 		end.x *= Screen.width;
 		end.y *= Screen.height;
-		width /= Screen.width;
-		Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset));
-		Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset));
+		width *= Screen.width;
+		Vector3 p1 = new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset);
+		Vector3 p2 = new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset);
 		Vector3 dir = end-start;
-		Vector3 ortho = width/2f * (Quaternion.AngleAxis(90f, Camera.transform.forward) * dir).normalized;
-        GL.Vertex(p1-ortho);
-		GL.Vertex(p1+ortho);
-		GL.Vertex(p2+ortho);
-		GL.Vertex(p2-ortho);
+		Vector3 ortho = width/2f * (Quaternion.AngleAxis(90f, Vector3.forward) * dir).normalized;
+        GL.Vertex(Camera.ScreenToWorldPoint(p1-ortho));
+		GL.Vertex(Camera.ScreenToWorldPoint(p1+ortho));
+		GL.Vertex(Camera.ScreenToWorldPoint(p2+ortho));
+		GL.Vertex(Camera.ScreenToWorldPoint(p2-ortho));
     }
+
+	public static void DrawGUIRectangle(Vector2 center, float width, float height, Color color) {
+		if(Camera != Camera.main) {return;}
+		if(Return()) {return;}
+		SetProgram(PROGRAM.QUADS);
+		GL.Color(color);
+		center.x *= Screen.width;
+		center.y *= Screen.height;
+		width *= Screen.width;
+		height *= Screen.height;
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+width/2f, center.y-height/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x-width/2f, center.y-height/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+-width/2f, center.y+height/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+width/2f, center.y+height/2f, Camera.nearClipPlane + GUIOffset)));
+	}
 
 	public static void DrawGUITriangle(Vector2 a, Vector2 b, Vector2 c, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES);
 		GL.Color(color);
-		float xA = a.x * Screen.width;
-		float yA = a.y * Screen.height;
-		float xB = b.x * Screen.width;
-		float yB = b.y * Screen.height;
-		float xC = c.x * Screen.width;
-		float yC = c.y * Screen.height;
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xA, yA, Camera.nearClipPlane + GUIOffset)));
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xB, yB, Camera.nearClipPlane + GUIOffset)));
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xC, yC, Camera.nearClipPlane + GUIOffset)));
-	}
-
-	public static void DrawGUIRectangle(Vector2 center, float width, float height, Color color) {
-		if(Camera != Camera.main) {return;}
-		DrawMesh(
-			QuadMesh, 
-			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
-			ViewRotation, 
-			new Vector3(width, height, 1f), 
-			color
-		);
+		a.x *= Screen.width;
+		a.y *= Screen.height;
+		b.x *= Screen.width;
+		b.y *= Screen.height;
+		c.x *= Screen.width;
+		c.y *= Screen.height;
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(a.x, a.y, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(b.x, b.y, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(c.x, c.y, Camera.nearClipPlane + GUIOffset)));
 	}
 
 	public static void DrawGUICircle(Vector2 center, float size, Color color) {
 		if(Camera != Camera.main) {return;}
-		DrawMesh(
-			CircleMesh, 
-			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
-			ViewRotation, 
-			new Vector3(size, size, 1f), 
-			color
-		);
+		if(Return()) {return;}
 	}
 
 	//------------------------------------------------------------------------------------------
