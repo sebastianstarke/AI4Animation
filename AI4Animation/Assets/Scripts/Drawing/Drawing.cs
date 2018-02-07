@@ -65,85 +65,6 @@ public static class Drawing {
 		}
 	}
 
-	private static bool Return() {
-		if(!Active) {
-			Debug.Log("Drawing is not active. Call 'Begin()' first.");
-		}
-		return !Active;
-	}
-
-	static void Initialise() {
-		if(Initialised != null) {
-			return;
-		}
-
-		Resources.UnloadUnusedAssets();
-
-		GLMaterial = new Material(Shader.Find("Hidden/Internal-Colored"));
-		GLMaterial.hideFlags = HideFlags.HideAndDontSave;
-		GLMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-		GLMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-		GLMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
-		GLMaterial.SetInt("_ZWrite", 1);
-		GLMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-
-		MeshMaterial = new Material(Shader.Find("UnityGL"));
-		MeshMaterial.hideFlags = HideFlags.HideAndDontSave;
-		MeshMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
-		MeshMaterial.SetInt("_ZWrite", 1);
-		MeshMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-		MeshMaterial.SetFloat("_Power", 0.25f);
-
-		//Meshes
-		CircleMesh = CreateCircleMesh(Resolution);
-		QuadMesh = GetPrimitiveMesh(PrimitiveType.Quad);
-		CubeMesh = GetPrimitiveMesh(PrimitiveType.Cube);
-		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
-		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
-		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
-		BoneMesh = CreateBoneMesh();
-		//
-
-		//Wires
-		CircleWire = CreateCircleWire(Resolution);
-		QuadWire = CreateQuadWire();
-		CubeWire = CreateCubeWire();
-		SphereWire = CreateSphereWire(Resolution);
-		CylinderWire = CreateCylinderWire(Resolution);
-		CapsuleWire = CreateCapsuleWire(Resolution);
-		BoneWire = CreateBoneWire();
-		//
-		
-		Initialised = new Mesh();
-	}
-
-	private static void SetProgram(PROGRAM program) {
-		if(Program != program) {
-			Program = program;
-			GL.End();
-			if(Program != PROGRAM.NONE) {
-				GLMaterial.SetPass(0);
-				switch(Program) {
-					case PROGRAM.LINES:
-					GL.Begin(GL.LINES);
-					break;
-					case PROGRAM.LINE_STRIP:
-					GL.Begin(GL.LINE_STRIP);
-					break;
-					case PROGRAM.TRIANGLES:
-					GL.Begin(GL.TRIANGLES);
-					break;
-					case PROGRAM.TRIANGLE_STRIP:
-					GL.Begin(GL.TRIANGLE_STRIP);
-					break;
-					case PROGRAM.QUADS:
-					GL.Begin(GL.QUADS);
-					break;
-				}
-			}
-		}
-	}
-
 	//------------------------------------------------------------------------------------------
 	//2D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
@@ -237,39 +158,39 @@ public static class Drawing {
 		DrawMesh(QuadMesh, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
-	public static void DrawQuadWire(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+	public static void DrawWireQuad(Vector3 position, Quaternion rotation, float width, float height, Color color) {
 		DrawWireLineStrip(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredQuad(Vector3 position, Quaternion rotation, float width, float height, Color quadColor, Color wireColor) {
 		DrawQuad(position, rotation, width, height, quadColor);
-		DrawQuadWire(position, rotation, width, height, wireColor);
+		DrawWireQuad(position, rotation, width, height, wireColor);
 	}
 
 	public static void DrawCube(Vector3 position, Quaternion rotation, float size, Color color) {
 		DrawMesh(CubeMesh, position, rotation, size*Vector3.one, color);
 	}
 
-	public static void DrawCubeWire(Vector3 position, Quaternion rotation, float size, Color color) {
+	public static void DrawWireCube(Vector3 position, Quaternion rotation, float size, Color color) {
 		DrawWireLines(CubeWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCube(Vector3 position, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
 		DrawCube(position, rotation, size, cubeColor);
-		DrawCubeWire(position, rotation, size, wireColor);
+		DrawWireCube(position, rotation, size, wireColor);
 	}
 
 	public static void DrawCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
 		DrawMesh(CubeMesh, position, rotation, size, color);
 	}
 
-	public static void DrawCuboidWire(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
+	public static void DrawWireCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
 		DrawWireLines(CubeWire, position, rotation, size, color);
 	}
 
 	public static void DrawWiredCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color cuboidColor, Color wireColor) {
 		DrawCuboid(position, rotation, size, cuboidColor);
-		DrawCuboidWire(position, rotation, size, wireColor);
+		DrawWireCuboid(position, rotation, size, wireColor);
 	}
 
 	public static void DrawSphere(Vector3 position, float size, Color color) {
@@ -315,25 +236,13 @@ public static class Drawing {
 		DrawMesh(BoneMesh, position, rotation, new Vector3(width, width, length), color);
 	}
 
-	public static void DrawBone(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawBone(position, rotation, size/4f, size, color);
-	}
-
 	public static void DrawWireBone(Vector3 position, Quaternion rotation, float width, float length, Color color) {
 		DrawWireLines(BoneWire, position, rotation, new Vector3(width, width, length), color);
-	}
-
-	public static void DrawWireBone(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawWireBone(position, rotation, size/4f, size, color);
 	}
 
 	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float width, float length, Color boneColor, Color wireColor) {
 		DrawBone(position, rotation, width, length, boneColor);
 		DrawWireBone(position, rotation, width, length, wireColor);
-	}
-
-	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float size, Color boneColor, Color wireColor) {
-		DrawWiredBone(position, rotation, size/4f, size, boneColor, wireColor);
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
@@ -427,6 +336,85 @@ public static class Drawing {
 	//------------------------------------------------------------------------------------------
 	//UTILITY FUNCTIONS
 	//------------------------------------------------------------------------------------------
+	private static bool Return() {
+		if(!Active) {
+			Debug.Log("Drawing is not active. Call 'Begin()' first.");
+		}
+		return !Active;
+	}
+
+	static void Initialise() {
+		if(Initialised != null) {
+			return;
+		}
+
+		Resources.UnloadUnusedAssets();
+
+		GLMaterial = new Material(Shader.Find("Hidden/Internal-Colored"));
+		GLMaterial.hideFlags = HideFlags.HideAndDontSave;
+		GLMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		GLMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+		GLMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
+		GLMaterial.SetInt("_ZWrite", 1);
+		GLMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+
+		MeshMaterial = new Material(Shader.Find("UnityGL"));
+		MeshMaterial.hideFlags = HideFlags.HideAndDontSave;
+		MeshMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
+		MeshMaterial.SetInt("_ZWrite", 1);
+		MeshMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+		MeshMaterial.SetFloat("_Power", 0.25f);
+
+		//Meshes
+		CircleMesh = CreateCircleMesh(Resolution);
+		QuadMesh = GetPrimitiveMesh(PrimitiveType.Quad);
+		CubeMesh = GetPrimitiveMesh(PrimitiveType.Cube);
+		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
+		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
+		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
+		BoneMesh = CreateBoneMesh();
+		//
+
+		//Wires
+		CircleWire = CreateCircleWire(Resolution);
+		QuadWire = CreateQuadWire();
+		CubeWire = CreateCubeWire();
+		SphereWire = CreateSphereWire(Resolution);
+		CylinderWire = CreateCylinderWire(Resolution);
+		CapsuleWire = CreateCapsuleWire(Resolution);
+		BoneWire = CreateBoneWire();
+		//
+		
+		Initialised = new Mesh();
+	}
+
+	private static void SetProgram(PROGRAM program) {
+		if(Program != program) {
+			Program = program;
+			GL.End();
+			if(Program != PROGRAM.NONE) {
+				GLMaterial.SetPass(0);
+				switch(Program) {
+					case PROGRAM.LINES:
+					GL.Begin(GL.LINES);
+					break;
+					case PROGRAM.LINE_STRIP:
+					GL.Begin(GL.LINE_STRIP);
+					break;
+					case PROGRAM.TRIANGLES:
+					GL.Begin(GL.TRIANGLES);
+					break;
+					case PROGRAM.TRIANGLE_STRIP:
+					GL.Begin(GL.TRIANGLE_STRIP);
+					break;
+					case PROGRAM.QUADS:
+					GL.Begin(GL.QUADS);
+					break;
+				}
+			}
+		}
+	}
+
 	private static void DrawWireLines(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.LINES);

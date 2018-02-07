@@ -30,7 +30,7 @@ public class DrawingDemo : MonoBehaviour {
 
 		//Drawing.DrawArrow(Vector3.one, 2f*Vector3.one, 0.75f, 0.05f, 0.1f, Color.green);
 		
-		//Drawing.DrawWiredBone(Vector3.one, Quaternion.identity, 1f, Color.cyan.Transparent(0.5f), Color.black);
+		Drawing.DrawWiredBone(Vector3.one, Quaternion.identity, 1f, 1f, Color.cyan.Transparent(0.5f), Color.black);
 
 		//Drawing.DrawGUILine(0.5f, 0.5f, 0.75f, 0.75f, 1f, Color.cyan);
 		//Drawing.DrawGUICircle(0.5f, 0.5f, 0.1f, Color.cyan);

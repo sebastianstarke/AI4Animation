@@ -3,15 +3,17 @@
      _Color ("Color" , Color) = (1,1,1,1)
      _Power ("Power", Float) = 0.0
      _MainTex ("Base (RGB)", 2D) = "white" {}
+     _ZTest ("ZTest", Int) = 0
+     _ZWrite ("ZWrite", Int) = 0
  }
  SubShader {
      Pass {
              Name "UnityGL"
              Tags { "RenderType"="transparent" "Queue" = "Transparent" }
              Blend SrcAlpha OneMinusSrcAlpha
-             ZTest Always
+             ZTest [_ZTest]
              Cull Back
-             ZWrite On
+             ZWrite [_ZWrite]
              LOD 200                    
             
              CGPROGRAM
