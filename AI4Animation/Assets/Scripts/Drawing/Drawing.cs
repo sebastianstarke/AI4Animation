@@ -87,8 +87,11 @@ public static class Drawing {
 		GLMaterial.SetInt("_ZWrite", 1);
 		GLMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
-		MeshMaterial = new Material(Shader.Find("UnityGL/Transparent"));
+		MeshMaterial = new Material(Shader.Find("UnityGL"));
 		MeshMaterial.hideFlags = HideFlags.HideAndDontSave;
+		MeshMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
+		MeshMaterial.SetInt("_ZWrite", 1);
+		MeshMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 		MeshMaterial.SetFloat("_Power", 0.0f);
 
 		//Meshes

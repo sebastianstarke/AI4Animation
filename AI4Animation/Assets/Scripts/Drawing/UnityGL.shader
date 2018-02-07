@@ -1,4 +1,4 @@
-﻿ Shader "UnityGL/Transparent" {
+﻿ Shader "UnityGL" {
  Properties {
      _Color ("Color" , Color) = (1,1,1,1)
      _Power ("Power", Float) = 0.0
@@ -6,7 +6,7 @@
  }
  SubShader {
      Pass {
-             Name "Behind"
+             Name "UnityGL"
              Tags { "RenderType"="transparent" "Queue" = "Transparent" }
              Blend SrcAlpha OneMinusSrcAlpha
              ZTest Always

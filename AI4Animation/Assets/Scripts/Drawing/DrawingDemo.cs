@@ -26,11 +26,11 @@ public class DrawingDemo : MonoBehaviour {
 		//Drawing.DrawWiredSphere(Vector3.one, 1f, Color.cyan.Transparent(0.5f), Color.black);
 		//Drawing.DrawWiredCylinder(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
 
-		//Drawing.DrawWiredCapsule(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
+		Drawing.DrawWiredCapsule(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
 
-		//Drawing.DrawArrow(Vector3.one, 2f*Vector3.one, 0.75f, 0.05f, 0.1f, Color.green);
+		Drawing.DrawArrow(Vector3.one, 2f*Vector3.one, 0.75f, 0.05f, 0.1f, Color.green);
 		
-		//Drawing.DrawWiredBone(Vector3.one, Quaternion.identity, 1f, Color.cyan.Transparent(0.5f), Color.black);
+		Drawing.DrawWiredBone(Vector3.one, Quaternion.identity, 1f, Color.cyan.Transparent(0.5f), Color.black);
 
 		//Drawing.DrawGUILine(0.5f, 0.5f, 0.75f, 0.75f, 1f, Color.cyan);
 		//Drawing.DrawGUICircle(0.5f, 0.5f, 0.1f, Color.cyan);
@@ -56,7 +56,8 @@ public class DrawingDemo : MonoBehaviour {
 		
 		//Drawing.DrawGUILine(new Vector2(0.25f, 0.25f), new Vector2(0.75f, 0.75f), 0.05f, Color.cyan);
 
-		//Drawing.DrawGUIRectangle(new Vector2(0.5f, 0.2f), 0.5f, 0.1f, Color.green);
+		Drawing.DrawGUIRectangle(new Vector2(0.5f, 0.2f), 0.99f, 0.1f, Color.green);
+
 
 		Drawing.End();
 	}
