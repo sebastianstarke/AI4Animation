@@ -127,7 +127,6 @@
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
-     <Compile Include="Assets\Scripts\Trash\GizmosGLTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />

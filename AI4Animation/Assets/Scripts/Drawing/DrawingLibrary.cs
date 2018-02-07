@@ -4,18 +4,23 @@ using System.Collections.Generic;
 
 public static class DrawingLibrary {
 
-	private static Material SceneMaterial;
+	private static int Resolution = 30;
 
-	private static bool Drawing = false;
+	private static Mesh Initialised;
+
+	private static bool Drawing;
+
+	private static Material GLMaterial;
+	private static Material MeshMaterial;
 
 	private static float GUIOffset = 0.001f;
 
-	private static Vector3[] CircleWire;
-	private static Vector3[] QuadWire;
-	private static Vector3[] CubeWire;
-	private static Vector3[] SphereWire;
-	private static Vector3[] CylinderWire;
-	private static Vector3[] CapsuleWire;
+	private static Camera Camera;
+	private static Vector3 ViewPosition;
+	private static Quaternion ViewRotation;
+
+	private static PROGRAM Program = PROGRAM.NONE;
+	private enum PROGRAM {NONE, LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, QUADS};
 
 	private static Mesh CircleMesh;
 	private static Mesh QuadMesh;
@@ -23,116 +28,179 @@ public static class DrawingLibrary {
 	private static Mesh SphereMesh;
 	private static Mesh CylinderMesh;
 	private static Mesh CapsuleMesh;
+	private static Mesh BoneMesh;
 
-	private static Dictionary<PrimitiveType, Mesh> PrimitiveMeshes = new Dictionary<PrimitiveType, Mesh>();
+	private static Vector3[] CircleWire;
+	private static Vector3[] QuadWire;
+	private static Vector3[] CubeWire;
+	private static Vector3[] SphereWire;
+	private static Vector3[] CylinderWire;
+	private static Vector3[] CapsuleWire;
+	private static Vector3[] BoneWire;
 
-	private static int Resolution = 30;
+	//------------------------------------------------------------------------------------------
+	//CONTROL FUNCTIONS
+	//------------------------------------------------------------------------------------------
+	public static void Begin() {
+		if(Drawing) {
+			Debug.Log("Drawing has not yet been ended.");
+		} else {
+			Initialise();
+			Camera = GetCamera();
+			ViewPosition = Camera.transform.position;
+			ViewRotation = Camera.transform.rotation;
+			Drawing = true;
+		}
+	}
 
-	private static Mesh Initialised;
+	public static void End() {
+		if(Drawing) {
+			SetProgram(PROGRAM.NONE);
+			Camera = null;
+			ViewPosition = Vector3.zero;
+			ViewRotation = Quaternion.identity;
+			Drawing = false;
+		} else {
+			Debug.Log("Drawing has not been begun yet.");
+		}
+	}
+
+	private static bool Return() {
+		if(!Drawing) {
+			Debug.Log("Drawing has not been begun yet.");
+		}
+		return !Drawing;
+	}
+
+	static void Initialise() {
+		if(Initialised != null) {
+			return;
+		}
+
+		Resources.UnloadUnusedAssets();
+
+		GLMaterial = new Material(Shader.Find("Hidden/Internal-Colored"));
+		GLMaterial.hideFlags = HideFlags.HideAndDontSave;
+		GLMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+		GLMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+		GLMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
+		GLMaterial.SetInt("_ZWrite", 1);
+		GLMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+
+		MeshMaterial = new Material(Shader.Find("UnityGL/Transparent"));
+		MeshMaterial.hideFlags = HideFlags.HideAndDontSave;
+		MeshMaterial.SetFloat("_Power", 0.0f);
+
+		//Meshes
+		CircleMesh = CreateCircleMesh(Resolution);
+		QuadMesh = GetPrimitiveMesh(PrimitiveType.Quad);
+		CubeMesh = GetPrimitiveMesh(PrimitiveType.Cube);
+		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
+		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
+		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
+		BoneMesh = CreateBoneMesh();
+		//
+
+		//Wires
+		CircleWire = CreateCircleWire(Resolution);
+		QuadWire = CreateQuadWire();
+		CubeWire = CreateCubeWire();
+		SphereWire = CreateSphereWire(Resolution);
+		CylinderWire = CreateCylinderWire(Resolution);
+		CapsuleWire = CreateCapsuleWire(Resolution);
+		BoneWire = CreateBoneWire();
+		//
+		
+		Initialised = new Mesh();
+	}
+
+	private static void SetProgram(PROGRAM program) {
+		if(Program != program) {
+			Program = program;
+			GL.End();
+			if(Program != PROGRAM.NONE) {
+				GLMaterial.SetPass(0);
+				switch(Program) {
+					case PROGRAM.LINES:
+					GL.Begin(GL.LINES);
+					break;
+					case PROGRAM.LINE_STRIP:
+					GL.Begin(GL.LINE_STRIP);
+					break;
+					case PROGRAM.TRIANGLES:
+					GL.Begin(GL.TRIANGLES);
+					break;
+					case PROGRAM.TRIANGLE_STRIP:
+					GL.Begin(GL.TRIANGLE_STRIP);
+					break;
+					case PROGRAM.QUADS:
+					GL.Begin(GL.QUADS);
+					break;
+				}
+			}
+		}
+	}
 
 	//------------------------------------------------------------------------------------------
 	//2D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawLine(Vector3 start, Vector3 end, Color color) {
-		Initialise();
-		GL.Begin(GL.LINES);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
+		if(Return()) {return;};
+		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
 		GL.Vertex(start);
 		GL.Vertex(end);
-		GL.End();
 	}
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
-		Initialise();
-		Vector3 viewPosition = GetCamera().transform.position;
-		GL.Begin(GL.QUADS);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
+		if(Return()) {return;};
+		SetProgram(PROGRAM.QUADS);
+		GL.Color(color);
 		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - viewPosition)) * dir);
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - viewPosition)) * dir);
+		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
+		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 		GL.Vertex(end+orthoEnd);
 		GL.Vertex(end-orthoEnd);
 		GL.Vertex(start-orthoStart);
 		GL.Vertex(start+orthoStart);
-		GL.End();
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
-		Initialise();
-		Vector3 viewPosition = GetCamera().transform.position;
-		GL.Begin(GL.QUADS);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
+		if(Return()) {return;};
+		SetProgram(PROGRAM.QUADS);
+		GL.Color(color);
 		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - viewPosition)) * dir);
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - viewPosition)) * dir);
+		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
+		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 		GL.Vertex(end+orthoEnd);
 		GL.Vertex(end-orthoEnd);
 		GL.Vertex(start-orthoStart);
 		GL.Vertex(start+orthoStart);
-		GL.End();
-    }
-
-	public static void DrawLines(Vector3[] points, Color color) {
-		Initialise();
-		GL.Begin(GL.LINE_STRIP);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
-		for(int i=0; i<points.Length; i++) {
-			GL.Vertex(points[i]);
-		}
-		GL.End();
-	}
-
-    public static void DrawLines(Vector3[] points, float width, Color color) {
-		Initialise();
-		Vector3 viewPosition = GetCamera().transform.position;
-		GL.Begin(GL.QUADS);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
-		for(int i=1; i<points.Length; i++) {
-			Vector3 start = points[i-1];
-			Vector3 end = points[i];
-			Vector3 dir = (end-start).normalized;
-			Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - viewPosition)) * dir);
-			Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - viewPosition)) * dir);
-			GL.Vertex(end+orthoEnd);
-			GL.Vertex(end-orthoEnd);
-			GL.Vertex(start-orthoStart);
-			GL.Vertex(start+orthoStart);
-		}
-		GL.End();
     }
 
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
-		Initialise();
-		GL.Begin(GL.TRIANGLES);
-		SceneMaterial.color = color;
-		SceneMaterial.SetPass(0);
+		if(Return()) {return;};
+		SetProgram(PROGRAM.TRIANGLES);
+		GL.Color(color);
         GL.Vertex(a);
 		GL.Vertex(b);
 		GL.Vertex(c);
-		GL.End();
 	}
 
 	public static void DrawCircle(Vector3 position, float size, Color color) {
-		Initialise();
-		DrawMesh(CircleMesh, position, GetCamera().transform.rotation, size*Vector3.one, SceneMaterial, color);
+		DrawMesh(CircleMesh, position, ViewRotation, size*Vector3.one, color);
 	}
 
 	public static void DrawCircle(Vector3 position, Quaternion rotation, float size, Color color) {
-		Initialise();
-		DrawMesh(CircleMesh, position, rotation, size*Vector3.one, SceneMaterial, color);
+		DrawMesh(CircleMesh, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWireCircle(Vector3 position, float size, Color color) {
-		DrawWireStrip(CircleWire, position, GetCamera().transform.rotation, size*Vector3.one, SceneMaterial, color);
+		DrawWireLineStrip(CircleWire, position, ViewRotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWireCircle(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawWireStrip(CircleWire, position, rotation, size*Vector3.one, SceneMaterial, color);
+		DrawWireLineStrip(CircleWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCircle(Vector3 position, float size, Color circleColor, Color wireColor) {
@@ -146,7 +214,7 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
-		Initialise();
+		if(Return()) {return;};
 		if(tipPivot < 0f || tipPivot > 1f) {
 			Debug.Log("The tip pivot must be specified between 0 and 1.");
 			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
@@ -157,7 +225,7 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color shaftColor, Color tipColor) {
-		Initialise();
+		if(Return()) {return;};
 		if(tipPivot < 0f || tipPivot > 1f) {
 			Debug.Log("The tip pivot must be specified between 0 and 1.");
 			tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
@@ -171,13 +239,11 @@ public static class DrawingLibrary {
 	//3D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
 	public static void DrawQuad(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawMesh(QuadMesh, position, rotation, new Vector3(width, height, 1f), SceneMaterial, color);
+		DrawMesh(QuadMesh, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawQuadWire(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawWireStrip(QuadWire, position, rotation, new Vector3(width, height, 1f), SceneMaterial, color);
+		DrawWireLineStrip(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredQuad(Vector3 position, Quaternion rotation, float width, float height, Color quadColor, Color wireColor) {
@@ -186,13 +252,11 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawCube(Vector3 position, Quaternion rotation, float size, Color color) {
-		Initialise();
-		DrawMesh(CubeMesh, position, rotation, size*Vector3.one, SceneMaterial, color);
+		DrawMesh(CubeMesh, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawCubeWire(Vector3 position, Quaternion rotation, float size, Color color) {
-		Initialise();
-		DrawWireLines(CubeWire, position, rotation, size*Vector3.one, SceneMaterial, color);
+		DrawWireLines(CubeWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCube(Vector3 position, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
@@ -201,13 +265,11 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
-		Initialise();
-		DrawMesh(CubeMesh, position, rotation, size, SceneMaterial, color);
+		DrawMesh(CubeMesh, position, rotation, size, color);
 	}
 
 	public static void DrawCuboidWire(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
-		Initialise();
-		DrawWireLines(CubeWire, position, rotation, size, SceneMaterial, color);
+		DrawWireLines(CubeWire, position, rotation, size, color);
 	}
 
 	public static void DrawWiredCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color cuboidColor, Color wireColor) {
@@ -216,13 +278,11 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawSphere(Vector3 position, float size, Color color) {
-		Initialise();
-		DrawMesh(SphereMesh, position, Quaternion.identity, size*Vector3.one, SceneMaterial, color);
+		DrawMesh(SphereMesh, position, Quaternion.identity, size*Vector3.one, color);
 	}
 
 	public static void DrawWireSphere(Vector3 position, float size, Color color) {
-		Initialise();
-		DrawWireLines(SphereWire, position, Quaternion.identity, size*Vector3.one, SceneMaterial, color);
+		DrawWireLines(SphereWire, position, Quaternion.identity, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredSphere(Vector3 position, float size, Color sphereColor, Color wireColor) {
@@ -231,13 +291,11 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawCylinder(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawMesh(CylinderMesh, position, rotation, new Vector3(width, height/2f, width), SceneMaterial, color);
+		DrawMesh(CylinderMesh, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWireCylinder(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawWireLines(CylinderWire, position, rotation, new Vector3(width, height/2f, width), SceneMaterial, color);
+		DrawWireLines(CylinderWire, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWiredCylinder(Vector3 position, Quaternion rotation, float width, float height, Color cylinderColor, Color wireColor) {
@@ -246,13 +304,11 @@ public static class DrawingLibrary {
 	}
 
 	public static void DrawCapsule(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawMesh(CapsuleMesh, position, rotation, new Vector3(width, height/2f, width), SceneMaterial, color);
+		DrawMesh(CapsuleMesh, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWireCapsule(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		Initialise();
-		DrawWireLines(CapsuleWire, position, rotation, new Vector3(width, height/2f, width), SceneMaterial, color);
+		DrawWireLines(CapsuleWire, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWiredCapsule(Vector3 position, Quaternion rotation, float width, float height, Color capsuleColor, Color wireColor) {
@@ -260,52 +316,145 @@ public static class DrawingLibrary {
 		DrawWireCapsule(position, rotation, width, height, wireColor);
 	}
 
-	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material, Color color) {
-		Initialise();
-		material.color = color;
-		material.SetPass(0);
+	public static void DrawBone(Vector3 position, Quaternion rotation, float width, float length, Color color) {
+		DrawMesh(BoneMesh, position, rotation, new Vector3(width, width, length), color);
+	}
+
+	public static void DrawBone(Vector3 position, Quaternion rotation, float size, Color color) {
+		DrawBone(position, rotation, size/4f, size, color);
+	}
+
+	public static void DrawWireBone(Vector3 position, Quaternion rotation, float width, float length, Color color) {
+		DrawWireLines(BoneWire, position, rotation, new Vector3(width, width, length), color);
+	}
+
+	public static void DrawWireBone(Vector3 position, Quaternion rotation, float size, Color color) {
+		DrawWireBone(position, rotation, size/4f, size, color);
+	}
+
+	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float width, float length, Color boneColor, Color wireColor) {
+		DrawBone(position, rotation, width, length, boneColor);
+		DrawWireBone(position, rotation, width, length, wireColor);
+	}
+
+	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float size, Color boneColor, Color wireColor) {
+		DrawWiredBone(position, rotation, size/4f, size, boneColor, wireColor);
+	}
+
+	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.NONE);
+		MeshMaterial.color = color;
+		MeshMaterial.SetPass(0);
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
 	//------------------------------------------------------------------------------------------
 	//GUI DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
-	
+	public static void DrawGUILine(Vector2 start, Vector2 end, Color color) {
+		if(Camera != Camera.main) {
+			return;
+		}
+		if(Return()) {return;}
+		SetProgram(PROGRAM.LINES);
+		start.x *= Screen.width;
+		start.y *= Screen.height;
+		end.x *= Screen.width;
+		end.y *= Screen.height;
+		Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset));
+		Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset));
+		GL.Color(color);
+		GL.Vertex(p1);
+		GL.Vertex(p2);
+	}
+
+    public static void DrawGUILine(Vector2 start, Vector2 end, float width, Color color) {
+		if(Camera != Camera.main) {
+			return;
+		}
+		if(Return()) {return;}
+		SetProgram(PROGRAM.QUADS);
+		GL.Color(color);
+		start.x *= Screen.width;
+		start.y *= Screen.height;
+		end.x *= Screen.width;
+		end.y *= Screen.height;
+		width /= Screen.width;
+		Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset));
+		Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset));
+		Vector3 dir = end-start;
+		Vector3 ortho = width/2f * (Quaternion.AngleAxis(90f, Camera.transform.forward) * dir).normalized;
+        GL.Vertex(p1-ortho);
+		GL.Vertex(p1+ortho);
+		GL.Vertex(p2+ortho);
+		GL.Vertex(p2-ortho);
+    }
+
+	public static void DrawGUITriangle(Vector2 a, Vector2 b, Vector2 c, Color color) {
+		if(Camera != Camera.main) {
+			return;
+		}
+		if(Return()) {return;}
+		SetProgram(PROGRAM.TRIANGLES);
+		GL.Color(color);
+		float xA = a.x * Screen.width;
+		float yA = a.y * Screen.height;
+		float xB = b.x * Screen.width;
+		float yB = b.y * Screen.height;
+		float xC = c.x * Screen.width;
+		float yC = c.y * Screen.height;
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xA, yA, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xB, yB, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(xC, yC, Camera.nearClipPlane + GUIOffset)));
+	}
+
+	public static void DrawGUIRectangle(Vector2 center, float width, float height, Color color) {
+		if(Camera != Camera.main) {
+			return;
+		}
+		DrawMesh(
+			QuadMesh, 
+			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
+			ViewRotation, 
+			new Vector3(width, height, 1f), 
+			color
+		);
+	}
+
+	public static void DrawGUICircle(Vector2 center, float size, Color color) {
+		if(Camera != Camera.main) {
+			return;
+		}
+		DrawMesh(
+			CircleMesh, 
+			ViewPosition + ViewRotation * new Vector3(0f, 0f, Camera.nearClipPlane + GUIOffset), 
+			ViewRotation, 
+			new Vector3(size, size, 1f), 
+			color
+		);
+	}
+
 	//------------------------------------------------------------------------------------------
 	//UTILITY FUNCTIONS
 	//------------------------------------------------------------------------------------------
-	static void Initialise() {
-		if(Initialised != null) {
-			return;
+	private static void DrawWireLines(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
+		if(Return()) {return;};
+		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
+		for(int i=0; i<points.Length; i+=2) {
+			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
+			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i+1]));
 		}
+	}
 
-		Resources.UnloadUnusedAssets();
-
-		Shader xrayShader = Shader.Find("UnityGL/Transparent");
-
-		SceneMaterial = new Material(xrayShader);
-		SceneMaterial.hideFlags = HideFlags.HideAndDontSave;
-		SceneMaterial.SetFloat("_Power", 0f);
-
-		//Meshes
-		CircleMesh = CreateCircle(Resolution);
-		QuadMesh = GetPrimitiveMesh(PrimitiveType.Quad);
-		CubeMesh = GetPrimitiveMesh(PrimitiveType.Cube);
-		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
-		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
-		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
-		//
-
-		//Wires
-		CircleWire = CreateCircleWire(Resolution);
-		QuadWire = CreateQuadWire();
-		CubeWire = CreateCubeWire();
-		SphereWire = CreateSphereWire(Resolution);
-		CylinderWire = CreateCylinderWire(Resolution);
-		CapsuleWire = CreateCapsuleWire(Resolution);
-		//
-		
-		Initialised = new Mesh();
+	private static void DrawWireLineStrip(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
+		if(Return()) {return;};
+		SetProgram(PROGRAM.LINE_STRIP);
+		GL.Color(color);
+		for(int i=0; i<points.Length; i++) {
+			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
+		}
 	}
 
 	private static Camera GetCamera() {
@@ -317,43 +466,78 @@ public static class DrawingLibrary {
 	}
 
 	private static Mesh GetPrimitiveMesh(PrimitiveType type) {
-		if(!PrimitiveMeshes.ContainsKey(type)) {
-			GameObject gameObject = GameObject.CreatePrimitive(type);
-			gameObject.GetComponent<MeshRenderer>().enabled = false;
-			Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
-			if(Application.isPlaying) {
-				GameObject.Destroy(gameObject);
-			} else {
-				GameObject.DestroyImmediate(gameObject);
-			}
-			PrimitiveMeshes[type] = mesh;
-			return mesh;
+		GameObject gameObject = GameObject.CreatePrimitive(type);
+		gameObject.hideFlags = HideFlags.HideInHierarchy;
+		gameObject.GetComponent<MeshRenderer>().enabled = false;
+		Mesh mesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+		if(Application.isPlaying) {
+			GameObject.Destroy(gameObject);
+		} else {
+			GameObject.DestroyImmediate(gameObject);
 		}
-		return PrimitiveMeshes[type];
+		return mesh;
 	}
 	
-	private static Mesh CreateCircle(int resolution) {
+	private static Mesh CreateCircleMesh(int resolution) {
 		float step = 360.0f / (float)resolution;
-		List<Vector3> vertexList = new List<Vector3>();
-		List<int> triangleList = new List<int>();
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
 		Quaternion quaternion = Quaternion.Euler(0.0f, 0.0f, step);
-		// Make first triangle.
-		vertexList.Add(new Vector3(0.0f, 0.0f, 0.0f));  // 1. Circle center.
-		vertexList.Add(new Vector3(0.0f, 0.5f, 0.0f));  // 2. First vertex on circle outline (radius = 0.5f)
-		vertexList.Add(quaternion * vertexList[1]);     // 3. First vertex on circle outline rotated by angle)
-		// Add triangle indices.
-		triangleList.Add(1);
-		triangleList.Add(0);
-		triangleList.Add(2);
+		vertices.Add(new Vector3(0.0f, 0.0f, 0.0f));
+		vertices.Add(new Vector3(0.0f, 0.5f, 0.0f));
+		vertices.Add(quaternion * vertices[1]);
+		triangles.Add(1);
+		triangles.Add(0);
+		triangles.Add(2);
 		for(int i=0; i<resolution-1; i++) {
-			triangleList.Add(vertexList.Count - 1);
-			triangleList.Add(0);                      // Index of circle center.
-			triangleList.Add(vertexList.Count);
-			vertexList.Add(quaternion * vertexList[vertexList.Count - 1]);
+			triangles.Add(vertices.Count - 1);
+			triangles.Add(0);
+			triangles.Add(vertices.Count);
+			vertices.Add(quaternion * vertices[vertices.Count - 1]);
 		}
 		Mesh mesh = new Mesh();
-		mesh.vertices = vertexList.ToArray();
-		mesh.triangles = triangleList.ToArray();        
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();        
+		return mesh;
+	}
+
+	private static Mesh CreateBoneMesh() {
+		float size = 0.5f;
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
+		vertices.Add(new Vector3(-size, -size, 0.200f));
+		vertices.Add(new Vector3(-size, size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		vertices.Add(new Vector3(size, size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		vertices.Add(new Vector3(size, -size, 0.200f));
+		vertices.Add(new Vector3(-size, size, 0.200f));
+		vertices.Add(new Vector3(-size, -size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		vertices.Add(new Vector3(size, -size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		vertices.Add(new Vector3(-size, -size, 0.200f));
+		vertices.Add(new Vector3(size, size, 0.200f));
+		vertices.Add(new Vector3(-size, size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		vertices.Add(new Vector3(size, size, 0.200f));
+		vertices.Add(new Vector3(size, -size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		vertices.Add(new Vector3(size, size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		vertices.Add(new Vector3(-size, size, 0.200f));
+		vertices.Add(new Vector3(size, -size, 0.200f));
+		vertices.Add(new Vector3(-size, -size, 0.200f));
+		vertices.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		for(int i=0; i<24; i++) {
+			triangles.Add(i);
+		}
+		Mesh mesh = new Mesh();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+		mesh.RecalculateBounds();
+		mesh.RecalculateNormals();
+		mesh.RecalculateTangents();
 		return mesh;
 	}
 
@@ -476,27 +660,36 @@ public static class DrawingLibrary {
 		return points.ToArray();
 	}
 
-	private static void DrawWireStrip(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Material material, Color color) {
-		Initialise();
-		GL.Begin(GL.LINE_STRIP);
-		material.color = color;
-		material.SetPass(0);
-		for(int i=0; i<points.Length; i++) {
-			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
-		}
-		GL.End();
-	}
+	private static Vector3[] CreateBoneWire() {
+		float size = 0.5f;
+		List<Vector3> points = new List<Vector3>();
+		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		points.Add(new Vector3(-size, -size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		points.Add(new Vector3(size, -size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		points.Add(new Vector3(-size, size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
+		points.Add(new Vector3(size, size, 0.200f));
 
-	private static void DrawWireLines(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Material material, Color color) {
-		Initialise();
-		GL.Begin(GL.LINES);
-		material.color = color;
-		material.SetPass(0);
-		for(int i=0; i<points.Length; i+=2) {
-			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
-			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i+1]));
-		}
-		GL.End();
+		points.Add(new Vector3(-size, -size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		points.Add(new Vector3(size, -size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		points.Add(new Vector3(-size, size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
+		points.Add(new Vector3(size, size, 0.200f));
+		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
+
+		points.Add(new Vector3(-size, -size, 0.200f));
+		points.Add(new Vector3(size, -size, 0.200f));
+		points.Add(new Vector3(size, -size, 0.200f));
+		points.Add(new Vector3(size, size, 0.200f));
+		points.Add(new Vector3(size, size, 0.200f));
+		points.Add(new Vector3(-size, size, 0.200f));
+		points.Add(new Vector3(-size, size, 0.200f));
+		points.Add(new Vector3(-size, -size, 0.200f));
+		return points.ToArray();
 	}
 
 }

@@ -15,23 +15,8 @@ public class DrawingDemo : MonoBehaviour {
 	}
 
 	void Draw() {
-		//UnityGL.Start();
+		DrawingLibrary.Begin();
 
-		float opacity = 1f;
-
-		//UnityGL.DrawWiredCube(Vector3.one, Quaternion.identity, 0.5f, Color.cyan.Transparent(0.4f), Color.black);
-		//UnityGL.DrawArrow(Vector3.one + new Vector3(1f, 0f, 0f), 2f*Vector3.one, 0.75f, 0.025f, 0.1f, Color.black, Color.magenta);
-
-		//UnityGL.DrawWiredSphere(Vector3.one + Vector3.one, 1f, Color.cyan.Transparent(opacity), Color.white);
-				
-		//UnityGL.DrawWiredSphere(Vector3.one, 0.6f, Color.red.Transparent(opacity), Color.black);
-		//UnityGL.DrawWiredCube(Vector3.one, Quaternion.identity, 0.8f, Color.cyan.Transparent(opacity), Color.black);
-
-		//UnityGL.DrawWiredCone(Vector3.one + new Vector3(-1f, 0f, 0f), Quaternion.Euler(Angle, 0f, 0f), 0.5f, 1f, Color.red.Transparent(opacity), Color.black);
-
-		//UnityGL.DrawWiredCircle(new Vector3(3f, 1f, 0f), 0.5f, Color.green.Transparent(0.5f), Color.black);
-
-		//UnityGL.Finish();
 		//DrawingLibrary.DrawWiredCircle(Vector3.one, Quaternion.Euler(0f, 45f, 0f), 1f, Color.cyan, Color.black);
 
 		//DrawingLibrary.DrawWiredQuad(Vector3.one, Quaternion.Euler(0f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.75f), Color.black);
@@ -41,22 +26,31 @@ public class DrawingDemo : MonoBehaviour {
 		//DrawingLibrary.DrawWiredSphere(Vector3.one, 1f, Color.cyan.Transparent(0.5f), Color.black);
 		//DrawingLibrary.DrawWiredCylinder(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
 
-		DrawingLibrary.DrawWiredCapsule(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
+		//DrawingLibrary.DrawWiredCapsule(Vector3.one, Quaternion.Euler(30f, 45f, 0f), 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
 
 		//DrawingLibrary.DrawArrow(Vector3.one, 2f*Vector3.one, 0.75f, 0.05f, 0.1f, Color.green);
+		
+		//DrawingLibrary.DrawWiredBone(Vector3.one, Quaternion.identity, 1f, Color.cyan.Transparent(0.5f), Color.black);
 
-		/*
-		UnityGL.Start();
-		for(int i=0; i<10000; i++) {
-			UnityGL.DrawLine(Vector3.zero, Vector3.one, 0.25f, 0f, Color.blue.Transparent(0.5f));
-		}
-		UnityGL.Finish();
-		*/
+		//DrawingLibrary.DrawGUILine(0.5f, 0.5f, 0.75f, 0.75f, 1f, Color.cyan);
+		//DrawingLibrary.DrawGUICircle(0.5f, 0.5f, 0.1f, Color.cyan);
+		//DrawingLibrary.DrawGUITriangle(0.25f, 0.25f, 0.5f, 0.25f, 0.375f, 0.5f, Color.red);
+		//DrawingLibrary.DrawGUIRectangle(0.5f, 0.5f, 0.1f, 0.1f, Color.red);
 
-		//DrawingLibrary.DrawSphere(Vector3.one + Vector3.one + Vector3.one, 1f, Color.cyan.Transparent(opacity));
-		//DrawingLibrary.DrawCube(Vector3.one, Quaternion.identity, 1f, Color.red.Transparent(opacity));
-		//DrawingLibrary.DrawCapsule(Vector3.one + Vector3.one, Quaternion.Euler(90f, 0f, 0f), 1f, 2f, Color.green.Transparent(opacity));
-		//DrawingLibrary.DrawQuad(new Vector3(0f, 1f, 0f), Quaternion.Euler(45f, 180f, 0f), 2f, 5f, Color.yellow.Transparent(opacity));
+		//UnityGL.Start();
+		//for(int i=0; i<100000; i++) {
+		//	UnityGL.DrawLine(Vector3.zero, Vector3.one, Color.blue);
+		//}
+		//UnityGL.Finish();
+
+		//for(int i=0; i<10000; i++) {
+		//	DrawingLibrary.DrawLine(Vector3.zero, Vector3.one, Color.blue);
+		//}
+
+		//DrawingLibrary.DrawLine(Vector3.one, 2f*Vector3.one, Color.cyan);
+		//DrawingLibrary.DrawLine(Vector3.one, Vector3.zero, Color.red);
+
+		DrawingLibrary.End();
 	}
 
 }
