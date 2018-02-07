@@ -891,7 +891,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				Character.Hierarchy[i].SetTransformation(matrices[i]);
 			}
-			Character.Draw(Character.DRAWTYPE.Transparent, Utility.Blue, Utility.Yellow, 1f);
+			Character.Draw(Utility.Blue, Utility.Yellow, 1f);
 
 			int steps = 5;
 			float timespan = 0.1f;
@@ -905,7 +905,6 @@ public class BVHAnimation : ScriptableObject {
 						Character.Hierarchy[j].SetTransformation(t[j]);
 					}
 					Character.Draw(
-						Character.DRAWTYPE.Transparent,
 						Color.Lerp(Utility.Blue, Utility.Red, (float)i / (float)steps),
 						Utility.Yellow,
 						1f - (float)i / (float)(steps+1)
@@ -922,11 +921,9 @@ public class BVHAnimation : ScriptableObject {
 						Character.Hierarchy[j].SetTransformation(t[j]);
 					}
 					Character.Draw(
-						Character.DRAWTYPE.Transparent,
 						Color.Lerp(Utility.Blue, Utility.Green, (float)i / (float)steps),
 						Utility.Yellow,
-						1f - (float)i / (float)(steps+1))
-						;
+						1f - (float)i / (float)(steps+1));
 				}
 			}
 

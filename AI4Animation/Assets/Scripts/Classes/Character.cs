@@ -8,8 +8,6 @@ using UnityEditor;
 [Serializable]
 public class Character {
 
-	public enum DRAWTYPE {Diffuse, Transparent}
-
 	public bool Inspect = false;
 
 	public Segment[] Hierarchy = new Segment[0];
@@ -17,7 +15,6 @@ public class Character {
 	public float BoneSize = 0.025f;
 	public Color BoneColor = Utility.Black;
 	public Color JointColor = Utility.Mustard;
-	public DRAWTYPE DrawType = DRAWTYPE.Transparent;
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
 
@@ -288,10 +285,10 @@ public class Character {
 	}
 
 	public void Draw() {
-		Draw(DrawType, BoneColor, JointColor, 1f);
+		Draw(BoneColor, JointColor, 1f);
 	}
 
-	public void Draw(DRAWTYPE drawType, Color boneColor, Color jointColor, float alpha) {
+	public void Draw(Color boneColor, Color jointColor, float alpha) {
 		Drawing.Begin();
 
 		if(DrawSkeleton) {
@@ -373,7 +370,6 @@ public class Character {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.LabelField("Skeleton Bones: " + Hierarchy.Length);
-					DrawType = (DRAWTYPE)EditorGUILayout.EnumPopup("Draw Type", DrawType);
 					BoneSize = EditorGUILayout.FloatField("Bone Size", BoneSize);
 					JointColor = EditorGUILayout.ColorField("Joint Color", JointColor);
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
