@@ -87,12 +87,10 @@ public class BioVisualisation : MonoBehaviour {
 			_x = x + (float)(_index)/(float)(Frames-1) * width;
 			_y = y - height + value*height;
 			if(_index > 0) {
-				UnityGL.DrawGUILine(
-					_xPrev,
-					_yPrev, 
-					_x,
-					_y,
-					2.5f,
+				Drawing.DrawGUILine(
+					new Vector2(_xPrev,	_yPrev),
+					new Vector2(_x, _y),
+					0.002f,
 					color
 				);
 			}
@@ -230,18 +228,23 @@ public class BioVisualisation : MonoBehaviour {
 		}
 
 		if(DrawCW) {
-			UnityGL.Start();
-			float x = 0.025f;
-			float y = 0.15f;
+			Drawing.Begin();
+			Vector2 center = new Vector2(0.5f, 0.1f);
 			float width = 0.95f;
 			float height = 0.1f;
 			float border = 0.0025f;
-			UnityGL.DrawGUIQuad(x-border/Screen.width*Screen.height, y-height-border, width+2f*border/Screen.width*Screen.height, height+2f*border, Utility.Black);
-			UnityGL.DrawGUIQuad(x, y-height, width, height, Utility.White);
+			Drawing.DrawGUIRectangle(
+				center,
+				width+2f*border/Screen.width*Screen.height, height+2f*border, 
+				Utility.Black);
+			Drawing.DrawGUIRectangle(
+				center,
+				width, height, 
+				Utility.White);
 
 			Color[] colors = Utility.GetRainbowColors(Animation.APFNN.ControlWeights);
 			for(int i=0; i<colors.Length; i++) {
-				DrawControlPoint(x, y, width, height, CW[i], colors[i]);
+				DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, CW[i], colors[i]);
 			}
 			/*
 			DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
@@ -249,7 +252,7 @@ public class BioVisualisation : MonoBehaviour {
 			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
 			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
 			*/
-			UnityGL.Finish();
+			Drawing.End();
 		}
 
 		for(int i=0; i<Trails.Length; i++) {
@@ -274,17 +277,17 @@ public class BioVisualisation : MonoBehaviour {
 		}
 
 		public void Draw(float width, Color color) {
-			UnityGL.Start();
+			Drawing.Begin();
 			int index = 0;
 			Vector3 previous = Vector3.zero;
 			foreach(Vector3 position in Positions) {
 				if(index > 1) {
-					UnityGL.DrawLine(previous, position, width, color);
+					Drawing.DrawLine(previous, position, width, color);
 				}
 				previous = position;
 				index += 1;
 			}
-			UnityGL.Finish();
+			Drawing.End();
 		}
 	}
 
