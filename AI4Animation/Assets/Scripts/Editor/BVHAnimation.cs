@@ -980,13 +980,13 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		if(ShowPreview) {
-			UnityGL.Start();
+			Drawing.Begin();
 			for(int i=1; i<GetTotalFrames(); i++) {
 				Matrix4x4[] prevTransformations = ExtractTransformations(Frames[i-1], ShowMirrored);
 				Matrix4x4[] currTransformations = ExtractTransformations(Frames[i], ShowMirrored);
-				UnityGL.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
+				Drawing.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
 			}
-			UnityGL.Finish();
+			Drawing.End();
 			float step = 1f;
 			for(float i=0f; i<=GetTotalTime(); i+=step) {
 				Matrix4x4[] t = ExtractTransformations(GetFrame(i), ShowMirrored);
@@ -1007,7 +1007,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 		Character.Draw();
 
-		UnityGL.Start();
+		Drawing.Begin();
 		BVHPhaseFunction function = ShowMirrored ? MirroredPhaseFunction : PhaseFunction;
 		for(int i=0; i<function.Variables.Length; i++) {
 			if(function.Variables[i]) {
@@ -1015,17 +1015,17 @@ public class BVHAnimation : ScriptableObject {
 				red.a = 0.25f;
 				Color green = Utility.Green;
 				green.a = 0.25f;
-				UnityGL.DrawCircle(ShowMirrored ? transformations[Symmetry[i]].GetPosition() : transformations[i].GetPosition(), Character.BoneSize*1.25f, green);
-				UnityGL.DrawCircle(ShowMirrored ? transformations[i].GetPosition() : transformations[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
+				Drawing.DrawCircle(ShowMirrored ? transformations[Symmetry[i]].GetPosition() : transformations[i].GetPosition(), Character.BoneSize*1.25f, green);
+				Drawing.DrawCircle(ShowMirrored ? transformations[i].GetPosition() : transformations[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
 			}
 		}
-		UnityGL.Finish();
+		Drawing.End();
 		
 		if(ShowVelocities) {
 			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.1f);
-			UnityGL.Start();
+			Drawing.Begin();
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
-				UnityGL.DrawArrow(
+				Drawing.DrawArrow(
 					transformations[i].GetPosition(),
 					transformations[i].GetPosition() + velocities[i] / FrameTime,
 					0.75f,
@@ -1034,7 +1034,7 @@ public class BVHAnimation : ScriptableObject {
 					Utility.Purple.Transparent(0.5f)
 				);				
 			}
-			UnityGL.Finish();
+			Drawing.End();
 		}
 	}
 
@@ -1502,7 +1502,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Inspector() {
-			UnityGL.Start();
+			Drawing.Begin();
 
 			Utility.SetGUIColor(Utility.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -1630,7 +1630,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedVelocities[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Green : Utility.Red);
+					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Green : Utility.Red);
 				}
 
 				//Mirrored Velocities
@@ -1639,7 +1639,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.MirroredPhaseFunction.NormalisedVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.MirroredPhaseFunction.NormalisedVelocities[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Red : Utility.Green);
+					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Red : Utility.Green);
 				}
 
 				//Heights
@@ -1649,7 +1649,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Heights[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Heights[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.Red);
+					Drawing.DrawLine(prevPos, newPos, Utility.Red);
 				}
 				*/
 
@@ -1659,7 +1659,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.Cyan);
+					Drawing.DrawLine(prevPos, newPos, Utility.Cyan);
 				}
 				
 				//Cycle
@@ -1669,7 +1669,7 @@ public class BVHAnimation : ScriptableObject {
 						prevPos.y = rect.yMax - NormalisedCycle[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 						newPos.y = rect.yMax - NormalisedCycle[i+start] * rect.height;
-						UnityGL.DrawLine(prevPos, newPos, Utility.Yellow);
+						Drawing.DrawLine(prevPos, newPos, Utility.Yellow);
 					}
 				}
 
@@ -1682,7 +1682,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
 					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.White);
+					Drawing.DrawLine(prevPos, newPos, Utility.White);
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 				}
@@ -1691,7 +1691,7 @@ public class BVHAnimation : ScriptableObject {
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
-					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Utility.Magenta);
 				}
 				BVHFrame B = GetNextKey(A);
 				while(A != B) {
@@ -1699,10 +1699,10 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
 					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-					UnityGL.DrawLine(prevPos, newPos, Utility.White);
+					Drawing.DrawLine(prevPos, newPos, Utility.White);
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Utility.Magenta);
 					A = B;
 					B = GetNextKey(A);
 					if(B.Index > end) {
@@ -1716,7 +1716,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						UnityGL.DrawCircle(top, 5f, Utility.White);
+						Drawing.DrawCircle(top, 5f, Utility.White);
 					}
 					timestamp += 1f;
 				}
@@ -1735,16 +1735,16 @@ public class BVHAnimation : ScriptableObject {
 
 					Color yellow = Utility.Yellow;
 					yellow.a = 0.25f;
-					UnityGL.DrawTriangle(a, b, c, yellow);
-					UnityGL.DrawTriangle(d, b, c, yellow);
+					Drawing.DrawTriangle(a, b, c, yellow);
+					Drawing.DrawTriangle(b, d, c, yellow);
 				}
 
 				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
-				UnityGL.DrawLine(top, bottom, Utility.Yellow);
-				UnityGL.DrawCircle(top, 3f, Utility.Green);
-				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
+				Drawing.DrawLine(top, bottom, Utility.Yellow);
+				Drawing.DrawCircle(top, 3f, Utility.Green);
+				Drawing.DrawCircle(bottom, 3f, Utility.Green);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
@@ -1755,7 +1755,7 @@ public class BVHAnimation : ScriptableObject {
 				EditorGUILayout.EndHorizontal();
 			}
 
-			UnityGL.Finish();
+			Drawing.End();
 		}
 	}
 
@@ -1960,7 +1960,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void Inspector() {
-			UnityGL.Start();
+			Drawing.Begin();
 
 			Utility.SetGUIColor(Utility.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -2069,7 +2069,7 @@ public class BVHAnimation : ScriptableObject {
 				if(IsKey(A)) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
-					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Utility.Magenta);
 				}
 				
 				BVHFrame B = GetNextKey(A);
@@ -2083,13 +2083,13 @@ public class BVHAnimation : ScriptableObject {
 						for(int i=0; i<Styles.Length; i++) {
 							prevPos.y = rect.yMax - Styles[i].Values[f-1] * rect.height;
 							newPos.y = rect.yMax - Styles[i].Values[f] * rect.height;
-							UnityGL.DrawLine(prevPos, newPos, colors[i]);
+							Drawing.DrawLine(prevPos, newPos, colors[i]);
 						}
 					}
 					
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					UnityGL.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Utility.Magenta);
 					
 					A = B;
 					B = GetNextKey(A);
@@ -2107,7 +2107,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						UnityGL.DrawCircle(top, 5f, Utility.White);
+						Drawing.DrawCircle(top, 5f, Utility.White);
 					}
 					timestamp += 1f;
 				}
@@ -2126,16 +2126,16 @@ public class BVHAnimation : ScriptableObject {
 
 					Color yellow = Utility.Yellow;
 					yellow.a = 0.25f;
-					UnityGL.DrawTriangle(a, b, c, yellow);
-					UnityGL.DrawTriangle(d, b, c, yellow);
+					Drawing.DrawTriangle(a, b, c, yellow);
+					Drawing.DrawTriangle(b, d, c, yellow);
 				}
 
 				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
-				UnityGL.DrawLine(top, bottom, Utility.Yellow);
-				UnityGL.DrawCircle(top, 3f, Utility.Green);
-				UnityGL.DrawCircle(bottom, 3f, Utility.Green);
+				Drawing.DrawLine(top, bottom, Utility.Yellow);
+				Drawing.DrawCircle(top, 3f, Utility.Green);
+				Drawing.DrawCircle(bottom, 3f, Utility.Green);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
@@ -2147,7 +2147,7 @@ public class BVHAnimation : ScriptableObject {
 
 			}
 
-			UnityGL.Finish();
+			Drawing.End();
 		}
 	}
 

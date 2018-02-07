@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿/*
+using UnityEngine;
 
 public static class UnityGL {
 
@@ -641,3 +642,4 @@ public static class UnityGL {
 	}
 
 }
+*/

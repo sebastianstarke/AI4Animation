@@ -185,8 +185,8 @@ public static class Drawing {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.TRIANGLES);
 		GL.Color(color);
-        GL.Vertex(a);
-		GL.Vertex(b);
+        GL.Vertex(b);
+		GL.Vertex(a);
 		GL.Vertex(c);
 	}
 

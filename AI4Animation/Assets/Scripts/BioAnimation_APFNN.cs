@@ -583,10 +583,10 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
-				UnityGL.Start();
-				UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
-				UnityGL.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
-				UnityGL.Finish();
+				Drawing.Begin();
+				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
+				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
+				Drawing.End();
 				Trajectory.Draw(10);
 			}
 		}
@@ -598,11 +598,11 @@ public class BioAnimation_APFNN : MonoBehaviour {
 
 		if(ShowVelocities) {
 			if(Application.isPlaying) {
-				UnityGL.Start();
+				Drawing.Begin();
 				for(int i=0; i<Joints.Length; i++) {
 					Character.Segment segment = Character.FindSegment(Joints[i].name);
 					if(segment != null) {
-						UnityGL.DrawArrow(
+						Drawing.DrawArrow(
 							Joints[i].position,
 							Joints[i].position + Velocities[i] * 60f,
 							0.75f,
@@ -612,7 +612,7 @@ public class BioAnimation_APFNN : MonoBehaviour {
 						);
 					}
 				}
-				UnityGL.Finish();
+				Drawing.End();
 			}
 		}
 	}
