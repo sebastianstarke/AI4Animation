@@ -28,7 +28,7 @@ public static class Drawing {
 	private static Mesh SphereMesh;
 	private static Mesh CylinderMesh;
 	private static Mesh CapsuleMesh;
-	private static Mesh BoneMesh;
+	public static Mesh BoneMesh;
 
 	private static Vector3[] CircleWire;
 	private static Vector3[] QuadWire;
@@ -92,7 +92,7 @@ public static class Drawing {
 		MeshMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Back);
 		MeshMaterial.SetInt("_ZWrite", 1);
 		MeshMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
-		MeshMaterial.SetFloat("_Power", 0.0f);
+		MeshMaterial.SetFloat("_Power", 0.25f);
 
 		//Meshes
 		CircleMesh = CreateCircleMesh(Resolution);
@@ -414,6 +414,14 @@ public static class Drawing {
 	public static void DrawGUICircle(Vector2 center, float size, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
+		SetProgram(PROGRAM.TRIANGLE_STRIP);
+		GL.Color(color);
+		center.x *= Screen.width;
+		center.y *= Screen.height;
+		for(int i=0; i<CircleWire.Length; i++) {
+			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x + size*CircleWire[i].x*Screen.width, center.y + size*CircleWire[i].y*Screen.width, Camera.nearClipPlane + GUIOffset)));
+			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x, center.y, Camera.nearClipPlane + GUIOffset)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------
@@ -478,12 +486,12 @@ public static class Drawing {
 		}
 		Mesh mesh = new Mesh();
 		mesh.vertices = vertices.ToArray();
-		mesh.triangles = triangles.ToArray();        
+		mesh.triangles = triangles.ToArray();     
 		return mesh;
 	}
 
 	private static Mesh CreateBoneMesh() {
-		float size = 0.5f;
+		float size = 1f/7f;
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
 		vertices.Add(new Vector3(-size, -size, 0.200f));
@@ -516,9 +524,7 @@ public static class Drawing {
 		Mesh mesh = new Mesh();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
-		mesh.RecalculateBounds();
 		mesh.RecalculateNormals();
-		mesh.RecalculateTangents();
 		return mesh;
 	}
 

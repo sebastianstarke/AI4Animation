@@ -21,11 +21,6 @@ public class Character {
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
 
-	private Mesh JointMesh;
-	private Mesh BoneMesh;
-	private Material DiffuseMaterial;
-	private Material TransparentMaterial;
-
 	public Character() {
 
 	}
@@ -297,34 +292,27 @@ public class Character {
 	}
 
 	public void Draw(DRAWTYPE drawType, Color boneColor, Color jointColor, float alpha) {
-		UnityGL.Start();
+		Drawing.Begin();
 
 		if(DrawSkeleton) {
-			Material jointMaterial = new Material(GetMaterial(drawType));
-			Material boneMaterial = new Material(GetMaterial(drawType));
-			jointMaterial.color = jointColor.Transparent(alpha);
-			boneMaterial.color = boneColor.Transparent(alpha);
 			Action<Segment, Segment> recursion = null;
 			recursion = new Action<Segment, Segment>((segment, parent) => {
 				if(segment == null) {
 					return;
 				}
 				if(parent != null) {
-					UnityGL.DrawMesh(
-						GetJointMesh(),
+					Drawing.DrawSphere(
 						parent.GetTransformation().GetPosition(),
-						parent.GetTransformation().GetRotation(),
-						5f*BoneSize*Vector3.one,
-						jointMaterial
+						5f/8f * BoneSize,
+						jointColor.Transparent(alpha)
 					);
 					float distance = Vector3.Distance(parent.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition());
 					if(distance > 0.05f) {
-						UnityGL.DrawMesh(
-							GetBoneMesh(),
+						Drawing.DrawBone(
 							parent.GetTransformation().GetPosition(),
 							Quaternion.FromToRotation(parent.GetTransformation().GetForward(), segment.GetTransformation().GetPosition() - parent.GetTransformation().GetPosition()) * parent.GetTransformation().GetRotation(),
-							new Vector3(4f*BoneSize, 4f*BoneSize, distance),
-							boneMaterial
+							4f*BoneSize, distance,
+							boneColor.Transparent(alpha)
 						);
 					}
 				}
@@ -334,16 +322,14 @@ public class Character {
 				}
 			});
 			recursion(GetRoot(), null);
-			Utility.Destroy(jointMaterial);
-			Utility.Destroy(boneMaterial);
 		}
 
 		if(DrawTransforms) {
 			Action<Segment> recursion = null;
 			recursion = new Action<Segment>((segment) => {
-				UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-				UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-				UnityGL.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
 				for(int i=0; i<segment.GetChildCount(); i++) {
 					recursion(segment.GetChild(Hierarchy, i));
 				}
@@ -351,14 +337,14 @@ public class Character {
 			recursion(GetRoot());
 		}
 
-		UnityGL.Finish();
+		Drawing.End();
 	}
 
 	
 	public void DrawSimple() {
-		UnityGL.Start();
+		Drawing.Begin();
 		DrawSimple(GetRoot());
-		UnityGL.Finish();
+		Drawing.End();
 	}
 
 	private void DrawSimple(Segment segment) {
@@ -367,45 +353,14 @@ public class Character {
 		}
 		for(int i=0; i<segment.GetChildCount(); i++) {
 			Segment child = segment.GetChild(Hierarchy, i);
-			UnityGL.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
+			Drawing.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
 		}
-		UnityGL.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
+		Drawing.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
 		for(int i=0; i<segment.GetChildCount(); i++) {
 			DrawSimple(segment.GetChild(Hierarchy, i));
 		}
 	}
-
-	private Mesh GetJointMesh() {
-		if(JointMesh == null) {
-			JointMesh = (Mesh)Resources.Load("Meshes/Joint", typeof(Mesh));
-		}
-		return JointMesh;
-	}
-
-	private Mesh GetBoneMesh() {
-		if(BoneMesh == null) {
-			BoneMesh = (Mesh)Resources.Load("Meshes/Bone", typeof(Mesh));
-		}
-		return BoneMesh;
-	}
-
-	private Material GetMaterial(DRAWTYPE drawType) {
-		switch(drawType) {
-			case DRAWTYPE.Diffuse:
-			if(DiffuseMaterial == null) {
-				DiffuseMaterial = (Material)Resources.Load("Materials/UnityGLDiffuse", typeof(Material));
-			}
-			return DiffuseMaterial;
-			case DRAWTYPE.Transparent:
-			if(TransparentMaterial == null) {
-				TransparentMaterial = (Material)Resources.Load("Materials/UnityGLTransparent", typeof(Material));
-			}
-			return TransparentMaterial;
-		}
-		Debug.Log("Material could not be found.");
-		return null;
-	}
-
+	
 	#if UNITY_EDITOR
 	public void Inspector(Transform root = null) {
 		Utility.SetGUIColor(Color.grey);
