@@ -648,7 +648,7 @@ public static class Drawing {
 	}
 
 	private static Vector3[] CreateBoneWire() {
-		float size = 0.5f;
+		float size = 1f/7f;
 		List<Vector3> points = new List<Vector3>();
 		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
 		points.Add(new Vector3(-size, -size, 0.200f));
