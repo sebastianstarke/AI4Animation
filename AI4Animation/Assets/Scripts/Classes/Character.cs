@@ -327,6 +327,7 @@ public class Character {
 				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
 				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
 				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+				//Drawing.DrawTranslateGizmo(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetRotation(), 0.075f);
 				for(int i=0; i<segment.GetChildCount(); i++) {
 					recursion(segment.GetChild(Hierarchy, i));
 				}

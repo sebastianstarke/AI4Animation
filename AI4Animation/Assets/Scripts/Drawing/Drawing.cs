@@ -47,6 +47,7 @@ public static class Drawing {
 	private static Mesh SphereMesh;
 	private static Mesh CylinderMesh;
 	private static Mesh CapsuleMesh;
+	private static Mesh ConeMesh;
 	private static Mesh PyramidMesh;
 	public static Mesh BoneMesh;
 
@@ -56,6 +57,7 @@ public static class Drawing {
 	private static Vector3[] SphereWire;
 	private static Vector3[] CylinderWire;
 	private static Vector3[] CapsuleWire;
+	private static Vector3[] ConeWire;
 	private static Vector3[] PyramidWire;
 	private static Vector3[] BoneWire;
 
@@ -295,6 +297,19 @@ public static class Drawing {
 		DrawWireCapsule(position, rotation, width, height, wireColor);
 	}
 
+	public static void DrawCone(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawMesh(ConeMesh, position, rotation, new Vector3(width, height, width), color);
+	}
+
+	public static void DrawWireCone(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawWireLines(ConeWire, position, rotation, new Vector3(width, height, width), color);
+	}
+
+	public static void DrawWiredCone(Vector3 position, Quaternion rotation, float width, float height, Color coneColor, Color wireColor) {
+		DrawCone(position, rotation, width, height, coneColor);
+		DrawWireCone(position, rotation, width, height, wireColor);
+	}
+
 	public static void DrawPyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
 		DrawMesh(PyramidMesh, position, rotation, new Vector3(width, height, width), color);
 	}
@@ -319,6 +334,37 @@ public static class Drawing {
 	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float width, float length, Color boneColor, Color wireColor) {
 		DrawBone(position, rotation, width, length, boneColor);
 		DrawWireBone(position, rotation, width, length, wireColor);
+	}
+
+	public static void DrawTranslateGizmo(Vector3 position, Quaternion rotation, float size) {
+		if(Return()) {return;}
+		DrawLine(position, position + 0.8f*size*(rotation*Vector3.right), Red);
+		DrawCone(position + 0.8f*size*(rotation*Vector3.right), rotation*Quaternion.Euler(0f, 0f, -90f), 0.15f*size, 0.2f*size, Red);
+		DrawLine(position, position + 0.8f*size*(rotation*Vector3.up), Green);
+		DrawCone(position + 0.8f*size*(rotation*Vector3.up), rotation*Quaternion.Euler(0f, 0f, 0f), 0.15f*size, 0.2f*size, Green);
+		DrawLine(position, position + 0.8f*size*(rotation*Vector3.forward), Blue);
+		DrawCone(position + 0.8f*size*(rotation*Vector3.forward), rotation*Quaternion.Euler(90f, 0f, 0f), 0.15f*size, 0.2f*size, Blue);
+	}
+
+	public static void DrawRotateGizmo(Vector3 position, Quaternion rotation, float size) {
+		if(Return()) {return;}
+		SetProgram(PROGRAM.NONE);
+		DrawWireCircle(position, rotation*Quaternion.Euler(0f, 90f, 0f), 2f*size, Red);
+		SetProgram(PROGRAM.NONE);
+		DrawWireCircle(position, rotation*Quaternion.Euler(90f, 0f, 90f), 2f*size, Green);
+		SetProgram(PROGRAM.NONE);
+		DrawWireCircle(position, rotation*Quaternion.Euler(0f, 0f, 0f), 2f*size, Blue);
+		SetProgram(PROGRAM.NONE);
+	}
+
+	public static void DrawScaleGizmo(Vector3 position, Quaternion rotation, float size) {
+		if(Return()) {return;}
+		DrawLine(position, position + 0.85f*size*(rotation*Vector3.right), Red);
+		DrawCube(position + 0.925f*size*(rotation*Vector3.right), rotation, 0.15f, Red);
+		DrawLine(position, position + 0.85f*size*(rotation*Vector3.up), Green);
+		DrawCube(position + 0.925f*size*(rotation*Vector3.up), rotation, 0.15f, Green);
+		DrawLine(position, position + 0.85f*size*(rotation*Vector3.forward), Blue);
+		DrawCube(position + 0.925f*size*(rotation*Vector3.forward), rotation, 0.15f, Blue);
 	}
 
 	public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
@@ -448,6 +494,7 @@ public static class Drawing {
 		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
 		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
 		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
+		ConeMesh = CreateConeMesh(Resolution);
 		PyramidMesh = CreatePyramidMesh();
 		BoneMesh = CreateBoneMesh();
 		//
@@ -459,6 +506,7 @@ public static class Drawing {
 		SphereWire = CreateSphereWire(Resolution);
 		CylinderWire = CreateCylinderWire(Resolution);
 		CapsuleWire = CreateCapsuleWire(Resolution);
+		ConeWire = CreateConeWire(Resolution);
 		PyramidWire = CreatePyramidWire();
 		BoneWire = CreateBoneWire();
 		//
@@ -534,12 +582,12 @@ public static class Drawing {
 	}
 	
 	private static Mesh CreateCircleMesh(int resolution) {
-		float step = 360.0f / (float)resolution;
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
-		Quaternion quaternion = Quaternion.Euler(0.0f, 0.0f, step);
-		vertices.Add(new Vector3(0.0f, 0.0f, 0.0f));
-		vertices.Add(new Vector3(0.0f, 0.5f, 0.0f));
+		float step = 360.0f / (float)resolution;
+		Quaternion quaternion = Quaternion.Euler(0f, 0f, step);
+		vertices.Add(new Vector3(0f, 0f, 0f));
+		vertices.Add(new Vector3(0f, 0.5f, 0f));
 		vertices.Add(quaternion * vertices[1]);
 		triangles.Add(1);
 		triangles.Add(0);
@@ -553,6 +601,37 @@ public static class Drawing {
 		Mesh mesh = new Mesh();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();     
+		return mesh;
+	}
+
+	private static Mesh CreateConeMesh(int resolution) {
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
+		float step = 360.0f / (float)resolution;
+		Quaternion quaternion = Quaternion.Euler(0f, step, 0f);
+		vertices.Add(new Vector3(0f, 1f, 0f));
+		vertices.Add(new Vector3(0f, 0f, 0f));
+		vertices.Add(new Vector3(0f, 0f, 0.5f));
+		vertices.Add(quaternion * vertices[2]);
+		triangles.Add(2);
+		triangles.Add(1);
+		triangles.Add(3);
+		triangles.Add(2);
+		triangles.Add(3);
+		triangles.Add(0);
+		for(int i=0; i<resolution-1; i++) {
+			triangles.Add(vertices.Count-1);
+			triangles.Add(1);
+			triangles.Add(vertices.Count);
+			triangles.Add(vertices.Count-1);
+			triangles.Add(vertices.Count);
+			triangles.Add(0);
+			vertices.Add(quaternion * vertices[vertices.Count-1]);
+		}
+		Mesh mesh = new Mesh();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+		mesh.RecalculateNormals();
 		return mesh;
 	}
 
@@ -628,9 +707,8 @@ public static class Drawing {
 	private static Vector3[] CreateCircleWire(int resolution) {
 		List<Vector3> points = new List<Vector3>();
 		float step = 360.0f / (float)resolution;
-		for(int i=0; i<resolution; i++) {
+		for(int i=0; i<=resolution; i++) {
 			points.Add(Quaternion.Euler(0f, 0f, i*step) * new Vector3(0f, 0.5f, 0f));
-			points.Add(Quaternion.Euler(0f, 0f, (i+1)*step) * new Vector3(0f, 0.5f, 0f));
 		}
 		return points.ToArray();
 	}
@@ -738,6 +816,24 @@ public static class Drawing {
 		points.Add(new Vector3(-0.5f, 0.5f, 0f));
 		points.Add(new Vector3(0.5f, -0.5f, 0f));
 		points.Add(new Vector3(0.5f, 0.5f, 0));
+		return points.ToArray();
+	}
+
+	private static Vector3[] CreateConeWire(int resolution) {
+		List<Vector3> points = new List<Vector3>();
+		float step = 360.0f / (float)resolution;
+		for(int i=0; i<resolution; i++) {
+			points.Add(Quaternion.Euler(0f, i*step, 0f) * new Vector3(0f, 0f, 0.5f));
+			points.Add(Quaternion.Euler(0f, (i+1)*step, 0f) * new Vector3(0f, 0f, 0.5f));
+		}
+		points.Add(new Vector3(-0.5f, 0f, 0f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(0.5f, 0f, 0f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(0f, 0f, -0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(0f, 0f, 0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
 		return points.ToArray();
 	}
 
