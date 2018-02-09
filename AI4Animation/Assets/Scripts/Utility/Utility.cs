@@ -5,25 +5,6 @@ using System.Reflection;
 
 public static class Utility {
 
-	public static Color White = Color.white;
-	public static Color Black = Color.black;
-	public static Color Red = Color.red;
-	public static Color DarkRed = new Color(0.75f, 0f, 0f, 1f);
-	public static Color Green = Color.green;
-	public static Color DarkGreen = new Color(0f, 0.75f, 0f, 1f);
-	public static Color Blue = Color.blue;
-	public static Color Cyan = Color.cyan;
-	public static Color Magenta = Color.magenta;
-	public static Color Yellow = Color.yellow;
-	public static Color Grey = Color.grey;
-	public static Color LightGrey = new Color(0.75f, 0.75f, 0.75f, 1f);
-	public static Color DarkGrey = new Color(0.25f, 0.25f, 0.25f, 1f);
-	public static Color Orange = new Color(1f, 0.5f, 0f, 1f);
-	public static Color Brown = new Color(0.5f, 0.25f, 0f, 1f);
-	public static Color Mustard = new Color(1f, 0.75f, 0.25f, 1f);
-	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
-	public static Color Purple = new Color(0.5f, 0f, 0.5f, 1f);
-
 	public static void Screenshot(string name, int x, int y, int width, int height) {
     	Texture2D tex = new Texture2D(width, height);
 		tex.ReadPixels(new Rect(x, y, width, height), 0, 0);
@@ -48,10 +29,6 @@ public static class Utility {
 
 	public static double GetElapsedTime(System.DateTime timestamp) {
 		return (System.DateTime.Now-timestamp).Duration().TotalSeconds;
-	}
-
-	public static Color Transparent(this Color color, float opacity) {
-		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
 	}
 
 	public static float Exponential01(float value) {

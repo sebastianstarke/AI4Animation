@@ -14,16 +14,16 @@ public class BioVisualisation : MonoBehaviour {
 	public Button CanvasToggle;
 
 	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Move, Jump, Sit, Lie, Stand;
-	public Color Active = Utility.Orange;
-	public Color Inactive = Utility.DarkGrey;
+	public Color Active = Drawing.Orange;
+	public Color Inactive = Drawing.DarkGrey;
 
 	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics, MotionTrails;
-	public Color VisualisationEnabled = Utility.Cyan;
-	public Color VisualisationDisabled = Utility.Grey;
+	public Color VisualisationEnabled = Drawing.Cyan;
+	public Color VisualisationDisabled = Drawing.Grey;
 
 	public Button SmoothFollow, ConstantView, Static;
-	public Color CameraEnabled = Utility.Mustard;
-	public Color CameraDisabled = Utility.LightGrey;
+	public Color CameraEnabled = Drawing.Mustard;
+	public Color CameraDisabled = Drawing.LightGrey;
 
 	public Slider Yaw, Pitch, FOV;
 
@@ -236,11 +236,11 @@ public class BioVisualisation : MonoBehaviour {
 			Drawing.DrawGUIRectangle(
 				center,
 				width+2f*border/Screen.width*Screen.height, height+2f*border, 
-				Utility.Black);
+				Drawing.Black);
 			Drawing.DrawGUIRectangle(
 				center,
 				width, height, 
-				Utility.White);
+				Drawing.White);
 
 			Color[] colors = Utility.GetRainbowColors(Animation.APFNN.ControlWeights);
 			for(int i=0; i<colors.Length; i++) {

@@ -164,7 +164,7 @@ public class Trajectory {
 		Drawing.Begin();
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
-			Drawing.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Utility.Black);
+			Drawing.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Drawing.Black);
 		}
 
 		//Projections
@@ -176,7 +176,7 @@ public class Trajectory {
 		}
 
 		//Velocities
-		Color transparentVelocity = Utility.DarkGreen.Transparent(0.25f);
+		Color transparentVelocity = Drawing.DarkGreen.Transparent(0.25f);
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
 			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
@@ -185,7 +185,7 @@ public class Trajectory {
 		}
 
 		//Directions
-		Color transparentDirection = Utility.Orange.Transparent(0.75f);
+		Color transparentDirection = Drawing.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
 			Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
@@ -201,7 +201,7 @@ public class Trajectory {
 
 		//Positions
 		for(int i=0; i<Points.Length; i+=step) {
-			Drawing.DrawCircle(Points[i].GetPosition(), 0.025f, Utility.Black);
+			Drawing.DrawCircle(Points[i].GetPosition(), 0.025f, Drawing.Black);
 		}
 		Drawing.End();
 	}

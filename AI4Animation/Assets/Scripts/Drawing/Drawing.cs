@@ -4,6 +4,25 @@ using System.Collections.Generic;
 
 public static class Drawing {
 
+	public static Color White = Color.white;
+	public static Color Black = Color.black;
+	public static Color Red = Color.red;
+	public static Color DarkRed = new Color(0.75f, 0f, 0f, 1f);
+	public static Color Green = Color.green;
+	public static Color DarkGreen = new Color(0f, 0.75f, 0f, 1f);
+	public static Color Blue = Color.blue;
+	public static Color Cyan = Color.cyan;
+	public static Color Magenta = Color.magenta;
+	public static Color Yellow = Color.yellow;
+	public static Color Grey = Color.grey;
+	public static Color LightGrey = new Color(0.75f, 0.75f, 0.75f, 1f);
+	public static Color DarkGrey = new Color(0.25f, 0.25f, 0.25f, 1f);
+	public static Color Orange = new Color(1f, 0.5f, 0f, 1f);
+	public static Color Brown = new Color(0.5f, 0.25f, 0f, 1f);
+	public static Color Mustard = new Color(1f, 0.75f, 0.25f, 1f);
+	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
+	public static Color Purple = new Color(0.5f, 0f, 0.5f, 1f);
+
 	private static int Resolution = 30;
 
 	private static Mesh Initialised;
@@ -43,7 +62,7 @@ public static class Drawing {
 	//------------------------------------------------------------------------------------------
 	public static void Begin() {
 		if(Active) {
-			Debug.Log("Drawing is still active. Call 'End' to stop.");
+			Debug.Log("Drawing is still active. Call 'End()' to stop.");
 		} else {
 			Initialise();
 			Camera = GetCamera();
@@ -61,7 +80,7 @@ public static class Drawing {
 			ViewRotation = Quaternion.identity;
 			Active = false;
 		} else {
-			Debug.Log("Drawing is not active. Call 'Begin()' first.");
+			Debug.Log("Drawing is not active. Call 'Begin()' to start.");
 		}
 	}
 
@@ -77,16 +96,7 @@ public static class Drawing {
 	}
 
     public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
-		if(Return()) {return;};
-		SetProgram(PROGRAM.QUADS);
-		GL.Color(color);
-		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
-		Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
-		GL.Vertex(end+orthoEnd);
-		GL.Vertex(end-orthoEnd);
-		GL.Vertex(start-orthoStart);
-		GL.Vertex(start+orthoStart);
+		DrawLine(start, end, width, width, color);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
@@ -137,6 +147,32 @@ public static class Drawing {
 		DrawWireCircle(position, rotation, size, wireColor);
 	}
 
+	public static void DrawEllipse(Vector3 position, float width, float height, Color color) {
+		DrawMesh(CircleMesh, position, ViewRotation, new Vector3(width, height, 1f), color);
+	}
+
+	public static void DrawEllipse(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawMesh(CircleMesh, position, rotation, new Vector3(width, height, 1f), color);
+	}
+
+	public static void DrawWireEllipse(Vector3 position, float width, float height, Color color) {
+		DrawWireLineStrip(CircleWire, position, ViewRotation, new Vector3(width, height, 1f), color);
+	}
+
+	public static void DrawWireEllipse(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawWireLineStrip(CircleWire, position, rotation, new Vector3(width, height, 1f), color);
+	}
+
+	public static void DrawWiredEllipse(Vector3 position, float width, float height, Color ellipseColor, Color wireColor) {
+		DrawEllipse(position, ViewRotation, width, height, ellipseColor);
+		DrawWireEllipse(position, ViewRotation, width, height, wireColor);
+	}
+
+	public static void DrawWiredEllipse(Vector3 position, Quaternion rotation, float width, float height, Color ellipseColor, Color wireColor) {
+		DrawEllipse(position, rotation, width, height, ellipseColor);
+		DrawWireEllipse(position, rotation, width, height, wireColor);
+	}
+
 	public static void DrawArrow(Vector3 start, Vector3 end, float tipPivot, float shaftWidth, float tipWidth, Color color) {
 		tipPivot = Mathf.Clamp(tipPivot, 0f, 1f);
 		Vector3 pivot = start + tipPivot * (end-start);
@@ -151,9 +187,21 @@ public static class Drawing {
 		DrawLine(pivot, end, tipWidth, 0f, tipColor);
 	}
 
-	//------------------------------------------------------------------------------------------
-	//3D SCENE DRAWING FUNCTIONS
-	//------------------------------------------------------------------------------------------
+	public static void DrawGrid(Vector3 center, Quaternion rotation, float width, float length, int cellsX, int cellsY, Color color) {
+		if(Return()) {return;}
+		float stepX = width / (float)cellsX;
+		float stepY = length / (float)cellsY;
+		Vector3 start = center - width/2f * (rotation * Vector3.right) - length/2f * (rotation * Vector3.forward);
+		Vector3 dirX = rotation * Vector3.right;
+		Vector3 dirY = rotation * Vector3.forward;
+		for(int i=0; i<cellsX+1; i++) {
+			DrawLine(start + i*stepX*dirX, start + i*stepX*dirX + length*dirY, color);
+		}
+		for(int i=0; i<cellsY+1; i++) {
+			DrawLine(start + i*stepY*dirY, start + i*stepY*dirY + width*dirX, color);
+		}
+	}
+
 	public static void DrawQuad(Vector3 position, Quaternion rotation, float width, float height, Color color) {
 		DrawMesh(QuadMesh, position, rotation, new Vector3(width, height, 1f), color);
 	}
@@ -206,6 +254,19 @@ public static class Drawing {
 		DrawWireSphere(position, size, wireColor);
 	}
 
+	public static void DrawEllipsoid(Vector3 position, float width, float height, Color color) {
+		DrawMesh(SphereMesh, position, Quaternion.identity, new Vector3(width, height, width), color);
+	}
+
+	public static void DrawWireEllipsoid(Vector3 position, float width, float height, Color color) {
+		DrawWireLines(SphereWire, position, Quaternion.identity, new Vector3(width, height, width), color);
+	}
+
+	public static void DrawWiredEllipsoid(Vector3 position, float width, float height, Color ellipsoidColor, Color wireColor) {
+		DrawEllipsoid(position, width, height, ellipsoidColor);
+		DrawWireEllipsoid(position, width, height, wireColor);
+	}
+
 	public static void DrawCylinder(Vector3 position, Quaternion rotation, float width, float height, Color color) {
 		DrawMesh(CylinderMesh, position, rotation, new Vector3(width, height/2f, width), color);
 	}
@@ -230,6 +291,19 @@ public static class Drawing {
 	public static void DrawWiredCapsule(Vector3 position, Quaternion rotation, float width, float height, Color capsuleColor, Color wireColor) {
 		DrawCapsule(position, rotation, width, height, capsuleColor);
 		DrawWireCapsule(position, rotation, width, height, wireColor);
+	}
+
+	public static void DrawPyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		//TODO
+	}
+
+	public static void DrawWirePyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		//TODO
+	}
+
+	public static void DrawWiredPyramid(Vector3 position, Quaternion rotation, float width, float height, Color pyramidColor, Color wireColor) {
+		DrawPyramid(position, rotation, width, height, pyramidColor);
+		DrawWirePyramid(position, rotation, width, height, wireColor);
 	}
 
 	public static void DrawBone(Vector3 position, Quaternion rotation, float width, float length, Color color) {
@@ -665,6 +739,10 @@ public static class Drawing {
 		points.Add(new Vector3(-size, size, 0.200f));
 		points.Add(new Vector3(-size, -size, 0.200f));
 		return points.ToArray();
+	}
+
+	public static Color Transparent(this Color color, float opacity) {
+		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
 	}
 
 }

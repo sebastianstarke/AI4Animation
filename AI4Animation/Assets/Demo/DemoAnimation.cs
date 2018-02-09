@@ -361,8 +361,8 @@ public class DemoAnimation : MonoBehaviour {
 	void OnRenderObject() {
 		if(Application.isPlaying) {
 			Drawing.Begin();
-			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
-			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
+			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, Drawing.Red.Transparent(0.75f));
+			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, Drawing.Green.Transparent(0.75f));
 			Drawing.End();
 			Trajectory.Draw(10);
 		}
@@ -383,7 +383,7 @@ public class DemoAnimation : MonoBehaviour {
 						0.75f,
 						0.0075f,
 						0.05f,
-						new Color(0f, 1f, 1f, 0.5f)
+						Drawing.Cyan.Transparent(0.75f)
 					);
 				}
 			}

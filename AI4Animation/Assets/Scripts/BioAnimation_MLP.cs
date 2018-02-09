@@ -534,7 +534,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 		if(name == "Wolf_MLP_P") {
 			Drawing.Begin();
-			Drawing.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, Utility.Black.Transparent(0.5f));
+			Drawing.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, Drawing.Black.Transparent(0.5f));
 			Quaternion rotation = Quaternion.AngleAxis(-360f * Phase, Vector3.forward);
 			Vector2 a = rotation * new Vector2(-0.005f, 0f);
 			Vector2 b = rotation *new Vector3(0.005f, 0f);
@@ -543,15 +543,16 @@ public class BioAnimation_MLP : MonoBehaviour {
 				new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y),
 				new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y),
 				new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y),
-				Utility.Cyan);
+				Drawing.Cyan
+			);
 			Drawing.End();
 		}
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
 				Drawing.Begin();
-				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, new Color(Utility.Red.r, Utility.Red.g, Utility.Red.b, 0.75f));
-				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, new Color(Utility.Green.r, Utility.Green.g, Utility.Green.b, 0.75f));
+				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, Drawing.Red.Transparent(0.75f));
+				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, Drawing.Green.Transparent(0.75f));
 				Drawing.End();
 				Trajectory.Draw(10);
 			}
@@ -574,7 +575,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 							0.75f,
 							0.0075f,
 							0.05f,
-							Utility.Purple.Transparent(0.5f)
+							Drawing.Purple.Transparent(0.5f)
 						);
 					}
 				}
@@ -613,7 +614,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 		}
 
 		private void Inspector() {			
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -624,7 +625,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 					}
 				}
 
-				if(Utility.GUIButton("Animation", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Animation", Drawing.DarkGrey, Drawing.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 
@@ -638,10 +639,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
 
 						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Add IK Solver", Utility.Brown, Utility.White)) {
+						if(Utility.GUIButton("Add IK Solver", Drawing.Brown, Drawing.White)) {
 							Utility.Expand(ref Target.IKSolvers);
 						}
-						if(Utility.GUIButton("Remove IK Solver", Utility.Brown, Utility.White)) {
+						if(Utility.GUIButton("Remove IK Solver", Drawing.Brown, Drawing.White)) {
 							Utility.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
@@ -654,14 +655,14 @@ public class BioAnimation_MLP : MonoBehaviour {
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-						if(Utility.GUIButton("Auto Detect", Utility.DarkGrey, Utility.White)) {
+						if(Utility.GUIButton("Auto Detect", Drawing.DarkGrey, Drawing.White)) {
 							Target.AutoDetect();
 						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
-								Utility.SetGUIColor(Utility.Green);
+								Utility.SetGUIColor(Drawing.Green);
 							} else {
-								Utility.SetGUIColor(Utility.Red);
+								Utility.SetGUIColor(Drawing.Red);
 							}
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));

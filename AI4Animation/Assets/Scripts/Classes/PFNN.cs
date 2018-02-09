@@ -137,7 +137,7 @@ public class PFNN {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("PFNN", Utility.DarkGrey, Utility.White)) {
+			if(Utility.GUIButton("PFNN", Drawing.DarkGrey, Drawing.White)) {
 				Inspect = !Inspect;
 			}
 

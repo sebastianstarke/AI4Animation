@@ -56,7 +56,7 @@ public class Orbit : MonoBehaviour {
 		}
 
 		private void Inspector() {
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				Target.SetPivot((Transform)EditorGUILayout.ObjectField("Pivot", Target.Pivot, typeof(Transform), true));

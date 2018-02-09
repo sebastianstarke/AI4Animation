@@ -139,15 +139,15 @@ public class BVHRecorder : EditorWindow {
 	}
 
 	void OnGUI() {
-		Utility.SetGUIColor(Utility.Black);
+		Utility.SetGUIColor(Drawing.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Utility.Orange);
+				Utility.SetGUIColor(Drawing.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Recorder");
@@ -168,14 +168,14 @@ public class BVHRecorder : EditorWindow {
 					EditorGUILayout.LabelField("Frames: " + Data.Frames.Length);
 				}
 
-				if(Utility.GUIButton(Recording ? "Stop" : "Start", Recording ? Utility.DarkRed : Utility.DarkGreen, Utility.White)) {
+				if(Utility.GUIButton(Recording ? "Stop" : "Start", Recording ? Drawing.DarkRed : Drawing.DarkGreen, Drawing.White)) {
 					Recording = !Recording;
 					if(Recording) {
 						Animation.StartCoroutine(Record());
 					}
 				}
 
-				if(Utility.GUIButton("Save", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Save", Drawing.DarkGrey, Drawing.White)) {
 					Save();
 				}
 

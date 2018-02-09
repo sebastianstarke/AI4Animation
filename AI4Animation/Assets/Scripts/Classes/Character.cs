@@ -13,8 +13,8 @@ public class Character {
 	public Segment[] Hierarchy = new Segment[0];
 
 	public float BoneSize = 0.025f;
-	public Color BoneColor = Utility.Black;
-	public Color JointColor = Utility.Mustard;
+	public Color BoneColor = Drawing.Black;
+	public Color JointColor = Drawing.Mustard;
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
 
@@ -363,7 +363,7 @@ public class Character {
 		Utility.SetGUIColor(Color.grey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("Character", Utility.DarkGrey, Utility.White)) {
+			if(Utility.GUIButton("Character", Drawing.DarkGrey, Drawing.White)) {
 				Inspect = !Inspect;
 			}
 
@@ -375,7 +375,7 @@ public class Character {
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
-					if(Utility.GUIButton("Clear", Utility.DarkRed, Utility.White)) {
+					if(Utility.GUIButton("Clear", Drawing.DarkRed, Drawing.White)) {
 						Utility.Clear(ref Hierarchy);
 					}
 					if(root == null) {
@@ -394,7 +394,7 @@ public class Character {
 
 	private void InspectHierarchy(Transform root, Transform transform, int indent) {
 		Segment segment = FindSegment(transform.name);
-		Utility.SetGUIColor(segment == null ? Utility.White : Utility.LightGrey);
+		Utility.SetGUIColor(segment == null ? Drawing.White : Drawing.LightGrey);
 		using(new EditorGUILayout.HorizontalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
@@ -404,7 +404,7 @@ public class Character {
 			EditorGUILayout.LabelField("-", GUILayout.Width(20f));
 			EditorGUILayout.LabelField(transform.name, GUILayout.Width(100f), GUILayout.Height(20f));
 			GUILayout.FlexibleSpace();
-			if(Utility.GUIButton("Bone", segment == null ? Utility.White : Utility.DarkGrey, segment == null ? Utility.DarkGrey : Utility.White)) {
+			if(Utility.GUIButton("Bone", segment == null ? Drawing.White : Drawing.DarkGrey, segment == null ? Drawing.DarkGrey : Drawing.White)) {
 				if(segment == null) {
 					string[] names = GetBoneNames();
 					Utility.Add(ref names, transform.name);
@@ -423,7 +423,7 @@ public class Character {
 	}
 
 	private void InspectHierarchy(Segment segment, int indent) {
-		Utility.SetGUIColor(Utility.LightGrey);
+		Utility.SetGUIColor(Drawing.LightGrey);
 		using(new EditorGUILayout.HorizontalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();

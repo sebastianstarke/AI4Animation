@@ -591,38 +591,38 @@ public class BVHAnimation : ScriptableObject {
 	}
 
 	public void Inspector() {
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton(ShowMirrored ? "Mirrored" : "Default", Utility.Cyan, Utility.Black)) {
+			if(Utility.GUIButton(ShowMirrored ? "Mirrored" : "Default", Drawing.Cyan, Drawing.Black)) {
 				ShowMirrored = !ShowMirrored;
 			}
 			EditorGUILayout.EndHorizontal();
 		}
 
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton("Show Velocities", ShowVelocities ? Utility.Green : Utility.Grey, ShowVelocities ? Utility.Black : Utility.LightGrey)) {
+			if(Utility.GUIButton("Show Velocities", ShowVelocities ? Drawing.Green : Drawing.Grey, ShowVelocities ? Drawing.Black : Drawing.LightGrey)) {
 				ShowVelocities = !ShowVelocities;
 			}
-			if(Utility.GUIButton("Show Trajectory", ShowTrajectory ? Utility.Green : Utility.Grey, ShowTrajectory ? Utility.Black : Utility.LightGrey)) {
+			if(Utility.GUIButton("Show Trajectory", ShowTrajectory ? Drawing.Green : Drawing.Grey, ShowTrajectory ? Drawing.Black : Drawing.LightGrey)) {
 				ShowTrajectory = !ShowTrajectory;
 			}
-			if(Utility.GUIButton("Show Preview", ShowPreview ? Utility.Green : Utility.Grey, ShowPreview ? Utility.Black : Utility.LightGrey)) {
+			if(Utility.GUIButton("Show Preview", ShowPreview ? Drawing.Green : Drawing.Grey, ShowPreview ? Drawing.Black : Drawing.LightGrey)) {
 				ShowPreview = !ShowPreview;
 			}
-			if(Utility.GUIButton("Show Flow", ShowFlow ? Utility.Green : Utility.Grey, ShowFlow ? Utility.Black : Utility.LightGrey)) {
+			if(Utility.GUIButton("Show Flow", ShowFlow ? Drawing.Green : Drawing.Grey, ShowFlow ? Drawing.Black : Drawing.LightGrey)) {
 				ShowFlow = !ShowFlow;
 			}
-			if(Utility.GUIButton("Show Zero", ShowZero ? Utility.Green : Utility.Grey, ShowZero ? Utility.Black : Utility.LightGrey)) {
+			if(Utility.GUIButton("Show Zero", ShowZero ? Drawing.Green : Drawing.Grey, ShowZero ? Drawing.Black : Drawing.LightGrey)) {
 				ShowZero = !ShowZero;
 			}
 			EditorGUILayout.EndHorizontal();
 			/*
-			if(Utility.GUIButton(ExportScreenshots ? "Stop" : "Export Screenshots", Utility.DarkGrey, Utility.White)) {
+			if(Utility.GUIButton(ExportScreenshots ? "Stop" : "Export Screenshots", Drawing.DarkGrey, Drawing.White)) {
 				ExportScreenshots = !ExportScreenshots;
 				SkipExportScreenshot = false;
 				if(ExportScreenshots) {
@@ -633,19 +633,19 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		
-		if(Utility.GUIButton("Recompute Trajectory", Utility.Brown, Utility.White)) {
+		if(Utility.GUIButton("Recompute Trajectory", Drawing.Brown, Drawing.White)) {
 			ComputeTrajectory();
 		}
 
 		/*
-		if(Utility.GUIButton("Recompute Values", Utility.Brown, Utility.White)) {
+		if(Utility.GUIButton("Recompute Values", Drawing.Brown, Drawing.White)) {
 			PhaseFunction.ComputeValues();
 			MirroredPhaseFunction.ComputeValues();
 		}
 		*/
 
 		/*
-		if(Utility.GUIButton("Reimport", Utility.Brown, Utility.White)) {
+		if(Utility.GUIButton("Reimport", Drawing.Brown, Drawing.White)) {
 			string path = EditorUtility.OpenFilePanel("BVH Editor", Application.dataPath, "bvh");
 			if(name != path.Substring(path.LastIndexOf("/")+1)) {
 				Debug.Log("Name mismatch!");
@@ -659,7 +659,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 		*/
 
-		Utility.SetGUIColor(Utility.LightGrey);
+		Utility.SetGUIColor(Drawing.LightGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
@@ -671,7 +671,7 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.EndHorizontal();
 		}
 
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
@@ -685,10 +685,10 @@ public class BVHAnimation : ScriptableObject {
 					Play();
 				}
 			}
-			if(Utility.GUIButton("<", Utility.Grey, Utility.White, 20f, 20f)) {
+			if(Utility.GUIButton("<", Drawing.Grey, Drawing.White, 20f, 20f)) {
 				LoadPreviousFrame();
 			}
-			if(Utility.GUIButton(">", Utility.Grey, Utility.White, 20f, 20f)) {
+			if(Utility.GUIButton(">", Drawing.Grey, Drawing.White, 20f, 20f)) {
 				LoadNextFrame();
 			}
 			BVHAnimation.BVHFrame frame = GetFrame(EditorGUILayout.IntSlider(CurrentFrame.Index, 1, GetTotalFrames(), GUILayout.Width(440f)));
@@ -700,16 +700,16 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.EndHorizontal();
 		}
 
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 			
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton("-1s", Utility.Grey, Utility.White, 65, 20f)) {
+			if(Utility.GUIButton("-1s", Drawing.Grey, Drawing.White, 65, 20f)) {
 				LoadFrame(Mathf.Max(CurrentFrame.Timestamp - 1f, 0f));
 			}
 			TimeWindow = EditorGUILayout.Slider(TimeWindow, 2f*FrameTime, GetTotalTime(), GUILayout.Width(440f));
-			if(Utility.GUIButton("+1s", Utility.Grey, Utility.White, 65, 20f)) {
+			if(Utility.GUIButton("+1s", Drawing.Grey, Drawing.White, 65, 20f)) {
 				LoadFrame(Mathf.Min(CurrentFrame.Timestamp + 1f, GetTotalTime()));
 			}
 			EditorGUILayout.EndHorizontal();
@@ -724,17 +724,17 @@ public class BVHAnimation : ScriptableObject {
 		StyleFunction.Inspector();
 
 
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Utility.Orange);
+			Utility.SetGUIColor(Drawing.Orange);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				EditorGUILayout.LabelField("Sequences");
 			}
 
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -746,45 +746,45 @@ public class BVHAnimation : ScriptableObject {
 					Sequences[i].End = EditorGUILayout.IntSlider(Sequences[i].End, 1, GetTotalFrames(), GUILayout.Width(182f));
 					EditorGUILayout.LabelField("Export", GUILayout.Width(67f));
 					Sequences[i].Export = Mathf.Max(1, EditorGUILayout.IntField(Sequences[i].Export, GUILayout.Width(182f)));
-					if(Utility.GUIButton("Auto", Utility.DarkGrey, Utility.White)) {
+					if(Utility.GUIButton("Auto", Drawing.DarkGrey, Drawing.White)) {
 						Sequences[i].Auto();
 					}
 					EditorGUILayout.EndHorizontal();
 				}
 
-				if(Utility.GUIButton("Add Sequence", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Add Sequence", Drawing.DarkGrey, Drawing.White)) {
 					AddSequence();
 				}
-				if(Utility.GUIButton("Remove Sequence", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Remove Sequence", Drawing.DarkGrey, Drawing.White)) {
 					RemoveSequence();
 				}
 			}
 		}
 
 		
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Utility.Orange);
+			Utility.SetGUIColor(Drawing.Orange);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				EditorGUILayout.LabelField("Armature");
 			}
 
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
 				Character.Inspector();
 
-				if(Utility.GUIButton("Export Skeleton", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Export Skeleton", Drawing.DarkGrey, Drawing.White)) {
 					ExportSkeleton();
 				}
 
 				SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
 
-				if(Utility.GUIButton("Assign Dog Corrections", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Assign Dog Corrections", Drawing.DarkGrey, Drawing.White)) {
 					AssignDogCorrections();
 				}
 
@@ -799,41 +799,41 @@ public class BVHAnimation : ScriptableObject {
 			}
 		}
 
-		Utility.SetGUIColor(Utility.DarkGrey);
+		Utility.SetGUIColor(Drawing.DarkGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Utility.Orange);
+			Utility.SetGUIColor(Drawing.Orange);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				EditorGUILayout.LabelField("Symmetry");
 			}
 
-			Utility.SetGUIColor(Utility.Grey);
+			Utility.SetGUIColor(Drawing.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				Utility.SetGUIColor(Utility.DarkGrey);
+				Utility.SetGUIColor(Drawing.DarkGrey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Mirror X", MirrorX ? Utility.Cyan : Utility.Grey, MirrorX ? Utility.Black : Utility.LightGrey)) {
+					if(Utility.GUIButton("Mirror X", MirrorX ? Drawing.Cyan : Drawing.Grey, MirrorX ? Drawing.Black : Drawing.LightGrey)) {
 						MirrorX = !MirrorX;
 						MirrorY = false;
 						MirrorZ = false;
 					}
-					if(Utility.GUIButton("Mirror Y", MirrorY ? Utility.Cyan : Utility.Grey, MirrorY ? Utility.Black : Utility.LightGrey)) {
+					if(Utility.GUIButton("Mirror Y", MirrorY ? Drawing.Cyan : Drawing.Grey, MirrorY ? Drawing.Black : Drawing.LightGrey)) {
 						MirrorY = !MirrorY;
 						MirrorX = false;
 						MirrorZ = false;
 					}
-					if(Utility.GUIButton("Mirror Z", MirrorZ ? Utility.Cyan : Utility.Grey, MirrorZ ? Utility.Black : Utility.LightGrey)) {
+					if(Utility.GUIButton("Mirror Z", MirrorZ ? Drawing.Cyan : Drawing.Grey, MirrorZ ? Drawing.Black : Drawing.LightGrey)) {
 						MirrorZ = !MirrorZ;
 						MirrorX = false;
 						MirrorY = false;
 					}
 					EditorGUILayout.EndHorizontal();
 				}
-				if(Utility.GUIButton("Auto Detect", Utility.DarkGrey, Utility.White)) {
+				if(Utility.GUIButton("Auto Detect", Drawing.DarkGrey, Drawing.White)) {
 					DetectSymmetry();
 				}
 				string[] names = new string[Character.Hierarchy.Length];
@@ -891,7 +891,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				Character.Hierarchy[i].SetTransformation(matrices[i]);
 			}
-			Character.Draw(Utility.Blue, Utility.Yellow, 1f);
+			Character.Draw(Drawing.Blue, Drawing.Yellow, 1f);
 
 			int steps = 5;
 			float timespan = 0.1f;
@@ -905,8 +905,8 @@ public class BVHAnimation : ScriptableObject {
 						Character.Hierarchy[j].SetTransformation(t[j]);
 					}
 					Character.Draw(
-						Color.Lerp(Utility.Blue, Utility.Red, (float)i / (float)steps),
-						Utility.Yellow,
+						Color.Lerp(Drawing.Blue, Drawing.Red, (float)i / (float)steps),
+						Drawing.Yellow,
 						1f - (float)i / (float)(steps+1)
 						);
 				}
@@ -921,8 +921,8 @@ public class BVHAnimation : ScriptableObject {
 						Character.Hierarchy[j].SetTransformation(t[j]);
 					}
 					Character.Draw(
-						Color.Lerp(Utility.Blue, Utility.Green, (float)i / (float)steps),
-						Utility.Yellow,
+						Color.Lerp(Drawing.Blue, Drawing.Green, (float)i / (float)steps),
+						Drawing.Yellow,
 						1f - (float)i / (float)(steps+1));
 				}
 			}
@@ -981,7 +981,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=1; i<GetTotalFrames(); i++) {
 				Matrix4x4[] prevTransformations = ExtractTransformations(Frames[i-1], ShowMirrored);
 				Matrix4x4[] currTransformations = ExtractTransformations(Frames[i], ShowMirrored);
-				Drawing.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Utility.Magenta);
+				Drawing.DrawLine(prevTransformations[0].GetPosition(), currTransformations[0].GetPosition(), Drawing.Magenta);
 			}
 			Drawing.End();
 			float step = 1f;
@@ -1008,9 +1008,9 @@ public class BVHAnimation : ScriptableObject {
 		BVHPhaseFunction function = ShowMirrored ? MirroredPhaseFunction : PhaseFunction;
 		for(int i=0; i<function.Variables.Length; i++) {
 			if(function.Variables[i]) {
-				Color red = Utility.Red;
+				Color red = Drawing.Red;
 				red.a = 0.25f;
-				Color green = Utility.Green;
+				Color green = Drawing.Green;
 				green.a = 0.25f;
 				Drawing.DrawCircle(ShowMirrored ? transformations[Symmetry[i]].GetPosition() : transformations[i].GetPosition(), Character.BoneSize*1.25f, green);
 				Drawing.DrawCircle(ShowMirrored ? transformations[i].GetPosition() : transformations[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
@@ -1028,7 +1028,7 @@ public class BVHAnimation : ScriptableObject {
 					0.75f,
 					0.0075f,
 					0.05f,
-					Utility.Purple.Transparent(0.5f)
+					Drawing.Purple.Transparent(0.5f)
 				);				
 			}
 			Drawing.End();
@@ -1501,30 +1501,30 @@ public class BVHAnimation : ScriptableObject {
 		public void Inspector() {
 			Drawing.Begin();
 
-			Utility.SetGUIColor(Utility.LightGrey);
+			Utility.SetGUIColor(Drawing.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Utility.Orange);
+				Utility.SetGUIColor(Drawing.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Phase Function");
 				}
 
-				Utility.SetGUIColor(Utility.Grey);
+				Utility.SetGUIColor(Drawing.Grey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					if(Optimising) {
-						if(Utility.GUIButton("Stop Optimisation", Utility.LightGrey, Utility.Black)) {
+						if(Utility.GUIButton("Stop Optimisation", Drawing.LightGrey, Drawing.Black)) {
 							Optimising = !Optimising;
 						}
 					} else {
-						if(Utility.GUIButton("Start Optimisation", Utility.DarkGrey, Utility.White)) {
+						if(Utility.GUIButton("Start Optimisation", Drawing.DarkGrey, Drawing.White)) {
 							Optimising = !Optimising;
 						}
 					}
 					if(Optimiser != null) {
-						if(Utility.GUIButton("Restart", Utility.Brown, Utility.White)) {
+						if(Utility.GUIButton("Restart", Drawing.Brown, Drawing.White)) {
 							Optimiser.Initialise();
 						}
 						EditorGUILayout.BeginHorizontal();
@@ -1554,11 +1554,11 @@ public class BVHAnimation : ScriptableObject {
 				VariablesScroll = EditorGUILayout.BeginScrollView(VariablesScroll, GUILayout.Height(100f));
 				for(int i=0; i<Animation.Character.Hierarchy.Length; i++) {
 					if(Variables[i]) {
-						if(Utility.GUIButton(Animation.Character.Hierarchy[i].GetName(), Utility.DarkGreen, Utility.White)) {
+						if(Utility.GUIButton(Animation.Character.Hierarchy[i].GetName(), Drawing.DarkGreen, Drawing.White)) {
 							ToggleVariable(i);
 						}
 					} else {
-						if(Utility.GUIButton(Animation.Character.Hierarchy[i].GetName(), Utility.DarkRed, Utility.White)) {
+						if(Utility.GUIButton(Animation.Character.Hierarchy[i].GetName(), Drawing.DarkRed, Drawing.White)) {
 							ToggleVariable(i);
 						}
 					}
@@ -1581,24 +1581,24 @@ public class BVHAnimation : ScriptableObject {
 				ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
 
 				if(IsKey(Animation.CurrentFrame)) {
-					if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
+					if(Utility.GUIButton("Unset Key", Drawing.Grey, Drawing.White)) {
 						SetKey(Animation.CurrentFrame, false);
 					}
 				} else {
-					if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
+					if(Utility.GUIButton("Set Key", Drawing.DarkGrey, Drawing.White)) {
 						SetKey(Animation.CurrentFrame, true);
 					}
 				}
 
 				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, 25f, 50f)) {
+				if(Utility.GUIButton("<", Drawing.DarkGrey, Drawing.White, 25f, 50f)) {
 					Animation.LoadFrame(GetPreviousKey(Animation.CurrentFrame));
 				}
 
 				EditorGUILayout.BeginVertical(GUILayout.Height(50f));
 				Rect ctrl = EditorGUILayout.GetControlRect();
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
-				EditorGUI.DrawRect(rect, Utility.Black);
+				EditorGUI.DrawRect(rect, Drawing.Black);
 
 				float startTime = Animation.CurrentFrame.Timestamp-Animation.TimeWindow/2f;
 				float endTime = Animation.CurrentFrame.Timestamp+Animation.TimeWindow/2f;
@@ -1627,7 +1627,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedVelocities[i+start] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Green : Utility.Red);
+					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Drawing.Green : Drawing.Red);
 				}
 
 				//Mirrored Velocities
@@ -1636,7 +1636,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.MirroredPhaseFunction.NormalisedVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.MirroredPhaseFunction.NormalisedVelocities[i+start] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Utility.Red : Utility.Green);
+					Drawing.DrawLine(prevPos, newPos, this == Animation.PhaseFunction ? Drawing.Red : Drawing.Green);
 				}
 
 				//Heights
@@ -1646,7 +1646,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Heights[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Heights[i+start] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, Utility.Red);
+					Drawing.DrawLine(prevPos, newPos, Drawing.Red);
 				}
 				*/
 
@@ -1656,7 +1656,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start-1] * rect.height;
 					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, Utility.Cyan);
+					Drawing.DrawLine(prevPos, newPos, Drawing.Cyan);
 				}
 				
 				//Cycle
@@ -1666,7 +1666,7 @@ public class BVHAnimation : ScriptableObject {
 						prevPos.y = rect.yMax - NormalisedCycle[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
 						newPos.y = rect.yMax - NormalisedCycle[i+start] * rect.height;
-						Drawing.DrawLine(prevPos, newPos, Utility.Yellow);
+						Drawing.DrawLine(prevPos, newPos, Drawing.Yellow);
 					}
 				}
 
@@ -1679,7 +1679,7 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
 					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, Utility.White);
+					Drawing.DrawLine(prevPos, newPos, Drawing.White);
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 				}
@@ -1688,7 +1688,7 @@ public class BVHAnimation : ScriptableObject {
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
-					Drawing.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Drawing.Magenta);
 				}
 				BVHFrame B = GetNextKey(A);
 				while(A != B) {
@@ -1696,10 +1696,10 @@ public class BVHAnimation : ScriptableObject {
 					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
 					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-					Drawing.DrawLine(prevPos, newPos, Utility.White);
+					Drawing.DrawLine(prevPos, newPos, Drawing.White);
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					Drawing.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Drawing.Magenta);
 					A = B;
 					B = GetNextKey(A);
 					if(B.Index > end) {
@@ -1713,7 +1713,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						Drawing.DrawCircle(top, 5f, Utility.White);
+						Drawing.DrawCircle(top, 5f, Drawing.White);
 					}
 					timestamp += 1f;
 				}
@@ -1730,7 +1730,7 @@ public class BVHAnimation : ScriptableObject {
 					Vector3 c = top;
 					Vector3 d = bottom;
 
-					Color yellow = Utility.Yellow;
+					Color yellow = Drawing.Yellow;
 					yellow.a = 0.25f;
 					Drawing.DrawTriangle(a, b, c, yellow);
 					Drawing.DrawTriangle(b, d, c, yellow);
@@ -1739,14 +1739,14 @@ public class BVHAnimation : ScriptableObject {
 				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
-				Drawing.DrawLine(top, bottom, Utility.Yellow);
-				Drawing.DrawCircle(top, 3f, Utility.Green);
-				Drawing.DrawCircle(bottom, 3f, Utility.Green);
+				Drawing.DrawLine(top, bottom, Drawing.Yellow);
+				Drawing.DrawCircle(top, 3f, Drawing.Green);
+				Drawing.DrawCircle(bottom, 3f, Drawing.Green);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
-				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
+				if(Utility.GUIButton(">", Drawing.DarkGrey, Drawing.White, 25f, 50f)) {
 					Animation.LoadFrame(GetNextKey(Animation.CurrentFrame));
 				}
 				EditorGUILayout.EndHorizontal();
@@ -1959,11 +1959,11 @@ public class BVHAnimation : ScriptableObject {
 		public void Inspector() {
 			Drawing.Begin();
 
-			Utility.SetGUIColor(Utility.LightGrey);
+			Utility.SetGUIColor(Drawing.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Utility.Orange);
+				Utility.SetGUIColor(Drawing.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Style Function");
@@ -1982,22 +1982,22 @@ public class BVHAnimation : ScriptableObject {
 					Styles[i].Name = EditorGUILayout.TextField(Styles[i].Name, GUILayout.Width(75f));
 					if(IsKey(Animation.CurrentFrame)) {
 						if(GetFlag(Animation.CurrentFrame, i)) {
-							if(Utility.GUIButton("On", Utility.DarkGreen, Color.white)) {
+							if(Utility.GUIButton("On", Drawing.DarkGreen, Color.white)) {
 								SetFlag(Animation.CurrentFrame, i, false);
 							}
 						} else {
-							if(Utility.GUIButton("Off", Utility.DarkRed, Color.white)) {
+							if(Utility.GUIButton("Off", Drawing.DarkRed, Color.white)) {
 								SetFlag(Animation.CurrentFrame, i, true);
 							}
 						}
 					} else {
 						EditorGUI.BeginDisabledGroup(true);
 						if(GetFlag(Animation.CurrentFrame, i)) {
-							if(Utility.GUIButton("On", Utility.DarkGreen, Color.white)) {
+							if(Utility.GUIButton("On", Drawing.DarkGreen, Color.white)) {
 								SetFlag(Animation.CurrentFrame, i, false);
 							}
 						} else {
-							if(Utility.GUIButton("Off", Utility.DarkRed, Color.white)) {
+							if(Utility.GUIButton("Off", Drawing.DarkRed, Color.white)) {
 								SetFlag(Animation.CurrentFrame, i, true);
 							}
 						}
@@ -2011,34 +2011,34 @@ public class BVHAnimation : ScriptableObject {
 				
 				if(Style == STYLE.Custom) {
 				EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Add Style", Utility.DarkGrey, Utility.White)) {
+					if(Utility.GUIButton("Add Style", Drawing.DarkGrey, Drawing.White)) {
 						AddStyle();
 					}
-					if(Utility.GUIButton("Remove Style", Utility.DarkGrey, Utility.White)) {
+					if(Utility.GUIButton("Remove Style", Drawing.DarkGrey, Drawing.White)) {
 						RemoveStyle();
 					}
 					EditorGUILayout.EndHorizontal();
 				}
 
 				if(IsKey(Animation.CurrentFrame)) {
-					if(Utility.GUIButton("Unset Key", Utility.Grey, Utility.White)) {
+					if(Utility.GUIButton("Unset Key", Drawing.Grey, Drawing.White)) {
 						SetKey(Animation.CurrentFrame, false);
 					}
 				} else {
-					if(Utility.GUIButton("Set Key", Utility.DarkGrey, Utility.White)) {
+					if(Utility.GUIButton("Set Key", Drawing.DarkGrey, Drawing.White)) {
 						SetKey(Animation.CurrentFrame, true);
 					}
 				}
 
 				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("<", Utility.DarkGrey, Utility.White, 25f, 50f)) {
+				if(Utility.GUIButton("<", Drawing.DarkGrey, Drawing.White, 25f, 50f)) {
 					Animation.LoadFrame(GetPreviousKey(Animation.CurrentFrame));
 				}
 
 				EditorGUILayout.BeginVertical(GUILayout.Height(50f));
 				Rect ctrl = EditorGUILayout.GetControlRect();
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
-				EditorGUI.DrawRect(rect, Utility.Black);
+				EditorGUI.DrawRect(rect, Drawing.Black);
 
 				float startTime = Animation.CurrentFrame.Timestamp-Animation.TimeWindow/2f;
 				float endTime = Animation.CurrentFrame.Timestamp+Animation.TimeWindow/2f;
@@ -2066,7 +2066,7 @@ public class BVHAnimation : ScriptableObject {
 				if(IsKey(A)) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
-					Drawing.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Drawing.Magenta);
 				}
 				
 				BVHFrame B = GetNextKey(A);
@@ -2086,7 +2086,7 @@ public class BVHAnimation : ScriptableObject {
 					
 					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					Drawing.DrawLine(bottom, top, Utility.Magenta);
+					Drawing.DrawLine(bottom, top, Drawing.Magenta);
 					
 					A = B;
 					B = GetNextKey(A);
@@ -2104,7 +2104,7 @@ public class BVHAnimation : ScriptableObject {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
 						top.x = rect.xMin + (float)(Animation.GetFrame(floor).Index-start)/elements * rect.width;
-						Drawing.DrawCircle(top, 5f, Utility.White);
+						Drawing.DrawCircle(top, 5f, Drawing.White);
 					}
 					timestamp += 1f;
 				}
@@ -2121,7 +2121,7 @@ public class BVHAnimation : ScriptableObject {
 					Vector3 c = top;
 					Vector3 d = bottom;
 
-					Color yellow = Utility.Yellow;
+					Color yellow = Drawing.Yellow;
 					yellow.a = 0.25f;
 					Drawing.DrawTriangle(a, b, c, yellow);
 					Drawing.DrawTriangle(b, d, c, yellow);
@@ -2130,14 +2130,14 @@ public class BVHAnimation : ScriptableObject {
 				//Current Pivot
 				top.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(Animation.CurrentFrame.Index-start)/elements * rect.width;
-				Drawing.DrawLine(top, bottom, Utility.Yellow);
-				Drawing.DrawCircle(top, 3f, Utility.Green);
-				Drawing.DrawCircle(bottom, 3f, Utility.Green);
+				Drawing.DrawLine(top, bottom, Drawing.Yellow);
+				Drawing.DrawCircle(top, 3f, Drawing.Green);
+				Drawing.DrawCircle(bottom, 3f, Drawing.Green);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();
 
-				if(Utility.GUIButton(">", Utility.DarkGrey, Utility.White, 25f, 50f)) {
+				if(Utility.GUIButton(">", Drawing.DarkGrey, Drawing.White, 25f, 50f)) {
 					Animation.LoadFrame(GetNextKey(Animation.CurrentFrame));
 				}
 				EditorGUILayout.EndHorizontal();

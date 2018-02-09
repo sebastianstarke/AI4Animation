@@ -143,7 +143,7 @@ public class Controller {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("Controller", Utility.DarkGrey, Utility.White)) {
+			if(Utility.GUIButton("Controller", Drawing.DarkGrey, Drawing.White)) {
 				Inspect = !Inspect;
 			}
 
@@ -157,7 +157,7 @@ public class Controller {
 					TurnRight = (KeyCode)EditorGUILayout.EnumPopup("Turn Right", TurnRight);
 					SetStyleCount(EditorGUILayout.IntField("Styles", Styles.Length));
 					for(int i=0; i<Styles.Length; i++) {
-						Utility.SetGUIColor(Utility.Grey);
+						Utility.SetGUIColor(Drawing.Grey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							Styles[i].Name = EditorGUILayout.TextField("Name", Styles[i].Name);
@@ -180,10 +180,10 @@ public class Controller {
 								}
 							}
 							
-							if(Utility.GUIButton("Add Multiplier", Utility.DarkGrey, Utility.White)) {
+							if(Utility.GUIButton("Add Multiplier", Drawing.DarkGrey, Drawing.White)) {
 								Styles[i].AddMultiplier();
 							}
-							if(Utility.GUIButton("Remove Multiplier", Utility.DarkGrey, Utility.White)) {
+							if(Utility.GUIButton("Remove Multiplier", Drawing.DarkGrey, Drawing.White)) {
 								Styles[i].RemoveMultiplier();
 							}
 						}
