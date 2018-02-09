@@ -25,8 +25,8 @@ public class DrawingDemo : MonoBehaviour {
 		//System.DateTime timestamp = Utility.GetTimestamp();
 		Drawing.Begin();
 		//Drawing.DrawWiredEllipse(Vector3.one, 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
-		Drawing.DrawWiredEllipsoid(Vector3.one, 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
-
+		//Drawing.DrawWiredEllipsoid(Vector3.one, 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
+		Drawing.DrawWiredPyramid(Vector3.one, Quaternion.identity, 1f, 1f, Color.cyan.Transparent(0.5f), Color.black);
 		//for(int i=0; i<1000; i++) {
 			//Drawing.DrawWiredSphere(Vector3.one, 1f, Color.cyan.Transparent(1f), Color.white);
 			//Drawing.DrawGrid(Vector3.zero, Quaternion.identity, 1000f, 1000f, 100, 100, Drawing.LightGrey);

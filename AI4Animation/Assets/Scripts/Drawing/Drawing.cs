@@ -47,6 +47,7 @@ public static class Drawing {
 	private static Mesh SphereMesh;
 	private static Mesh CylinderMesh;
 	private static Mesh CapsuleMesh;
+	private static Mesh PyramidMesh;
 	public static Mesh BoneMesh;
 
 	private static Vector3[] CircleWire;
@@ -55,6 +56,7 @@ public static class Drawing {
 	private static Vector3[] SphereWire;
 	private static Vector3[] CylinderWire;
 	private static Vector3[] CapsuleWire;
+	private static Vector3[] PyramidWire;
 	private static Vector3[] BoneWire;
 
 	//------------------------------------------------------------------------------------------
@@ -294,11 +296,11 @@ public static class Drawing {
 	}
 
 	public static void DrawPyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		//TODO
+		DrawMesh(PyramidMesh, position, rotation, new Vector3(width, height, width), color);
 	}
 
 	public static void DrawWirePyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		//TODO
+		DrawWireLines(PyramidWire, position, rotation, new Vector3(width, height, width), color);
 	}
 
 	public static void DrawWiredPyramid(Vector3 position, Quaternion rotation, float width, float height, Color pyramidColor, Color wireColor) {
@@ -446,6 +448,7 @@ public static class Drawing {
 		SphereMesh = GetPrimitiveMesh(PrimitiveType.Sphere);
 		CylinderMesh = GetPrimitiveMesh(PrimitiveType.Cylinder);
 		CapsuleMesh = GetPrimitiveMesh(PrimitiveType.Capsule);
+		PyramidMesh = CreatePyramidMesh();
 		BoneMesh = CreateBoneMesh();
 		//
 
@@ -456,6 +459,7 @@ public static class Drawing {
 		SphereWire = CreateSphereWire(Resolution);
 		CylinderWire = CreateCylinderWire(Resolution);
 		CapsuleWire = CreateCapsuleWire(Resolution);
+		PyramidWire = CreatePyramidWire();
 		BoneWire = CreateBoneWire();
 		//
 		
@@ -552,6 +556,37 @@ public static class Drawing {
 		return mesh;
 	}
 
+	private static Mesh CreatePyramidMesh() {
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
+		vertices.Add(new Vector3(-0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(-0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(-0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(-0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0f, 1f, 0f));
+		vertices.Add(new Vector3(0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0.5f, 0f, -0.5f));
+		vertices.Add(new Vector3(0f, 1f, 0f));
+		vertices.Add(new Vector3(0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(0f, 1f, 0f));
+		vertices.Add(new Vector3(-0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(-0.5f, 0f, 0.5f));
+		vertices.Add(new Vector3(0f, 1f, 0f));
+		vertices.Add(new Vector3(-0.5f, 0f, -0.5f));
+		for(int i=0; i<18; i++) {
+			triangles.Add(i);
+		}
+		Mesh mesh = new Mesh();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+		mesh.RecalculateNormals();
+		return mesh;
+	}
+
 	private static Mesh CreateBoneMesh() {
 		float size = 1f/7f;
 		List<Vector3> vertices = new List<Vector3>();
@@ -620,18 +655,15 @@ public static class Drawing {
 		Vector3 p3 = C; Vector3 p4 = D;
 		Vector3 p5 = -D; Vector3 p6 = -C;
 		Vector3 p7 = -B; Vector3 p8 = -A;
-
 		List<Vector3> points = new List<Vector3>();
 		points.Add(p1); points.Add(p2);
 		points.Add(p2); points.Add(p4);
 		points.Add(p4); points.Add(p3);
 		points.Add(p3); points.Add(p1);
-		
 		points.Add(p5); points.Add(p6);
 		points.Add(p6); points.Add(p8);
 		points.Add(p5); points.Add(p7);
 		points.Add(p7); points.Add(p8);
-
 		points.Add(p1); points.Add(p5);
 		points.Add(p2); points.Add(p6);
 		points.Add(p3); points.Add(p7);
@@ -709,6 +741,27 @@ public static class Drawing {
 		return points.ToArray();
 	}
 
+	private static Vector3[] CreatePyramidWire() {
+		List<Vector3> points = new List<Vector3>();
+		points.Add(new Vector3(-0.5f, 0f, -0.5f));
+		points.Add(new Vector3(0.5f, 0f, -0.5f));
+		points.Add(new Vector3(0.5f, 0f, -0.5f));
+		points.Add(new Vector3(0.5f, 0f, 0.5f));
+		points.Add(new Vector3(0.5f, 0f, 0.5f));
+		points.Add(new Vector3(-0.5f, 0f, 0.5f));
+		points.Add(new Vector3(-0.5f, 0f, 0.5f));
+		points.Add(new Vector3(-0.5f, 0f, -0.5f));
+		points.Add(new Vector3(-0.5f, 0f, -0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(0.5f, 0f, -0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(-0.5f, 0f, 0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		points.Add(new Vector3(0.5f, 0f, 0.5f));
+		points.Add(new Vector3(0f, 1f, 0f));
+		return points.ToArray();
+	}
+
 	private static Vector3[] CreateBoneWire() {
 		float size = 1f/7f;
 		List<Vector3> points = new List<Vector3>();
@@ -720,7 +773,6 @@ public static class Drawing {
 		points.Add(new Vector3(-size, size, 0.200f));
 		points.Add(new Vector3(0.000f, 0.000f, 0.000f));
 		points.Add(new Vector3(size, size, 0.200f));
-
 		points.Add(new Vector3(-size, -size, 0.200f));
 		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
 		points.Add(new Vector3(size, -size, 0.200f));
@@ -729,7 +781,6 @@ public static class Drawing {
 		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
 		points.Add(new Vector3(size, size, 0.200f));
 		points.Add(new Vector3(0.000f, 0.000f, 1.000f));
-
 		points.Add(new Vector3(-size, -size, 0.200f));
 		points.Add(new Vector3(size, -size, 0.200f));
 		points.Add(new Vector3(size, -size, 0.200f));
