@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class Drawing {
+public static class UltiDraw {
 
 	public static Color White = Color.white;
 	public static Color Black = Color.black;
@@ -39,7 +39,7 @@ public static class Drawing {
 	private static Quaternion ViewRotation;
 
 	private static PROGRAM Program = PROGRAM.NONE;
-	private enum PROGRAM {NONE, LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, QUADS};
+	private enum PROGRAM {NONE, LINES, TRIANGLES, TRIANGLE_STRIP, QUADS};
 
 	private static Mesh CircleMesh;
 	private static Mesh QuadMesh;
@@ -88,6 +88,21 @@ public static class Drawing {
 		}
 	}
 
+	public static void SetDepthRendering(bool enabled) {
+		Initialise();
+		SetProgram(PROGRAM.NONE);
+		GLMaterial.SetInt("_ZWrite", enabled ? 1 : 0);
+		GLMaterial.SetInt("_ZTest", enabled ? (int)UnityEngine.Rendering.CompareFunction.LessEqual : (int)UnityEngine.Rendering.CompareFunction.Always);
+		MeshMaterial.SetInt("_ZWrite", enabled ? 1 : 0);
+		MeshMaterial.SetInt("_ZTest", enabled ? (int)UnityEngine.Rendering.CompareFunction.LessEqual : (int)UnityEngine.Rendering.CompareFunction.Always);
+	}
+
+	public static void SetSpatialRendering(float value) {
+		Initialise();
+		SetProgram(PROGRAM.NONE);
+		MeshMaterial.SetFloat("_Power", value);
+	}
+
 	//------------------------------------------------------------------------------------------
 	//2D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
@@ -116,6 +131,35 @@ public static class Drawing {
 		GL.Vertex(start+orthoStart);
     }
 
+	/*
+	public static void DrawLines(Vector3[] points, Color color) {
+		if(Return()) {return;};
+		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
+		for(int i=0; i<points.Length-1; i++) {
+			GL.Vertex(points[i]);
+			GL.Vertex(points[i+1]);
+		}
+	}
+
+	public static void DrawLines(Vector3[] points, float width, Color color) {
+		if(Return()) {return;};
+		SetProgram(PROGRAM.LINES);
+		GL.Color(color);
+		for(int i=0; i<points.Length-1; i++) {
+			Vector3 start = points[i];
+			Vector3 end = points[i+1];
+			Vector3 dir = (end-start).normalized;
+			Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
+			Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
+			GL.Vertex(end+orthoEnd);
+			GL.Vertex(end-orthoEnd);
+			GL.Vertex(start-orthoStart);
+			GL.Vertex(start+orthoStart);
+		}
+	}
+	*/
+
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.TRIANGLES);
@@ -134,11 +178,11 @@ public static class Drawing {
 	}
 
 	public static void DrawWireCircle(Vector3 position, float size, Color color) {
-		DrawWireLineStrip(CircleWire, position, ViewRotation, size*Vector3.one, color);
+		DrawWireLines(CircleWire, position, ViewRotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWireCircle(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawWireLineStrip(CircleWire, position, rotation, size*Vector3.one, color);
+		DrawWireLines(CircleWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCircle(Vector3 position, float size, Color circleColor, Color wireColor) {
@@ -160,11 +204,11 @@ public static class Drawing {
 	}
 
 	public static void DrawWireEllipse(Vector3 position, float width, float height, Color color) {
-		DrawWireLineStrip(CircleWire, position, ViewRotation, new Vector3(width, height, 1f), color);
+		DrawWireLines(CircleWire, position, ViewRotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWireEllipse(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLineStrip(CircleWire, position, rotation, new Vector3(width, height, 1f), color);
+		DrawWireLines(CircleWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredEllipse(Vector3 position, float width, float height, Color ellipseColor, Color wireColor) {
@@ -211,7 +255,7 @@ public static class Drawing {
 	}
 
 	public static void DrawWireQuad(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLineStrip(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
+		DrawWireLines(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredQuad(Vector3 position, Quaternion rotation, float width, float height, Color quadColor, Color wireColor) {
@@ -375,6 +419,20 @@ public static class Drawing {
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
+	public static void DrawFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax) {
+		DrawGUIRectangle(center, size, Color.black);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			DrawGUILine(
+				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
+				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
+				Color.cyan
+			);
+		}
+	}
+
 	//------------------------------------------------------------------------------------------
 	//GUI DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
@@ -411,19 +469,19 @@ public static class Drawing {
 		GL.Vertex(Camera.ScreenToWorldPoint(p2-ortho));
     }
 
-	public static void DrawGUIRectangle(Vector2 center, float width, float height, Color color) {
+	public static void DrawGUIRectangle(Vector2 center, Vector2 size, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS);
 		GL.Color(color);
 		center.x *= Screen.width;
 		center.y *= Screen.height;
-		width *= Screen.width;
-		height *= Screen.height;
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+width/2f, center.y-height/2f, Camera.nearClipPlane + GUIOffset)));
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x-width/2f, center.y-height/2f, Camera.nearClipPlane + GUIOffset)));
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+-width/2f, center.y+height/2f, Camera.nearClipPlane + GUIOffset)));
-		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+width/2f, center.y+height/2f, Camera.nearClipPlane + GUIOffset)));
+		size.x *= Screen.width;
+		size.y *= Screen.height;
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+size.x/2f, center.y-size.y/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x-size.x/2f, center.y-size.y/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+-size.x/2f, center.y+size.y/2f, Camera.nearClipPlane + GUIOffset)));
+		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+size.x/2f, center.y+size.y/2f, Camera.nearClipPlane + GUIOffset)));
 	}
 
 	public static void DrawGUITriangle(Vector2 a, Vector2 b, Vector2 c, Color color) {
@@ -524,9 +582,6 @@ public static class Drawing {
 					case PROGRAM.LINES:
 					GL.Begin(GL.LINES);
 					break;
-					case PROGRAM.LINE_STRIP:
-					GL.Begin(GL.LINE_STRIP);
-					break;
 					case PROGRAM.TRIANGLES:
 					GL.Begin(GL.TRIANGLES);
 					break;
@@ -548,15 +603,6 @@ public static class Drawing {
 		for(int i=0; i<points.Length; i+=2) {
 			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
 			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i+1]));
-		}
-	}
-
-	private static void DrawWireLineStrip(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
-		if(Return()) {return;};
-		SetProgram(PROGRAM.LINE_STRIP);
-		GL.Color(color);
-		for(int i=0; i<points.Length; i++) {
-			GL.Vertex(position + rotation * Vector3.Scale(scale, points[i]));
 		}
 	}
 
@@ -707,8 +753,9 @@ public static class Drawing {
 	private static Vector3[] CreateCircleWire(int resolution) {
 		List<Vector3> points = new List<Vector3>();
 		float step = 360.0f / (float)resolution;
-		for(int i=0; i<=resolution; i++) {
+		for(int i=0; i<resolution; i++) {
 			points.Add(Quaternion.Euler(0f, 0f, i*step) * new Vector3(0f, 0.5f, 0f));
+			points.Add(Quaternion.Euler(0f, 0f, (i+1)*step) * new Vector3(0f, 0.5f, 0f));
 		}
 		return points.ToArray();
 	}
@@ -890,6 +937,18 @@ public static class Drawing {
 
 	public static Color Transparent(this Color color, float opacity) {
 		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
+	}
+
+	public static Color[] GetRainbowColors(int number) {
+		Color[] colors = new Color[number];
+		for(int i=0; i<number; i++) {
+			float frequency = 5f/number;
+			colors[i].r = Utility.Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].g = Utility.Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].b = Utility.Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].a = 1f;
+		}
+		return colors;
 	}
 
 }

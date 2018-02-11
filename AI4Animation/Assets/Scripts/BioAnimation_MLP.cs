@@ -533,27 +533,27 @@ public class BioAnimation_MLP : MonoBehaviour {
 		}
 
 		if(name == "Wolf_MLP_P") {
-			Drawing.Begin();
-			Drawing.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, Drawing.Black.Transparent(0.5f));
+			UltiDraw.Begin();
+			UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
 			Quaternion rotation = Quaternion.AngleAxis(-360f * Phase, Vector3.forward);
 			Vector2 a = rotation * new Vector2(-0.005f, 0f);
 			Vector2 b = rotation *new Vector3(0.005f, 0f);
 			Vector3 c = rotation * new Vector3(0f, 0.075f);
-			Drawing.DrawGUITriangle(
+			UltiDraw.DrawGUITriangle(
 				new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y),
 				new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y),
 				new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y),
-				Drawing.Cyan
+				UltiDraw.Cyan
 			);
-			Drawing.End();
+			UltiDraw.End();
 		}
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
-				Drawing.Begin();
-				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, Drawing.Red.Transparent(0.75f));
-				Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, Drawing.Green.Transparent(0.75f));
-				Drawing.End();
+				UltiDraw.Begin();
+				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Red.Transparent(0.75f));
+				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, UltiDraw.Green.Transparent(0.75f));
+				UltiDraw.End();
 				Trajectory.Draw(10);
 			}
 		}
@@ -565,21 +565,21 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 		if(ShowVelocities) {
 			if(Application.isPlaying) {
-				Drawing.Begin();
+				UltiDraw.Begin();
 				for(int i=0; i<Joints.Length; i++) {
 					Character.Segment segment = Character.FindSegment(Joints[i].name);
 					if(segment != null) {
-						Drawing.DrawArrow(
+						UltiDraw.DrawArrow(
 							Joints[i].position,
 							Joints[i].position + Velocities[i] * 60f,
 							0.75f,
 							0.0075f,
 							0.05f,
-							Drawing.Purple.Transparent(0.5f)
+							UltiDraw.Purple.Transparent(0.5f)
 						);
 					}
 				}
-				Drawing.End();
+				UltiDraw.End();
 			}
 		}
 	}
@@ -614,7 +614,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 		}
 
 		private void Inspector() {			
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -625,7 +625,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 					}
 				}
 
-				if(Utility.GUIButton("Animation", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Animation", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 
@@ -639,10 +639,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
 
 						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Add IK Solver", Drawing.Brown, Drawing.White)) {
+						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
 							Utility.Expand(ref Target.IKSolvers);
 						}
-						if(Utility.GUIButton("Remove IK Solver", Drawing.Brown, Drawing.White)) {
+						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
 							Utility.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
@@ -655,14 +655,14 @@ public class BioAnimation_MLP : MonoBehaviour {
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-						if(Utility.GUIButton("Auto Detect", Drawing.DarkGrey, Drawing.White)) {
+						if(Utility.GUIButton("Auto Detect", UltiDraw.DarkGrey, UltiDraw.White)) {
 							Target.AutoDetect();
 						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
-								Utility.SetGUIColor(Drawing.Green);
+								Utility.SetGUIColor(UltiDraw.Green);
 							} else {
-								Utility.SetGUIColor(Drawing.Red);
+								Utility.SetGUIColor(UltiDraw.Red);
 							}
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));

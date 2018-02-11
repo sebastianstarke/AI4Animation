@@ -67,13 +67,13 @@ public class Skinning : MonoBehaviour {
 		}
 
 		private void Inspector() {
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				Target.NewSkeleton = (GameObject)EditorGUILayout.ObjectField("Skeleton", Target.NewSkeleton, typeof(GameObject), true);
 				Target.BendRange = EditorGUILayout.FloatField("Bend Range", Target.BendRange);
 				Target.BendFactor = EditorGUILayout.FloatField("Bend Factor", Target.BendFactor);
-				if(Utility.GUIButton("Process", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Process", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.Process();
 				}
 			}

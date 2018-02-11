@@ -14,16 +14,16 @@ public class BioVisualisation : MonoBehaviour {
 	public Button CanvasToggle;
 
 	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Move, Jump, Sit, Lie, Stand;
-	public Color Active = Drawing.Orange;
-	public Color Inactive = Drawing.DarkGrey;
+	public Color Active = UltiDraw.Orange;
+	public Color Inactive = UltiDraw.DarkGrey;
 
 	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics, MotionTrails;
-	public Color VisualisationEnabled = Drawing.Cyan;
-	public Color VisualisationDisabled = Drawing.Grey;
+	public Color VisualisationEnabled = UltiDraw.Cyan;
+	public Color VisualisationDisabled = UltiDraw.Grey;
 
 	public Button SmoothFollow, ConstantView, Static;
-	public Color CameraEnabled = Drawing.Mustard;
-	public Color CameraDisabled = Drawing.LightGrey;
+	public Color CameraEnabled = UltiDraw.Mustard;
+	public Color CameraDisabled = UltiDraw.LightGrey;
 
 	public Slider Yaw, Pitch, FOV;
 
@@ -87,7 +87,7 @@ public class BioVisualisation : MonoBehaviour {
 			_x = x + (float)(_index)/(float)(Frames-1) * width;
 			_y = y - height + value*height;
 			if(_index > 0) {
-				Drawing.DrawGUILine(
+				UltiDraw.DrawGUILine(
 					new Vector2(_xPrev,	_yPrev),
 					new Vector2(_x, _y),
 					0.002f,
@@ -228,21 +228,21 @@ public class BioVisualisation : MonoBehaviour {
 		}
 
 		if(DrawCW) {
-			Drawing.Begin();
+			UltiDraw.Begin();
 			Vector2 center = new Vector2(0.5f, 0.1f);
 			float width = 0.95f;
 			float height = 0.1f;
 			float border = 0.0025f;
-			Drawing.DrawGUIRectangle(
+			UltiDraw.DrawGUIRectangle(
 				center,
-				width+2f*border/Screen.width*Screen.height, height+2f*border, 
-				Drawing.Black);
-			Drawing.DrawGUIRectangle(
+				new Vector2(width+2f*border/Screen.width*Screen.height, height+2f*border),
+				UltiDraw.Black);
+			UltiDraw.DrawGUIRectangle(
 				center,
-				width, height, 
-				Drawing.White);
+				new Vector2(width, height),
+				UltiDraw.White);
 
-			Color[] colors = Utility.GetRainbowColors(Animation.APFNN.ControlWeights);
+			Color[] colors = UltiDraw.GetRainbowColors(Animation.APFNN.ControlWeights);
 			for(int i=0; i<colors.Length; i++) {
 				DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, CW[i], colors[i]);
 			}
@@ -252,7 +252,7 @@ public class BioVisualisation : MonoBehaviour {
 			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
 			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
 			*/
-			Drawing.End();
+			UltiDraw.End();
 		}
 
 		for(int i=0; i<Trails.Length; i++) {
@@ -277,17 +277,17 @@ public class BioVisualisation : MonoBehaviour {
 		}
 
 		public void Draw(float width, Color color) {
-			Drawing.Begin();
+			UltiDraw.Begin();
 			int index = 0;
 			Vector3 previous = Vector3.zero;
 			foreach(Vector3 position in Positions) {
 				if(index > 1) {
-					Drawing.DrawLine(previous, position, width, color);
+					UltiDraw.DrawLine(previous, position, width, color);
 				}
 				previous = position;
 				index += 1;
 			}
-			Drawing.End();
+			UltiDraw.End();
 		}
 	}
 

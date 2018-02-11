@@ -24,7 +24,7 @@ public class DemoAnimation_Editor : Editor {
 		}
 
 		private void Inspector() {
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
@@ -35,7 +35,7 @@ public class DemoAnimation_Editor : Editor {
 					}
 				}
 
-				if(Utility.GUIButton("Animation", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Animation", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.Inspect = !Target.Inspect;
 				}
 				
@@ -48,14 +48,14 @@ public class DemoAnimation_Editor : Editor {
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
 						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-						if(Utility.GUIButton("Auto Detect", Drawing.DarkGrey, Drawing.White)) {
+						if(Utility.GUIButton("Auto Detect", UltiDraw.DarkGrey, UltiDraw.White)) {
 							Target.AutoDetect();
 						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
-								Utility.SetGUIColor(Drawing.Green);
+								Utility.SetGUIColor(UltiDraw.Green);
 							} else {
-								Utility.SetGUIColor(Drawing.Red);
+								Utility.SetGUIColor(UltiDraw.Red);
 							}
 							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField("Joint " + (i+1), Target.Joints[i], typeof(Transform), true));
 							Utility.ResetGUIColor();

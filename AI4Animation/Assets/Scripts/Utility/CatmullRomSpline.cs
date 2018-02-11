@@ -102,23 +102,23 @@ public class CatmullRomSpline : MonoBehaviour {
 		}
 		Trajectory.Draw(10);
 		
-		Drawing.Begin();
+		UltiDraw.Begin();
 		if(Positions.Count > 1) {
 			for(int i=1; i<Positions.Count; i++) {
-				Drawing.DrawLine(Positions[i-1], Positions[i], 0.025f, Drawing.DarkGreen.Transparent(0.75f));
+				UltiDraw.DrawLine(Positions[i-1], Positions[i], 0.025f, UltiDraw.DarkGreen.Transparent(0.75f));
 			}
 		}
-		Drawing.End();
+		UltiDraw.End();
 
 		if(Visualise) {
-			Drawing.Begin();
+			UltiDraw.Begin();
 			for(int i=10; i<Trajectory.Points.Length-60; i+=10) {
-				Drawing.DrawLine(Trajectory.Points[i-10].GetPosition(), Trajectory.Points[i].GetPosition(), 0.075f, Drawing.Magenta);
+				UltiDraw.DrawLine(Trajectory.Points[i-10].GetPosition(), Trajectory.Points[i].GetPosition(), 0.075f, UltiDraw.Magenta);
 			}
 			//for(int i=0; i<ControlPoints.Length; i++) {
 			//	UnityGL.DrawSphere(ControlPoints[i].position, 0.05f, Utility.Cyan.Transparent(0.75f));
 			//}
-			Drawing.End();
+			UltiDraw.End();
 		}
 
 		/*

@@ -13,8 +13,8 @@ public class Character {
 	public Segment[] Hierarchy = new Segment[0];
 
 	public float BoneSize = 0.025f;
-	public Color BoneColor = Drawing.Black;
-	public Color JointColor = Drawing.Mustard;
+	public Color BoneColor = UltiDraw.Black;
+	public Color JointColor = UltiDraw.Mustard;
 	public bool DrawSkeleton = true;
 	public bool DrawTransforms = false;
 
@@ -289,7 +289,7 @@ public class Character {
 	}
 
 	public void Draw(Color boneColor, Color jointColor, float alpha) {
-		Drawing.Begin();
+		UltiDraw.Begin();
 
 		if(DrawSkeleton) {
 			Action<Segment, Segment> recursion = null;
@@ -298,14 +298,14 @@ public class Character {
 					return;
 				}
 				if(parent != null) {
-					Drawing.DrawSphere(
+					UltiDraw.DrawSphere(
 						parent.GetTransformation().GetPosition(),
 						5f/8f * BoneSize,
 						jointColor.Transparent(alpha)
 					);
 					float distance = Vector3.Distance(parent.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition());
 					if(distance > 0.05f) {
-						Drawing.DrawBone(
+						UltiDraw.DrawBone(
 							parent.GetTransformation().GetPosition(),
 							Quaternion.FromToRotation(parent.GetTransformation().GetForward(), segment.GetTransformation().GetPosition() - parent.GetTransformation().GetPosition()) * parent.GetTransformation().GetRotation(),
 							4f*BoneSize, distance,
@@ -324,10 +324,10 @@ public class Character {
 		if(DrawTransforms) {
 			Action<Segment> recursion = null;
 			recursion = new Action<Segment>((segment) => {
-				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-				Drawing.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-				//Drawing.DrawTranslateGizmo(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetRotation(), 0.075f);
+				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+				//UltiDraw.DrawTranslateGizmo(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetRotation(), 0.075f);
 				for(int i=0; i<segment.GetChildCount(); i++) {
 					recursion(segment.GetChild(Hierarchy, i));
 				}
@@ -335,14 +335,14 @@ public class Character {
 			recursion(GetRoot());
 		}
 
-		Drawing.End();
+		UltiDraw.End();
 	}
 
 	
 	public void DrawSimple() {
-		Drawing.Begin();
+		UltiDraw.Begin();
 		DrawSimple(GetRoot());
-		Drawing.End();
+		UltiDraw.End();
 	}
 
 	private void DrawSimple(Segment segment) {
@@ -351,9 +351,9 @@ public class Character {
 		}
 		for(int i=0; i<segment.GetChildCount(); i++) {
 			Segment child = segment.GetChild(Hierarchy, i);
-			Drawing.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
+			UltiDraw.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
 		}
-		Drawing.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
+		UltiDraw.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
 		for(int i=0; i<segment.GetChildCount(); i++) {
 			DrawSimple(segment.GetChild(Hierarchy, i));
 		}
@@ -364,7 +364,7 @@ public class Character {
 		Utility.SetGUIColor(Color.grey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("Character", Drawing.DarkGrey, Drawing.White)) {
+			if(Utility.GUIButton("Character", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Inspect = !Inspect;
 			}
 
@@ -376,7 +376,7 @@ public class Character {
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
-					if(Utility.GUIButton("Clear", Drawing.DarkRed, Drawing.White)) {
+					if(Utility.GUIButton("Clear", UltiDraw.DarkRed, UltiDraw.White)) {
 						Utility.Clear(ref Hierarchy);
 					}
 					if(root == null) {
@@ -395,7 +395,7 @@ public class Character {
 
 	private void InspectHierarchy(Transform root, Transform transform, int indent) {
 		Segment segment = FindSegment(transform.name);
-		Utility.SetGUIColor(segment == null ? Drawing.White : Drawing.LightGrey);
+		Utility.SetGUIColor(segment == null ? UltiDraw.White : UltiDraw.LightGrey);
 		using(new EditorGUILayout.HorizontalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();
@@ -405,7 +405,7 @@ public class Character {
 			EditorGUILayout.LabelField("-", GUILayout.Width(20f));
 			EditorGUILayout.LabelField(transform.name, GUILayout.Width(100f), GUILayout.Height(20f));
 			GUILayout.FlexibleSpace();
-			if(Utility.GUIButton("Bone", segment == null ? Drawing.White : Drawing.DarkGrey, segment == null ? Drawing.DarkGrey : Drawing.White)) {
+			if(Utility.GUIButton("Bone", segment == null ? UltiDraw.White : UltiDraw.DarkGrey, segment == null ? UltiDraw.DarkGrey : UltiDraw.White)) {
 				if(segment == null) {
 					string[] names = GetBoneNames();
 					Utility.Add(ref names, transform.name);
@@ -424,7 +424,7 @@ public class Character {
 	}
 
 	private void InspectHierarchy(Segment segment, int indent) {
-		Utility.SetGUIColor(Drawing.LightGrey);
+		Utility.SetGUIColor(UltiDraw.LightGrey);
 		using(new EditorGUILayout.HorizontalScope ("Box")) {
 			Utility.ResetGUIColor();
 			EditorGUILayout.BeginHorizontal();

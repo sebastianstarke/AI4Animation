@@ -31,18 +31,18 @@ public class MotionTrail : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		Drawing.Begin();
+		UltiDraw.Begin();
 		int index = 0;
 		//GameObject previous = null;
 		foreach(GameObject instance in Instances) {
 			index += 1;
 			instance.GetComponent<Transparency>().SetTransparency(0.25f);
 			if(index > 1) {
-				Drawing.DrawSphere(instance.transform.position, 0.025f, Drawing.Magenta.Transparent(0.8f));
+				UltiDraw.DrawSphere(instance.transform.position, 0.025f, UltiDraw.Magenta.Transparent(0.8f));
 			}
 			//previous = instance;
 		}
-		Drawing.End();
+		UltiDraw.End();
 	}
 
 	void OnGUI() {

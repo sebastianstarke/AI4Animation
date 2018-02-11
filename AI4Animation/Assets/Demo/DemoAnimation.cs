@@ -360,10 +360,10 @@ public class DemoAnimation : MonoBehaviour {
 
 	void OnRenderObject() {
 		if(Application.isPlaying) {
-			Drawing.Begin();
-			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, Drawing.Red.Transparent(0.75f));
-			Drawing.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, Drawing.Green.Transparent(0.75f));
-			Drawing.End();
+			UltiDraw.Begin();
+			UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Red.Transparent(0.75f));
+			UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, UltiDraw.Green.Transparent(0.75f));
+			UltiDraw.End();
 			Trajectory.Draw(10);
 		}
 
@@ -373,21 +373,21 @@ public class DemoAnimation : MonoBehaviour {
 		Character.Draw();
 		
 		if(Application.isPlaying) {
-			Drawing.Begin();
+			UltiDraw.Begin();
 			for(int i=0; i<Joints.Length; i++) {
 				Character.Segment segment = Character.FindSegment(Joints[i].name);
 				if(segment != null) {
-					Drawing.DrawArrow(
+					UltiDraw.DrawArrow(
 						Joints[i].position,
 						Joints[i].position + Velocities[i],
 						0.75f,
 						0.0075f,
 						0.05f,
-						Drawing.Cyan.Transparent(0.75f)
+						UltiDraw.Cyan.Transparent(0.75f)
 					);
 				}
 			}
-			Drawing.End();
+			UltiDraw.End();
 		}
 	}
 

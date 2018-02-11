@@ -52,15 +52,15 @@ public class BVHEditor : EditorWindow {
 	}
 
 	void OnGUI() {
-		Utility.SetGUIColor(Drawing.Black);
+		Utility.SetGUIColor(UltiDraw.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Drawing.Orange);
+				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Importer");
@@ -85,16 +85,16 @@ public class BVHEditor : EditorWindow {
 					}
 					EditorGUILayout.EndHorizontal();
 				}
-				if(Utility.GUIButton("Load", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Load();
 				}
 			}
 
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Drawing.Orange);
+				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					Load((BVHAnimation)EditorGUILayout.ObjectField("Animation", Animation, typeof(BVHAnimation), false));

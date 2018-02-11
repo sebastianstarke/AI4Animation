@@ -161,49 +161,49 @@ public class Trajectory {
 	}
 
 	public void Draw(int step=1) {
-		Drawing.Begin();
+		UltiDraw.Begin();
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
-			Drawing.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, Drawing.Black);
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, UltiDraw.Black);
 		}
 
 		//Projections
 		for(int i=0; i<Points.Length; i+=step) {
 		//	Vector3 right = Points[i].GetRightSample();
 		//	Vector3 left = Points[i].GetLeftSample();
-		//	Drawing.DrawCircle(right, 0.01f, Utility.Yellow);
-		//	Drawing.DrawCircle(left, 0.01f, Utility.Yellow);
+		//	UltiDraw.DrawCircle(right, 0.01f, Utility.Yellow);
+		//	UltiDraw.DrawCircle(left, 0.01f, Utility.Yellow);
 		}
 
 		//Velocities
-		Color transparentVelocity = Drawing.DarkGreen.Transparent(0.25f);
+		Color transparentVelocity = UltiDraw.DarkGreen.Transparent(0.25f);
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
 			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
 			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			Drawing.DrawLine(start, end, 0.025f, 0f, transparentVelocity);
+			UltiDraw.DrawLine(start, end, 0.025f, 0f, transparentVelocity);
 		}
 
 		//Directions
-		Color transparentDirection = Drawing.Orange.Transparent(0.75f);
+		Color transparentDirection = UltiDraw.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
 			Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
 			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			Drawing.DrawLine(start, end, 0.025f, 0f, transparentDirection);
+			UltiDraw.DrawLine(start, end, 0.025f, 0f, transparentDirection);
 		}
 		
 		//Slopes
 		//Color transparentSlope = Utility.Blue.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-		//	Drawing.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
+		//	UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
 		}
 
 		//Positions
 		for(int i=0; i<Points.Length; i+=step) {
-			Drawing.DrawCircle(Points[i].GetPosition(), 0.025f, Drawing.Black);
+			UltiDraw.DrawCircle(Points[i].GetPosition(), 0.025f, UltiDraw.Black);
 		}
-		Drawing.End();
+		UltiDraw.End();
 	}
 
 }

@@ -258,18 +258,6 @@ public static class Utility {
 		return normal;
 	}
 
-	public static Color[] GetRainbowColors(int number) {
-		Color[] colors = new Color[number];
-		for(int i=0; i<number; i++) {
-			float frequency = 5f/number;
-			colors[i].r = Utility.Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].g = Utility.Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].b = Utility.Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].a = 1f;
-		}
-		return colors;
-	}
-
 	public static void Destroy(UnityEngine.Object o) {
 		if(Application.isPlaying) {
 			GameObject.Destroy(o);

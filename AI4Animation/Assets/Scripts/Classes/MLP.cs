@@ -99,7 +99,7 @@ public class MLP {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("MLP", Drawing.DarkGrey, Drawing.White)) {
+			if(Utility.GUIButton("MLP", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Inspect = !Inspect;
 			}
 

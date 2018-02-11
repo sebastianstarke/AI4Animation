@@ -21,40 +21,40 @@ public class BVHProcessor : EditorWindow {
 	}
 
 	void OnGUI() {
-		Utility.SetGUIColor(Drawing.Black);
+		Utility.SetGUIColor(UltiDraw.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
 
-			Utility.SetGUIColor(Drawing.Grey);
+			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(Drawing.Orange);
+				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("Processor");
 				}
 
-				if(Utility.GUIButton("Export Labels", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Export Labels", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ExportLabels();
 				}
-				if(Utility.GUIButton("Export Data", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Export Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ExportData();
 				}
-				if(Utility.GUIButton("Export Root Velocities", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Export Root Velocities", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ExportRootVelocities();
 				}
-				if(Utility.GUIButton("Data Distribution", Drawing.DarkGrey, Drawing.White)) {
+				if(Utility.GUIButton("Data Distribution", UltiDraw.DarkGrey, UltiDraw.White)) {
 					PrintDataDistribution();
 				}
 
 				EditorGUILayout.BeginHorizontal();
-				if(Utility.GUIButton("Enable All", Drawing.Grey, Drawing.White)) {
+				if(Utility.GUIButton("Enable All", UltiDraw.Grey, UltiDraw.White)) {
 					for(int i=0; i<Use.Length; i++) {
 						Use[i] = true;
 					}
 				}
-				if(Utility.GUIButton("Disable All", Drawing.Grey, Drawing.White)) {
+				if(Utility.GUIButton("Disable All", UltiDraw.Grey, UltiDraw.White)) {
 					for(int i=0; i<Use.Length; i++) {
 						Use[i] = false;
 					}
@@ -63,12 +63,12 @@ public class BVHProcessor : EditorWindow {
 
 				EditorGUILayout.LabelField("Export Time: " + GetExportTime() + "s");
 				
-                if(Utility.GUIButton("Fix Data", Drawing.DarkGreen, Drawing.White)) {
+                if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
 						//animation.ComputeTrajectory();
-						animation.Character.BoneColor = Drawing.Cyan;
-						animation.Character.JointColor = Drawing.Mustard;
+						animation.Character.BoneColor = UltiDraw.Cyan;
+						animation.Character.JointColor = UltiDraw.Mustard;
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -85,9 +85,9 @@ public class BVHProcessor : EditorWindow {
 
 					for(int i=0; i<Animations.Length; i++) {
 						if(Use[i]) {
-							Utility.SetGUIColor(Drawing.DarkGreen);
+							Utility.SetGUIColor(UltiDraw.DarkGreen);
 						} else {
-							Utility.SetGUIColor(Drawing.DarkRed);
+							Utility.SetGUIColor(UltiDraw.DarkRed);
 						}
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
