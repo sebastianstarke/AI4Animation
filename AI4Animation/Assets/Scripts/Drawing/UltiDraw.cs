@@ -114,17 +114,17 @@ public static class UltiDraw {
 		GL.Vertex(end);
 	}
 
-    public static void DrawLine(Vector3 start, Vector3 end, float width, Color color) {
-		DrawLine(start, end, width, width, color);
+    public static void DrawLine(Vector3 start, Vector3 end, float thickness, Color color) {
+		DrawLine(start, end, thickness, thickness, color);
     }
 
-    public static void DrawLine(Vector3 start, Vector3 end, float startWidth, float endWidth, Color color) {
+    public static void DrawLine(Vector3 start, Vector3 end, float startThickness, float endThickness, Color color) {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.QUADS);
 		GL.Color(color);
 		Vector3 dir = (end-start).normalized;
-		Vector3 orthoStart = startWidth/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
-		Vector3 orthoEnd = endWidth/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
+		Vector3 orthoStart = startThickness/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
+		Vector3 orthoEnd = endThickness/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
 		GL.Vertex(end+orthoEnd);
 		GL.Vertex(end-orthoEnd);
 		GL.Vertex(start-orthoStart);
@@ -419,20 +419,6 @@ public static class UltiDraw {
 		Graphics.DrawMeshNow(mesh, Matrix4x4.TRS(position, rotation, scale));
 	}
 
-	public static void DrawFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax) {
-		DrawGUIRectangle(center, size, Color.black);
-		float x = center.x - size.x/2f;
-		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
-		for(int i=0; i<values.Length-1; i++) {
-			DrawGUILine(
-				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
-				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
-				Color.cyan
-			);
-		}
-	}
-
 	//------------------------------------------------------------------------------------------
 	//GUI DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
@@ -449,7 +435,7 @@ public static class UltiDraw {
 		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset)));
 	}
 
-    public static void DrawGUILine(Vector2 start, Vector2 end, float width, Color color) {
+    public static void DrawGUILine(Vector2 start, Vector2 end, float thickness, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS);
@@ -458,11 +444,11 @@ public static class UltiDraw {
 		start.y *= Screen.height;
 		end.x *= Screen.width;
 		end.y *= Screen.height;
-		width *= Screen.width;
+		thickness *= Screen.width;
 		Vector3 p1 = new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset);
 		Vector3 p2 = new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset);
 		Vector3 dir = end-start;
-		Vector3 ortho = width/2f * (Quaternion.AngleAxis(90f, Vector3.forward) * dir).normalized;
+		Vector3 ortho = thickness/2f * (Quaternion.AngleAxis(90f, Vector3.forward) * dir).normalized;
         GL.Vertex(Camera.ScreenToWorldPoint(p1-ortho));
 		GL.Vertex(Camera.ScreenToWorldPoint(p1+ortho));
 		GL.Vertex(Camera.ScreenToWorldPoint(p2+ortho));
@@ -510,6 +496,71 @@ public static class UltiDraw {
 		for(int i=0; i<CircleWire.Length; i++) {
 			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x + size*CircleWire[i].x*Screen.width, center.y + size*CircleWire[i].y*Screen.width, Camera.nearClipPlane + GUIOffset)));
 			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x, center.y, Camera.nearClipPlane + GUIOffset)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------
+	//PLOTTING FUNCTIONS
+	//------------------------------------------------------------------------------------------
+	public static void DrawFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			DrawGUILine(
+				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
+				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
+				line
+			);
+		}
+	}
+
+	public static void DrawFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			DrawGUILine(
+				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
+				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
+				thickness,
+				line
+			);
+		}
+	}
+
+	public static void DrawFunctions(Vector2 center, Vector2 size, List<float[]> values, float yMin, float yMax, Color background, Color[] lines) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int k=0; k<values.Count; k++) {
+			for(int i=0; i<values[k].Length-1; i++) {
+				DrawGUILine(
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i+1]/scale, 0f, 1f)*size.y),
+					lines[k]
+				);
+			}
+		}
+	}
+
+	public static void DrawFunctions(Vector2 center, Vector2 size, List<float[]> values, float yMin, float yMax, float thickness, Color background, Color[] lines) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int k=0; k<values.Count; k++) {
+			for(int i=0; i<values[k].Length-1; i++) {
+				DrawGUILine(
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i+1]/scale, 0f, 1f)*size.y),
+					thickness,
+					lines[k]
+				);
+			}
 		}
 	}
 

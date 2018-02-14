@@ -116,14 +116,6 @@ public class DrawingDemo : MonoBehaviour {
 		}
 
 		UltiDraw.End();
-
-		UltiDraw.Begin();
-		float[] values = new float[1000];
-		for(int i=0; i<values.Length; i++) {
-			values[i] = Random.value;
-		}
-		UltiDraw.DrawFunction(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.25f), values, 0f, 1f);
-		UltiDraw.End();
 	}
 
 }

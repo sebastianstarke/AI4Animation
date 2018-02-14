@@ -111,10 +111,4 @@ public class SerialIK : MonoBehaviour {
 		return dls;
   	}
 
-	void OnRenderObject() {
-		//UnityGL.Start();
-		//UnityGL.DrawSphere(Goal, 0.025f, Utility.Green.Transparent(0.5f));
-		//UnityGL.Finish();
-	}
-
 }
