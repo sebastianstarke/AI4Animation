@@ -165,6 +165,9 @@ public class BVHAnimation : ScriptableObject {
 		//Generate character
 		GenerateCharacter();
 
+		//Required
+		Corrections = new Vector3[Character.Hierarchy.Length];
+
 		//Generate frames
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Frames[i] = new BVHFrame(this, i+1, i*FrameTime);
@@ -443,12 +446,15 @@ public class BVHAnimation : ScriptableObject {
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].World[0].GetPosition(), mask);
-			//Vector3 rootDir = Frames[i].World[0].GetRotation() * Vector3.forward;
+			Vector3 rootDir = Frames[i].World[0].GetRotation() * Vector3.forward;
 			
+			/*
 			//HARDCODED FOR DOG
 			int hipIndex = Character.FindSegment("Hips").GetIndex();
 			int neckIndex = Character.FindSegment("Neck").GetIndex();
 			Vector3 rootDir = Frames[i].World[neckIndex].GetPosition() - Frames[i].World[hipIndex].GetPosition();
+			*/
+
 			rootDir.y = 0f;
 			rootDir = rootDir.normalized;
 

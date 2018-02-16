@@ -177,7 +177,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeHistogram.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
-     <None Include="Assets\Scripts\Drawing\UnityGL.shader" />
+     <None Include="Assets\Resources\Shaders\UnityGL.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
      <None Include="Assets\Palette\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
