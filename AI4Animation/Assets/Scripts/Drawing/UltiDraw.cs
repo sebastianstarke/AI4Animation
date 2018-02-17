@@ -49,7 +49,7 @@ public static class UltiDraw {
 	private static Mesh CapsuleMesh;
 	private static Mesh ConeMesh;
 	private static Mesh PyramidMesh;
-	public static Mesh BoneMesh;
+	private static Mesh BoneMesh;
 
 	private static Vector3[] CircleWire;
 	private static Vector3[] QuadWire;

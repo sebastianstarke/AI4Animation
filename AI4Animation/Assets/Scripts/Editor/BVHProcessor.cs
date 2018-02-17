@@ -8,6 +8,7 @@ public class BVHProcessor : EditorWindow {
 	public static Vector2 Scroll;
 
 	public string Directory = string.Empty;
+	public int Framerate = 60;
 	public bool[] Use = new bool[0];
 	public BVHAnimation[] Animations = new BVHAnimation[0];
 
@@ -67,14 +68,33 @@ public class BVHProcessor : EditorWindow {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
 						//animation.ComputeTrajectory();
-						animation.Character.BoneColor = UltiDraw.Cyan;
-						animation.Character.JointColor = UltiDraw.Mustard;
+						//animation.Character.BoneColor = UltiDraw.Cyan;
+						//animation.Character.JointColor = UltiDraw.Mustard;
+						animation.Bones = new bool[Animations[i].Character.Hierarchy.Length];
+						for(int j=0; j<animation.Bones.Length; j++) {
+							animation.Bones[j] = true;
+						}
+						animation.Bones[6] = false;
+						animation.Bones[12] = false;
+
+						animation.Bones[24] = false;
+						animation.Bones[25] = false;
+						animation.Bones[26] = false;
+						animation.Bones[27] = false;
+						animation.Bones[28] = false;
+
+						animation.Bones[33] = false;
+						animation.Bones[34] = false;
+						animation.Bones[35] = false;
+						animation.Bones[36] = false;
+						animation.Bones[37] = false;
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
-				
+
+				Framerate = EditorGUILayout.IntField("Framerate", Framerate);				
 				
 				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -265,18 +285,16 @@ public class BVHProcessor : EditorWindow {
 				for(int s=0; s<Animations[i].Sequences.Length; s++) {
 					for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
 						sequence += 1;
-						//float timeStart = Animations[i].GetFrame(Animations[i].SequenceStart).Timestamp;
-						//float timeEnd = Animations[i].GetFrame(Animations[i].SequenceEnd).Timestamp;
-						//for(float j=timeStart; j<=timeEnd; j+=1f/60f) {
-						int startIndex = Animations[i].Sequences[s].Start;
-						int endIndex = Animations[i].Sequences[s].End;
-						for(int j=startIndex; j<=endIndex; j++) {
+						float timeStart = Animations[i].GetFrame(Animations[i].Sequences[s].Start).Timestamp;
+						float timeEnd = Animations[i].GetFrame(Animations[i].Sequences[s].End).Timestamp;
+						for(float j=timeStart; j<=timeEnd; j+=1f/(float)Framerate) {
+						//int startIndex = Animations[i].Sequences[s].Start;
+						//int endIndex = Animations[i].Sequences[s].End;
+						//for(int j=startIndex; j<=endIndex; j++) {
 							//Get frame
 							BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
-							//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/60f, 0f, Animations[i].TotalTime));
-							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
-
-							//j = frame.Timestamp;
+							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/(float)Framerate, 0f, Animations[i].GetTotalTime()));
+							//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
 
 							//Sequence number
 							string line = sequence + Separator;
@@ -298,15 +316,17 @@ public class BVHProcessor : EditorWindow {
 
 							//Bone data
 							for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
-								//Position
-								line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
+								if(Animations[i].Bones[k]) {
+									//Position
+									line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
 
-								//Rotation
-								line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
-								line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
+									//Rotation
+									line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
+									line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
 
-								//Velocity
-								line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
+									//Velocity
+									line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
+								}
 							}
 							
 							//Trajectory data

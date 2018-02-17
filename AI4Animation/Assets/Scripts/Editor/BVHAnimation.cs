@@ -7,6 +7,7 @@ public class BVHAnimation : ScriptableObject {
 
 	public BVHData Data;
 	public Character Character;
+	public bool[] Bones;
 	public int[] Symmetry;
 	public bool MirrorX, MirrorY, MirrorZ;
 
@@ -191,109 +192,6 @@ public class BVHAnimation : ScriptableObject {
 		LoadFrame(1);
 	}
 
-	/*
-	public void Recompute() {
-		GenerateCharacter();
-		ComputeSymmetry();
-		ComputeFrames();
-		ComputeTrajectory();
-	}
-	*/
-
-	/*
-	public void Reimport(string path) {
-		string[] lines = File.ReadAllLines(path);
-		char[] whitespace = new char[] {' '};
-		int index = 0;
-
-		//Build Hierarchy
-		Data = new BVHData();
-		string name = string.Empty;
-		string parent = string.Empty;
-		Vector3 offset = Vector3.zero;
-		int[] channels = null;
-		for(index = 0; index<lines.Length; index++) {
-			if(lines[index] == "MOTION") {
-				break;
-			}
-			string[] entries = lines[index].Split(whitespace);
-			for(int entry=0; entry<entries.Length; entry++) {
-				if(entries[entry].Contains("ROOT")) {
-					parent = "None";
-					name = entries[entry+1];
-					break;
-				} else if(entries[entry].Contains("JOINT")) {
-					parent = name;
-					name = entries[entry+1];
-					break;
-				} else if(entries[entry].Contains("End")) {
-					parent = name;
-					name = name+entries[entry+1];
-					string[] subEntries = lines[index+2].Split(whitespace);
-					for(int subEntry=0; subEntry<subEntries.Length; subEntry++) {
-						if(subEntries[subEntry].Contains("OFFSET")) {
-							offset.x = Utility.ReadFloat(subEntries[subEntry+1]);
-							offset.y = Utility.ReadFloat(subEntries[subEntry+2]);
-							offset.z = Utility.ReadFloat(subEntries[subEntry+3]);
-							break;
-						}
-					}
-					Data.AddBone(name, parent, offset, new int[0]);
-					index += 2;
-					break;
-				} else if(entries[entry].Contains("OFFSET")) {
-					offset.x = Utility.ReadFloat(entries[entry+1]);
-					offset.y = Utility.ReadFloat(entries[entry+2]);
-					offset.z = Utility.ReadFloat(entries[entry+3]);
-					break;
-				} else if(entries[entry].Contains("CHANNELS")) {
-					channels = new int[Utility.ReadInt(entries[entry+1])];
-					for(int i=0; i<channels.Length; i++) {
-						if(entries[entry+2+i] == "Xposition") {
-							channels[i] = 1;
-						} else if(entries[entry+2+i] == "Yposition") {
-							channels[i] = 2;
-						} else if(entries[entry+2+i] == "Zposition") {
-							channels[i] = 3;
-						} else if(entries[entry+2+i] == "Xrotation") {
-							channels[i] = 4;
-						} else if(entries[entry+2+i] == "Yrotation") {
-							channels[i] = 5;
-						} else if(entries[entry+2+i] == "Zrotation") {
-							channels[i] = 6;
-						}
-					}
-					Data.AddBone(name, parent, offset, channels);
-					break;
-				} else if(entries[entry].Contains("}")) {
-					name = parent;
-					parent = name == "None" ? "None" : Data.FindBone(name).Parent;
-					break;
-				}
-			}
-		}
-
-		//Read frame count
-		index += 1;
-		TotalFrames = Utility.ReadInt(lines[index].Substring(8));
-
-		//Read frame time
-		index += 1;
-		FrameTime = Utility.ReadFloat(lines[index].Substring(12));
-
-		//Compute total time
-		TotalTime = TotalFrames * FrameTime;
-
-		//Read motions
-		index += 1;
-		for(int i=index; i<lines.Length; i++) {
-			Data.AddMotion(Utility.ReadArray(lines[i]));
-		}
-
-		Recompute();
-	}
-	*/
-
 	public void Play() {
 		PlayTime = CurrentFrame.Timestamp;
 		Timestamp = Utility.GetTimestamp();
@@ -368,6 +266,10 @@ public class BVHAnimation : ScriptableObject {
 			parents[i] = Data.Bones[i].Parent;
 		}
 		Character.BuildHierarchy(names, parents);
+		Bones = new bool[Character.Hierarchy.Length];
+		for(int i=0; i<Bones.Length; i++) {
+			Bones[i] = true;
+		}
 	}
 
 	public void AssignDogCorrections() {
@@ -627,43 +529,12 @@ public class BVHAnimation : ScriptableObject {
 				ShowZero = !ShowZero;
 			}
 			EditorGUILayout.EndHorizontal();
-			/*
-			if(Utility.GUIButton(ExportScreenshots ? "Stop" : "Export Screenshots", UltiDraw.DarkGrey, UltiDraw.White)) {
-				ExportScreenshots = !ExportScreenshots;
-				SkipExportScreenshot = false;
-				if(ExportScreenshots) {
-					LoadFrame(1);
-				}
-			}
-			*/
 		}
 
 		
 		if(Utility.GUIButton("Recompute Trajectory", UltiDraw.Brown, UltiDraw.White)) {
 			ComputeTrajectory();
 		}
-
-		/*
-		if(Utility.GUIButton("Recompute Values", UltiDraw.Brown, UltiDraw.White)) {
-			PhaseFunction.ComputeValues();
-			MirroredPhaseFunction.ComputeValues();
-		}
-		*/
-
-		/*
-		if(Utility.GUIButton("Reimport", UltiDraw.Brown, UltiDraw.White)) {
-			string path = EditorUtility.OpenFilePanel("BVH Editor", Application.dataPath, "bvh");
-			if(name != path.Substring(path.LastIndexOf("/")+1)) {
-				Debug.Log("Name mismatch!");
-				return;
-			} else {
-				Debug.Log("Reimported " + name + ".");
-			}
-			GUI.SetNextControlName("");
-			GUI.FocusControl("");
-			Reimport(path);
-		}
-		*/
 
 		Utility.SetGUIColor(UltiDraw.LightGrey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -789,19 +660,6 @@ public class BVHAnimation : ScriptableObject {
 				}
 
 				SetUnitScale(EditorGUILayout.FloatField("Unit Scale", UnitScale));
-
-				if(Utility.GUIButton("Assign Dog Corrections", UltiDraw.DarkGrey, UltiDraw.White)) {
-					AssignDogCorrections();
-				}
-
-				for(int i=0; i<Character.Hierarchy.Length; i++) {
-					EditorGUILayout.BeginHorizontal();
-					EditorGUI.BeginDisabledGroup(true);
-					EditorGUILayout.TextField(Character.Hierarchy[i].GetName());
-					EditorGUI.EndDisabledGroup();
-					SetCorrection(i, EditorGUILayout.Vector3Field("", Corrections[i]));
-					EditorGUILayout.EndHorizontal();
-				}
 			}
 		}
 
@@ -812,7 +670,7 @@ public class BVHAnimation : ScriptableObject {
 			Utility.SetGUIColor(UltiDraw.Orange);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				EditorGUILayout.LabelField("Symmetry");
+				EditorGUILayout.LabelField("Setup");
 			}
 
 			Utility.SetGUIColor(UltiDraw.Grey);
@@ -851,34 +709,58 @@ public class BVHAnimation : ScriptableObject {
 					EditorGUI.BeginDisabledGroup(true);
 					EditorGUILayout.TextField(names[i]);
 					EditorGUI.EndDisabledGroup();
+
+					if(Bones == null) {
+						Bones = new bool[Character.Hierarchy.Length];
+						for(int j=0; j<Bones.Length; j++) {
+							Bones[j] = true;
+						}
+					}
+					if(Bones.Length != Character.Hierarchy.Length) {
+						Bones = new bool[Character.Hierarchy.Length];
+						for(int j=0; j<Bones.Length; j++) {
+							Bones[j] = true;
+						}
+					}
+
+					Bones[i] = EditorGUILayout.Toggle(Bones[i]);
+					SetCorrection(i, EditorGUILayout.Vector3Field("", Corrections[i]));
 					Symmetry[i] = EditorGUILayout.Popup(Symmetry[i], names);
 					EditorGUILayout.EndHorizontal();
 				}
 			}
 		}
-		
 	}
 
 	private void ExportSkeleton() {
-		Transform skeleton = ExportSkeleton(Character.GetRoot(), null);
+		int active = 0;
+		Transform skeleton = ExportSkeleton(Character.GetRoot(), null, ref active);
 		Transform root = new GameObject("Skeleton").transform;
 		root.position = new Vector3(skeleton.position.x, 0f, skeleton.position.z);
 		root.rotation = skeleton.rotation;
 		skeleton.SetParent(root.transform);
 
 		BioAnimation_PFNN animation = root.gameObject.AddComponent<BioAnimation_PFNN>();
-		animation.Joints = new Transform[Character.Hierarchy.Length];
+		animation.Joints = new Transform[active];
 		int index = 0;
 		AssignJoints(skeleton, ref animation.Joints, ref index);
 	}
 
-	private Transform ExportSkeleton(Character.Segment bone, Transform parent) {
-		Transform instance = new GameObject(bone.GetName()).transform;
-		instance.SetParent(parent);
-		instance.position = bone.GetTransformation().GetPosition();
-		instance.rotation = bone.GetTransformation().GetRotation();
-		for(int i=0; i<bone.GetChildCount(); i++) {
-			ExportSkeleton(bone.GetChild(Character.Hierarchy, i), instance);
+	private Transform ExportSkeleton(Character.Segment bone, Transform parent, ref int active) {
+		Transform instance = parent;
+		if(Bones[bone.GetIndex()]) {
+			active += 1;
+			instance = new GameObject(bone.GetName()).transform;
+			instance.SetParent(parent);
+			instance.position = bone.GetTransformation().GetPosition();
+			instance.rotation = bone.GetTransformation().GetRotation();
+			for(int i=0; i<bone.GetChildCount(); i++) {
+				ExportSkeleton(bone.GetChild(Character.Hierarchy, i), instance, ref active);
+			}
+		} else {
+			for(int i=0; i<bone.GetChildCount(); i++) {
+				ExportSkeleton(bone.GetChild(Character.Hierarchy, i), parent, ref active);
+			}
 		}
 		return instance.root;
 	}

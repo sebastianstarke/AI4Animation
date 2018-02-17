@@ -94,7 +94,7 @@ public class BVHEditor : EditorWindow {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(UltiDraw.Orange);
+				Utility.SetGUIColor(UltiDraw.DarkGreen);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					Load((BVHAnimation)EditorGUILayout.ObjectField("Animation", Animation, typeof(BVHAnimation), false));

@@ -96,6 +96,7 @@ public static class Transformations {
 			matrix[2, 0] *= -1f; //Rot
 			matrix[2, 2] *= -1f; //Rot
 		}
+		// should be 0,1 1,0 1,2 2,1 maybe
 		if(axis == Vector3.forward) { //Z-Axis
 			matrix[2, 3] *= -1f; //Pos
 			matrix[0, 2] *= -1f; //Rot
