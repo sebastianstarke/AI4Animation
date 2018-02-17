@@ -1917,10 +1917,10 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		private void MakeConstant(int dimension, BVHFrame previous, BVHFrame next) {
-			//int start = previous == null ? 1 : previous.Index;
-			//int end = next == null ? Animation.GetTotalFrames() : next.Index-1;
-			int start = previous.Index;
-			int end = next.Index;
+			int start = previous == null ? 1 : previous.Index;
+			int end = next == null ? Animation.GetTotalFrames() : next.Index-1;
+			//int start = previous.Index;
+			//int end = next.Index;
 			for(int i=start; i<end; i++) {
 				Styles[dimension].Flags[i] = Styles[dimension].Flags[start-1];
 				Styles[dimension].Values[i] = Styles[dimension].Flags[start-1] ? 1f : 0f;

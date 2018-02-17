@@ -27,7 +27,6 @@ public static class Transformations {
 
 	public static Vector3 GetPosition(this Matrix4x4 matrix) {
 		return new Vector3(matrix[0,3], matrix[1,3], matrix[2,3]);
-		//return matrix.GetColumn(3);
 	}
 	
 	public static Quaternion GetRotation(this Matrix4x4 matrix) {
@@ -40,17 +39,14 @@ public static class Transformations {
 
 	public static Vector3 GetRight(this Matrix4x4 matrix) {
 		return new Vector3(matrix[0,0], matrix[1,0], matrix[2,0]);
-		//return matrix.GetColumn(0);
 	}
 
 	public static Vector3 GetUp(this Matrix4x4 matrix) {
 		return new Vector3(matrix[0,1], matrix[1,1], matrix[2,1]);
-		//return matrix.GetColumn(1);
 	}
 
 	public static Vector3 GetForward(this Matrix4x4 matrix) {
 		return new Vector3(matrix[0,2], matrix[1,2], matrix[2,2]);
-		//return matrix.GetColumn(2);
 	}
 
 	public static Matrix4x4 GetRelativeTransformationFrom(this Matrix4x4 matrix, Matrix4x4 from) {
@@ -86,18 +82,21 @@ public static class Transformations {
 	}
 
 	public static Matrix4x4 GetMirror(this Matrix4x4 matrix, Vector3 axis) {
-		if(axis == Vector3.right) {
+		if(axis == Vector3.right) { //X-Axis
 			matrix[0, 3] *= -1f; //Pos
 			matrix[0, 1] *= -1f; //Rot
 			matrix[0, 2] *= -1f; //Rot
 			matrix[1, 0] *= -1f; //Rot
 			matrix[2, 0] *= -1f; //Rot
 		}
-		if(axis == Vector3.up) {
-			Debug.Log("Mirroring against Y-plane not yet implemented");
-		//	matrix[1, 3] *= -1f; //Pos
+		if(axis == Vector3.up) { //Y-Axis
+			matrix[1, 3] *= -1f; //Pos
+			matrix[0, 0] *= -1f; //Rot
+			matrix[0, 2] *= -1f; //Rot
+			matrix[2, 0] *= -1f; //Rot
+			matrix[2, 2] *= -1f; //Rot
 		}
-		if(axis == Vector3.forward) {
+		if(axis == Vector3.forward) { //Z-Axis
 			matrix[2, 3] *= -1f; //Pos
 			matrix[0, 2] *= -1f; //Rot
 			matrix[1, 2] *= -1f; //Rot
