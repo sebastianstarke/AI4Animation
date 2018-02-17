@@ -21,30 +21,6 @@ public class DrawingDemo : MonoBehaviour {
 		}
 		Debug.Log("Unity Gizmos: " + Utility.GetElapsedTime(timestamp2));
 		*/
-		
-		//System.DateTime timestamp = Utility.GetTimestamp();
-		UltiDraw.Begin();
-		//UltiDraw.DrawWiredEllipse(Vector3.one, 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
-		//UltiDraw.DrawWiredEllipsoid(Vector3.one, 1f, 2f, Color.cyan.Transparent(0.5f), Color.black);
-		//UltiDraw.DrawWiredPyramid(Vector3.one, Quaternion.identity, 1f, 1f, Color.cyan.Transparent(0.5f), Color.black);
-		//UltiDraw.DrawWiredCircle(Vector3.one, 1f, Color.green, Color.black);
-		//UltiDraw.DrawWiredCone(Vector3.one, Quaternion.identity, 1f, 1f, Color.cyan.Transparent(0.5f), Color.black);
-		//UltiDraw.DrawTranslateGizmo(Vector3.one, Quaternion.identity, 1f);
-		//UltiDraw.DrawRotateGizmo(Vector3.one, Quaternion.identity, 1f);
-		//UltiDraw.DrawScaleGizmo(Vector3.one, Quaternion.identity, 1f);
-		//for(int i=0; i<1000; i++) {
-			//UltiDraw.DrawWiredSphere(Vector3.one, 1f, Color.cyan.Transparent(1f), Color.white);
-			//UltiDraw.DrawGrid(Vector3.zero, Quaternion.identity, 1000f, 1000f, 100, 100, UltiDraw.LightGrey);
-		//}
-		UltiDraw.End();
-		//Debug.Log("Elapsed Time: " + Utility.GetElapsedTime(timestamp));
-
-		/*
-		Gizmos.color = Color.cyan.Transparent(1f);
-		Gizmos.DrawSphere(Vector3.one + new Vector3(2f, 0f, 0f), 0.5f);
-		Gizmos.color = Color.black;
-		Gizmos.DrawWireSphere(Vector3.one + new Vector3(2f, 0f, 0f), 0.5f);
-		*/
 
 		if(!Application.isPlaying) {
 			Draw();
@@ -62,7 +38,7 @@ public class DrawingDemo : MonoBehaviour {
 
 		UltiDraw.Begin();
 
-		UltiDraw.DrawGrid(Vector3.zero, Quaternion.identity, 100f, 100f, 100, 100, UltiDraw.DarkGreen);
+		UltiDraw.DrawGrid(Vector3.zero, Quaternion.identity, 100, 100, 1f, 1f, UltiDraw.DarkGreen);
 
 		UltiDraw.DrawWiredSphere(
 			new Vector3(Mathf.Cos(Time.time), 1f, Mathf.Sin(Time.time)), 

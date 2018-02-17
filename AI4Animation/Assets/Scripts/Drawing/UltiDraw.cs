@@ -235,18 +235,18 @@ public static class UltiDraw {
 		DrawLine(pivot, end, tipWidth, 0f, tipColor);
 	}
 
-	public static void DrawGrid(Vector3 center, Quaternion rotation, float width, float length, int cellsX, int cellsY, Color color) {
+	public static void DrawGrid(Vector3 center, Quaternion rotation, int cellsX, int cellsY, float sizeX, float sizeY, Color color) {
 		if(Return()) {return;}
-		float stepX = width / (float)cellsX;
-		float stepY = length / (float)cellsY;
-		Vector3 start = center - width/2f * (rotation * Vector3.right) - length/2f * (rotation * Vector3.forward);
+		float width = cellsX * sizeX;
+		float height = cellsY * sizeY;
+		Vector3 start = center - width/2f * (rotation * Vector3.right) - height/2f * (rotation * Vector3.forward);
 		Vector3 dirX = rotation * Vector3.right;
 		Vector3 dirY = rotation * Vector3.forward;
 		for(int i=0; i<cellsX+1; i++) {
-			DrawLine(start + i*stepX*dirX, start + i*stepX*dirX + length*dirY, color);
+			DrawLine(start + i*sizeX*dirX, start + i*sizeX*dirX + height*dirY, color);
 		}
 		for(int i=0; i<cellsY+1; i++) {
-			DrawLine(start + i*stepY*dirY, start + i*stepY*dirY + width*dirX, color);
+			DrawLine(start + i*sizeY*dirY, start + i*sizeY*dirY + width*dirX, color);
 		}
 	}
 
