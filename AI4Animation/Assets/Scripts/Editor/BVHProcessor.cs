@@ -67,9 +67,6 @@ public class BVHProcessor : EditorWindow {
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
-						//animation.ComputeTrajectory();
-						//animation.Character.BoneColor = UltiDraw.Cyan;
-						//animation.Character.JointColor = UltiDraw.Mustard;
 						animation.Bones = new bool[Animations[i].Character.Hierarchy.Length];
 						for(int j=0; j<animation.Bones.Length; j++) {
 							animation.Bones[j] = true;
@@ -365,15 +362,6 @@ public class BVHProcessor : EditorWindow {
 
 							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 							line += FormatValue(rotationOffset);
-
-							/*
-							//Phase change
-							if(mirrored) {
-								line += FormatValue(GetPhaseChange(Animations[i].MirroredPhaseFunction.GetPhase(prevFrame), Animations[i].MirroredPhaseFunction.GetPhase(frame)));
-							} else {
-								line += FormatValue(GetPhaseChange(Animations[i].PhaseFunction.GetPhase(prevFrame), Animations[i].PhaseFunction.GetPhase(frame)));
-							}
-							*/
 
 							//Postprocess
 							line = line.Remove(line.Length-1);
