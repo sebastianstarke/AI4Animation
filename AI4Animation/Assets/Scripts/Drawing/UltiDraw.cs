@@ -178,11 +178,11 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCircle(Vector3 position, float size, Color color) {
-		DrawWireLines(CircleWire, position, ViewRotation, size*Vector3.one, color);
+		DrawWire(CircleWire, position, ViewRotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWireCircle(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawWireLines(CircleWire, position, rotation, size*Vector3.one, color);
+		DrawWire(CircleWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCircle(Vector3 position, float size, Color circleColor, Color wireColor) {
@@ -204,11 +204,11 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireEllipse(Vector3 position, float width, float height, Color color) {
-		DrawWireLines(CircleWire, position, ViewRotation, new Vector3(width, height, 1f), color);
+		DrawWire(CircleWire, position, ViewRotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWireEllipse(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(CircleWire, position, rotation, new Vector3(width, height, 1f), color);
+		DrawWire(CircleWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredEllipse(Vector3 position, float width, float height, Color ellipseColor, Color wireColor) {
@@ -255,7 +255,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireQuad(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
+		DrawWire(QuadWire, position, rotation, new Vector3(width, height, 1f), color);
 	}
 
 	public static void DrawWiredQuad(Vector3 position, Quaternion rotation, float width, float height, Color quadColor, Color wireColor) {
@@ -268,7 +268,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCube(Vector3 position, Quaternion rotation, float size, Color color) {
-		DrawWireLines(CubeWire, position, rotation, size*Vector3.one, color);
+		DrawWire(CubeWire, position, rotation, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredCube(Vector3 position, Quaternion rotation, float size, Color cubeColor, Color wireColor) {
@@ -281,7 +281,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color color) {
-		DrawWireLines(CubeWire, position, rotation, size, color);
+		DrawWire(CubeWire, position, rotation, size, color);
 	}
 
 	public static void DrawWiredCuboid(Vector3 position, Quaternion rotation, Vector3 size, Color cuboidColor, Color wireColor) {
@@ -294,7 +294,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireSphere(Vector3 position, float size, Color color) {
-		DrawWireLines(SphereWire, position, Quaternion.identity, size*Vector3.one, color);
+		DrawWire(SphereWire, position, Quaternion.identity, size*Vector3.one, color);
 	}
 
 	public static void DrawWiredSphere(Vector3 position, float size, Color sphereColor, Color wireColor) {
@@ -307,7 +307,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireEllipsoid(Vector3 position, float width, float height, Color color) {
-		DrawWireLines(SphereWire, position, Quaternion.identity, new Vector3(width, height, width), color);
+		DrawWire(SphereWire, position, Quaternion.identity, new Vector3(width, height, width), color);
 	}
 
 	public static void DrawWiredEllipsoid(Vector3 position, float width, float height, Color ellipsoidColor, Color wireColor) {
@@ -320,7 +320,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCylinder(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(CylinderWire, position, rotation, new Vector3(width, height/2f, width), color);
+		DrawWire(CylinderWire, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWiredCylinder(Vector3 position, Quaternion rotation, float width, float height, Color cylinderColor, Color wireColor) {
@@ -333,7 +333,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCapsule(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(CapsuleWire, position, rotation, new Vector3(width, height/2f, width), color);
+		DrawWire(CapsuleWire, position, rotation, new Vector3(width, height/2f, width), color);
 	}
 
 	public static void DrawWiredCapsule(Vector3 position, Quaternion rotation, float width, float height, Color capsuleColor, Color wireColor) {
@@ -346,7 +346,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireCone(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(ConeWire, position, rotation, new Vector3(width, height, width), color);
+		DrawWire(ConeWire, position, rotation, new Vector3(width, height, width), color);
 	}
 
 	public static void DrawWiredCone(Vector3 position, Quaternion rotation, float width, float height, Color coneColor, Color wireColor) {
@@ -359,7 +359,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWirePyramid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
-		DrawWireLines(PyramidWire, position, rotation, new Vector3(width, height, width), color);
+		DrawWire(PyramidWire, position, rotation, new Vector3(width, height, width), color);
 	}
 
 	public static void DrawWiredPyramid(Vector3 position, Quaternion rotation, float width, float height, Color pyramidColor, Color wireColor) {
@@ -372,7 +372,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawWireBone(Vector3 position, Quaternion rotation, float width, float length, Color color) {
-		DrawWireLines(BoneWire, position, rotation, new Vector3(width, width, length), color);
+		DrawWire(BoneWire, position, rotation, new Vector3(width, width, length), color);
 	}
 
 	public static void DrawWiredBone(Vector3 position, Quaternion rotation, float width, float length, Color boneColor, Color wireColor) {
@@ -647,7 +647,7 @@ public static class UltiDraw {
 		}
 	}
 
-	private static void DrawWireLines(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
+	private static void DrawWire(Vector3[] points, Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.LINES);
 		GL.Color(color);

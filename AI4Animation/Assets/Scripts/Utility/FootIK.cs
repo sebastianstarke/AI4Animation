@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SerialIK : MonoBehaviour {
+public class FootIK : MonoBehaviour {
 
 	public bool AutoUpdate = true;
 	public int Iterations = 5;
