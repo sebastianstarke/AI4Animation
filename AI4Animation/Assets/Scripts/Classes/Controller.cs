@@ -159,6 +159,7 @@ public class Controller {
 					for(int i=0; i<Styles.Length; i++) {
 						Utility.SetGUIColor(UltiDraw.Grey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
+
 							Utility.ResetGUIColor();
 							Styles[i].Name = EditorGUILayout.TextField("Name", Styles[i].Name);
 							Styles[i].Bias = EditorGUILayout.FloatField("Bias", Styles[i].Bias);
