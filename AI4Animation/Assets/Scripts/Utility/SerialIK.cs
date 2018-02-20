@@ -31,6 +31,64 @@ public class SerialIK : MonoBehaviour {
 			ComputeGoal();
 			ProcessIK();
 		}
+
+		Quaternion unity = Quaternion.AngleAxis(30f, Vector3.forward) * Quaternion.AngleAxis(40f, Vector3.right) * Quaternion.AngleAxis(50f, Vector3.up);
+		Quaternion function = QuaternionEuler(30f, 40f, 50f);
+
+		Debug.Log("Unity: " + Quaternion.Angle(Quaternion.identity, unity));
+		Debug.Log("Function:" + Quaternion.Angle(Quaternion.identity, function));
+
+
+	}
+
+	public Quaternion QuaternionEuler(float roll, float pitch, float yaw) {
+		double sin = 0.0;
+		double x1 = 0.0;
+		double y1 = 0.0;
+		double z1 = 0.0;
+		double w1 = 0.0;
+		double x2 = 0.0;
+		double y2 = 0.0;
+		double z2 = 0.0;
+		double w2 = 0.0;
+		double qx = 0.0;
+		double qy = 0.0;
+		double qz = 0.0;
+		double qw = 0.0;
+
+		Vector3 Z = Vector3.forward;
+		Vector3 X = Vector3.right;
+		Vector3 Y = Vector3.up;
+
+		sin = System.Math.Sin(roll/2.0);
+		qx = Z.x * sin;
+		qy = Z.y * sin;
+		qz = Z.z * sin;
+		qw = System.Math.Cos(roll/2.0);
+
+		sin = System.Math.Sin(pitch/2.0);
+		x1 = X.x * sin;
+		y1 = X.y * sin;
+		z1 = X.z * sin;
+		w1 = System.Math.Cos(pitch/2.0);
+		x2 = qx; y2 = qy; z2 = qz; w2 = qw;
+		qx = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
+		qy = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
+		qz = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
+		qw = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
+
+		sin = System.Math.Sin(yaw/2.0);
+		x1 = Y.x * sin;
+		y1 = Y.y * sin;
+		z1 = Y.z * sin;
+		w1 = System.Math.Cos(yaw/2.0);
+		x2 = qx; y2 = qy; z2 = qz; w2 = qw;
+		qx = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
+		qy = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
+		qz = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
+		qw = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
+
+		return new Quaternion((float)qx, (float)qy, (float)qz, (float)qw);
 	}
 
 	public void ComputeGoal() {
