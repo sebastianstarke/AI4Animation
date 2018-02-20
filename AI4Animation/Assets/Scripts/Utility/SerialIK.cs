@@ -32,63 +32,45 @@ public class SerialIK : MonoBehaviour {
 			ProcessIK();
 		}
 
-		Quaternion unity = Quaternion.AngleAxis(30f, Vector3.forward) * Quaternion.AngleAxis(40f, Vector3.right) * Quaternion.AngleAxis(50f, Vector3.up);
-		Quaternion function = QuaternionEuler(30f, 40f, 50f);
+		//Quaternion unity = Quaternion.AngleAxis(30f, Vector3.forward) * Quaternion.AngleAxis(50f, Vector3.right) * Quaternion.AngleAxis(40f, Vector3.up);
+		//Quaternion function = QuaternionEuler(30f, 50f, 40f);
 
-		Debug.Log("Unity: " + Quaternion.Angle(Quaternion.identity, unity));
-		Debug.Log("Function:" + Quaternion.Angle(Quaternion.identity, function));
-
-
+		//Debug.Log("Unity: " + unity * new Vector3(5f, 5f, 5f));
+		//Debug.Log("Function:" + function * new Vector3(5f, 5f, 5f));
 	}
 
 	public Quaternion QuaternionEuler(float roll, float pitch, float yaw) {
-		double sin = 0.0;
-		double x1 = 0.0;
-		double y1 = 0.0;
-		double z1 = 0.0;
-		double w1 = 0.0;
-		double x2 = 0.0;
-		double y2 = 0.0;
-		double z2 = 0.0;
-		double w2 = 0.0;
-		double qx = 0.0;
-		double qy = 0.0;
-		double qz = 0.0;
-		double qw = 0.0;
+		roll *= Mathf.Deg2Rad;
+		pitch *= Mathf.Deg2Rad;
+		yaw *= Mathf.Deg2Rad;
 
 		Vector3 Z = Vector3.forward;
 		Vector3 X = Vector3.right;
 		Vector3 Y = Vector3.up;
 
-		sin = System.Math.Sin(roll/2.0);
-		qx = Z.x * sin;
-		qy = Z.y * sin;
-		qz = Z.z * sin;
-		qw = System.Math.Cos(roll/2.0);
+		float sin, cos;
 
-		sin = System.Math.Sin(pitch/2.0);
-		x1 = X.x * sin;
-		y1 = X.y * sin;
-		z1 = X.z * sin;
-		w1 = System.Math.Cos(pitch/2.0);
-		x2 = qx; y2 = qy; z2 = qz; w2 = qw;
-		qx = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
-		qy = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
-		qz = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
-		qw = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
+		sin = (float)System.Math.Sin(roll/2.0);
+		cos = (float)System.Math.Cos(roll/2.0);
+		Quaternion q1 = new Quaternion(Z.x * sin, Z.y * sin, Z.z * sin, cos);
+		sin = (float)System.Math.Sin(pitch/2.0);
+		cos = (float)System.Math.Cos(pitch/2.0);
+		Quaternion q2 = new Quaternion(X.x * sin, X.y * sin, X.z * sin, cos);
+		sin = (float)System.Math.Sin(yaw/2.0);
+		cos = (float)System.Math.Cos(yaw/2.0);
+		Quaternion q3 = new Quaternion(Y.x * sin, Y.y * sin, Y.z * sin, cos);
 
-		sin = System.Math.Sin(yaw/2.0);
-		x1 = Y.x * sin;
-		y1 = Y.y * sin;
-		z1 = Y.z * sin;
-		w1 = System.Math.Cos(yaw/2.0);
-		x2 = qx; y2 = qy; z2 = qz; w2 = qw;
-		qx = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
-		qy = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
-		qz = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
-		qw = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
+		Quaternion result = mul(q1, q2);
+		result = mul(result, q3);
+		return result;
+	}
 
-		return new Quaternion((float)qx, (float)qy, (float)qz, (float)qw);
+	public Quaternion mul(Quaternion q1, Quaternion q2) {
+		float x =  q1.x * q2.w + q1.y * q2.z - q1.z * q2.y + q1.w * q2.x;
+		float y = -q1.x * q2.z + q1.y * q2.w + q1.z * q2.x + q1.w * q2.y;
+		float z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
+		float w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
+		return new Quaternion(x, y, z, w);
 	}
 
 	public void ComputeGoal() {
