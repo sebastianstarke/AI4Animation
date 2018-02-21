@@ -40,9 +40,9 @@ public class SerialIK : MonoBehaviour {
 	}
 
 	public Quaternion QuaternionEuler(float roll, float pitch, float yaw) {
-		roll *= Mathf.Deg2Rad;
-		pitch *= Mathf.Deg2Rad;
-		yaw *= Mathf.Deg2Rad;
+		roll *= Mathf.Deg2Rad / 2f;
+		pitch *= Mathf.Deg2Rad / 2f;
+		yaw *= Mathf.Deg2Rad / 2f;
 
 		Vector3 Z = Vector3.forward;
 		Vector3 X = Vector3.right;
@@ -50,19 +50,17 @@ public class SerialIK : MonoBehaviour {
 
 		float sin, cos;
 
-		sin = (float)System.Math.Sin(roll/2.0);
-		cos = (float)System.Math.Cos(roll/2.0);
-		Quaternion q1 = new Quaternion(Z.x * sin, Z.y * sin, Z.z * sin, cos);
-		sin = (float)System.Math.Sin(pitch/2.0);
-		cos = (float)System.Math.Cos(pitch/2.0);
-		Quaternion q2 = new Quaternion(X.x * sin, X.y * sin, X.z * sin, cos);
-		sin = (float)System.Math.Sin(yaw/2.0);
-		cos = (float)System.Math.Cos(yaw/2.0);
-		Quaternion q3 = new Quaternion(Y.x * sin, Y.y * sin, Y.z * sin, cos);
+		sin = (float)System.Math.Sin(roll);
+		cos = (float)System.Math.Cos(roll);
+		Quaternion q1 = new Quaternion(0f, 0f, Z.z * sin, cos);
+		sin = (float)System.Math.Sin(pitch);
+		cos = (float)System.Math.Cos(pitch);
+		Quaternion q2 = new Quaternion(X.x * sin, 0f, 0f, cos);
+		sin = (float)System.Math.Sin(yaw);
+		cos = (float)System.Math.Cos(yaw);
+		Quaternion q3 = new Quaternion(0f, Y.y * sin, 0f, cos);
 
-		Quaternion result = mul(q1, q2);
-		result = mul(result, q3);
-		return result;
+		return mul(mul(q1, q2), q3);
 	}
 
 	public Quaternion mul(Quaternion q1, Quaternion q2) {
@@ -120,7 +118,7 @@ public class SerialIK : MonoBehaviour {
 
 	private void FK(Matrix4x4[] posture, float[] variables) {
 		for(int i=0; i<Bones; i++) {
-			Quaternion update = Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+0], Vector3.forward) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+1], Vector3.right) * Quaternion.AngleAxis(Mathf.Rad2Deg*variables[i*3+2], Vector3.up);
+			Quaternion update = QuaternionEuler(Mathf.Rad2Deg*variables[i*3+0], Mathf.Rad2Deg*variables[i*3+1], Mathf.Rad2Deg*variables[i*3+2]);
 			Transforms[i].localPosition = posture[i].GetPosition();
 			Transforms[i].localRotation = posture[i].GetRotation() * update;
 		}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DrawingDemo : MonoBehaviour {
+public class PrimitivesDemo : MonoBehaviour {
 	
 	void OnDrawGizmos() {
 		/*
@@ -32,10 +32,6 @@ public class DrawingDemo : MonoBehaviour {
 	}
 
 	void Draw() {
-		if(!Application.isPlaying) {
-			return;
-		}
-
 		UltiDraw.Begin();
 
 		UltiDraw.DrawGrid(Vector3.zero, Quaternion.identity, 100, 100, 1f, 1f, UltiDraw.DarkGreen);
@@ -81,15 +77,6 @@ public class DrawingDemo : MonoBehaviour {
 			UltiDraw.Red.Transparent(1f),
 			UltiDraw.Green
 		);
-
-		for(int i=0; i<100; i++) {
-			UltiDraw.DrawLine(
-				new Vector3(0f, 3f, 2f),
-				new Vector3(2f*Random.value - 1f, 3f + (2f*Random.value - 1f), 2f + 2f*Random.value - 1f),
-				0.1f*Random.value,
-				new Color(Random.value, Random.value, Random.value).Transparent(1f)
-			);
-		}
 
 		UltiDraw.End();
 	}

@@ -815,7 +815,13 @@ public static class UltiDraw {
 		List<Vector3> points = new List<Vector3>();
 		points.Add(new Vector3(-0.5f, -0.5f, 0f));
 		points.Add(new Vector3(0.5f, -0.5f, 0f));
+
+		points.Add(new Vector3(0.5f, -0.5f, 0f));
 		points.Add(new Vector3(0.5f, 0.5f, 0f));
+
+		points.Add(new Vector3(0.5f, 0.5f, 0f));
+		points.Add(new Vector3(-0.5f, 0.5f, 0f));
+
 		points.Add(new Vector3(-0.5f, 0.5f, 0f));
 		points.Add(new Vector3(-0.5f, -0.5f, 0f));
 		return points.ToArray();
