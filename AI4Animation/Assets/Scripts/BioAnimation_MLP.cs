@@ -24,7 +24,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 	public MLP MLP;
 
 	public bool SolveIK = true;
-	public SerialIK[] IKSolvers = new SerialIK[0];
+	public FootIK[] IKSolvers = new FootIK[0];
 
 	private Trajectory Trajectory;
 
@@ -648,7 +648,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 						EditorGUILayout.EndHorizontal();
 						Target.SolveIK = EditorGUILayout.Toggle("Solve IK", Target.SolveIK);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
+							Target.IKSolvers[i] = (FootIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(FootIK), true);
 						}
 
 						EditorGUI.BeginDisabledGroup(true);
