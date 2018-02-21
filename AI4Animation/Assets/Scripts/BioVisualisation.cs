@@ -34,11 +34,11 @@ public class BioVisualisation : MonoBehaviour {
 	private Queue<float>[] CW;
 	public bool DrawCW = true;
 
-	private BioAnimation_APFNN Animation;
+	private BioAnimation_MFNN Animation;
 
 	void Awake() {
-		Animation = GetComponent<BioAnimation_APFNN>();
-		CW = new Queue<float>[Animation.APFNN.ControlWeights];
+		Animation = GetComponent<BioAnimation_MFNN>();
+		CW = new Queue<float>[Animation.MFNN.ControlWeights];
 		for(int i=0; i<CW.Length; i++) {
 			CW[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
@@ -73,7 +73,7 @@ public class BioVisualisation : MonoBehaviour {
 	private void UpdateData() {
 		for(int i=0; i<CW.Length; i++) {
 			CW[i].Dequeue();
-			CW[i].Enqueue(Animation.APFNN.GetControlPoint(i));
+			CW[i].Enqueue(Animation.MFNN.GetControlPoint(i));
 		}
 	}
 
@@ -242,7 +242,7 @@ public class BioVisualisation : MonoBehaviour {
 				new Vector2(width, height),
 				UltiDraw.White);
 
-			Color[] colors = UltiDraw.GetRainbowColors(Animation.APFNN.ControlWeights);
+			Color[] colors = UltiDraw.GetRainbowColors(Animation.MFNN.ControlWeights);
 			for(int i=0; i<colors.Length; i++) {
 				DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, CW[i], colors[i]);
 			}

@@ -6,7 +6,7 @@ using UnityEditor;
 #endif
 
 [System.Serializable]
-public class APFNN {
+public class MFNN {
 
 	public bool Inspect = false;
 
@@ -22,28 +22,28 @@ public class APFNN {
 	
 	private IntPtr Network;
 
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern IntPtr Create();
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern IntPtr Delete(IntPtr obj);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim, int controlWeights);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern void SetValue(IntPtr obj, int matrix, int row, int col, float value);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern float GetValue(IntPtr obj, int matrix, int row, int col);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern float AddControlNeuron(IntPtr obj, int index);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern float IgnoreControlNeuron(IntPtr obj, int index, bool value);
-    [DllImport("APFNN")]
+    [DllImport("MFNN")]
     private static extern void Predict(IntPtr obj);
 
-	public APFNN() {
+	public MFNN() {
 		Network = Create();
 	}
 
-	~APFNN() {
+	~MFNN() {
 		Delete(Network);
 	}
 
@@ -77,7 +77,7 @@ public class APFNN {
 
 	public void Initialise() {
 		if(Parameters == null) {
-			Debug.Log("Building PFNN failed because no parameters were loaded.");
+			Debug.Log("Building MFNN failed because no parameters were loaded.");
 			return;
 		}
 		Initialise(Network, CDim, XDim, HDim, YDim, ControlWeights);
@@ -142,7 +142,7 @@ public class APFNN {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("PFNN", UltiDraw.DarkGrey, UltiDraw.White)) {
+			if(Utility.GUIButton("MFNN", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Inspect = !Inspect;
 			}
 

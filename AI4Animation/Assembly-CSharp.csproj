@@ -108,12 +108,12 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\Water.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
-     <Compile Include="Assets\Scripts\BioAnimation_APFNN.cs" />
-     <Compile Include="Assets\Scripts\BioAnimation_APFNN_Latent.cs" />
+     <Compile Include="Assets\Scripts\BioAnimation_MFNN.cs" />
+     <Compile Include="Assets\Scripts\BioAnimation_MFNN_Latent.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_MLP.cs" />
      <Compile Include="Assets\Scripts\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\BioVisualisation.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\APFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\MFNN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\PFNN.cs" />

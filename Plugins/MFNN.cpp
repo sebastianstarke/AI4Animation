@@ -9,8 +9,8 @@
 
 using namespace Eigen;
 
-//PFNN Class
-class APFNN {
+//MFNN Class
+class MFNN {
 
     std::vector<MatrixXf*> References;
 
@@ -188,35 +188,35 @@ class APFNN {
 };
 
 extern "C" {
-    APFNN* Create() {
-        return new APFNN();
+    MFNN* Create() {
+        return new MFNN();
     }
 
-    void Delete(APFNN* obj) {
+    void Delete(MFNN* obj) {
         delete obj;
     }
 
-    void Initialise(APFNN* obj, int cDim, int xDim, int hDim, int yDim, int controlWeights) {
+    void Initialise(MFNN* obj, int cDim, int xDim, int hDim, int yDim, int controlWeights) {
         obj->Initialise(cDim, xDim, hDim, yDim, controlWeights);
     }
 
-    void SetValue(APFNN* obj, int matrix, int row, int col, float value) {
+    void SetValue(MFNN* obj, int matrix, int row, int col, float value) {
         obj->SetValue(matrix, row, col, value);
     }
 
-    float GetValue(APFNN* obj, int matrix, int row, int col) {
+    float GetValue(MFNN* obj, int matrix, int row, int col) {
         return obj->GetValue(matrix, row, col);
     }
 
-    void AddControlNeuron(APFNN* obj, int index) {
+    void AddControlNeuron(MFNN* obj, int index) {
         obj->AddControlNeuron(index);
     }
 
-    void IgnoreControlNeuron(APFNN* obj, int index, bool value) {
+    void IgnoreControlNeuron(MFNN* obj, int index, bool value) {
         obj->IgnoreControlNeuron(index, value);
     }
 
-    void Predict(APFNN* obj) {
+    void Predict(MFNN* obj) {
         obj->Predict();
     }
 }

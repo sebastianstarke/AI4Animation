@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-public class BioAnimation_APFNN_Latent : MonoBehaviour {
+public class BioAnimation_MFNN_Latent : MonoBehaviour {
 
 	public bool Inspect = false;
 	public bool ShowTrajectory = true;
@@ -20,7 +20,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 
 	public Controller Controller;
 	public Character Character;
-	public APFNN APFNN;
+	public MFNN MFNN;
 
 	public bool SolveIK = true;
 	public FootIK[] IKSolvers = new FootIK[0];
@@ -49,7 +49,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		APFNN = new APFNN();
+		MFNN = new MFNN();
 	}
 
 	void Awake() {
@@ -61,7 +61,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
-		APFNN.Initialise();
+		MFNN.Initialise();
 
 		int start = 8*PointSamples;
 		int lh = start + 10*12 + 9;
@@ -69,16 +69,16 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 		int lf = start + 19*12 + 9;
 		int rf = start + 23*12 + 9;
 		for(int i=lh; i<lh+3; i++) {
-			APFNN.AddControlNeuron(i);
+			MFNN.AddControlNeuron(i);
 		}
 		for(int i=rh; i<rh+3; i++) {
-			APFNN.AddControlNeuron(i);
+			MFNN.AddControlNeuron(i);
 		}
 		for(int i=lf; i<lf+3; i++) {
-			APFNN.AddControlNeuron(i);
+			MFNN.AddControlNeuron(i);
 		}
 		for(int i=rf; i<rf+3; i++) {
-			APFNN.AddControlNeuron(i);
+			MFNN.AddControlNeuron(i);
 		}
 
 		for(int i=0; i<Joints.Length; i++) {
@@ -199,7 +199,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 			Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 		}
 
-		if(APFNN.Parameters != null) {
+		if(MFNN.Parameters != null) {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			//Fix for flat terrain
@@ -215,14 +215,14 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				float vel = GetSample(i).GetVelocity();
-				APFNN.SetInput(start + i*8 + 0, pos.x);
-				APFNN.SetInput(start + i*8 + 1, 0f); //pos y
-				APFNN.SetInput(start + i*8 + 2, pos.z);
-				APFNN.SetInput(start + i*8 + 3, dir.x);
-				APFNN.SetInput(start + i*8 + 4, dir.z);
-				APFNN.SetInput(start + i*8 + 5, vel);
-				APFNN.SetInput(start + i*8 + 6, 0f); //left height
-				APFNN.SetInput(start + i*8 + 7, 0f); //right height
+				MFNN.SetInput(start + i*8 + 0, pos.x);
+				MFNN.SetInput(start + i*8 + 1, 0f); //pos y
+				MFNN.SetInput(start + i*8 + 2, pos.z);
+				MFNN.SetInput(start + i*8 + 3, dir.x);
+				MFNN.SetInput(start + i*8 + 4, dir.z);
+				MFNN.SetInput(start + i*8 + 5, vel);
+				MFNN.SetInput(start + i*8 + 6, 0f); //left height
+				MFNN.SetInput(start + i*8 + 7, 0f); //right height
 			}
 			start += 8*PointSamples;
 
@@ -239,28 +239,28 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-				APFNN.SetInput(start + i*JointDimIn + 0, pos.x);
-				APFNN.SetInput(start + i*JointDimIn + 1, pos.y);
-				APFNN.SetInput(start + i*JointDimIn + 2, pos.z);
-				APFNN.SetInput(start + i*JointDimIn + 3, forward.x);
-				APFNN.SetInput(start + i*JointDimIn + 4, forward.y);
-				APFNN.SetInput(start + i*JointDimIn + 5, forward.z);
-				APFNN.SetInput(start + i*JointDimIn + 6, up.x);
-				APFNN.SetInput(start + i*JointDimIn + 7, up.y);
-				APFNN.SetInput(start + i*JointDimIn + 8, up.z);
-				APFNN.SetInput(start + i*JointDimIn + 9, vel.x);
-				APFNN.SetInput(start + i*JointDimIn + 10, vel.y);
-				APFNN.SetInput(start + i*JointDimIn + 11, vel.z);
+				MFNN.SetInput(start + i*JointDimIn + 0, pos.x);
+				MFNN.SetInput(start + i*JointDimIn + 1, pos.y);
+				MFNN.SetInput(start + i*JointDimIn + 2, pos.z);
+				MFNN.SetInput(start + i*JointDimIn + 3, forward.x);
+				MFNN.SetInput(start + i*JointDimIn + 4, forward.y);
+				MFNN.SetInput(start + i*JointDimIn + 5, forward.z);
+				MFNN.SetInput(start + i*JointDimIn + 6, up.x);
+				MFNN.SetInput(start + i*JointDimIn + 7, up.y);
+				MFNN.SetInput(start + i*JointDimIn + 8, up.z);
+				MFNN.SetInput(start + i*JointDimIn + 9, vel.x);
+				MFNN.SetInput(start + i*JointDimIn + 10, vel.y);
+				MFNN.SetInput(start + i*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Joints.Length;
 
 			for(int i=0; i<Trajectory.Points[RootPointIndex].Styles.Length; i++) {
-				APFNN.SetInput(start + i, Trajectory.Points[RootPointIndex].Styles[i]);
+				MFNN.SetInput(start + i, Trajectory.Points[RootPointIndex].Styles[i]);
 			}
 			start += 5;
 			
 			//Predict
-			APFNN.Predict();
+			MFNN.Predict();
 
 			//Update Past Trajectory
 			for(int i=0; i<RootPointIndex; i++) {
@@ -277,8 +277,8 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 
 			//Update Current Trajectory
 			int end = 6*4 + JointDimOut*Joints.Length;
-			Vector3 translationalOffset = new Vector3(APFNN.GetOutput(end+0), 0f, APFNN.GetOutput(end+1));
-			float angularOffset = APFNN.GetOutput(end+2);
+			Vector3 translationalOffset = new Vector3(MFNN.GetOutput(end+0), 0f, MFNN.GetOutput(end+1));
+			float angularOffset = MFNN.GetOutput(end+2);
 			
 			translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
 			angularOffset *= Utility.Exponential01(Mathf.Abs(angularOffset) / 0.01f);
@@ -307,15 +307,15 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 				int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
 				float factor = (float)(i % PointDensity) / PointDensity;
 
-				float prevPosX = APFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
-				float prevPosZ = APFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
-				float prevDirX = APFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
-				float prevDirZ = APFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
+				float prevPosX = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
+				float prevPosZ = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
+				float prevDirX = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
+				float prevDirZ = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
 
-				float nextPosX = APFNN.GetOutput(start + (nextSampleIndex-6)*4 + 0);
-				float nextPosZ = APFNN.GetOutput(start + (nextSampleIndex-6)*4 + 1);
-				float nextDirX = APFNN.GetOutput(start + (nextSampleIndex-6)*4 + 2);
-				float nextDirZ = APFNN.GetOutput(start + (nextSampleIndex-6)*4 + 3);
+				float nextPosX = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 0);
+				float nextPosZ = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 1);
+				float nextDirX = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 2);
+				float nextDirZ = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 3);
 
 				float posX = (1f - factor) * prevPosX + factor * nextPosX;
 				float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
@@ -358,10 +358,10 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
-				Vector3 position = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 0), APFNN.GetOutput(start + i*JointDimOut + 1), APFNN.GetOutput(start + i*JointDimOut + 2));
-				Vector3 forward = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 3), APFNN.GetOutput(start + i*JointDimOut + 4), APFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
-				Vector3 up = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 6), APFNN.GetOutput(start + i*JointDimOut + 7), APFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
-				Vector3 velocity = new Vector3(APFNN.GetOutput(start + i*JointDimOut + 9), APFNN.GetOutput(start + i*JointDimOut + 10), APFNN.GetOutput(start + i*JointDimOut + 11));
+				Vector3 position = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 0), MFNN.GetOutput(start + i*JointDimOut + 1), MFNN.GetOutput(start + i*JointDimOut + 2));
+				Vector3 forward = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 3), MFNN.GetOutput(start + i*JointDimOut + 4), MFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
+				Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
+				Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11));
 				
 				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
@@ -564,13 +564,13 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 	}
 
 	#if UNITY_EDITOR
-	[CustomEditor(typeof(BioAnimation_APFNN_Latent))]
-	public class BioAnimation_APFNN_Latent_Editor : Editor {
+	[CustomEditor(typeof(BioAnimation_MFNN_Latent))]
+	public class BioAnimation_MFNN_Latent_Editor : Editor {
 
-		public BioAnimation_APFNN_Latent Target;
+		public BioAnimation_MFNN_Latent Target;
 
 		void Awake() {
-			Target = (BioAnimation_APFNN_Latent)target;
+			Target = (BioAnimation_MFNN_Latent)target;
 		}
 
 		public override void OnInspectorGUI() {
@@ -579,7 +579,7 @@ public class BioAnimation_APFNN_Latent : MonoBehaviour {
 			Inspector();
 			Target.Controller.Inspector();
 			Target.Character.Inspector(Target.Root);
-			Target.APFNN.Inspector();
+			Target.MFNN.Inspector();
 
 			if(GUI.changed) {
 				EditorUtility.SetDirty(Target);
