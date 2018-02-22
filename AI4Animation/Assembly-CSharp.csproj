@@ -122,10 +122,11 @@
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
-     <Compile Include="Assets\Scripts\UltiDraw\LogoDemo.cs" />
-     <Compile Include="Assets\Scripts\UltiDraw\NoiseDemo.cs" />
-     <Compile Include="Assets\Scripts\UltiDraw\PrimitivesDemo.cs" />
-     <Compile Include="Assets\Scripts\UltiDraw\SkeletonDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\LogoDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\NoiseDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\PerformanceDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\PrimitivesDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\SkeletonDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\UltiDraw.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />

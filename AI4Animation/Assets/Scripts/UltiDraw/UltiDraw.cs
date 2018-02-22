@@ -289,30 +289,30 @@ public static class UltiDraw {
 		DrawWireCuboid(position, rotation, size, wireColor);
 	}
 
-	public static void DrawSphere(Vector3 position, float size, Color color) {
-		DrawMesh(SphereMesh, position, Quaternion.identity, size*Vector3.one, color);
+	public static void DrawSphere(Vector3 position, Quaternion rotation, float size, Color color) {
+		DrawMesh(SphereMesh, position, rotation, size*Vector3.one, color);
 	}
 
-	public static void DrawWireSphere(Vector3 position, float size, Color color) {
-		DrawWire(SphereWire, position, Quaternion.identity, size*Vector3.one, color);
+	public static void DrawWireSphere(Vector3 position, Quaternion rotation, float size, Color color) {
+		DrawWire(SphereWire, position, rotation, size*Vector3.one, color);
 	}
 
-	public static void DrawWiredSphere(Vector3 position, float size, Color sphereColor, Color wireColor) {
-		DrawSphere(position, size, sphereColor);
-		DrawWireSphere(position, size, wireColor);
+	public static void DrawWiredSphere(Vector3 position, Quaternion rotation, float size, Color sphereColor, Color wireColor) {
+		DrawSphere(position, rotation, size, sphereColor);
+		DrawWireSphere(position, rotation, size, wireColor);
 	}
 
-	public static void DrawEllipsoid(Vector3 position, float width, float height, Color color) {
-		DrawMesh(SphereMesh, position, Quaternion.identity, new Vector3(width, height, width), color);
+	public static void DrawEllipsoid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawMesh(SphereMesh, position, rotation, new Vector3(width, height, width), color);
 	}
 
-	public static void DrawWireEllipsoid(Vector3 position, float width, float height, Color color) {
-		DrawWire(SphereWire, position, Quaternion.identity, new Vector3(width, height, width), color);
+	public static void DrawWireEllipsoid(Vector3 position, Quaternion rotation, float width, float height, Color color) {
+		DrawWire(SphereWire, position, rotation, new Vector3(width, height, width), color);
 	}
 
-	public static void DrawWiredEllipsoid(Vector3 position, float width, float height, Color ellipsoidColor, Color wireColor) {
-		DrawEllipsoid(position, width, height, ellipsoidColor);
-		DrawWireEllipsoid(position, width, height, wireColor);
+	public static void DrawWiredEllipsoid(Vector3 position, Quaternion rotation, float width, float height, Color ellipsoidColor, Color wireColor) {
+		DrawEllipsoid(position, rotation, width, height, ellipsoidColor);
+		DrawWireEllipsoid(position, rotation, width, height, wireColor);
 	}
 
 	public static void DrawCylinder(Vector3 position, Quaternion rotation, float width, float height, Color color) {
@@ -1000,12 +1000,21 @@ public static class UltiDraw {
 		Color[] colors = new Color[number];
 		for(int i=0; i<number; i++) {
 			float frequency = 5f/number;
-			colors[i].r = Utility.Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].g = Utility.Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].b = Utility.Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].r = Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].g = Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].b = Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
 			colors[i].a = 1f;
 		}
 		return colors;
+	}
+
+	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
+		if(valueMax-valueMin != 0f) {
+			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;
+		} else {
+			//Not possible to normalise input value.
+			return value;
+		}
 	}
 
 }

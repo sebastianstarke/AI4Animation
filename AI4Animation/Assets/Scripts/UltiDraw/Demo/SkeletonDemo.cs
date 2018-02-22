@@ -31,6 +31,7 @@ public class SkeletonDemo : MonoBehaviour {
 			if(parent != null) {
 				UltiDraw.DrawSphere(
 					parent.position,
+					parent.rotation,
 					5f/8f * BoneSize,
 					JointColor
 				);

@@ -300,6 +300,7 @@ public class Character {
 				if(parent != null) {
 					UltiDraw.DrawSphere(
 						parent.GetTransformation().GetPosition(),
+						Quaternion.identity,
 						5f/8f * BoneSize,
 						jointColor.Transparent(alpha)
 					);

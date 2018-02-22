@@ -38,7 +38,7 @@ public class MotionTrail : MonoBehaviour {
 			index += 1;
 			instance.GetComponent<Transparency>().SetTransparency(0.25f);
 			if(index > 1) {
-				UltiDraw.DrawSphere(instance.transform.position, 0.025f, UltiDraw.Magenta.Transparent(0.8f));
+				UltiDraw.DrawSphere(instance.transform.position, Quaternion.identity, 0.025f, UltiDraw.Magenta.Transparent(0.8f));
 			}
 			//previous = instance;
 		}
