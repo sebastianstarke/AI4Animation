@@ -1,7 +1,8 @@
 ﻿ Shader "UnityGL" {
  Properties {
      _Color ("Color" , Color) = (1,1,1,1)
-     _Power ("Power", Float) = 0.0
+     _Power ("Power", Float) = 0.25
+     _Solid ("Filling", Float) = 0.0
      _MainTex ("Base (RGB)", 2D) = "white" {}
      _ZTest ("ZTest", Int) = 0
      _ZWrite ("ZWrite", Int) = 0
@@ -31,6 +32,7 @@
              sampler2D _MainTex;
              float4 _Color;
              float _Power;
+             float _Filling;
             
              float4 _MainTex_ST;
             
@@ -44,7 +46,8 @@
              }
             
              half4 frag (v2f i) : COLOR {
-                 half Power = 1 - saturate(dot(normalize(i.viewDir), i.normal));                
+                 half saturation = saturate(dot(normalize(i.viewDir), i.normal));
+                 half Power = (1 - _Filling) * (1 - saturation) + (_Filling * saturation);           
                  half4 PowerOut = _Color * pow(Power, _Power);
                  return PowerOut;
              }

@@ -214,18 +214,20 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "Frame"); index += 1;
 		labels.WriteLine(index + " " + "Timestamp"); index += 1;
 		for(int i=1; i<=Animations[0].Character.Hierarchy.Length; i++) {
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardZ"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpZ"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityX"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityY"+i); index += 1;
-			labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityZ"+i); index += 1;
+			if(Animations[0].Bones[i-1]) {
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionX"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionY"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionZ"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardX"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardY"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardZ"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpX"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpY"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpZ"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityX"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityY"+i); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityZ"+i); index += 1;
+			}
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
@@ -234,7 +236,7 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
 		}
@@ -250,7 +252,6 @@ public class BVHProcessor : EditorWindow {
 		labels.Close();
 	}
 
-	//TODO: EVERYTHING ASSUMES 60HZ!!!
 	private void ExportData() {
 		if(Animations.Length == 0) {
 			Debug.Log("No animations specified.");
@@ -329,10 +330,9 @@ public class BVHProcessor : EditorWindow {
 							//Trajectory data
 							for(int k=0; k<12; k++) {
 								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-								//line += FormatVector3(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root));
 								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
 								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
-								line += FormatValue(trajectory.Points[k].GetVelocity());
+								//line += FormatValue(trajectory.Points[k].GetVelocity());
 								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
 								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
 							}

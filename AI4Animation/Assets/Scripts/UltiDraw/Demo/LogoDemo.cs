@@ -19,6 +19,7 @@ public class LogoDemo : MonoBehaviour {
 		UltiDraw.Begin();
 
 		UltiDraw.SetSpatialRendering(0f);
+		UltiDraw.SetDepthRendering(false);
 		UltiDraw.DrawWiredQuad(new Vector3(0f, 1.5f, 1f), Quaternion.identity, 4.25f, 4.25f, UltiDraw.DarkGrey, UltiDraw.White);
 
 		UltiDraw.SetSpatialRendering(0.5f);

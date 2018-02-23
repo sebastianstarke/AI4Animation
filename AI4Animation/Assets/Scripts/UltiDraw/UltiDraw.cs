@@ -103,6 +103,13 @@ public static class UltiDraw {
 		MeshMaterial.SetFloat("_Power", value);
 	}
 
+	public static void SetFilling(float value) {
+		value = Mathf.Clamp(value, 0f, 1f);
+		Initialise();
+		SetProgram(PROGRAM.NONE);
+		MeshMaterial.SetFloat("_Filling", value);
+	}
+
 	//------------------------------------------------------------------------------------------
 	//2D SCENE DRAWING FUNCTIONS
 	//------------------------------------------------------------------------------------------
