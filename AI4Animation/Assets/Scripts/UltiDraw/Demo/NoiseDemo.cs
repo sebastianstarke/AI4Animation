@@ -21,6 +21,12 @@ public class NoiseDemo : MonoBehaviour {
 	void Draw() {
 		UltiDraw.Begin();
 
+		UltiDraw.SetCurvature(0f);
+
+		UltiDraw.DrawQuad(new Vector3(0f, 1f, 3f), Quaternion.identity, 15f, 15f, UltiDraw.DarkGrey);
+
+		UltiDraw.SetCurvature(0.25f);
+
 		for(int i=0; i<Lines; i++) {
 			Vector3 dir = new Vector3(2f*Random.value - 1f, 2f*Random.value - 1f, 2f*Random.value - 1f).normalized;
 			UltiDraw.DrawLine(

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PrimitivesDemo : MonoBehaviour {
 	
+	public bool DepthRendering = true;
+
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
 			Draw();
@@ -25,7 +27,7 @@ public class PrimitivesDemo : MonoBehaviour {
 
 		UltiDraw.Begin();
 
-		UltiDraw.SetDepthRendering(true);
+		UltiDraw.SetDepthRendering(DepthRendering);
 
 		UltiDraw.SetCurvature(0f);
 		UltiDraw.DrawQuad(Vector3.zero, Quaternion.Euler(90f, 0f, 0f), 100f, 100f, UltiDraw.DarkGrey);
