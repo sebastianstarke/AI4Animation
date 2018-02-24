@@ -123,6 +123,7 @@
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\ComparisonDemo.cs" />
+     <Compile Include="Assets\Scripts\UltiDraw\Demo\FunctionDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\GizmoDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\LogoDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\NoiseDemo.cs" />

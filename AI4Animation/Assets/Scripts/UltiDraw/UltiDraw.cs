@@ -97,7 +97,7 @@ public static class UltiDraw {
 		MeshMaterial.SetInt("_ZTest", enabled ? (int)UnityEngine.Rendering.CompareFunction.LessEqual : (int)UnityEngine.Rendering.CompareFunction.Always);
 	}
 
-	public static void SetSpatialRendering(float value) {
+	public static void SetCurvature(float value) {
 		Initialise();
 		SetProgram(PROGRAM.NONE);
 		MeshMaterial.SetFloat("_Power", value);

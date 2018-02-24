@@ -18,11 +18,11 @@ public class LogoDemo : MonoBehaviour {
 	void Draw() {
 		UltiDraw.Begin();
 
-		UltiDraw.SetSpatialRendering(0f);
+		UltiDraw.SetCurvature(0f);
 		UltiDraw.SetDepthRendering(false);
 		UltiDraw.DrawWiredQuad(new Vector3(0f, 1.5f, 1f), Quaternion.identity, 4.25f, 4.25f, UltiDraw.DarkGrey, UltiDraw.White);
 
-		UltiDraw.SetSpatialRendering(0.5f);
+		UltiDraw.SetCurvature(0.5f);
 		for(int i=0; i<5; i++) {
 			UltiDraw.DrawWireSphere(new Vector3(0f, 1.5f, 0f), Quaternion.identity, i*0.25f, UltiDraw.White);
 		}

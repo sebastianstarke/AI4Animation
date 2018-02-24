@@ -27,9 +27,9 @@ public class PrimitivesDemo : MonoBehaviour {
 
 		UltiDraw.SetDepthRendering(true);
 
-		UltiDraw.SetSpatialRendering(0f);
+		UltiDraw.SetCurvature(0f);
 		UltiDraw.DrawQuad(Vector3.zero, Quaternion.Euler(90f, 0f, 0f), 100f, 100f, UltiDraw.DarkGrey);
-		UltiDraw.SetSpatialRendering(0.25f);
+		UltiDraw.SetCurvature(0.25f);
 
 		UltiDraw.DrawGrid(Vector3.zero, Quaternion.identity, 100, 100, 1f, 1f, UltiDraw.DarkGreen.Transparent(0.5f));
 
