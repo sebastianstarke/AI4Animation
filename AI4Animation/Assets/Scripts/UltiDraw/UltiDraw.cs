@@ -138,35 +138,6 @@ public static class UltiDraw {
 		GL.Vertex(start+orthoStart);
     }
 
-	/*
-	public static void DrawLines(Vector3[] points, Color color) {
-		if(Return()) {return;};
-		SetProgram(PROGRAM.LINES);
-		GL.Color(color);
-		for(int i=0; i<points.Length-1; i++) {
-			GL.Vertex(points[i]);
-			GL.Vertex(points[i+1]);
-		}
-	}
-
-	public static void DrawLines(Vector3[] points, float width, Color color) {
-		if(Return()) {return;};
-		SetProgram(PROGRAM.LINES);
-		GL.Color(color);
-		for(int i=0; i<points.Length-1; i++) {
-			Vector3 start = points[i];
-			Vector3 end = points[i+1];
-			Vector3 dir = (end-start).normalized;
-			Vector3 orthoStart = width/2f * (Quaternion.AngleAxis(90f, (start - ViewPosition)) * dir);
-			Vector3 orthoEnd = width/2f * (Quaternion.AngleAxis(90f, (end - ViewPosition)) * dir);
-			GL.Vertex(end+orthoEnd);
-			GL.Vertex(end-orthoEnd);
-			GL.Vertex(start-orthoStart);
-			GL.Vertex(start+orthoStart);
-		}
-	}
-	*/
-
 	public static void DrawTriangle(Vector3 a, Vector3 b, Vector3 c, Color color) {
 		if(Return()) {return;};
 		SetProgram(PROGRAM.TRIANGLES);
