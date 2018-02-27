@@ -1078,7 +1078,7 @@ public class BVHAnimation : ScriptableObject {
 
 		public float ComputeMotionVelocity() {
 			Vector3 vel = ComputeVelocity(0, 1f);
-			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z) / Animation.FrameTime;
+			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z);
 		}
 	}
 
