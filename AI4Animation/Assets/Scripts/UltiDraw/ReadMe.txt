@@ -2,8 +2,8 @@
 ------------------------------------------------------- UltiDraw -------------------------------------------------------
 ========================================================================================================================
 
-This asset is an easy-to-use drawing library for visualising lines, primitives, gizmos or GUI elements in edit mode and
-runtime. Everything you need is:
+This asset is an easy-to-use and light-weighted drawing library for visualising lines, primitives, gizmos or GUI elements
+in edit mode and runtime. Everything you need is:
 # Ultidraw.cs file
 # Resources folder
 
@@ -18,7 +18,7 @@ UltiDraw assumes the following scripting pattern in order to perform computation
 # <Drawing Call 3...>
 # UltiDraw.End();
 
-The following drawing features are so far implemented:
+The following drawing features are implemented to allow visual customisation:
 # Coloring
 # Solid Objects
 # Wire Objects

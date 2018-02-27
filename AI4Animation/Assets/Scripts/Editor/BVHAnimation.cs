@@ -907,12 +907,12 @@ public class BVHAnimation : ScriptableObject {
 		UltiDraw.End();
 		
 		if(ShowVelocities) {
-			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.1f);
+			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.0f);
 			UltiDraw.Begin();
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				UltiDraw.DrawArrow(
 					transformations[i].GetPosition(),
-					transformations[i].GetPosition() + velocities[i] / FrameTime,
+					transformations[i].GetPosition() + velocities[i],
 					0.75f,
 					0.0075f,
 					0.05f,
@@ -1065,12 +1065,12 @@ public class BVHAnimation : ScriptableObject {
 
 		public Vector3 ComputeVelocity(int index, float smoothing) {
 			if(smoothing == 0f) {
-				return World[index].GetPosition() - Animation.GetFrame(Mathf.Max(1, Index-1)).World[index].GetPosition();
+				return (World[index].GetPosition() - Animation.GetFrame(Mathf.Max(1, Index-1)).World[index].GetPosition()) / Animation.FrameTime;
 			}
 			BVHFrame[] frames = Animation.GetFrames(Mathf.Max(0f, Timestamp-smoothing/2f), Mathf.Min(Animation.GetTotalTime(), Timestamp+smoothing/2f));
 			Vector3 velocity = Vector3.zero;
 			for(int i=1; i<frames.Length; i++) {
-				velocity += frames[i].World[index].GetPosition() - frames[i-1].World[index].GetPosition();
+				velocity += (frames[i].World[index].GetPosition() - frames[i-1].World[index].GetPosition()) / Animation.FrameTime;
 			}
 			velocity /= frames.Length;
 			return velocity;
@@ -1335,7 +1335,7 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Animation.GetTotalFrames(); i++) {
 				for(int j=0; j<Animation.Character.Hierarchy.Length; j++) {
 					if(Variables[j]) {
-						float boneVelocity = Animation.Frames[i].ComputeVelocity(j, VelocitySmoothing).magnitude / Animation.FrameTime;
+						float boneVelocity = Animation.Frames[i].ComputeVelocity(j, VelocitySmoothing).magnitude;
 						Velocities[i] += boneVelocity;
 					}
 				}

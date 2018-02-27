@@ -169,10 +169,10 @@ public class Trajectory {
 
 		//Projections
 		for(int i=0; i<Points.Length; i+=step) {
-		//	Vector3 right = Points[i].GetRightSample();
-		//	Vector3 left = Points[i].GetLeftSample();
-		//	UltiDraw.DrawCircle(right, 0.01f, Utility.Yellow);
-		//	UltiDraw.DrawCircle(left, 0.01f, Utility.Yellow);
+			Vector3 right = Points[i].GetRightSample();
+			Vector3 left = Points[i].GetLeftSample();
+			UltiDraw.DrawCircle(right, 0.01f, UltiDraw.Yellow);
+			UltiDraw.DrawCircle(left, 0.01f, UltiDraw.Yellow);
 		}
 
 		//Velocities
@@ -194,9 +194,9 @@ public class Trajectory {
 		}
 		
 		//Slopes
-		//Color transparentSlope = Utility.Blue.Transparent(0.75f);
+		Color transparentSlope = UltiDraw.Blue.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
-		//	UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
 		}
 
 		//Positions

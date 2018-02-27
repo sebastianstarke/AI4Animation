@@ -218,20 +218,20 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "Sequence"); index += 1;
 		labels.WriteLine(index + " " + "Frame"); index += 1;
 		labels.WriteLine(index + " " + "Timestamp"); index += 1;
-		for(int i=1; i<=Animations[0].Character.Hierarchy.Length; i++) {
-			if(Animations[0].Bones[i-1]) {
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionX"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionY"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "PositionZ"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardX"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardY"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "ForwardZ"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpX"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpY"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "UpZ"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityX"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityY"+i); index += 1;
-				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i-1].GetName() + "VelocityZ"+i); index += 1;
+		for(int i=0; i<Animations[0].Character.Hierarchy.Length; i++) {
+			if(Animations[0].Bones[i]) {
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "PositionX"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "PositionY"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "PositionZ"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "ForwardX"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "ForwardY"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "ForwardZ"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "UpX"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "UpY"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "UpZ"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "VelocityX"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "VelocityY"+(i+1)); index += 1;
+				labels.WriteLine(index + " " + Animations[0].Character.Hierarchy[i].GetName() + "VelocityZ"+(i+1)); index += 1;
 			}
 		}
 		for(int i=1; i<=12; i++) {
@@ -244,8 +244,6 @@ public class BVHProcessor : EditorWindow {
 			//labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
-		}
-		for(int i=1; i<=12; i++) {
 			for(int j=1; j<=Animations[0].StyleFunction.Styles.Length; j++) {
 				labels.WriteLine(index + " " + Animations[0].StyleFunction.Styles[j-1].Name + i); index += 1;
 			}
@@ -278,7 +276,7 @@ public class BVHProcessor : EditorWindow {
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
 		WriteAnimations(ref data, ref sequence, false);
-		//WriteAnimations(ref data, ref sequence, true);
+		WriteAnimations(ref data, ref sequence, true);
 		data.Close();
 	}
 
@@ -310,7 +308,7 @@ public class BVHProcessor : EditorWindow {
 
 							//Extract data
 							Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
-							Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+							Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.0f);
 							Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 							Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 							
@@ -340,9 +338,6 @@ public class BVHProcessor : EditorWindow {
 								//line += FormatValue(trajectory.Points[k].GetVelocity());
 								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
 								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
-							}
-
-							for(int k=0; k<12; k++) {
 								line += FormatArray(trajectory.Points[k].Styles);
 							}
 

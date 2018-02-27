@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NoiseDemo : MonoBehaviour {
+public class GeometryDemo : MonoBehaviour {
 	
 	public int Lines = 100;
 	[Range(0f, 1f)] public float StartWidth = 1f;

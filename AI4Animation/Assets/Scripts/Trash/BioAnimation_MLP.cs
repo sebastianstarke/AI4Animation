@@ -1,5 +1,4 @@
-﻿/*
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
@@ -203,17 +202,17 @@ public class BioAnimation_MLP : MonoBehaviour {
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				MLP.SetInput(start + i*6 + 0, pos.x);
-				//MLP.SetInput(start + i*6 + 1, pos.y); //Fix for flat terrain
-				MLP.SetInput(start + i*6 + 1, 0f);
-				MLP.SetInput(start + i*6 + 2, pos.z);
-				MLP.SetInput(start + i*6 + 3, dir.x);
-				//MLP.SetInput(start + i*6 + 4, dir.y); //Fix for flat terrain
-				MLP.SetInput(start + i*6 + 4, 0f);
-				MLP.SetInput(start + i*6 + 5, dir.z);
+				MLP.SetInput(start + i*7 + 0, pos.x);
+				MLP.SetInput(start + i*7 + 1, 0f);
+				MLP.SetInput(start + i*7 + 2, pos.z);
+				MLP.SetInput(start + i*7 + 3, dir.x);
+				MLP.SetInput(start + i*7 + 4, dir.z);
+				MLP.SetInput(start + i*7 + 5, 0f);
+				MLP.SetInput(start + i*7 + 6, 0f);
 			}
-			start += 6*PointSamples;
+			start += 7*PointSamples;
 
+			/*
 			//Input Trajectory Heights
 			for(int i=0; i<PointSamples; i++) {
 				//MLP.SetInput(start + i*2 + 0, GetSample(i).GetLeftSample().y - currentRoot.GetPosition().y); //Fix for flat terrain
@@ -222,6 +221,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 				MLP.SetInput(start + i*2 + 1, 0f);
 			}
 			start += 2*PointSamples;
+			*/
 
 			//Input Trajectory Styles
 			for (int i=0; i<PointSamples; i++) {
@@ -258,10 +258,6 @@ public class BioAnimation_MLP : MonoBehaviour {
 				MLP.SetInput(start + i*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Joints.Length;
-
-			if(name == "Wolf_MLP_P")  {
-				MLP.SetInput(start, Phase); start += 1;
-			}
 			
 			//Predict
 			MLP.Predict();
@@ -381,7 +377,6 @@ public class BioAnimation_MLP : MonoBehaviour {
 			
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
-			/*
 			if(SolveIK) {
 				//Step #1
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -409,11 +404,9 @@ public class BioAnimation_MLP : MonoBehaviour {
 					//Ups[i] = Joints[i].up;
 				}
 			}
-			*/
 
-			/*transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
+			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
 			
-			/*
 			if(SolveIK) {
 				//Step #2
 				for(int i=0; i<IKSolvers.Length; i++) {
@@ -446,15 +439,9 @@ public class BioAnimation_MLP : MonoBehaviour {
 					IKSolvers[i].ProcessIK();
 				}
 			}
-			*/
-			/*
+
 			//Update Skeleton
 			Character.FetchTransformations(Root);
-
-			if(name == "Wolf_MLP_P") {
-				//Update Phase
-				Phase = Mathf.Repeat(Phase + MLP.GetOutput(end+3), 1f);
-			}	
 		}
 	}
 
@@ -512,41 +499,9 @@ public class BioAnimation_MLP : MonoBehaviour {
 		}
 	}
 
-	void OnGUI() {
-		/*
-		float height = 0.05f;
-		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
-		for(int i=0; i<Controller.Styles.Length; i++) {
-			GUI.Label(Utility.GetGUIRect(0.725f, 0.05f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
-			string keys = string.Empty;
-			for(int j=0; j<Controller.Styles[i].Keys.Length; j++) {
-				keys += Controller.Styles[i].Keys[j].ToString() + " ";
-			}
-			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
-			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
-		}
-		*//*
-	}
-
 	void OnRenderObject() {
 		if(Root == null) {
 			Root = transform;
-		}
-
-		if(name == "Wolf_MLP_P") {
-			UltiDraw.Begin();
-			UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
-			Quaternion rotation = Quaternion.AngleAxis(-360f * Phase, Vector3.forward);
-			Vector2 a = rotation * new Vector2(-0.005f, 0f);
-			Vector2 b = rotation *new Vector3(0.005f, 0f);
-			Vector3 c = rotation * new Vector3(0f, 0.075f);
-			UltiDraw.DrawGUITriangle(
-				new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y),
-				new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y),
-				new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y),
-				UltiDraw.Cyan
-			);
-			UltiDraw.End();
 		}
 
 		if(ShowTrajectory) {
@@ -678,4 +633,3 @@ public class BioAnimation_MLP : MonoBehaviour {
 	}
 	#endif
 }
-*/
