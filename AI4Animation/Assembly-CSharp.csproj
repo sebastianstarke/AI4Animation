@@ -202,6 +202,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
+     <None Include="Assets\Scripts\UltiDraw\ReadMe.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
