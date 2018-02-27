@@ -66,11 +66,15 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						BVHAnimation animation = Animations[i];
+						//BVHAnimation animation = Animations[i];
+						/*
 						animation.Bones = new bool[Animations[i].Character.Hierarchy.Length];
 						for(int j=0; j<animation.Bones.Length; j++) {
 							animation.Bones[j] = true;
 						}
+						Debug.Log(animation.Bones.Length);
+						*/
+						/*
 						animation.Bones[6] = false;
 						animation.Bones[12] = false;
 
@@ -85,6 +89,7 @@ public class BVHProcessor : EditorWindow {
 						animation.Bones[35] = false;
 						animation.Bones[36] = false;
 						animation.Bones[37] = false;
+						*/
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -273,7 +278,7 @@ public class BVHProcessor : EditorWindow {
 		StreamWriter data = File.CreateText(filename+".txt");
 		int sequence = 0;
 		WriteAnimations(ref data, ref sequence, false);
-		WriteAnimations(ref data, ref sequence, true);
+		//WriteAnimations(ref data, ref sequence, true);
 		data.Close();
 	}
 

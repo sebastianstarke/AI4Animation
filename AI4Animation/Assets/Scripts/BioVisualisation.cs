@@ -34,10 +34,10 @@ public class BioVisualisation : MonoBehaviour {
 	private Queue<float>[] CW;
 	public bool DrawCW = true;
 
-	private BioAnimation_MFNN Animation;
+	private BioAnimation Animation;
 
 	void Awake() {
-		Animation = GetComponent<BioAnimation_MFNN>();
+		Animation = GetComponent<BioAnimation>();
 		CW = new Queue<float>[Animation.MFNN.ControlWeights];
 		for(int i=0; i<CW.Length; i++) {
 			CW[i] = new Queue<float>();
@@ -209,6 +209,9 @@ public class BioVisualisation : MonoBehaviour {
 
 	private void UpdateStyle(Button button, int index) {
 		if(button == null) {
+			return;
+		}
+		if(index >= Animation.GetTrajectory().Points[0].Styles.Length) {
 			return;
 		}
 		float activation = Animation.GetTrajectory().Points[60].Styles[index];

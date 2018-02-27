@@ -17,6 +17,7 @@ public class MFNN {
 	public int HDim = 512;
 	public int YDim = 352;
 	public int ControlWeights = 4;
+	public int[] ControlNeurons = new int[0];
 
 	public NetworkParameters Parameters;
 	
@@ -81,6 +82,28 @@ public class MFNN {
 			return;
 		}
 		Initialise(Network, CDim, XDim, HDim, YDim, ControlWeights);
+		for(int i=0; i<ControlNeurons.Length; i++) {
+			AddControlNeuron(ControlNeurons[i]);
+		}
+		/*
+		int start = (Controller.Styles.Length+8) * PointSamples;
+		int lh = start + 10*12 + 9;
+		int rh = start + 15*12 + 9;
+		int lf = start + 19*12 + 9;
+		int rf = start + 23*12 + 9;
+		for(int i=lh; i<lh+3; i++) {
+			MFNN.AddControlNeuron(i);
+		}
+		for(int i=rh; i<rh+3; i++) {
+			MFNN.AddControlNeuron(i);
+		}
+		for(int i=lf; i<lf+3; i++) {
+			MFNN.AddControlNeuron(i);
+		}
+		for(int i=rf; i<rf+3; i++) {
+			MFNN.AddControlNeuron(i);
+		}
+		*/
 		for(int i=0; i<Parameters.Matrices.Length; i++) {
 			SetupMatrix(i);
 		}
@@ -154,6 +177,10 @@ public class MFNN {
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
 					ControlWeights = EditorGUILayout.IntField("Control Weights", ControlWeights);
+					Array.Resize(ref ControlNeurons, EditorGUILayout.IntField("Control Neurons", ControlNeurons.Length));
+					for(int i=0; i<ControlNeurons.Length; i++) {
+						ControlNeurons[i] = EditorGUILayout.IntField("Neuron " + (i+1), ControlNeurons[i]);
+					}
 					EditorGUILayout.BeginHorizontal();
 					if(GUILayout.Button("Load Parameters")) {
 						LoadParameters();

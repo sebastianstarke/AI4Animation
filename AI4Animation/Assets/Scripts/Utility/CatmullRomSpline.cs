@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class CatmullRomSpline : MonoBehaviour {
 
-	public BioAnimation_MFNN Target;
+	public BioAnimation Target;
 
 	[Range(0f, 1f)] public float Correction = 1f;
 
