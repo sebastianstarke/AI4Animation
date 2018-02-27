@@ -377,9 +377,9 @@ public class Character {
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
-					if(Utility.GUIButton("Clear", UltiDraw.DarkRed, UltiDraw.White)) {
-						Utility.Clear(ref Hierarchy);
-					}
+					//if(Utility.GUIButton("Clear", UltiDraw.DarkRed, UltiDraw.White)) {
+					//	Utility.Clear(ref Hierarchy);
+					//}
 					if(root == null) {
 						if(Hierarchy.Length == 0) {
 							EditorGUILayout.HelpBox("No skeleton available.", MessageType.Warning);
