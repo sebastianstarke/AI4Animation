@@ -79,8 +79,6 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.PhaseFunction.Velocities, 0f);
 			Utility.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
 			Utility.Add(ref Data.PhaseFunction.Heights, 0f);
-			Utility.Add(ref Data.PhaseFunction.RootVelocities, 0f);
-			Utility.Add(ref Data.PhaseFunction.NormalisedRootVelocities, 0f);
 
 			//Mirrored Phase Function
 			Utility.Add(ref Data.MirroredPhaseFunction.Phase, 0f);
@@ -90,8 +88,6 @@ public class BVHRecorder : EditorWindow {
 			Utility.Add(ref Data.MirroredPhaseFunction.Velocities, 0f);
 			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedVelocities, 0f);
 			Utility.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
-			Utility.Add(ref Data.MirroredPhaseFunction.RootVelocities, 0f);
-			Utility.Add(ref Data.MirroredPhaseFunction.NormalisedRootVelocities, 0f);
 
 			//Style Function
 			bool styleUpdate = false;

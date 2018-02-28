@@ -362,7 +362,6 @@ public class BVHAnimation : ScriptableObject {
 
 			Trajectory.Points[i].SetPosition(rootPos);
 			Trajectory.Points[i].SetDirection(rootDir);
-			Trajectory.Points[i].SetVelocity(Frames[i].ComputeMotionVelocity());
 			Trajectory.Points[i].Postprocess();
 		}
 	}
@@ -398,7 +397,7 @@ public class BVHAnimation : ScriptableObject {
 		return transformations;
 	}
 
-	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing=0f) {
+	public Vector3[] ExtractVelocities(BVHFrame frame, bool mirrored, float smoothing) {
 		Vector3[] velocities = new Vector3[Character.Hierarchy.Length];
 		for(int i=0; i<velocities.Length; i++) {
 			velocities[i] = mirrored ? frame.ComputeVelocity(Symmetry[i], smoothing).GetMirror(GetMirrorAxis()) : frame.ComputeVelocity(i, smoothing);
@@ -417,7 +416,6 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
 			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
 			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
-			trajectory.Points[i].SetVelocity(Trajectory.Points[index-1].GetVelocity());
 			trajectory.Points[i].SetSlope(Trajectory.Points[index-1].GetSlope());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
@@ -429,8 +427,10 @@ public class BVHAnimation : ScriptableObject {
 		trajectory.Points[6].SetDirection(Trajectory.Points[frame.Index-1].GetDirection());
 		trajectory.Points[6].SetLeftsample(Trajectory.Points[frame.Index-1].GetLeftSample());
 		trajectory.Points[6].SetRightSample(Trajectory.Points[frame.Index-1].GetRightSample());
-		trajectory.Points[6].SetVelocity(Trajectory.Points[frame.Index-1].GetVelocity());
 		trajectory.Points[6].SetSlope(Trajectory.Points[frame.Index-1].GetSlope());
+		for(int j=0; j<StyleFunction.Styles.Length; j++) {
+			trajectory.Points[6].Styles[j] = StyleFunction.Styles[j].Values[frame.Index-1];
+		}
 		//Future
 		for(int i=7; i<12; i++) {
 			float timestamp = Mathf.Clamp(frame.Timestamp + (float)(i-6)/5f, 0f, GetTotalTime());
@@ -440,7 +440,6 @@ public class BVHAnimation : ScriptableObject {
 			trajectory.Points[i].SetDirection(Trajectory.Points[index-1].GetDirection());
 			trajectory.Points[i].SetLeftsample(Trajectory.Points[index-1].GetLeftSample());
 			trajectory.Points[i].SetRightSample(Trajectory.Points[index-1].GetRightSample());
-			trajectory.Points[i].SetVelocity(Trajectory.Points[index-1].GetVelocity());
 			trajectory.Points[i].SetSlope(Trajectory.Points[index-1].GetSlope());
 			for(int j=0; j<StyleFunction.Styles.Length; j++) {
 				trajectory.Points[i].Styles[j] = StyleFunction.Styles[j].Values[index-1];
@@ -907,7 +906,7 @@ public class BVHAnimation : ScriptableObject {
 		UltiDraw.End();
 		
 		if(ShowVelocities) {
-			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.0f);
+			Vector3[] velocities = ExtractVelocities(CurrentFrame, ShowMirrored, 0.1f);
 			UltiDraw.Begin();
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				UltiDraw.DrawArrow(
@@ -1075,11 +1074,6 @@ public class BVHAnimation : ScriptableObject {
 			velocity /= frames.Length;
 			return velocity;
 		}
-
-		public float ComputeMotionVelocity() {
-			Vector3 vel = ComputeVelocity(0, 1f);
-			return Mathf.Sqrt(vel.x*vel.x + vel.z*vel.z);
-		}
 	}
 
 	[System.Serializable]
@@ -1102,9 +1096,6 @@ public class BVHAnimation : ScriptableObject {
 		public float[] Velocities;
 		public float[] NormalisedVelocities;
 
-		public float[] RootVelocities;
-		public float[] NormalisedRootVelocities;
-
 		public float HeightThreshold;
 		public float[] Heights;
 
@@ -1125,9 +1116,6 @@ public class BVHAnimation : ScriptableObject {
 
 			Velocities = new float[Animation.GetTotalFrames()];
 			NormalisedVelocities = new float[Animation.GetTotalFrames()];
-
-			RootVelocities = new float[Animation.GetTotalFrames()];
-			NormalisedRootVelocities = new float[Animation.GetTotalFrames()];
 
 			Heights = new float[Animation.GetTotalFrames()];
 		}
@@ -1352,24 +1340,6 @@ public class BVHAnimation : ScriptableObject {
 			for(int i=0; i<Velocities.Length; i++) {
 				NormalisedVelocities[i] = Utility.Normalise(Velocities[i], min, max, 0f, 1f);
 			}
-
-
-			RootVelocities = new float[Animation.GetTotalFrames()];
-			NormalisedRootVelocities = new float[Animation.GetTotalFrames()];
-			min = float.MaxValue;
-			max = float.MinValue;
-			for(int i=0; i<Animation.GetTotalFrames(); i++) {
-				RootVelocities[i] = Animation.Frames[i].ComputeMotionVelocity();
-				if(RootVelocities[i] < min) {
-					min = RootVelocities[i];
-				}
-				if(RootVelocities[i] > max) {
-					max = RootVelocities[i];
-				}
-			}
-			for(int i=0; i<RootVelocities.Length; i++) {
-				NormalisedRootVelocities[i] = Utility.Normalise(RootVelocities[i], min, max, 0f, 1f);
-			}
 		}
 
 		public void EditorUpdate() {
@@ -1453,7 +1423,6 @@ public class BVHAnimation : ScriptableObject {
 				}
 				EditorGUILayout.EndScrollView();
 
-				EditorGUILayout.LabelField("Velocity: " + Animation.CurrentFrame.ComputeMotionVelocity());
 				SetVelocitySmoothing(EditorGUILayout.FloatField("Velocity Smoothing", VelocitySmoothing));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
 				SetHeightThreshold(EditorGUILayout.FloatField("Height Threshold", HeightThreshold));
@@ -1537,15 +1506,6 @@ public class BVHAnimation : ScriptableObject {
 					UltiDraw.DrawLine(prevPos, newPos, UltiDraw.Red);
 				}
 				*/
-
-				//Root Velocity
-				for(int i=1; i<elements; i++) {
-					prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-					prevPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start-1] * rect.height;
-					newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-					newPos.y = rect.yMax - Animation.PhaseFunction.NormalisedRootVelocities[i+start] * rect.height;
-					UltiDraw.DrawLine(prevPos, newPos, UltiDraw.Cyan);
-				}
 				
 				//Cycle
 				if(ShowCycle) {

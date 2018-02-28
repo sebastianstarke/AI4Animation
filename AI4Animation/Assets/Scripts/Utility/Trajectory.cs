@@ -56,7 +56,6 @@ public class Trajectory {
 		[SerializeField] private Matrix4x4 Transformation;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
-		[SerializeField] private float Velocity;
 		[SerializeField] private float Slope;
 		public float[] Styles = new float[0];
 
@@ -65,7 +64,6 @@ public class Trajectory {
 			Transformation = Matrix4x4.identity;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
-			Velocity = 0f;
 			Slope = 0f;
 			Styles = new float[styles];
 		}
@@ -126,14 +124,6 @@ public class Trajectory {
 			return RightSample;
 		}
 
-		public void SetVelocity(float velocity) {
-			Velocity = velocity;
-		}
-
-		public float GetVelocity() {
-			return Velocity;
-		}
-
 		public void SetSlope(float slope) {
 			Slope = slope;
 		}
@@ -173,15 +163,6 @@ public class Trajectory {
 			Vector3 left = Points[i].GetLeftSample();
 			UltiDraw.DrawCircle(right, 0.01f, UltiDraw.Yellow);
 			UltiDraw.DrawCircle(left, 0.01f, UltiDraw.Yellow);
-		}
-
-		//Velocities
-		Color transparentVelocity = UltiDraw.DarkGreen.Transparent(0.25f);
-		for(int i=0; i<Points.Length; i+=step) {
-			Vector3 start = Points[i].GetPosition();
-			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
-			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			UltiDraw.DrawLine(start, end, 0.025f, 0f, transparentVelocity);
 		}
 
 		//Directions

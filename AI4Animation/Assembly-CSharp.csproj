@@ -165,7 +165,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
-     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
@@ -198,7 +197,6 @@
      <None Include="Assets\Project\Parameters\Quadruped\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
-     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />

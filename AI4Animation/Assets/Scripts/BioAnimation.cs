@@ -685,10 +685,10 @@ public class BioAnimation : MonoBehaviour {
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
 
-	private const int TrajectoryDimIn = 7;
-	private const int TrajectoryDimOut = 4;
-	private const int JointDimIn = 12;
-	private const int JointDimOut = 12;
+	private int TrajectoryDimIn;
+	private int TrajectoryDimOut;
+	private int JointDimIn;
+	private int JointDimOut;
 
 	void Reset() {
 		Root = transform;
@@ -723,6 +723,10 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
+		JointDimIn = 12;
+		JointDimOut = 12;
+		TrajectoryDimIn = 7 + Controller.Styles.Length;
+		TrajectoryDimOut = 4;
 	}
 
 	public Trajectory GetTrajectory() {
@@ -795,8 +799,6 @@ public class BioAnimation : MonoBehaviour {
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetVelocity(TargetVelocity.magnitude); //Set Desired Smoothed Root Velocities
-				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
 				}
@@ -815,7 +817,6 @@ public class BioAnimation : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -834,22 +835,21 @@ public class BioAnimation : MonoBehaviour {
 
 			int start = 0;
 			//Input Trajectory Positions / Directions / Heights / Styles
-			int dimensions = 7 + Controller.Styles.Length;
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				MFNN.SetInput(start + i*dimensions + 0, pos.x);
-				MFNN.SetInput(start + i*dimensions + 1, 0f);
-				MFNN.SetInput(start + i*dimensions + 2, pos.z);
-				MFNN.SetInput(start + i*dimensions + 3, dir.x);
-				MFNN.SetInput(start + i*dimensions + 4, dir.z);
-				MFNN.SetInput(start + i*dimensions + 5, 0f);
-				MFNN.SetInput(start + i*dimensions + 6, 0f);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 1, 0f);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 2, pos.z);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.x);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 4, dir.z);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 5, 0f);
+				MFNN.SetInput(start + i*TrajectoryDimIn + 6, 0f);
 				for(int j=0; j<GetSample(i).Styles.Length; j++) {
-					MFNN.SetInput(start + i*dimensions + 7 + j, GetSample(i).Styles[j]);
+					MFNN.SetInput(start + i*TrajectoryDimIn + 7 + j, GetSample(i).Styles[j]);
 				}
 			}
-			start += dimensions*PointSamples;
+			start += TrajectoryDimIn*PointSamples;
 
 			//Input Previous Bone Positions / Velocities
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
@@ -886,7 +886,6 @@ public class BioAnimation : MonoBehaviour {
 			for(int i=0; i<RootPointIndex; i++) {
 				Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
-				Trajectory.Points[i].SetVelocity(Trajectory.Points[i+1].GetVelocity());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
 				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
@@ -927,15 +926,15 @@ public class BioAnimation : MonoBehaviour {
 				int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
 				float factor = (float)(i % PointDensity) / PointDensity;
 
-				float prevPosX = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 0);
-				float prevPosZ = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 1);
-				float prevDirX = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 2);
-				float prevDirZ = MFNN.GetOutput(start + (prevSampleIndex-6)*4 + 3);
+				float prevPosX = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0);
+				float prevPosZ = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1);
+				float prevDirX = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2);
+				float prevDirZ = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3);
 
-				float nextPosX = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 0);
-				float nextPosZ = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 1);
-				float nextDirX = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 2);
-				float nextDirZ = MFNN.GetOutput(start + (nextSampleIndex-6)*4 + 3);
+				float nextPosX = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0);
+				float nextPosZ = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1);
+				float nextDirX = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2);
+				float nextDirZ = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3);
 
 				float posX = (1f - factor) * prevPosX + factor * nextPosX;
 				float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
@@ -968,13 +967,10 @@ public class BioAnimation : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
-
-			Trajectory.Points[RootPointIndex].SetVelocity((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Current Smoothed Root Velocity
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
