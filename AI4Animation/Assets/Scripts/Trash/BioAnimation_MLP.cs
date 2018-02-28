@@ -45,7 +45,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 	private const int JointDimIn = 12;
 	private const int JointDimOut = 12;
 
-	private float Phase = 0f;
+	//private float Phase = 0f;
 
 	void Reset() {
 		Root = transform;
@@ -127,7 +127,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
 			//Update Trajectory Correction
-			//TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
+			TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(Controller.QueryMove().normalized.magnitude, Mathf.Abs(Controller.QueryTurn())), TargetBlending);
 
 			//Update Style
 			for(int i=0; i<Controller.Styles.Length; i++) {

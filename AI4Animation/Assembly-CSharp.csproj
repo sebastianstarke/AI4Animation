@@ -136,6 +136,7 @@
      <Compile Include="Assets\Scripts\Utility\Controller.cs" />
      <Compile Include="Assets\Scripts\Utility\FootIK.cs" />
      <Compile Include="Assets\Scripts\Utility\FPS.cs" />
+     <Compile Include="Assets\Scripts\Utility\FreeCamera.cs" />
      <Compile Include="Assets\Scripts\Utility\GamePad.cs" />
      <Compile Include="Assets\Scripts\Utility\GizmosGL.cs" />
      <Compile Include="Assets\Scripts\Utility\Matrix.cs" />
@@ -172,7 +173,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
-     <None Include="Assets\Resources\meshskinner12526228033329972625.txt" />
+     <None Include="Assets\Resources\meshskinner134897840333210739750.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
