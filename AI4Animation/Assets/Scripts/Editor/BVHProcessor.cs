@@ -189,7 +189,6 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			//labels.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
 			for(int j=1; j<=Animations[0].StyleFunction.Styles.Length; j++) {
@@ -257,6 +256,9 @@ public class BVHProcessor : EditorWindow {
 							//Extract data
 							Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
 							Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+							for(int v=0; v<velocities.Length; v++) {
+								velocities[v] /= Framerate;
+							}
 							Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 							Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 							
@@ -283,7 +285,6 @@ public class BVHProcessor : EditorWindow {
 								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
 								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
 								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
-								//line += FormatValue(trajectory.Points[k].GetVelocity());
 								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
 								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
 								line += FormatArray(trajectory.Points[k].Styles);
