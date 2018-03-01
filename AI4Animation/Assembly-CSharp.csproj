@@ -195,6 +195,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
+     <None Include="Assets\Project\Labels.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
      <None Include="Assets\Project\Parameters\Quadruped\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
@@ -204,6 +205,7 @@
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
      <None Include="Assets\Scripts\UltiDraw\ReadMe.txt" />
+     <None Include="Assets\Project\Data.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
