@@ -198,6 +198,9 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "TranslationalOffsetX"); index += 1;
 		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
+
+		//labels.WriteLine(index + " " + "Phase"); index += 1;
+		//labels.WriteLine(index + " " + "PhaseUpdate");
 		
 		labels.Close();
 	}
@@ -286,15 +289,6 @@ public class BVHProcessor : EditorWindow {
 								line += FormatArray(trajectory.Points[k].Styles);
 							}
 
-							/*
-							//Phase
-							if(mirrored) {
-								line += FormatValue(Animations[i].MirroredPhaseFunction.GetPhase(frame));
-							} else {
-								line += FormatValue(Animations[i].PhaseFunction.GetPhase(frame));
-							}
-							*/
-
 							//Translational and angular root velocity
 							Vector3 position = trajectory.Points[6].GetPosition();
 							Vector3 direction = trajectory.Points[6].GetDirection();
@@ -307,6 +301,14 @@ public class BVHProcessor : EditorWindow {
 
 							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 							line += FormatValue(rotationOffset);
+
+							/*
+							//Phase
+							float prev = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(prevFrame) : Animations[i].PhaseFunction.GetPhase(prevFrame);
+							float current = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(frame) : Animations[i].PhaseFunction.GetPhase(frame);
+							line += FormatValue(current);
+							line += FormatValue(GetPhaseUpdate(prev, current));
+							*/
 
 							//Postprocess
 							line = line.Remove(line.Length-1);
@@ -369,7 +371,7 @@ public class BVHProcessor : EditorWindow {
 		}
 	}
 
-	private float GetPhaseChange(float prev, float next) {
+	private float GetPhaseUpdate(float prev, float next) {
 		return Mathf.Repeat(((next-prev) + 1f), 1f);
 	}
 
