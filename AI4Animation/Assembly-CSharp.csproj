@@ -172,7 +172,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
-     <None Include="Assets\Resources\meshskinner134897840333210739750.txt" />
+     <None Include="Assets\Resources\meshskinner144533400333211506875.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />

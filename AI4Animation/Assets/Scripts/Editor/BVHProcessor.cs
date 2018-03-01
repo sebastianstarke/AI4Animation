@@ -236,13 +236,9 @@ public class BVHProcessor : EditorWindow {
 						float timeStart = Animations[i].GetFrame(Animations[i].Sequences[s].Start).Timestamp;
 						float timeEnd = Animations[i].GetFrame(Animations[i].Sequences[s].End).Timestamp;
 						for(float j=timeStart; j<=timeEnd; j+=1f/(float)Framerate) {
-						//int startIndex = Animations[i].Sequences[s].Start;
-						//int endIndex = Animations[i].Sequences[s].End;
-						//for(int j=startIndex; j<=endIndex; j++) {
-							//Get frame
+							//Get frames
 							BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
 							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/(float)Framerate, 0f, Animations[i].GetTotalTime()));
-							//BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1, 1, Animations[i].GetTotalFrames()));
 
 							//Sequence number
 							string line = sequence + Separator;
