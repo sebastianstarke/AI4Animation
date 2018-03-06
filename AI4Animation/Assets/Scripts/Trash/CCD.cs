@@ -15,8 +15,6 @@ public class CCD : MonoBehaviour {
 	}
 	
 	void LateUpdate() {
-		//Target.position = Utility.ProjectGround(Bones[Bones.Length-1].position, LayerMask.GetMask("Ground"));
-
 		for(int k=0; k<Iterations; k++) {
 			for(int i=0; i<Bones.Length-1; i++) {
 
@@ -31,11 +29,6 @@ public class CCD : MonoBehaviour {
 					Quaternion.FromToRotation(Bones[Bones.Length-1].position - Bones[i].position, Target.position - Bones[i].position) * Bones[i].rotation,
 					(float)(i+1)/(float)Bones.Length
 				);
-
-				Quaternion rotation = Bones[i].localRotation;
-				rotation.x = 0f;
-
-				Bones[i].localRotation = rotation;
 				
 			}
 			Bones[Bones.Length-1].rotation = Target.rotation;

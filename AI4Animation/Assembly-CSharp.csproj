@@ -175,6 +175,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
      <None Include="Assets\Resources\meshskinner144533400333211506875.txt" />
+     <None Include="Assets\Project\Labels_Dog.txt" />
      <None Include="Assets\Project\Data_Phase.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
@@ -186,6 +187,7 @@
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeHistogram.compute" />
+     <None Include="Assets\Project\Data_Dog.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
      <None Include="Assets\Scripts\UltiDraw\Resources\UltiDraw.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
