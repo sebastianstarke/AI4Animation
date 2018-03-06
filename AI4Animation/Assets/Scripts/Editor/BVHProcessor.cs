@@ -199,8 +199,8 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 
-		//labels.WriteLine(index + " " + "Phase"); index += 1;
-		//labels.WriteLine(index + " " + "PhaseUpdate");
+		labels.WriteLine(index + " " + "Phase"); index += 1;
+		labels.WriteLine(index + " " + "PhaseUpdate");
 		
 		labels.Close();
 	}
@@ -242,9 +242,7 @@ public class BVHProcessor : EditorWindow {
 							//Get frames
 							BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
 							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/(float)Framerate, 0f, Animations[i].GetTotalTime()));
-
-							Debug.Log("Frame: " + frame.Index + " Prev Frame: " + prevFrame.Index);
-
+							
 							//Sequence number
 							string line = sequence + Separator;
 
@@ -304,13 +302,13 @@ public class BVHProcessor : EditorWindow {
 							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
 							line += FormatValue(rotationOffset);
 
-							/*
+							
 							//Phase
 							float prev = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(prevFrame) : Animations[i].PhaseFunction.GetPhase(prevFrame);
 							float current = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(frame) : Animations[i].PhaseFunction.GetPhase(frame);
 							line += FormatValue(current);
 							line += FormatValue(GetPhaseUpdate(prev, current));
-							*/
+							
 
 							//Postprocess
 							line = line.Remove(line.Length-1);
