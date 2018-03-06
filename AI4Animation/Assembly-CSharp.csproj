@@ -114,11 +114,13 @@
      <Compile Include="Assets\Scripts\DeepLearning\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\PFNN.cs" />
+     <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_MFNN_Latent.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_MLP.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
+     <Compile Include="Assets\Scripts\Trash\CCD.cs" />
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />

@@ -243,6 +243,8 @@ public class BVHProcessor : EditorWindow {
 							BVHAnimation.BVHFrame frame = Animations[i].GetFrame(j);
 							BVHAnimation.BVHFrame prevFrame = Animations[i].GetFrame(Mathf.Clamp(j-1f/(float)Framerate, 0f, Animations[i].GetTotalTime()));
 
+							Debug.Log("Frame: " + frame.Index + " Prev Frame: " + prevFrame.Index);
+
 							//Sequence number
 							string line = sequence + Separator;
 

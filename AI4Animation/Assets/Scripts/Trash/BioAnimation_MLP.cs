@@ -42,10 +42,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
 
-	private const int JointDimIn = 12;
-	private const int JointDimOut = 12;
-
-	//private float Phase = 0f;
+	private int TrajectoryDimIn;
+	private int TrajectoryDimOut;
+	private int JointDimIn;
+	private int JointDimOut;
 
 	void Reset() {
 		Root = transform;
@@ -70,7 +70,6 @@ public class BioAnimation_MLP : MonoBehaviour {
 			Ups[i] = Joints[i].up;
 			Velocities[i] = Vector3.zero;
 		}
-
 		if(MLP.Parameters == null) {
 			Debug.Log("No parameters loaded.");
 			return;
@@ -80,6 +79,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
+		JointDimIn = 12;
+		JointDimOut = 12;
+		TrajectoryDimIn = 7 + Controller.Styles.Length;
+		TrajectoryDimOut = 4;
 	}
 
 	public Trajectory GetTrajectory() {
@@ -196,22 +199,21 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 			int start = 0;
 			//Input Trajectory Positions / Directions / Heights / Styles
-			int dimensions = 7 + Controller.Styles.Length;
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				MLP.SetInput(start + i*dimensions + 0, pos.x);
-				MLP.SetInput(start + i*dimensions + 1, 0f);
-				MLP.SetInput(start + i*dimensions + 2, pos.z);
-				MLP.SetInput(start + i*dimensions + 3, dir.x);
-				MLP.SetInput(start + i*dimensions + 4, dir.z);
-				MLP.SetInput(start + i*dimensions + 5, 0f);
-				MLP.SetInput(start + i*dimensions + 6, 0f);
+				MLP.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
+				MLP.SetInput(start + i*TrajectoryDimIn + 1, 0f);
+				MLP.SetInput(start + i*TrajectoryDimIn + 2, pos.z);
+				MLP.SetInput(start + i*TrajectoryDimIn + 3, dir.x);
+				MLP.SetInput(start + i*TrajectoryDimIn + 4, dir.z);
+				MLP.SetInput(start + i*TrajectoryDimIn + 5, 0f);
+				MLP.SetInput(start + i*TrajectoryDimIn + 6, 0f);
 				for(int j=0; j<GetSample(i).Styles.Length; j++) {
-					MLP.SetInput(start + i*dimensions + 7 + j, GetSample(i).Styles[j]);
+					MLP.SetInput(start + i*TrajectoryDimIn + 7 + j, GetSample(i).Styles[j]);
 				}
 			}
-			start += dimensions*PointSamples;
+			start += TrajectoryDimIn*PointSamples;
 
 			//Input Previous Bone Positions / Velocities
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
@@ -257,9 +259,12 @@ public class BioAnimation_MLP : MonoBehaviour {
 			}
 
 			//Update Current Trajectory
-			int end = 6*4 + JointDimOut*Joints.Length;
+			int end = TrajectoryDimOut*6 + JointDimOut*Joints.Length;
 			Vector3 translationalOffset = new Vector3(MLP.GetOutput(end+0), 0f, MLP.GetOutput(end+1));
 			float angularOffset = MLP.GetOutput(end+2);
+
+			translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
+			angularOffset *= Utility.Exponential01(Mathf.Abs(angularOffset) / 0.01f);
 
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
@@ -285,15 +290,15 @@ public class BioAnimation_MLP : MonoBehaviour {
 				int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
 				float factor = (float)(i % PointDensity) / PointDensity;
 
-				float prevPosX = MLP.GetOutput(start + (prevSampleIndex-6)*4 + 0);
-				float prevPosZ = MLP.GetOutput(start + (prevSampleIndex-6)*4 + 1);
-				float prevDirX = MLP.GetOutput(start + (prevSampleIndex-6)*4 + 2);
-				float prevDirZ = MLP.GetOutput(start + (prevSampleIndex-6)*4 + 3);
+				float prevPosX = MLP.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0);
+				float prevPosZ = MLP.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1);
+				float prevDirX = MLP.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2);
+				float prevDirZ = MLP.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3);
 
-				float nextPosX = MLP.GetOutput(start + (nextSampleIndex-6)*4 + 0);
-				float nextPosZ = MLP.GetOutput(start + (nextSampleIndex-6)*4 + 1);
-				float nextDirX = MLP.GetOutput(start + (nextSampleIndex-6)*4 + 2);
-				float nextDirZ = MLP.GetOutput(start + (nextSampleIndex-6)*4 + 3);
+				float nextPosX = MLP.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0);
+				float nextPosZ = MLP.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1);
+				float nextDirX = MLP.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2);
+				float nextDirZ = MLP.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3);
 
 				float posX = (1f - factor) * prevPosX + factor * nextPosX;
 				float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
@@ -315,7 +320,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 						)
 					);
 			}
-			start += 6 * 4;
+			start += TrajectoryDimOut*6;
 			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
@@ -338,7 +343,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 				Vector3 up = new Vector3(MLP.GetOutput(start + i*JointDimOut + 6), MLP.GetOutput(start + i*JointDimOut + 7), MLP.GetOutput(start + i*JointDimOut + 8)).normalized;
 				Vector3 velocity = new Vector3(MLP.GetOutput(start + i*JointDimOut + 9), MLP.GetOutput(start + i*JointDimOut + 10), MLP.GetOutput(start + i*JointDimOut + 11));
 				
-				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity / 60f, position, 0.5f).GetRelativePositionFrom(currentRoot);
+				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
 				Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
 				Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
@@ -378,8 +383,6 @@ public class BioAnimation_MLP : MonoBehaviour {
 				}
 				for(int i=0; i<Joints.Length; i++) {
 					Positions[i] = Joints[i].position;
-					//Forwards[i] = Joints[i].forward;
-					//Ups[i] = Joints[i].up;
 				}
 			}
 
@@ -427,13 +430,19 @@ public class BioAnimation_MLP : MonoBehaviour {
 		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
 		for(int i=0; i<styles.Length; i++) {
-			float multiplier = Controller.Styles[i].Bias;
+			float _bias = Controller.Styles[i].Bias;
+			float max = 0f;
 			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
 				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
-					multiplier = Mathf.Max(multiplier, Controller.Styles[i].Bias * Controller.Styles[i].Multipliers[j].Value);
+					max = Mathf.Max(max, Controller.Styles[i].Bias * Controller.Styles[i].Multipliers[j].Value);
 				}
 			}
-			bias = Mathf.Max(bias, styles[i] * multiplier);
+			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
+				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
+					_bias = Mathf.Min(max, _bias * Controller.Styles[i].Multipliers[j].Value);
+				}
+			}
+			bias += styles[i] * _bias;
 		}
 		return bias;
 	}
@@ -505,7 +514,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 					if(segment != null) {
 						UltiDraw.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + Velocities[i],
+							Joints[i].position + 60f * Velocities[i],
 							0.75f,
 							0.0075f,
 							0.05f,
