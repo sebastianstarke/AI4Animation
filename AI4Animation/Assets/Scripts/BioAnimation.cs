@@ -1129,6 +1129,22 @@ public class BioAnimation : MonoBehaviour {
 		TargetVelocity = velocity;
 	}
 
+	void OnGUI() {
+		GUI.color = UltiDraw.Mustard;
+		GUI.backgroundColor = UltiDraw.Black;
+		float height = 0.05f;
+		GUI.Box(Utility.GetGUIRect(0.025f, 0.05f, 0.3f, Controller.Styles.Length*height), "");
+		for(int i=0; i<Controller.Styles.Length; i++) {
+			GUI.Label(Utility.GetGUIRect(0.05f, 0.075f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
+			string keys = string.Empty;
+			for(int j=0; j<Controller.Styles[i].Keys.Length; j++) {
+				keys += Controller.Styles[i].Keys[j].ToString() + " ";
+			}
+			GUI.Label(Utility.GetGUIRect(0.075f, 0.075f + i*0.05f, 0.05f, height), keys);
+			GUI.HorizontalSlider(Utility.GetGUIRect(0.125f, 0.075f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
+		}
+	}
+
 	void OnRenderObject() {
 		if(Root == null) {
 			Root = transform;
