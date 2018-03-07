@@ -19,7 +19,6 @@ public class DemoAnimation : MonoBehaviour {
 
 	private Trajectory Trajectory;
 
-	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 	private Vector3[] Velocities = new Vector3[0];
@@ -203,7 +202,7 @@ public class DemoAnimation : MonoBehaviour {
 			}
 
 			//Predict
-			PFNN.Predict(Phase);
+			PFNN.Predict();
 
 			//Update Past Trajectory
 			for(int i=0; i<RootPointIndex; i++) {
@@ -299,7 +298,7 @@ public class DemoAnimation : MonoBehaviour {
 			Character.FetchTransformations(Root);
 
 			//Update Phase
-			Phase = Mathf.Repeat(Phase + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI);
+			PFNN.SetPhase(Mathf.Repeat(PFNN.GetPhase() + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
 		}
 	}
 
@@ -348,17 +347,35 @@ public class DemoAnimation : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		GUI.color = UltiDraw.Mustard;
+		GUI.backgroundColor = UltiDraw.Black;
 		float height = 0.05f;
-		GUI.HorizontalSlider(Utility.GetGUIRect(0.45f, 0.1f, 0.1f, height), Phase, 0f, 2f*Mathf.PI);
-		GUI.Box(Utility.GetGUIRect(0.725f, 0.025f, 0.25f, Controller.Styles.Length*height), "");
+		GUI.Box(Utility.GetGUIRect(0.025f, 0.05f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
-			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), Controller.Styles[i].Name);
-			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
+			GUI.Label(Utility.GetGUIRect(0.05f, 0.075f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
+			string keys = string.Empty;
+			for(int j=0; j<Controller.Styles[i].Keys.Length; j++) {
+				keys += Controller.Styles[i].Keys[j].ToString() + " ";
+			}
+			GUI.Label(Utility.GetGUIRect(0.075f, 0.075f + i*0.05f, 0.05f, height), keys);
+			GUI.HorizontalSlider(Utility.GetGUIRect(0.125f, 0.075f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
 	}
 
-
 	void OnRenderObject() {
+		if(Root == null) {
+			Root = transform;
+		}
+
+		UltiDraw.Begin();
+		UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
+		Quaternion rotation = Quaternion.AngleAxis(-360f * PFNN.GetPhase() / (2f * Mathf.PI), Vector3.forward);
+		Vector2 a = rotation * new Vector2(-0.005f, 0f);
+		Vector2 b = rotation *new Vector3(0.005f, 0f);
+		Vector3 c = rotation * new Vector3(0f, 0.075f);
+		UltiDraw.DrawGUITriangle(new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y), new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y), new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y), UltiDraw.Cyan);
+		UltiDraw.End();
+
 		if(Application.isPlaying) {
 			UltiDraw.Begin();
 			UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Red.Transparent(0.75f));
@@ -366,12 +383,12 @@ public class DemoAnimation : MonoBehaviour {
 			UltiDraw.End();
 			Trajectory.Draw(10);
 		}
-
+		
 		if(!Application.isPlaying) {
 			Character.FetchTransformations(Root);
 		}
 		Character.Draw();
-		
+
 		if(Application.isPlaying) {
 			UltiDraw.Begin();
 			for(int i=0; i<Joints.Length; i++) {
@@ -379,16 +396,17 @@ public class DemoAnimation : MonoBehaviour {
 				if(segment != null) {
 					UltiDraw.DrawArrow(
 						Joints[i].position,
-						Joints[i].position + Velocities[i],
+						Joints[i].position + Velocities[i] * 60f,
 						0.75f,
 						0.0075f,
 						0.05f,
-						UltiDraw.Cyan.Transparent(0.75f)
+						UltiDraw.Purple.Transparent(0.5f)
 					);
 				}
 			}
 			UltiDraw.End();
 		}
+		
 	}
 
 	void OnDrawGizmos() {

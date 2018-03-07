@@ -28,7 +28,6 @@ public class BioAnimation_PFNN : MonoBehaviour {
 
 	private Trajectory Trajectory;
 
-	private float Phase = 0f;
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 	private float Bias;
@@ -84,10 +83,6 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		JointDimOut = 12;
 		TrajectoryDimIn = 7 + Controller.Styles.Length;
 		TrajectoryDimOut = 4;
-	}
-
-	public float GetPhase() {
-		return Phase;
 	}
 
 	public Trajectory GetTrajectory() {
@@ -240,7 +235,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			start += JointDimIn*Joints.Length;
 			
 			//Predict
-			PFNN.Predict(Phase);
+			PFNN.Predict();
 
 			//Update Past Trajectory
 			for(int i=0; i<RootPointIndex; i++) {
@@ -360,7 +355,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			Character.FetchTransformations(Root);
 
 			//Update Phase
-			Phase = Mathf.Repeat(Phase + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI);			
+			PFNN.SetPhase(Mathf.Repeat(PFNN.GetPhase() + PFNN.GetOutput(end+3) * 2f*Mathf.PI, 2f*Mathf.PI));
 		}
 	}
 
@@ -447,7 +442,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 
 		UltiDraw.Begin();
 		UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
-		Quaternion rotation = Quaternion.AngleAxis(-360f * Phase / (2f * Mathf.PI), Vector3.forward);
+		Quaternion rotation = Quaternion.AngleAxis(-360f * PFNN.GetPhase() / (2f * Mathf.PI), Vector3.forward);
 		Vector2 a = rotation * new Vector2(-0.005f, 0f);
 		Vector2 b = rotation *new Vector3(0.005f, 0f);
 		Vector3 c = rotation * new Vector3(0f, 0.075f);

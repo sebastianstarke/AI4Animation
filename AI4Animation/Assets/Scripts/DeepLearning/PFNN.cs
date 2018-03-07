@@ -21,6 +21,8 @@ public class PFNN {
 
 	private Matrix X, Y;
 
+	private float Phase;
+
 	private const float M_PI = 3.14159265358979323846f;
 
 	public PFNN() {
@@ -55,6 +57,8 @@ public class PFNN {
 
 		X = new Matrix(XDim, 1);
 		Y = new Matrix(YDim, 1);
+
+		Phase = 0f;
 	}
 
 	public void LoadParameters() {
@@ -71,6 +75,14 @@ public class PFNN {
 			Parameters.StoreMatrix(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1);
 			Parameters.StoreMatrix(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
 		}
+	}
+
+	public void SetPhase(float value) {
+		Phase = value;
+	}
+
+	public float GetPhase() {
+		return Phase;
 	}
 
 	public void SetInput(int i, float value) {
@@ -92,8 +104,8 @@ public class PFNN {
 		}
 	}
 
-	public void Predict(float phase) {
-		int index = (int)((phase / (2f*M_PI)) * 50f);
+	public void Predict() {
+		int index = (int)((Phase / (2f*M_PI)) * 50f);
 		Matrix _X = (X - Xmean).PointwiseDivide(Xstd);
 		Matrix H0 = (W0[index] * _X) + b0[index]; ELU(ref H0);
 		Matrix H1 = (W1[index] * H0) + b1[index]; ELU(ref H1);

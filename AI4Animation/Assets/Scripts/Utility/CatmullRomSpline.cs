@@ -19,7 +19,7 @@ public class CatmullRomSpline : MonoBehaviour {
 
 	private bool Visualise = true;
 
-	private List<Vector3> Positions = new List<Vector3>();
+	//private List<Vector3> Positions = new List<Vector3>();
 	//private List<float> OffsetErrors = new List<float>();
 	//private List<float> AngleErrors = new List<float>();
 	//private List<float> Slidings = new List<float>();
