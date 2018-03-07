@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {SmoothFollow, ConstantView, Static}
+	public enum MODE {SmoothFollow, ConstantView, FreeView}
 
 	public MODE Mode = MODE.SmoothFollow;
 	public Transform Target;
@@ -28,7 +28,7 @@ public class CameraController : MonoBehaviour {
 	private Quaternion ZeroRotation;
 
 	void Start() {
-		//SetMode(Mode);
+
 	}
 
 	void Update() {
@@ -36,14 +36,14 @@ public class CameraController : MonoBehaviour {
 			return;
 		}
 
-		if(Mode == MODE.Static) {
+		if(Mode == MODE.FreeView) {
 			return;
 		}
 
 		Vector3 currentPosition = transform.position;
 		Quaternion currentRotation = transform.rotation;
 
-		//Determine final
+		//Determine Target
 		Vector3 _selfOffset = FOV * SelfOffset;
 		Vector3 _targetOffset = TargetOffset;
 		transform.position = Target.position + Target.rotation * _selfOffset;
@@ -55,7 +55,7 @@ public class CameraController : MonoBehaviour {
 		transform.position = Vector3.Lerp(currentPosition, transform.position, 1f-Damping);
 		transform.rotation = Quaternion.Lerp(currentRotation, transform.rotation, 1f-Damping);
 
-		//Correct height
+		//Correct Height
 		float height = transform.position.y - Target.position.y;
 		if(height < MinHeight) {
 			transform.position += new Vector3(0f, MinHeight-height, 0f);
@@ -63,7 +63,7 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void LateUpdate() {
-		if(Mode == MODE.Static) {
+		if(Mode == MODE.FreeView) {
 			MousePosition = GetNormalizedMousePosition();
 
 			if(EventSystem.current != null) {
@@ -71,21 +71,37 @@ public class CameraController : MonoBehaviour {
 					EventSystem.current.SetSelectedGameObject(null);
 				}
 				if(EventSystem.current.currentSelectedGameObject == null) {
-					UpdateStaticCamera();
+					UpdateFreeCamera();
 				}
 			} else {
-				UpdateStaticCamera();
+				UpdateFreeCamera();
 			}
 
 			LastMousePosition = MousePosition;
 		}
 	}
 
-	void OnRenderObject() {
-		//Debug.Log("RENDER");
+	void OnGUI() {
+		GUI.color = UltiDraw.Mustard;
+		GUI.backgroundColor = UltiDraw.Black;
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.05f, 0.1f, 0.04f), "Smooth Follow")) {
+			SetMode(MODE.SmoothFollow);
+		}
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.1f, 0.1f, 0.04f), "Constant View")) {
+			SetMode(MODE.ConstantView);
+		}
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.15f, 0.1f, 0.04f), "Free View")) {
+			SetMode(MODE.FreeView);
+		}
+		Yaw = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.2f, 0.1f, 0.02f), Yaw, -180f, 180f);
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.2f, 0.04f, 0.02f), "Yaw");
+		Pitch = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.225f, 0.1f, 0.02f), Pitch, -45f, 45f);
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.225f, 0.04f, 0.02f), "Pitch");
+		FOV = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.25f, 0.1f, 0.02f), FOV, 0f, 10f);
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.25f, 0.04f, 0.02f), "FOV");
 	}
 
-	private void UpdateStaticCamera() {
+	private void UpdateFreeCamera() {
 		//Translation
 		Vector3 direction = Vector3.zero;
 		if(Input.GetKey(KeyCode.LeftArrow)) {
@@ -147,7 +163,7 @@ public class CameraController : MonoBehaviour {
 			EndDamping = 0.0f;
 			break;
 			
-			case MODE.Static:
+			case MODE.FreeView:
 			Vector3 euler = transform.rotation.eulerAngles;
 			transform.rotation = Quaternion.Euler(0f, euler.y, 0f);
 			ZeroRotation = transform.rotation;

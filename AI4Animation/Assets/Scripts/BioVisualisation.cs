@@ -55,7 +55,7 @@ public class BioVisualisation : MonoBehaviour {
 
 		SmoothFollow.onClick.AddListener(SetSmoothFollow); UpdateColor(SmoothFollow, CameraController.Mode == CameraController.MODE.SmoothFollow ? CameraEnabled : CameraDisabled);
 		ConstantView.onClick.AddListener(SetConstantView); UpdateColor(ConstantView, CameraController.Mode == CameraController.MODE.ConstantView ? CameraEnabled : CameraDisabled);
-		Static.onClick.AddListener(SetStatic); UpdateColor(Static, CameraController.Mode == CameraController.MODE.Static ? CameraEnabled : CameraDisabled);
+		Static.onClick.AddListener(SetStatic); UpdateColor(Static, CameraController.Mode == CameraController.MODE.FreeView ? CameraEnabled : CameraDisabled);
 
 		Yaw.onValueChanged.AddListener(SetYaw);
 		Pitch.onValueChanged.AddListener(SetPitch);
@@ -146,7 +146,7 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	public void SetStatic() {
-		CameraController.SetMode(CameraController.MODE.Static);
+		CameraController.SetMode(CameraController.MODE.FreeView);
 		UpdateColor(SmoothFollow, CameraDisabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraEnabled);
 	}
 

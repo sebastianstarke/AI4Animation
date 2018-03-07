@@ -425,16 +425,18 @@ public class BioAnimation_PFNN : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		GUI.color = UltiDraw.Mustard;
+		GUI.backgroundColor = UltiDraw.Black;
 		float height = 0.05f;
-		GUI.Box(Utility.GetGUIRect(0.7f, 0.025f, 0.3f, Controller.Styles.Length*height), "");
+		GUI.Box(Utility.GetGUIRect(0.025f, 0.05f, 0.3f, Controller.Styles.Length*height), "");
 		for(int i=0; i<Controller.Styles.Length; i++) {
-			GUI.Label(Utility.GetGUIRect(0.725f, 0.05f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
+			GUI.Label(Utility.GetGUIRect(0.05f, 0.075f + i*0.05f, 0.025f, height), Controller.Styles[i].Name);
 			string keys = string.Empty;
 			for(int j=0; j<Controller.Styles[i].Keys.Length; j++) {
 				keys += Controller.Styles[i].Keys[j].ToString() + " ";
 			}
-			GUI.Label(Utility.GetGUIRect(0.75f, 0.05f + i*0.05f, 0.05f, height), keys);
-			GUI.HorizontalSlider(Utility.GetGUIRect(0.8f, 0.05f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
+			GUI.Label(Utility.GetGUIRect(0.075f, 0.075f + i*0.05f, 0.05f, height), keys);
+			GUI.HorizontalSlider(Utility.GetGUIRect(0.125f, 0.075f + i*0.05f, 0.15f, height), Trajectory.Points[RootPointIndex].Styles[i], 0f, 1f);
 		}
 	}
 
@@ -449,7 +451,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 		Vector2 a = rotation * new Vector2(-0.005f, 0f);
 		Vector2 b = rotation *new Vector3(0.005f, 0f);
 		Vector3 c = rotation * new Vector3(0f, 0.075f);
-		UltiDraw.DrawGUITriangle(new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y), new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y), new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y), UltiDraw.Cyan);
+		UltiDraw.DrawGUITriangle(new Vector2(0.5f + b.x/Screen.width*Screen.height, 0.85f + b.y), new Vector2(0.5f + a.x/Screen.width*Screen.height, 0.85f + a.y), new Vector2(0.5f + c.x/Screen.width*Screen.height, 0.85f + c.y), UltiDraw.Cyan);
 		UltiDraw.End();
 
 		if(ShowTrajectory) {
