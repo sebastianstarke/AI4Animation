@@ -85,25 +85,6 @@ public class MFNN {
 		for(int i=0; i<ControlNeurons.Length; i++) {
 			AddControlNeuron(ControlNeurons[i]);
 		}
-		/*
-		int start = (Controller.Styles.Length+8) * PointSamples;
-		int lh = start + 10*12 + 9;
-		int rh = start + 15*12 + 9;
-		int lf = start + 19*12 + 9;
-		int rf = start + 23*12 + 9;
-		for(int i=lh; i<lh+3; i++) {
-			MFNN.AddControlNeuron(i);
-		}
-		for(int i=rh; i<rh+3; i++) {
-			MFNN.AddControlNeuron(i);
-		}
-		for(int i=lf; i<lf+3; i++) {
-			MFNN.AddControlNeuron(i);
-		}
-		for(int i=rf; i<rf+3; i++) {
-			MFNN.AddControlNeuron(i);
-		}
-		*/
 		for(int i=0; i<Parameters.Matrices.Length; i++) {
 			SetupMatrix(i);
 		}

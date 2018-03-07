@@ -81,6 +81,10 @@ public class CameraController : MonoBehaviour {
 		}
 	}
 
+	void OnRenderObject() {
+		//Debug.Log("RENDER");
+	}
+
 	private void UpdateStaticCamera() {
 		//Translation
 		Vector3 direction = Vector3.zero;

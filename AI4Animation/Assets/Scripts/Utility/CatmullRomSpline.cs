@@ -99,8 +99,8 @@ public class CatmullRomSpline : MonoBehaviour {
 			}
 			Create();
 		}
-		Trajectory.Draw(10);
-		
+
+		/*
 		UltiDraw.Begin();
 		if(Positions.Count > 1) {
 			for(int i=1; i<Positions.Count; i++) {
@@ -108,27 +108,28 @@ public class CatmullRomSpline : MonoBehaviour {
 			}
 		}
 		UltiDraw.End();
+		*/
 
 		if(Visualise) {
 			UltiDraw.Begin();
-			for(int i=10; i<Trajectory.Points.Length-60; i+=10) {
-				UltiDraw.DrawLine(Trajectory.Points[i-10].GetPosition(), Trajectory.Points[i].GetPosition(), 0.075f, UltiDraw.Magenta);
+			for(int i=1; i<Trajectory.Points.Length; i++) {
+				UltiDraw.DrawLine(Trajectory.Points[i-1].GetPosition(), Trajectory.Points[i].GetPosition(), 0.025f, UltiDraw.Magenta);
 			}
-			//for(int i=0; i<ControlPoints.Length; i++) {
-			//	UnityGL.DrawSphere(ControlPoints[i].position, 0.05f, Utility.Cyan.Transparent(0.75f));
-			//}
+			for(int i=0; i<ControlPoints.Length; i++) {
+				UltiDraw.DrawSphere(ControlPoints[i].position, Quaternion.identity, 0.05f, UltiDraw.Cyan.Transparent(0.75f));
+			}
 			UltiDraw.End();
 		}
 
 		/*
 		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
-		UnityGL.Start();
-		UnityGL.DrawSphere(pivot.GetPosition(), 0.05f, Utility.DarkRed.Transparent(0.75f));
+		UltiDraw.Begin();
+		UltiDraw.DrawSphere(pivot.GetPosition(), Quaternion.identity, 0.05f, UltiDraw.DarkRed.Transparent(0.75f));
 		for(int i=0; i<future.Length; i++) {
-			UnityGL.DrawSphere(future[i].GetPosition(), 0.025f, Utility.DarkGreen.Transparent(0.75f));
+			UltiDraw.DrawSphere(future[i].GetPosition(), Quaternion.identity, 0.025f, UltiDraw.DarkGreen.Transparent(0.75f));
 		}
-		UnityGL.Finish();
+		UltiDraw.End();
 		*/
 
 		for(int i=0; i<ControlPoints.Length; i++) {
@@ -187,8 +188,9 @@ public class CatmullRomSpline : MonoBehaviour {
 	}
 
 	private void Create() {
-		Trajectory = new Trajectory(ControlPoints.Length * 60, 0);
-		for(int pos=0; pos<ControlPoints.Length-1; pos++) {
+		int length = ControlPoints.Length;
+		Trajectory = new Trajectory(length * 60, 0);
+		for(int pos=0; pos<length; pos++) {
 			Vector3 p0 = ControlPoints[ClampListPos(pos - 1)].position;
 			Vector3 p1 = ControlPoints[pos].position;
 			Vector3 p2 = ControlPoints[ClampListPos(pos + 1)].position;
@@ -301,6 +303,9 @@ public class CatmullRomSpline : MonoBehaviour {
 			}
 			if(GUILayout.Button("Remove Control Point")) {
 				Target.RemoveControlPoint();
+			}
+			if(GUILayout.Button("Rebuild")) {
+				Target.Create();
 			}
 		}
 
