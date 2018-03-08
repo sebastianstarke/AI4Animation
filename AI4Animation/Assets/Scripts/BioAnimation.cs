@@ -835,6 +835,7 @@ public class BioAnimation : MonoBehaviour {
 			int start = 0;
 			//Input Trajectory Positions / Directions / Heights / Styles
 			for(int i=0; i<PointSamples; i++) {
+				//Debug.Log(start + i*TrajectoryDimIn);
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
@@ -859,6 +860,7 @@ public class BioAnimation : MonoBehaviour {
 			);
 			//
 			for(int i=0; i<Joints.Length; i++) {
+				//Debug.Log("Joint " + Joints[i].name + " at " + (start + i*JointDimIn));
 				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);

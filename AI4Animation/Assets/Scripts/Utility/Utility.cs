@@ -525,4 +525,16 @@ public static class Utility {
 		variance /= args;
 		return System.Math.Sqrt(variance);
 	}
+
+	public static Quaternion AverageQuaternions(Quaternion[] quaternions) {
+		Vector3 forward = Vector3.zero;
+		Vector3 upwards = Vector3.zero;
+		for(int i=0; i<quaternions.Length; i++) {
+			forward += quaternions[i] * Vector3.forward;
+			upwards += quaternions[i] * Vector3.up;
+		}
+		forward /= quaternions.Length;
+		upwards /= quaternions.Length;
+		return Quaternion.LookRotation(forward, upwards);
+	}
 }
