@@ -546,6 +546,7 @@ public class BioAnimation_PFNN : MonoBehaviour {
 							Utility.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
+						Target.SolveIK = EditorGUILayout.Toggle("Motion Editing", Target.SolveIK);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
 							Target.IKSolvers[i] = (FootIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(FootIK), true);
 						}

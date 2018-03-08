@@ -8,7 +8,9 @@ using UnityEditor;
 
 public class CatmullRomSpline : MonoBehaviour {
 
-	public BioAnimation Target;
+	public BioAnimation_Old Target;
+
+	public int Density = 50;
 
 	[Range(0f, 1f)] public float Correction = 1f;
 
@@ -19,44 +21,31 @@ public class CatmullRomSpline : MonoBehaviour {
 
 	private bool Visualise = true;
 
-	//private List<Vector3> Positions = new List<Vector3>();
-	//private List<float> OffsetErrors = new List<float>();
-	//private List<float> AngleErrors = new List<float>();
-	//private List<float> Slidings = new List<float>();
-	private int[] Feet = new int[4] {10, 15, 19, 23};
-	private Vector3[] LastFeetPositions = new Vector3[4];
+	private List<Vector3> Positions = new List<Vector3>();
+	private List<float> OffsetErrors = new List<float>();
+	private List<float> AngleErrors = new List<float>();
 
 	private int Current = 0;
-
-	void Start() {
-		for(int i=0; i<Feet.Length; i++) {
-			LastFeetPositions[i] = Target.Joints[i].position;
-		}
-	}
 
 	void Update() {
 		Target.TrajectoryCorrection = Correction;
 		Target.TrajectoryControl = false;
 
-		Trajectory.Point pivot = Trajectory.Points[Current];//GetClosestTrajectoryPoint(Target.transform.position);
+		//Trajectory.Point pivot = Trajectory.Points[Current];
+		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
-
-		//Target.SetTargetDirection((future[future.Length-1].GetPosition() - Target.transform.position).normalized);
-		//Target.SetTargetVelocity(future[future.Length-1].GetPosition() - pivot.GetPosition());
-		Target.SetTargetDirection(Vector3.zero);
-		Target.SetTargetVelocity(Vector3.zero);
 		
 		Trajectory targetTrajectory = Target.GetTrajectory();
 		for(int i=0; i<future.Length; i++) {
 			float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = targetTrajectory.Points[60+i+1];
-			point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
+			point.SetPosition(future[i].GetPosition());
 			//point.SetDirection(future[i].GetDirection());
+			//point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
 			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
 			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
 		}
 		for(int i=60; i<targetTrajectory.Points.Length; i++) {
-			targetTrajectory.Points[i].Styles[0] = 0f;
 			targetTrajectory.Points[i].Styles[1] = 1f;
 		}
 
@@ -65,27 +54,12 @@ public class CatmullRomSpline : MonoBehaviour {
 			Current = 0;
 		}
 
-		/*
-		for(int i=0; i<Feet.Length; i++) {
-			float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
-			float velocityThreshold = i==0 || i==1 ? 0.015f : 0.015f;
-			Vector3 oldPosition = LastFeetPositions[i];
-			Vector3 newPosition = Target.Joints[Feet[i]].position;
-			float velocityWeight = Utility.Exponential01((newPosition-oldPosition).magnitude / velocityThreshold);
-			float heightWeight = Utility.Exponential01(newPosition.y / heightThreshold);
-			float weight = 1f - Mathf.Min(velocityWeight, heightWeight);
-			Vector3 slide = newPosition - oldPosition;
-			slide.y = 0f;
-			Slidings.Add(weight * slide.magnitude * 60f);
-			LastFeetPositions[i] = newPosition;
-		}
-
 		Positions.Add(Target.transform.position);
 		Vector3 p = pivot.GetPosition() - Target.transform.position;
 		p.y = 0f;
 		OffsetErrors.Add(p.magnitude);
 		AngleErrors.Add(Mathf.Abs(Vector3.SignedAngle(pivot.GetDirection(), targetTrajectory.Points[60].GetDirection(), Vector3.up)));
-		*/
+		
 	}
 
 	void OnRenderObject() {
@@ -121,16 +95,16 @@ public class CatmullRomSpline : MonoBehaviour {
 			UltiDraw.End();
 		}
 
-		/*
+		
 		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
 		UltiDraw.Begin();
-		UltiDraw.DrawSphere(pivot.GetPosition(), Quaternion.identity, 0.05f, UltiDraw.DarkRed.Transparent(0.75f));
+		UltiDraw.DrawSphere(pivot.GetPosition(), Quaternion.identity, 0.05f, UltiDraw.Red.Transparent(0.75f));
 		for(int i=0; i<future.Length; i++) {
-			UltiDraw.DrawSphere(future[i].GetPosition(), Quaternion.identity, 0.025f, UltiDraw.DarkGreen.Transparent(0.75f));
+			UltiDraw.DrawSphere(future[i].GetPosition(), Quaternion.identity, 0.025f, UltiDraw.Green.Transparent(0.75f));
 		}
 		UltiDraw.End();
-		*/
+		
 
 		for(int i=0; i<ControlPoints.Length; i++) {
 			ControlPoints[i].hasChanged = false;
@@ -189,19 +163,18 @@ public class CatmullRomSpline : MonoBehaviour {
 
 	private void Create() {
 		int length = ControlPoints.Length;
-		Trajectory = new Trajectory(length * 60, 0);
+		Trajectory = new Trajectory(length * Density, 0);
 		for(int pos=0; pos<length; pos++) {
 			Vector3 p0 = ControlPoints[ClampListPos(pos - 1)].position;
 			Vector3 p1 = ControlPoints[pos].position;
 			Vector3 p2 = ControlPoints[ClampListPos(pos + 1)].position;
 			Vector3 p3 = ControlPoints[ClampListPos(pos + 2)].position;
 			Vector3 lastPos = p1;
-			int sampling = 60;
-			for(int i=1; i<=sampling; i++) {
-				float t = i / (float)sampling;
+			for(int i=1; i<=Density; i++) {
+				float t = i / (float)Density;
 				Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
-				Trajectory.Points[pos * 60 + i -1].SetPosition(newPos);
-				Trajectory.Points[pos * 60 + i -1].SetDirection(newPos-lastPos);
+				Trajectory.Points[pos * Density + i -1].SetPosition(newPos);
+				Trajectory.Points[pos * Density + i -1].SetDirection(newPos-lastPos);
 				lastPos = newPos;
 			}
 		}
@@ -245,17 +218,17 @@ public class CatmullRomSpline : MonoBehaviour {
 			Visualise = !Visualise;
 		}
 		*/
-		/*
-		if(GUI.Button(Utility.GetGUIRect(0f, 0.075f, 0.05f, 0.025f), "Reset")) {
+		
+		GUI.color = UltiDraw.Mustard;
+		GUI.backgroundColor = UltiDraw.Black;
+		GUI.Box(Utility.GetGUIRect(0.025f, 0.875f, 0.2f, 0.125f), "");
+		if(GUI.Button(Utility.GetGUIRect(0.0375f, 0.89f, 0.175f, 0.025f), "Reset")) {
 			Positions.Clear();
 			OffsetErrors.Clear();
 			AngleErrors.Clear();
-			Slidings.Clear();
 		}
-		*/
-		//GUI.Label(Utility.GetGUIRect(0.025f, 0.925f, 0.2f, 0.025f), "Average Offset Error: " + Utility.ComputeMean(OffsetErrors.ToArray()));
-		//GUI.Label(Utility.GetGUIRect(0.025f, 0.95f, 0.2f, 0.025f), "Average Angle Error: " + Utility.ComputeMean(AngleErrors.ToArray()));
-		//GUI.Label(Utility.GetGUIRect(0.025f, 0.975f, 0.2f, 0.025f), "Average Sliding: " + Utility.ComputeMean(Slidings.ToArray()));
+		GUI.Label(Utility.GetGUIRect(0.0375f, 0.925f, 0.175f, 0.025f), "Average Offset Error: " + Utility.ComputeMean(OffsetErrors.ToArray()));
+		GUI.Label(Utility.GetGUIRect(0.0375f, 0.95f, 0.175f, 0.025f), "Average Angle Error: " + Utility.ComputeMean(AngleErrors.ToArray()));
 	}
 
 	private Transform AddControlPoint() {
@@ -292,6 +265,11 @@ public class CatmullRomSpline : MonoBehaviour {
 
 		public override void OnInspectorGUI() {
 			DrawDefaultInspector();
+			
+			if(GUILayout.Button("Rebuild")) {
+				Target.Create();
+			}
+
 			if(GUILayout.Button("Create Circle")) {
 				CreateCirlce();
 			}
@@ -303,9 +281,6 @@ public class CatmullRomSpline : MonoBehaviour {
 			}
 			if(GUILayout.Button("Remove Control Point")) {
 				Target.RemoveControlPoint();
-			}
-			if(GUILayout.Button("Rebuild")) {
-				Target.Create();
 			}
 		}
 

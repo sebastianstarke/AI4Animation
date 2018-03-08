@@ -37,6 +37,7 @@ public class BioVisualisation : MonoBehaviour {
 	private BioAnimation Animation;
 
 	void Awake() {
+		/*
 		Animation = GetComponent<BioAnimation>();
 		CW = new Queue<float>[Animation.MFNN.ControlWeights];
 		for(int i=0; i<CW.Length; i++) {
@@ -62,6 +63,7 @@ public class BioVisualisation : MonoBehaviour {
 		FOV.onValueChanged.AddListener(SetFOV);
 
 		CanvasToggle.onClick.AddListener(ToggleShow);
+		*/
 	}
 
 	void Start() {
