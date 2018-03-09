@@ -63,30 +63,8 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						//BVHAnimation animation = Animations[i];
-						/*
-						animation.Bones = new bool[Animations[i].Character.Hierarchy.Length];
-						for(int j=0; j<animation.Bones.Length; j++) {
-							animation.Bones[j] = true;
-						}
-						Debug.Log(animation.Bones.Length);
-						*/
-						/*
-						animation.Bones[6] = false;
-						animation.Bones[12] = false;
-
-						animation.Bones[24] = false;
-						animation.Bones[25] = false;
-						animation.Bones[26] = false;
-						animation.Bones[27] = false;
-						animation.Bones[28] = false;
-
-						animation.Bones[33] = false;
-						animation.Bones[34] = false;
-						animation.Bones[35] = false;
-						animation.Bones[36] = false;
-						animation.Bones[37] = false;
-						*/
+						BVHAnimation animation = Animations[i];
+						animation.StyleFunction.ComputeVelocities();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();

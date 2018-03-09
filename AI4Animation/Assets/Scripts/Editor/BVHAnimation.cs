@@ -1615,6 +1615,11 @@ public class BVHAnimation : ScriptableObject {
 		public bool[] Keys;
 		public BVHStyle[] Styles;
 
+		public float[] TargetVelocities;
+		public float[] NormalisedTargetVelocities;
+		public float[] CurrentVelocities;
+		public float[] NormalisedCurrentVelocities;
+
 		public BVHStyleFunction(BVHAnimation animation) {
 			Animation = animation;
 			Reset();
@@ -1624,6 +1629,7 @@ public class BVHAnimation : ScriptableObject {
 			Transition = 0.1f;
 			Keys = new bool[Animation.GetTotalFrames()];
 			Styles = new BVHStyle[0];
+			ComputeVelocities();
 		}
 
 		public void SetStyle(STYLE style) {
@@ -1804,6 +1810,37 @@ public class BVHAnimation : ScriptableObject {
 			return window;
 		}
 
+		public void ComputeVelocities() {
+			TargetVelocities = new float[Animation.GetTotalFrames()];
+			CurrentVelocities = new float[Animation.GetTotalFrames()];
+			for(int i=1; i<=Animation.GetTotalFrames(); i++) {
+				float velocity = 0f;
+				BVHFrame frame = Animation.GetFrame(i);
+				BVHFrame prevFrame = Animation.GetFrame(Mathf.Clamp(i-1, 1, Animation.GetTotalFrames()));
+				float targetVelocity = 0f;
+				Vector3[] points = new Vector3[6];
+				points[0] = Animation.Trajectory.Points[frame.Index-1].GetPosition();
+				points[1] = Animation.Trajectory.Points[Animation.GetFrame(Mathf.Clamp(frame.Timestamp + 1f/5f, 0f, Animation.GetTotalTime())).Index-1].GetPosition();
+				points[2] = Animation.Trajectory.Points[Animation.GetFrame(Mathf.Clamp(frame.Timestamp + 2f/5f, 0f, Animation.GetTotalTime())).Index-1].GetPosition();
+				points[3] = Animation.Trajectory.Points[Animation.GetFrame(Mathf.Clamp(frame.Timestamp + 3f/5f, 0f, Animation.GetTotalTime())).Index-1].GetPosition();
+				points[4] = Animation.Trajectory.Points[Animation.GetFrame(Mathf.Clamp(frame.Timestamp + 4f/5f, 0f, Animation.GetTotalTime())).Index-1].GetPosition();
+				points[5] = Animation.Trajectory.Points[Animation.GetFrame(Mathf.Clamp(frame.Timestamp + 5f/5f, 0f, Animation.GetTotalTime())).Index-1].GetPosition();
+				for(int j=1; j<6; j++) {
+					targetVelocity += Vector3.Distance(points[j-1], points[j]);
+				}
+				TargetVelocities[i-1] = targetVelocity;
+				CurrentVelocities[i-1] = Vector3.Distance(Animation.Trajectory.Points[prevFrame.Index-1].GetPosition(), Animation.Trajectory.Points[frame.Index-1].GetPosition()) / Animation.FrameTime;
+			}
+			NormalisedTargetVelocities = new float[Animation.GetTotalFrames()];
+			NormalisedCurrentVelocities = new float[Animation.GetTotalFrames()];
+			float maxTargetVelocity = Utility.ComputeMax(TargetVelocities);
+			float maxCurrentVelocity = Utility.ComputeMax(CurrentVelocities);
+			for(int i=1; i<=Animation.GetTotalFrames(); i++) {
+				NormalisedTargetVelocities[i-1] = TargetVelocities[i-1] / maxTargetVelocity;
+				NormalisedCurrentVelocities[i-1] = CurrentVelocities[i-1] / maxCurrentVelocity;
+			}
+		}
+
 		public void Inspector() {
 			UltiDraw.Begin();
 
@@ -1944,6 +1981,32 @@ public class BVHAnimation : ScriptableObject {
 					if(B.Index > end) {
 						break;
 					}
+				}
+
+				//Current Velocity
+				for(int i=1; i<Animation.Frames.Length; i++) {
+					BVHFrame a = Animation.Frames[i-1];
+					BVHFrame b = Animation.Frames[i];
+					prevPos.x = rect.xMin + (float)(a.Index-start)/elements * rect.width;
+					prevPos.y = rect.yMax - Mathf.Repeat(NormalisedCurrentVelocities[a.Index-1], 1f) * rect.height;
+					newPos.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
+					newPos.y = rect.yMax - NormalisedCurrentVelocities[b.Index-1] * rect.height;
+					UltiDraw.DrawLine(prevPos, newPos, UltiDraw.Green);
+					bottom.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
+				}
+
+				//Target Velocity
+				for(int i=1; i<Animation.Frames.Length; i++) {
+					BVHFrame a = Animation.Frames[i-1];
+					BVHFrame b = Animation.Frames[i];
+					prevPos.x = rect.xMin + (float)(a.Index-start)/elements * rect.width;
+					prevPos.y = rect.yMax - Mathf.Repeat(NormalisedTargetVelocities[a.Index-1], 1f) * rect.height;
+					newPos.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
+					newPos.y = rect.yMax - NormalisedTargetVelocities[b.Index-1] * rect.height;
+					UltiDraw.DrawLine(prevPos, newPos, UltiDraw.Red);
+					bottom.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
+					top.x = rect.xMin + (float)(b.Index-start)/elements * rect.width;
 				}
 
 				//Seconds
