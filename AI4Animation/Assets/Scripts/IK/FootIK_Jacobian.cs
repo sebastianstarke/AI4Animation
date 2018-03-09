@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class FootIK : MonoBehaviour {
+public class FootIK_Jacobian : MonoBehaviour {
 
 	public bool AutoUpdate = true;
 	public int Iterations = 5;

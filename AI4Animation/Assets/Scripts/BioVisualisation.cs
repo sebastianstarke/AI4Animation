@@ -39,7 +39,9 @@ public class BioVisualisation : MonoBehaviour {
 	void Awake() {
 		/*
 		Animation = GetComponent<BioAnimation>();
+		*/
 		CW = new Queue<float>[Animation.MFNN.ControlWeights];
+		/*
 		for(int i=0; i<CW.Length; i++) {
 			CW[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {

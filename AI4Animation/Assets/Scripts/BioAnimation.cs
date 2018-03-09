@@ -24,7 +24,7 @@ public class BioAnimation : MonoBehaviour {
 	public MFNN MFNN;
 
 	public bool SolveIK = true;
-	public FootIK[] IKSolvers = new FootIK[0];
+	public FootIK_Jacobian[] IKSolvers = new FootIK_Jacobian[0];
 
 	private Trajectory Trajectory;
 
@@ -601,7 +601,7 @@ public class BioAnimation : MonoBehaviour {
 						EditorGUILayout.EndHorizontal();
 						Target.SolveIK = EditorGUILayout.Toggle("Motion Editing", Target.SolveIK);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (FootIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(FootIK), true);
+							Target.IKSolvers[i] = (FootIK_Jacobian)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(FootIK_Jacobian), true);
 						}
 
 						EditorGUI.BeginDisabledGroup(true);
