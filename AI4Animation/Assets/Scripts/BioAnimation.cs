@@ -24,7 +24,7 @@ public class BioAnimation : MonoBehaviour {
 	public MFNN MFNN;
 
 	public bool SolveIK = true;
-	public FootIK_Jacobian[] IKSolvers = new FootIK_Jacobian[0];
+	public SerialCCD[] IKSolvers = new SerialCCD[0];
 
 	private Trajectory Trajectory;
 
@@ -93,7 +93,7 @@ public class BioAnimation : MonoBehaviour {
 		SolveIK = value;
 		if(SolveIK) {
 			for(int i=0; i<IKSolvers.Length; i++) {
-				IKSolvers[i].Goal = IKSolvers[i].GetTipPosition();
+				IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
 			}
 		}
 	}
@@ -351,28 +351,28 @@ public class BioAnimation : MonoBehaviour {
 				Joints[i].position = Positions[i];
 				Joints[i].rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 			}
-			
+		
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
 			if(SolveIK) {
 				//Step #1
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
-						float heightThreshold = i==0 || i==1 ? 0.025f : 0.05f;
-						float velocityThreshold = i==0 || i==1 ? 0.015f : 0.015f;
-						Vector3 goal = IKSolvers[i].GetTipPosition();
-						IKSolvers[i].Goal.y = goal.y;
-						float velocityDelta = (goal - IKSolvers[i].Goal).magnitude;
+						float heightThreshold = 0.025f;
+						float velocityThreshold = 0.025f;
+						Vector3 target = IKSolvers[i].EndEffector.position;
+						IKSolvers[i].TargetPosition.y = target.y;
+						float velocityDelta = (target - IKSolvers[i].TargetPosition).magnitude;
 						float velocityWeight = Utility.Exponential01(velocityDelta / velocityThreshold);
-						float heightDelta = goal.y;
+						float heightDelta = target.y;
 						float heightWeight = Utility.Exponential01(heightDelta / heightThreshold);
-						float weight = Mathf.Min(velocityWeight, heightWeight);
-						IKSolvers[i].Goal = Vector3.Lerp(IKSolvers[i].Goal, goal, weight);
+						float weight = Mathf.Max(velocityWeight, heightWeight);
+						IKSolvers[i].TargetPosition = Vector3.Lerp(IKSolvers[i].TargetPosition, target, weight);
 					}
 				}
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
-						IKSolvers[i].ProcessIK();
+						IKSolvers[i].Solve();
 					}
 				}
 				for(int i=0; i<Joints.Length; i++) {
@@ -380,17 +380,17 @@ public class BioAnimation : MonoBehaviour {
 				}
 			}
 
-			transform.position = Trajectory.Points[RootPointIndex].GetPosition(); //Fix for flat ground
+			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
 			
 			if(SolveIK) {
 				//Step #2
 				for(int i=0; i<IKSolvers.Length; i++) {
-					IKSolvers[i].Goal = IKSolvers[i].GetTipPosition();
-					float height = Utility.GetHeight(IKSolvers[i].Goal, LayerMask.GetMask("Ground"));
+					IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
+					float height = Utility.GetHeight(IKSolvers[i].TargetPosition, LayerMask.GetMask("Ground"));
 					if(IKSolvers[i].name == "Tail") {
-						IKSolvers[i].Goal.y = Mathf.Max(height, height + (IKSolvers[i].Goal.y - transform.position.y));
+						IKSolvers[i].TargetPosition.y = Mathf.Max(height, height + (IKSolvers[i].TargetPosition.y - transform.position.y));
 					} else {
-						IKSolvers[i].Goal.y = height + (IKSolvers[i].Goal.y - transform.position.y);
+						IKSolvers[i].TargetPosition.y = height + (IKSolvers[i].TargetPosition.y - transform.position.y);
 					}
 				}
 				Transform spine = Array.Find(Joints, x => x.name == "Spine1");
@@ -411,7 +411,7 @@ public class BioAnimation : MonoBehaviour {
 				leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - Root.position.y), leftShoulderPosition.z);
 				rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - Root.position.y), rightShoulderPosition.z);
 				for(int i=0; i<IKSolvers.Length; i++) {
-					IKSolvers[i].ProcessIK();
+					IKSolvers[i].Solve();
 				}
 			}
 			
@@ -601,7 +601,7 @@ public class BioAnimation : MonoBehaviour {
 						EditorGUILayout.EndHorizontal();
 						Target.SolveIK = EditorGUILayout.Toggle("Motion Editing", Target.SolveIK);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (FootIK_Jacobian)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(FootIK_Jacobian), true);
+							Target.IKSolvers[i] = (SerialCCD)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialCCD), true);
 						}
 
 						EditorGUI.BeginDisabledGroup(true);

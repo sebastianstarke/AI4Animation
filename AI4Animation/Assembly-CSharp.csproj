@@ -114,9 +114,9 @@
      <Compile Include="Assets\Scripts\DeepLearning\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\PFNN.cs" />
-     <Compile Include="Assets\Scripts\IK\CCD.cs" />
      <Compile Include="Assets\Scripts\IK\FootIK_Jacobian.cs" />
      <Compile Include="Assets\Scripts\IK\IK.cs" />
+     <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
      <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_MLP.cs" />
