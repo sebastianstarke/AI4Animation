@@ -44,6 +44,14 @@ public class Trajectory {
 		return Points[Points.Length-1];
 	}
 
+	public float GetLength() {
+		float length = 0f;
+		for(int i=1; i<Points.Length; i++) {
+			length += Vector3.Distance(Points[i-1].GetPosition(), Points[i].GetPosition());
+		}
+		return length;
+	}
+
 	public void Postprocess() {
 		for(int i=0; i<Points.Length; i++) {
 			Points[i].Postprocess();

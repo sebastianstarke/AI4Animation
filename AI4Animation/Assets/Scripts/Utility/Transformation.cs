@@ -14,11 +14,21 @@ public static class Transformations {
 		matrix[0,3] = position.x;
 		matrix[1,3] = position.y;
 		matrix[2,3] = position.z;
-		//matrix = Matrix4x4.TRS(position, matrix.GetRotation(), matrix.GetScale());
 	}
 
 	public static void SetRotation(ref Matrix4x4 matrix, Quaternion rotation) {
-		matrix = Matrix4x4.TRS(matrix.GetPosition(), rotation, matrix.GetScale());
+		Vector3 right = rotation.GetRight();
+		Vector3 up = rotation.GetUp();
+		Vector3 forward = rotation.GetForward();
+		matrix[0,0] = right.x;
+		matrix[1,0] = right.y;
+		matrix[2,0] = right.z;
+		matrix[0,1] = up.x;
+		matrix[1,1] = up.y;
+		matrix[2,1] = up.z;
+		matrix[0,2] = forward.x;
+		matrix[1,2] = forward.y;
+		matrix[2,2] = forward.z;
 	}
 
 	public static void SetScale(ref Matrix4x4 matrix, Vector3 scale) {
@@ -66,11 +76,11 @@ public static class Transformations {
 	}
 
 	public static Quaternion GetRelativeRotationFrom(this Quaternion rotation, Matrix4x4 from) {
-		return (from * Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one)).GetRotation();
+		return from.GetRotation() * rotation;
 	}
 
 	public static Quaternion GetRelativeRotationTo(this Quaternion rotation, Matrix4x4 to) {
-		return (to.inverse * Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one)).GetRotation();
+		return Quaternion.Inverse(to.GetRotation()) * rotation;
 	}
 
 	public static Vector3 GetRelativeDirectionFrom(this Vector3 direction, Matrix4x4 from) {
@@ -79,6 +89,18 @@ public static class Transformations {
 
 	public static Vector3 GetRelativeDirectionTo(this Vector3 direction, Matrix4x4 to) {
 		return to.inverse.MultiplyVector(direction);
+	}
+
+	public static Vector3 GetRight(this Quaternion quaternion) {
+		return quaternion * Vector3.right;
+	}
+
+	public static Vector3 GetUp(this Quaternion quaternion) {
+		return quaternion * Vector3.up;
+	}
+
+	public static Vector3 GetForward(this Quaternion quaternion) {
+		return quaternion * Vector3.forward;
 	}
 
 	public static Matrix4x4 GetMirror(this Matrix4x4 matrix, Vector3 axis) {
@@ -97,12 +119,17 @@ public static class Transformations {
 			matrix[2, 2] *= -1f; //Rot
 		}
 		// should be 0,1 1,0 1,2 2,1 maybe
+		/*
 		if(axis == Vector3.forward) { //Z-Axis
 			matrix[2, 3] *= -1f; //Pos
 			matrix[0, 2] *= -1f; //Rot
 			matrix[1, 2] *= -1f; //Rot
 			matrix[2, 0] *= -1f; //Rot
 			matrix[2, 1] *= -1f; //Rot
+		}
+		*/
+		if(axis == Vector3.forward) { //Z-Axis
+			Debug.Log("Mirroring against Z-axis not yet implemented");
 		}
 		return matrix;
 	}
