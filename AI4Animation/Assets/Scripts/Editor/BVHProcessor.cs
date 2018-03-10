@@ -13,7 +13,7 @@ public class BVHProcessor : EditorWindow {
 	public BVHAnimation[] Animations = new BVHAnimation[0];
 
 	private static string Separator = " ";
-	private static string Accuracy = "F5";
+	private static string Accuracy = "F6";
 
 	[MenuItem ("Addons/BVH Processor")]
 	static void Init() {
@@ -64,7 +64,6 @@ public class BVHProcessor : EditorWindow {
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
-						animation.StyleFunction.ComputeVelocities();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -162,13 +161,16 @@ public class BVHProcessor : EditorWindow {
 		}
 		for(int i=1; i<=12; i++) {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryPositionY"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryPositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryVelocityY"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
+			//labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
 			for(int j=1; j<=Animations[0].StyleFunction.Styles.Length; j++) {
 				labels.WriteLine(index + " " + Animations[0].StyleFunction.Styles[j-1].Name + i); index += 1;
 			}
@@ -177,12 +179,8 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 
-		labels.WriteLine(index + " " + "DesiredTranslationalOffsetX"); index += 1;
-		labels.WriteLine(index + " " + "DesiredTranslationalOffsetZ"); index += 1;
-		labels.WriteLine(index + " " + "DesiredAngularOffsetY"); index += 1;
-
-		labels.WriteLine(index + " " + "Phase"); index += 1;
-		labels.WriteLine(index + " " + "PhaseUpdate");
+		//labels.WriteLine(index + " " + "Phase"); index += 1;
+		//labels.WriteLine(index + " " + "PhaseUpdate");
 		
 		labels.Close();
 	}
@@ -235,11 +233,12 @@ public class BVHProcessor : EditorWindow {
 							line += frame.Timestamp + Separator;
 
 							//Extract data
-							Matrix4x4[] transformations = Animations[i].ExtractTransformations(frame, mirrored);
-							Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
-							for(int v=0; v<velocities.Length; v++) {
-								velocities[v] /= Framerate;
-							}
+							Matrix4x4[] posture = Animations[i].ExtractPosture(frame, mirrored);
+							//Vector3[] velocities = Animations[i].ExtractVelocities(frame, mirrored, 0.1f);
+							Vector3[] boneVelocities = Animations[i].ExtractBoneVelocities(frame, mirrored);
+							//for(int v=0; v<boneVelocities.Length; v++) {
+							//	boneVelocities[v] /= Framerate;
+							//}
 							Trajectory currentTrajectory = Animations[i].ExtractTrajectory(frame, mirrored);
 							Trajectory previousTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 							
@@ -250,24 +249,35 @@ public class BVHProcessor : EditorWindow {
 							for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
 								if(Animations[i].Bones[k]) {
 									//Position
-									line += FormatVector3(transformations[k].GetPosition().GetRelativePositionTo(root));
+									line += FormatVector3(posture[k].GetPosition().GetRelativePositionTo(root));
 
 									//Rotation
-									line += FormatVector3(transformations[k].GetForward().GetRelativeDirectionTo(root));
-									line += FormatVector3(transformations[k].GetUp().GetRelativeDirectionTo(root));
+									line += FormatVector3(posture[k].GetForward().GetRelativeDirectionTo(root));
+									line += FormatVector3(posture[k].GetUp().GetRelativeDirectionTo(root));
 
-									//Velocity
-									line += FormatVector3(velocities[k].GetRelativeDirectionTo(root));
+									//Bone Velocity
+									line += FormatVector3(boneVelocities[k].GetRelativeDirectionTo(root));
 								}
 							}
 							
 							//Trajectory data
 							for(int k=0; k<12; k++) {
-								line += FormatVector3(currentTrajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-								line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
-								line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
-								line += FormatValue(currentTrajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
-								line += FormatValue(currentTrajectory.Points[k].GetRightSample().y - root.GetPosition().y);
+								Vector3 position = currentTrajectory.Points[k].GetPosition().GetRelativePositionTo(root);
+								Vector3 facing = currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root);
+								Vector3 velocity = currentTrajectory.Points[k].GetVelocity().GetRelativeDirectionTo(root);
+								line += FormatValue(position.x);
+								line += FormatValue(position.z);
+								line += FormatValue(facing.x);
+								line += FormatValue(facing.z);
+								line += FormatValue(velocity.x);
+								line += FormatValue(velocity.z);
+								//line += FormatVector3(currentTrajectory.Points[k].GetPosition().GetRelativePositionTo(root));
+								//line += FormatValue(Vector3.SignedAngle(root.GetForward(), currentTrajectory.Points[k].GetDirection(), Vector3.up));
+								//line += FormatVector3(currentTrajectory.Points[k].GetVelocity().GetRelativeDirectionTo(root));
+								//line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
+								//line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
+								//line += FormatValue(currentTrajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
+								//line += FormatValue(currentTrajectory.Points[k].GetRightSample().y - root.GetPosition().y);
 								line += FormatArray(currentTrajectory.Points[k].Styles);
 							}
 
@@ -277,12 +287,13 @@ public class BVHProcessor : EditorWindow {
 							line += FormatValue(offset.GetPosition().z);
 							line += FormatValue(Vector3.SignedAngle(Vector3.forward, offset.GetForward(), Vector3.up));
 							
+							/*
 							//Phase
 							float prev = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(prevFrame) : Animations[i].PhaseFunction.GetPhase(prevFrame);
 							float current = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(frame) : Animations[i].PhaseFunction.GetPhase(frame);
 							line += FormatValue(current);
 							line += FormatValue(GetPhaseUpdate(prev, current));
-							
+							*/
 
 							//Postprocess
 							line = line.Remove(line.Length-1);

@@ -112,24 +112,22 @@ public static class Transformations {
 			matrix[2, 0] *= -1f; //Rot
 		}
 		if(axis == Vector3.up) { //Y-Axis
+			Debug.Log("Mirroring against Y-axis not yet implemented");
+		}
+		/*
 			matrix[1, 3] *= -1f; //Pos
 			matrix[0, 0] *= -1f; //Rot
 			matrix[0, 2] *= -1f; //Rot
 			matrix[2, 0] *= -1f; //Rot
 			matrix[2, 2] *= -1f; //Rot
-		}
+		*/
 		// should be 0,1 1,0 1,2 2,1 maybe
-		/*
 		if(axis == Vector3.forward) { //Z-Axis
 			matrix[2, 3] *= -1f; //Pos
 			matrix[0, 2] *= -1f; //Rot
 			matrix[1, 2] *= -1f; //Rot
 			matrix[2, 0] *= -1f; //Rot
 			matrix[2, 1] *= -1f; //Rot
-		}
-		*/
-		if(axis == Vector3.forward) { //Z-Axis
-			Debug.Log("Mirroring against Z-axis not yet implemented");
 		}
 		return matrix;
 	}

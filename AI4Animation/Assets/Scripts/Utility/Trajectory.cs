@@ -62,18 +62,20 @@ public class Trajectory {
 	public class Point {
 		[SerializeField] private int Index;
 		[SerializeField] private Matrix4x4 Transformation;
+		[SerializeField] private Vector3 Velocity;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
-		[SerializeField] private float Velocity;
+		[SerializeField] private float Speed;
 		[SerializeField] private float Slope;
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
 			Index = index;
 			Transformation = Matrix4x4.identity;
+			Velocity = Vector3.zero;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
-			Velocity = 0f;
+			Speed = 0f;
 			Slope = 0f;
 			Styles = new float[styles];
 		}
@@ -118,6 +120,14 @@ public class Trajectory {
 			return Transformation.GetForward();
 		}
 
+		public void SetVelocity(Vector3 velocity) {
+			Velocity = velocity;
+		}
+
+		public Vector3 GetVelocity() {
+			return Velocity;
+		}
+
 		public void SetLeftsample(Vector3 position) {
 			LeftSample = position;
 		}
@@ -134,12 +144,12 @@ public class Trajectory {
 			return RightSample;
 		}
 
-		public void SetVelocity(float velocity) {
-			Velocity = velocity;
+		public void SetSpeed(float speed) {
+			Speed = speed;
 		}
 
-		public float GetVelocity() {
-			return Velocity;
+		public float GetSpeed() {
+			return Speed;
 		}
 
 		public void SetSlope(float slope) {
@@ -194,7 +204,7 @@ public class Trajectory {
 		//Velocities
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
-			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
+			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity();
 			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
 			UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
 		}

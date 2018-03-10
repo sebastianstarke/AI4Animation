@@ -151,7 +151,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetVelocity(TargetVelocity.magnitude); //Set Desired Root Velocities
+				Trajectory.Points[i].SetSpeed(TargetVelocity.magnitude); //Set Desired Speed
 				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
@@ -171,7 +171,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
+				Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -193,7 +193,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				float vel = GetSample(i).GetVelocity();
+				float vel = GetSample(i).GetSpeed();
 				MFNN.SetInput(start + i*8 + 0, pos.x);
 				MFNN.SetInput(start + i*8 + 1, 0f); //pos y
 				MFNN.SetInput(start + i*8 + 2, pos.z);
@@ -250,7 +250,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 			for(int i=0; i<RootPointIndex; i++) {
 				Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
-				Trajectory.Points[i].SetVelocity(Trajectory.Points[i+1].GetVelocity());
+				Trajectory.Points[i].SetSpeed(Trajectory.Points[i+1].GetSpeed());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
 				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
@@ -332,13 +332,13 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity());
+				Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
 
-			Trajectory.Points[RootPointIndex].SetVelocity((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Root Velocity
+			Trajectory.Points[RootPointIndex].SetSpeed((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Root Velocity
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
