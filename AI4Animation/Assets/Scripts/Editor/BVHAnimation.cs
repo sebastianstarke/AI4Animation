@@ -1814,7 +1814,6 @@ public class BVHAnimation : ScriptableObject {
 			TargetVelocities = new float[Animation.GetTotalFrames()];
 			CurrentVelocities = new float[Animation.GetTotalFrames()];
 			for(int i=1; i<=Animation.GetTotalFrames(); i++) {
-				float velocity = 0f;
 				BVHFrame frame = Animation.GetFrame(i);
 				BVHFrame prevFrame = Animation.GetFrame(Mathf.Clamp(i-1, 1, Animation.GetTotalFrames()));
 				float targetVelocity = 0f;

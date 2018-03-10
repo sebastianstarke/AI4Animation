@@ -56,6 +56,7 @@ public class Trajectory {
 		[SerializeField] private Matrix4x4 Transformation;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
+		[SerializeField] private float Velocity;
 		[SerializeField] private float Slope;
 		public float[] Styles = new float[0];
 
@@ -64,6 +65,7 @@ public class Trajectory {
 			Transformation = Matrix4x4.identity;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
+			Velocity = 0f;
 			Slope = 0f;
 			Styles = new float[styles];
 		}
@@ -124,6 +126,14 @@ public class Trajectory {
 			return RightSample;
 		}
 
+		public void SetVelocity(float velocity) {
+			Velocity = velocity;
+		}
+
+		public float GetVelocity() {
+			return Velocity;
+		}
+
 		public void SetSlope(float slope) {
 			Slope = slope;
 		}
@@ -166,18 +176,24 @@ public class Trajectory {
 		}
 
 		//Directions
-		Color transparentDirection = UltiDraw.Orange.Transparent(0.75f);
 		for(int i=0; i<Points.Length; i+=step) {
 			Vector3 start = Points[i].GetPosition();
 			Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
 			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			UltiDraw.DrawLine(start, end, 0.025f, 0f, transparentDirection);
+			UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.Orange.Transparent(0.75f));
 		}
-		
-		//Slopes
-		Color transparentSlope = UltiDraw.Blue.Transparent(0.75f);
+
+		//Velocities
 		for(int i=0; i<Points.Length; i+=step) {
-			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, transparentSlope);
+			Vector3 start = Points[i].GetPosition();
+			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity() * Points[i].GetDirection();
+			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
+			UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
+		}
+
+		//Slopes
+		for(int i=0; i<Points.Length; i+=step) {
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, UltiDraw.Blue.Transparent(0.75f));
 		}
 
 		//Positions

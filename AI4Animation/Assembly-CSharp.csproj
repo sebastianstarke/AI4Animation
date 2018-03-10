@@ -121,6 +121,7 @@
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_MLP.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_Old.cs" />
+     <Compile Include="Assets\Scripts\Trash\BioAnimation_Old_V.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />

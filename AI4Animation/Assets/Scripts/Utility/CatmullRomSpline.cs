@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class CatmullRomSpline : MonoBehaviour {
 
-	public BioAnimation_Old Target;
+	public BioAnimation Target;
 
 	public int Density = 50;
 
@@ -37,13 +37,15 @@ public class CatmullRomSpline : MonoBehaviour {
 		
 		Trajectory targetTrajectory = Target.GetTrajectory();
 		for(int i=0; i<future.Length; i++) {
-			//float weight = (float)(i+1) / (float)future.Length;
+			float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = targetTrajectory.Points[60+i+1];
 			point.SetPosition(future[i].GetPosition());
-			//point.SetDirection(future[i].GetDirection());
 			//point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
+			//point.SetDirection(future[i].GetDirection());
 			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
 			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
+			point.SetVelocity(Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition()));
+
 		}
 		for(int i=60; i<targetTrajectory.Points.Length; i++) {
 			targetTrajectory.Points[i].Styles[1] = 1f;

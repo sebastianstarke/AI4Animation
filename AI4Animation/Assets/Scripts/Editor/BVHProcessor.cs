@@ -177,6 +177,10 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 
+		labels.WriteLine(index + " " + "DesiredTranslationalOffsetX"); index += 1;
+		labels.WriteLine(index + " " + "DesiredTranslationalOffsetZ"); index += 1;
+		labels.WriteLine(index + " " + "DesiredAngularOffsetY"); index += 1;
+
 		labels.WriteLine(index + " " + "Phase"); index += 1;
 		labels.WriteLine(index + " " + "PhaseUpdate");
 		
@@ -236,11 +240,11 @@ public class BVHProcessor : EditorWindow {
 							for(int v=0; v<velocities.Length; v++) {
 								velocities[v] /= Framerate;
 							}
-							Trajectory trajectory = Animations[i].ExtractTrajectory(frame, mirrored);
-							Trajectory prevTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
+							Trajectory currentTrajectory = Animations[i].ExtractTrajectory(frame, mirrored);
+							Trajectory previousTrajectory = Animations[i].ExtractTrajectory(prevFrame, mirrored);
 							
 							//Get root transformation
-							Matrix4x4 root = trajectory.Points[6].GetTransformation();
+							Matrix4x4 root = currentTrajectory.Points[6].GetTransformation();
 
 							//Bone data
 							for(int k=0; k<Animations[i].Character.Hierarchy.Length; k++) {
@@ -259,27 +263,19 @@ public class BVHProcessor : EditorWindow {
 							
 							//Trajectory data
 							for(int k=0; k<12; k++) {
-								line += FormatVector3(trajectory.Points[k].GetPosition().GetRelativePositionTo(root));
-								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
-								line += FormatValue(trajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
-								line += FormatValue(trajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
-								line += FormatValue(trajectory.Points[k].GetRightSample().y - root.GetPosition().y);
-								line += FormatArray(trajectory.Points[k].Styles);
+								line += FormatVector3(currentTrajectory.Points[k].GetPosition().GetRelativePositionTo(root));
+								line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).x);
+								line += FormatValue(currentTrajectory.Points[k].GetDirection().GetRelativeDirectionTo(root).z);
+								line += FormatValue(currentTrajectory.Points[k].GetLeftSample().y - root.GetPosition().y);
+								line += FormatValue(currentTrajectory.Points[k].GetRightSample().y - root.GetPosition().y);
+								line += FormatArray(currentTrajectory.Points[k].Styles);
 							}
 
-							//Translational and angular root velocity
-							Vector3 position = trajectory.Points[6].GetPosition();
-							Vector3 direction = trajectory.Points[6].GetDirection();
-							Vector3 prevPosition = prevTrajectory.Points[6].GetPosition();
-							Vector3 prevDirection = prevTrajectory.Points[6].GetDirection();
-
-							Vector3 translationOffset = Quaternion.Inverse(Quaternion.LookRotation(prevDirection, Vector3.up)) * (position - prevPosition);
-							line += FormatValue(translationOffset.x);
-							line += FormatValue(translationOffset.z);
-
-							float rotationOffset = Vector3.SignedAngle(prevDirection, direction, Vector3.up);
-							line += FormatValue(rotationOffset);
-
+							//Translational and angular root offset
+							Matrix4x4 offset = currentTrajectory.Points[6].GetTransformation().GetRelativeTransformationTo(previousTrajectory.Points[6].GetTransformation());
+							line += FormatValue(offset.GetPosition().x);
+							line += FormatValue(offset.GetPosition().z);
+							line += FormatValue(Vector3.SignedAngle(Vector3.forward, offset.GetForward(), Vector3.up));
 							
 							//Phase
 							float prev = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(prevFrame) : Animations[i].PhaseFunction.GetPhase(prevFrame);
