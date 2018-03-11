@@ -157,12 +157,10 @@
      <Compile Include="Assets\Scripts\Utility\Transparency.cs" />
      <Compile Include="Assets\Scripts\Utility\Utility.cs" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.shader" />
-     <None Include="Assets\Project\Labels_Human.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Fog.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\ParadeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\LutGen.shader" />
-     <None Include="Assets\Project\Data_Dog_Phase.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
@@ -171,7 +169,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
-     <None Include="Assets\Project\Labels_Dog_Phase.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
@@ -179,17 +176,15 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
-     <None Include="Assets\Project\Data_Human_Phase.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
      <None Include="Assets\Resources\meshskinner144533400333211506875.txt" />
+     <None Include="Assets\Project\Data_Human.txt" />
      <None Include="Assets\Project\Labels_Dog.txt" />
-     <None Include="Assets\Project\Labels_Human_Phase.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\COPYING.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />
-     <None Include="Assets\Project\Data_Human.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.cginc" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.shader" />
@@ -210,6 +205,7 @@
      <None Include="Assets\Project\Parameters\Quadruped_Old\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
+     <None Include="Assets\Project\Labels_Human.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />

@@ -64,6 +64,7 @@ public class BVHProcessor : EditorWindow {
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
+						//animation.ComputeTrajectory();
                         EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -163,12 +164,12 @@ public class BVHProcessor : EditorWindow {
 			labels.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryPositionY"+i); index += 1;
 			labels.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryFacingX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryVelocityY"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryFacingZ"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryDirectionY"+i); index += 1;
-			labels.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
+			labels.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryLeftHeight"+i); index += 1;
 			//labels.WriteLine(index + " " + "TrajectoryRightHeight"+i); index += 1;
 			for(int j=1; j<=Animations[0].StyleFunction.Styles.Length; j++) {

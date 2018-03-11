@@ -348,23 +348,24 @@ public class BVHAnimation : ScriptableObject {
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Vector3 rootPos = Utility.ProjectGround(Frames[i].World[0].GetPosition(), mask);
+			Trajectory.Points[i].SetPosition(rootPos);
+
 			Vector3 rootDir = Frames[i].World[0].GetRotation() * Vector3.forward;
+			rootDir.y = 0f;
+			rootDir = rootDir.normalized;
+			Trajectory.Points[i].SetDirection(rootDir);
+
 			Vector3 rootVel = (rootPos - Trajectory.Points[Mathf.Clamp(i-1, 0, GetTotalFrames()-1)].GetPosition()) / FrameTime;
+			Trajectory.Points[i].SetVelocity(rootVel);
 			
+			Trajectory.Points[i].Postprocess();
+
 			/*
 			//HARDCODED FOR DOG
 			int hipIndex = Character.FindSegment("Hips").GetIndex();
 			int neckIndex = Character.FindSegment("Neck").GetIndex();
 			Vector3 rootDir = Frames[i].World[neckIndex].GetPosition() - Frames[i].World[hipIndex].GetPosition();
 			*/
-
-			rootDir.y = 0f;
-			rootDir = rootDir.normalized;
-
-			Trajectory.Points[i].SetPosition(rootPos);
-			Trajectory.Points[i].SetDirection(rootDir);
-			Trajectory.Points[i].SetVelocity(rootVel);
-			Trajectory.Points[i].Postprocess();
 		}
 	}
 
