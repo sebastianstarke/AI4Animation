@@ -23,7 +23,7 @@ public class BioAnimation : MonoBehaviour {
 	public Character Character;
 	public MFNN MFNN;
 
-	public bool SolveIK = true;
+	public bool MotionEditing = true;
 	public SerialCCD[] IKSolvers = new SerialCCD[0];
 
 	private Trajectory Trajectory;
@@ -89,9 +89,9 @@ public class BioAnimation : MonoBehaviour {
 		return Trajectory;
 	}
 
-	public void UseIK(bool value) {
-		SolveIK = value;
-		if(SolveIK) {
+	public void EditMotion(bool value) {
+		MotionEditing = value;
+		if(MotionEditing) {
 			for(int i=0; i<IKSolvers.Length; i++) {
 				IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
 			}
@@ -118,7 +118,7 @@ public class BioAnimation : MonoBehaviour {
 			Bias = Utility.Interpolate(Bias, PoolBias(), TargetBlending);
 
 			//Update Target Direction / Velocity 
-			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn()*60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
+			TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(Controller.QueryTurn() * 60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), TargetBlending);
 			TargetVelocity = Vector3.Lerp(TargetVelocity, Bias * (Quaternion.LookRotation(TargetDirection, Vector3.up) * Controller.QueryMove()).normalized, TargetBlending);
 
 			//Update Trajectory Correction
@@ -161,8 +161,8 @@ public class BioAnimation : MonoBehaviour {
 			}
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
+				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * 60f);
 			}
-
 			for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
@@ -173,6 +173,7 @@ public class BioAnimation : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
+				Trajectory.Points[i].SetVelocity(((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity()));
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -244,6 +245,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int i=0; i<RootPointIndex; i++) {
 				Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
+				Trajectory.Points[i].SetVelocity(Trajectory.Points[i+1].GetVelocity());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
 				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
@@ -262,6 +264,7 @@ public class BioAnimation : MonoBehaviour {
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
+			Trajectory.Points[RootPointIndex].SetVelocity((Trajectory.Points[RootPointIndex].GetPosition() - Trajectory.Points[RootPointIndex-1].GetPosition()) * 60f);
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			//Fix for flat terrain
@@ -325,6 +328,7 @@ public class BioAnimation : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
+				Trajectory.Points[i].SetVelocity(((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity()));
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -354,7 +358,7 @@ public class BioAnimation : MonoBehaviour {
 		
 			transform.position = new Vector3(Root.position.x, 0f, Root.position.z); //Fix for flat ground
 
-			if(SolveIK) {
+			if(MotionEditing) {
 				//Step #1
 				for(int i=0; i<IKSolvers.Length; i++) {
 					if(IKSolvers[i].name != "Tail") {
@@ -382,7 +386,7 @@ public class BioAnimation : MonoBehaviour {
 
 			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
 			
-			if(SolveIK) {
+			if(MotionEditing) {
 				//Step #2
 				for(int i=0; i<IKSolvers.Length; i++) {
 					IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
@@ -599,7 +603,7 @@ public class BioAnimation : MonoBehaviour {
 							Utility.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
-						Target.SolveIK = EditorGUILayout.Toggle("Motion Editing", Target.SolveIK);
+						Target.MotionEditing = EditorGUILayout.Toggle("Motion Editing", Target.MotionEditing);
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
 							Target.IKSolvers[i] = (SerialCCD)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialCCD), true);
 						}

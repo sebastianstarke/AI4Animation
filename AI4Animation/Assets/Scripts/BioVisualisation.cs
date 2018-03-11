@@ -130,8 +130,8 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	public void ToggleInverseKinematics() {
-		Animation.UseIK(!Animation.SolveIK);
-		UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
+		Animation.EditMotion(!Animation.MotionEditing);
+		UpdateColor(InverseKinematics, Animation.MotionEditing ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleMotionTrails() {
