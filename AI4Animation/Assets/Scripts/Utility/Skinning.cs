@@ -21,7 +21,7 @@ public class Skinning : MonoBehaviour {
 		Utility.Destroy(FindSkeleton());
 		skeleton.name = "Skeleton";
 		Cleanup(skeleton.transform);
-		GetComponent<BioAnimation>().AutoDetect();
+		GetComponent<BioAnimation>().DetectJoints();
 		GetComponent<MeshSkinnerDebugWeights>().enabled = false;
 	}
 

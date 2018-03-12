@@ -98,12 +98,13 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
-	public void AutoDetect() {
-		SetJointCount(0);
+	public void DetectJoints() {
+		System.Array.Resize(ref Joints, 0);
 		Action<Transform> recursion = null;
 		recursion = new Action<Transform>((transform) => {
 			if(Character.FindSegment(transform.name) != null) {
-				AddJoint(transform);
+				System.Array.Resize(ref Joints, Joints.Length+1);
+				Joints[Joints.Length-1] = transform;
 			}
 			for(int i=0; i<transform.childCount; i++) {
 				recursion(transform.GetChild(i));
@@ -161,11 +162,14 @@ public class BioAnimation : MonoBehaviour {
 			}
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
+			}
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * 60f);
 			}
 			for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
+			/*
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				Trajectory.Point prev = GetPreviousSample(i);
 				Trajectory.Point next = GetNextSample(i);
@@ -178,6 +182,7 @@ public class BioAnimation : MonoBehaviour {
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
+			*/
 		}
 
 		if(MFNN.Parameters != null) {
@@ -264,7 +269,7 @@ public class BioAnimation : MonoBehaviour {
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
-			Trajectory.Points[RootPointIndex].SetVelocity((Trajectory.Points[RootPointIndex].GetPosition() - Trajectory.Points[RootPointIndex-1].GetPosition()) * 60f);
+			Trajectory.Points[RootPointIndex].SetVelocity(translationalOffset.GetRelativeDirectionFrom(currentRoot) * 60f);
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			//Fix for flat terrain
@@ -318,9 +323,13 @@ public class BioAnimation : MonoBehaviour {
 					);
 			}
 			start += TrajectoryDimOut*6;
+			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
+				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * 60f);
+			}
 			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
+			/*
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 				Trajectory.Point prev = GetPreviousSample(i);
 				Trajectory.Point next = GetNextSample(i);
@@ -333,6 +342,7 @@ public class BioAnimation : MonoBehaviour {
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
+			*/
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
@@ -444,10 +454,6 @@ public class BioAnimation : MonoBehaviour {
 		}
 		return bias;
 	}
-	
-	private int GetJointIndex(string name) {
-		return System.Array.FindIndex(Joints, x => x.name == name);
-	}
 
 	private Trajectory.Point GetSample(int index) {
 		return Trajectory.Points[Mathf.Clamp(index*10, 0, Trajectory.Points.Length-1)];
@@ -462,25 +468,6 @@ public class BioAnimation : MonoBehaviour {
 			return GetSample(index / 10);
 		} else {
 			return GetSample(index / 10 + 1);
-		}
-	}
-
-	public void AddJoint(Transform joint) {
-		System.Array.Resize(ref Joints, Joints.Length+1);
-		Joints[Joints.Length-1] = joint;
-	}
-
-	public void SetJoint(int index, Transform t) {
-		if(index < 0 || index >= Joints.Length) {
-			return;
-		}
-		Joints[index] = t;
-	}
-
-	public void SetJointCount(int count) {
-		count = Mathf.Max(0, count);
-		if(Joints.Length != count) {
-			System.Array.Resize(ref Joints, count);
 		}
 	}
 
@@ -507,10 +494,10 @@ public class BioAnimation : MonoBehaviour {
 
 		if(ShowTrajectory) {
 			if(Application.isPlaying) {
-				UltiDraw.Begin();
-				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Red.Transparent(0.75f));
-				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, UltiDraw.Green.Transparent(0.75f));
-				UltiDraw.End();
+				//UltiDraw.Begin();
+				//UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Orange.Transparent(0.75f));
+				//UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, UltiDraw.Green.Transparent(0.75f));
+				//UltiDraw.End();
 				Trajectory.Draw(10);
 			}
 		}
@@ -611,9 +598,8 @@ public class BioAnimation : MonoBehaviour {
 						EditorGUI.BeginDisabledGroup(true);
 						EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
 						EditorGUI.EndDisabledGroup();
-						Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-						if(Utility.GUIButton("Auto Detect", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.AutoDetect();
+						if(Utility.GUIButton("Detect Joints", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Target.DetectJoints();
 						}
 						for(int i=0; i<Target.Joints.Length; i++) {
 							if(Target.Joints[i] != null) {
@@ -623,7 +609,7 @@ public class BioAnimation : MonoBehaviour {
 							}
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));
-							Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField(Target.Joints[i], typeof(Transform), true));
+							Target.Joints[i] = (Transform)EditorGUILayout.ObjectField(Target.Joints[i], typeof(Transform), true);
 							EditorGUILayout.EndHorizontal();
 							Utility.ResetGUIColor();
 						}
