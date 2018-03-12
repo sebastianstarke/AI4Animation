@@ -8,6 +8,8 @@ using UnityEditor;
 public class BioAnimation : MonoBehaviour {
 
 	public bool Inspect = false;
+
+	public int Framerate = 60;
 	public bool ShowTrajectory = true;
 	public bool ShowVelocities = true;
 
@@ -164,7 +166,7 @@ public class BioAnimation : MonoBehaviour {
 				Trajectory.Points[i].SetPosition(trajectory_positions_blend[i]);
 			}
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * 60f);
+				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * Framerate);
 			}
 			for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
@@ -269,7 +271,7 @@ public class BioAnimation : MonoBehaviour {
 			
 			Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
-			Trajectory.Points[RootPointIndex].SetVelocity(translationalOffset.GetRelativeDirectionFrom(currentRoot) * 60f);
+			Trajectory.Points[RootPointIndex].SetVelocity(translationalOffset.GetRelativeDirectionFrom(currentRoot) * Framerate);
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 			//Fix for flat terrain
@@ -324,7 +326,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 			start += TrajectoryDimOut*6;
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * 60f);
+				Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * Framerate);
 			}
 			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
@@ -351,7 +353,7 @@ public class BioAnimation : MonoBehaviour {
 				Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
 				Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11));
 				
-				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
+				Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity / Framerate, position, 0.5f).GetRelativePositionFrom(currentRoot);
 				Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
 				Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
 				Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
@@ -515,7 +517,7 @@ public class BioAnimation : MonoBehaviour {
 					if(segment != null) {
 						UltiDraw.DrawArrow(
 							Joints[i].position,
-							Joints[i].position + 60f * Velocities[i],
+							Joints[i].position + Velocities[i],
 							0.75f,
 							0.0075f,
 							0.05f,
@@ -575,6 +577,7 @@ public class BioAnimation : MonoBehaviour {
 
 				if(Target.Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
 						Target.ShowTrajectory = EditorGUILayout.Toggle("Show Trajectory", Target.ShowTrajectory);
 						Target.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", Target.ShowVelocities);
 						Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
