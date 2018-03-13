@@ -211,7 +211,7 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
-			
+			/*
 			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 1, 0f);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 2, pos.z);
@@ -219,14 +219,14 @@ public class BioAnimation : MonoBehaviour {
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, 0f);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 6, 0f);
-			/*
+			*/
 			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-			*/
+			
 			for(int j=0; j<GetSample(i).Styles.Length; j++) {
 				MFNN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}

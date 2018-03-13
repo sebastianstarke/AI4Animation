@@ -44,8 +44,11 @@ public class CatmullRomSpline : MonoBehaviour {
 			//point.SetDirection(future[i].GetDirection());
 			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
 			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
-			point.SetSpeed(Vector3.Distance(pivot.GetPosition(), future[future.Length-1].GetPosition()));
-
+			if(i==0) {
+				point.SetVelocity((future[0].GetPosition() - pivot.GetPosition()) * 60f);
+			} else {
+				point.SetVelocity((future[i].GetPosition() - future[i-1].GetPosition()) * 60f);
+			}
 		}
 		for(int i=60; i<targetTrajectory.Points.Length; i++) {
 			targetTrajectory.Points[i].Styles[1] = 1f;
