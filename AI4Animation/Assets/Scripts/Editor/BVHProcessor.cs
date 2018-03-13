@@ -13,7 +13,7 @@ public class BVHProcessor : EditorWindow {
 	public BVHAnimation[] Animations = new BVHAnimation[0];
 
 	private static string Separator = " ";
-	private static string Accuracy = "F6";
+	private static string Accuracy = "F5";
 
 	[MenuItem ("Addons/BVH Processor")]
 	static void Init() {
@@ -63,7 +63,7 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						BVHAnimation animation = Animations[i];
+						//BVHAnimation animation = Animations[i];
 						//animation.ComputeTrajectory();
                         EditorUtility.SetDirty(Animations[i]);
                     }

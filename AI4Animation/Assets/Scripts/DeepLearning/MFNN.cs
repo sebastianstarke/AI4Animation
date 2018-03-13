@@ -90,6 +90,30 @@ public class MFNN {
 		}
 	}
 
+	public void Test() {
+		for(int i=0; i<XDim; i++) {
+			Debug.Log("X Mean " + i +": " + GetValue(Network, 0, i, 0));
+		}
+		for(int i=0; i<XDim; i++) {
+			Debug.Log("X Std " + i +": " + GetValue(Network, 1, i, 0));
+		}
+		for(int i=0; i<YDim; i++) {
+			Debug.Log("Y Mean " + i +": " + GetValue(Network, 2, i, 0));
+		}
+		for(int i=0; i<YDim; i++) {
+			Debug.Log("Y Std " + i +": " + GetValue(Network, 3, i, 0));
+		}
+		/*
+		for(int i=0; i<XDim; i++) {
+			SetInput(i, 0f);
+		}
+		Predict();
+		for(int i=0; i<YDim; i++) {
+			Debug.Log("Output " + i + ": " + GetOutput(i));
+		}
+		*/
+	}
+
 	private void SetupMatrix(int index) {
 		NetworkParameters.FloatMatrix matrix = Parameters.GetMatrix(index);
 		for(int i=0; i<matrix.Rows; i++) {
@@ -103,11 +127,19 @@ public class MFNN {
 		if(Parameters == null) {
 			return;
 		}
+		if(index >= XDim) {
+			Debug.Log("Setting out of bounds " + index + ".");
+			return;
+		}
 		SetValue(Network, 10+ControlWeights*6, index, 0, value);
 	}
 
 	public float GetOutput(int index) {
 		if(Parameters == null) {
+			return 0f;
+		}
+		if(index >= YDim) {
+			Debug.Log("Returning out of bounds " + index + ".");
 			return 0f;
 		}
 		return GetValue(Network, 10+ControlWeights*6+1, index, 0);
