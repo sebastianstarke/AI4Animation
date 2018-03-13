@@ -211,7 +211,7 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
-			/*
+			
 			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 1, 0f);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 2, pos.z);
@@ -219,14 +219,14 @@ public class BioAnimation : MonoBehaviour {
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, 0f);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 6, 0f);
-			*/
+			/*
 			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-			
+			*/
 			for(int j=0; j<GetSample(i).Styles.Length; j++) {
 				MFNN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
@@ -365,7 +365,8 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
 			Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11));
 
-			Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity / Framerate, position, 0.5f).GetRelativePositionFrom(currentRoot);
+			//Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity / Framerate, position, 0.5f).GetRelativePositionFrom(currentRoot);
+			Positions[i] = Vector3.Lerp(Positions[i] + velocity.GetRelativeDirectionFrom(currentRoot) / Framerate, position.GetRelativePositionFrom(currentRoot), 0.5f);
 			Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
 			Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
 			Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
