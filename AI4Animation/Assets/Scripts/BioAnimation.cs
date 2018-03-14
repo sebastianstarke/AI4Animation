@@ -295,6 +295,7 @@ public class BioAnimation : MonoBehaviour {
 		//Update Future Trajectory
 		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 			Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + translationalOffset.GetRelativeDirectionFrom(nextRoot));
+			Trajectory.Points[i].SetDirection(Quaternion.AngleAxis(rotationalOffset, Vector3.up) * Trajectory.Points[i].GetDirection());
 		}
 		start = 0;
 		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -305,32 +306,55 @@ public class BioAnimation : MonoBehaviour {
 			int nextSampleIndex = GetNextSample(index).GetIndex() / PointDensity;
 			float factor = (float)(i % PointDensity) / PointDensity;
 
-			float prevPosX = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0);
-			float prevPosZ = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1);
-			float prevDirX = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2);
-			float prevDirZ = MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3);
+			Vector3 prevPos = new Vector3(
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0),
+				0f,
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1)
+			).GetRelativePositionFrom(nextRoot);
+			Vector3 prevDir = new Vector3(
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2),
+				0f,
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3)
+			).normalized.GetRelativeDirectionFrom(nextRoot);
+			Vector3 prevVel = new Vector3(
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 4),
+				0f,
+				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 5)
+			).GetRelativeDirectionFrom(nextRoot);
 
-			float nextPosX = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0);
-			float nextPosZ = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1);
-			float nextDirX = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2);
-			float nextDirZ = MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3);
+			Vector3 nextPos = new Vector3(
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0),
+				0f,
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1)
+			).GetRelativePositionFrom(nextRoot);
+			Vector3 nextDir = new Vector3(
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2),
+				0f,
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3)
+			).normalized.GetRelativeDirectionFrom(nextRoot);
+			Vector3 nextVel = new Vector3(
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 4),
+				0f,
+				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 5)
+			).GetRelativeDirectionFrom(nextRoot);
 
-			float posX = (1f - factor) * prevPosX + factor * nextPosX;
-			float posZ = (1f - factor) * prevPosZ + factor * nextPosZ;
-			float dirX = (1f - factor) * prevDirX + factor * nextDirX;
-			float dirZ = (1f - factor) * prevDirZ + factor * nextDirZ;
+			Vector3 pos = (1f - factor) * prevPos + factor * nextPos;
+			Vector3 dir = ((1f - factor) * prevDir + factor * nextDir).normalized;
+			Vector3 vel = (1f - factor) * prevVel + factor * nextVel;
+
+			pos = Vector3.Lerp(Trajectory.Points[i].GetPosition() + vel / Framerate, pos, 0.5f);
 
 			Trajectory.Points[i].SetPosition(
 				Utility.Interpolate(
 					Trajectory.Points[i].GetPosition(),
-					new Vector3(posX, 0f, posZ).GetRelativePositionFrom(nextRoot),
+					pos,
 					TrajectoryCorrection
 					)
 				);
 			Trajectory.Points[i].SetDirection(
 				Utility.Interpolate(
 					Trajectory.Points[i].GetDirection(),
-					new Vector3(dirX, 0f, dirZ).normalized.GetRelativeDirectionFrom(nextRoot),
+					dir,
 					TrajectoryCorrection
 					)
 				);
