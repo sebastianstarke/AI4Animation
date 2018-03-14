@@ -151,6 +151,9 @@ public class BVHAnimation : ScriptableObject {
 
 		//Read frame count
 		index += 1;
+		while(lines[index].Length == 0) {
+			index += 1;
+		}
 		System.Array.Resize(ref Frames, Utility.ReadInt(lines[index].Substring(8)));
 
 		//Read frame time
@@ -1067,7 +1070,7 @@ public class BVHAnimation : ScriptableObject {
 
 				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character.Hierarchy);
 				Local[i] = Matrix4x4.TRS(
-					i == 0 ? position / Animation.UnitScale : (position + info.Offset) / Animation.UnitScale,
+					i == 0 ? position / Animation.UnitScale : info.Offset / Animation.UnitScale,
 					rotation,
 					Vector3.one
 					);
