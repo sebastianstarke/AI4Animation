@@ -1068,12 +1068,9 @@ public class BVHAnimation : ScriptableObject {
 					}
 				}
 
+				position = (position == Vector3.zero ? info.Offset : position) / Animation.UnitScale;
 				Character.Segment parent = Animation.Character.Hierarchy[i].GetParent(Animation.Character.Hierarchy);
-				Local[i] = Matrix4x4.TRS(
-					i == 0 ? position / Animation.UnitScale : info.Offset / Animation.UnitScale,
-					rotation,
-					Vector3.one
-					);
+				Local[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
 				World[i] = parent == null ? Local[i] : World[parent.GetIndex()] * Local[i];
 			}
 			for(int i=0; i<Animation.Character.Hierarchy.Length; i++) {
