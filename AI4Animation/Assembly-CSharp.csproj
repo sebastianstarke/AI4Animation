@@ -108,6 +108,9 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\Water.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
+     <Compile Include="Assets\Scripts\Analysis\AgilityMeasure.cs" />
+     <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
+     <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
      <Compile Include="Assets\Scripts\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\MFNN.cs" />
@@ -136,7 +139,6 @@
      <Compile Include="Assets\Scripts\UltiDraw\Demo\PrimitivesDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\SkeletonDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\UltiDraw.cs" />
-     <Compile Include="Assets\Scripts\Utility\AgilityMeasure.cs" />
      <Compile Include="Assets\Scripts\Utility\CameraController.cs" />
      <Compile Include="Assets\Scripts\Utility\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Utility\Character.cs" />
@@ -150,7 +152,6 @@
      <Compile Include="Assets\Scripts\Utility\Orbit.cs" />
      <Compile Include="Assets\Scripts\Utility\Perlin.cs" />
      <Compile Include="Assets\Scripts\Utility\Skinning.cs" />
-     <Compile Include="Assets\Scripts\Utility\SlidingMeasure.cs" />
      <Compile Include="Assets\Scripts\Utility\Stick.cs" />
      <Compile Include="Assets\Scripts\Utility\Trajectory.cs" />
      <Compile Include="Assets\Scripts\Utility\Transformation.cs" />
