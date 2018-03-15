@@ -207,7 +207,8 @@ public class BioAnimation : MonoBehaviour {
 		int start = 0;
 		//Input Trajectory Positions / Directions / Velocities / Styles
 		for(int i=0; i<PointSamples; i++) {
-			//Debug.Log(start + i*TrajectoryDimIn + 4);
+			//Debug.Log(i + ": " + (int)(start + i*TrajectoryDimIn + 4));
+			//Debug.Log(i + ": " + (int)(start + i*TrajectoryDimIn + 5));
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
