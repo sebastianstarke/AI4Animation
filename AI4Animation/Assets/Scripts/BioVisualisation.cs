@@ -31,8 +31,6 @@ public class BioVisualisation : MonoBehaviour {
 	public Trail[] Trails = new Trail[0];
 
 	private int Frames = 150;
-	private Queue<float>[] CW;
-	public bool DrawCW = true;
 
 	private BioAnimation Animation;
 
@@ -40,7 +38,6 @@ public class BioVisualisation : MonoBehaviour {
 		/*
 		Animation = GetComponent<BioAnimation>();
 		*/
-		CW = new Queue<float>[Animation.MFNN.ControlWeights];
 		/*
 		for(int i=0; i<CW.Length; i++) {
 			CW[i] = new Queue<float>();
@@ -74,36 +71,6 @@ public class BioVisualisation : MonoBehaviour {
 		SetFOV(1f);
 	}
 
-	private void UpdateData() {
-		for(int i=0; i<CW.Length; i++) {
-			CW[i].Dequeue();
-			CW[i].Enqueue(Animation.MFNN.GetControlPoint(i));
-		}
-	}
-
-	private void DrawControlPoint(float x, float y, float width, float height, Queue<float> CW, Color color) {
-		int _index = 0;
-		float _x = 0f;
-		float _xPrev = 0f;
-		float _y = 0f;
-		float _yPrev = 0f;
-		foreach(float value in CW) {
-			_x = x + (float)(_index)/(float)(Frames-1) * width;
-			_y = y - height + value*height;
-			if(_index > 0) {
-				UltiDraw.DrawGUILine(
-					new Vector2(_xPrev,	_yPrev),
-					new Vector2(_x, _y),
-					0.002f,
-					color
-				);
-			}
-			_xPrev = _x; 
-			_yPrev = _y;
-			_index += 1;
-		}
-	}
-
 	public void ToggleSkeleton() {
 		Animation.Character.DrawSkeleton = !Animation.Character.DrawSkeleton;
 		UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
@@ -122,11 +89,6 @@ public class BioVisualisation : MonoBehaviour {
 	public void ToggleTrajectory() {
 		Animation.ShowTrajectory = !Animation.ShowTrajectory;
 		UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleCyclicWeights() {
-		DrawCW = !DrawCW;
-		UpdateColor(CyclicWeights, DrawCW ? VisualisationEnabled : VisualisationDisabled);
 	}
 
 	public void ToggleInverseKinematics() {
@@ -228,38 +190,8 @@ public class BioVisualisation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		UpdateData();
-
 		if(!Show) {
 			return;
-		}
-
-		if(DrawCW) {
-			UltiDraw.Begin();
-			Vector2 center = new Vector2(0.5f, 0.1f);
-			float width = 0.95f;
-			float height = 0.1f;
-			float border = 0.0025f;
-			UltiDraw.DrawGUIRectangle(
-				center,
-				new Vector2(width+2f*border/Screen.width*Screen.height, height+2f*border),
-				UltiDraw.Black);
-			UltiDraw.DrawGUIRectangle(
-				center,
-				new Vector2(width, height),
-				UltiDraw.White);
-
-			Color[] colors = UltiDraw.GetRainbowColors(Animation.MFNN.ControlWeights);
-			for(int i=0; i<colors.Length; i++) {
-				DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, CW[i], colors[i]);
-			}
-			/*
-			DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
-			DrawControlPoint(x, y, width, height, CW[1], Utility.DarkGreen);
-			DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
-			DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
-			*/
-			UltiDraw.End();
 		}
 
 		for(int i=0; i<Trails.Length; i++) {

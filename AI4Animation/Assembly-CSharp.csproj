@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Demo\DemoAnimation.cs" />
+     <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutineExtensions.cs" />
+     <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutines.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\MinAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\TrackballAttribute.cs" />
@@ -193,14 +195,14 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
      <None Include="Assets\Palette\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
-     <None Include="Assets\Project\Parameters\Quadruped_Old\Baselines\baseline\readme.txt" />
+     <None Include="Assets\Project\Parameters\SIGGRAPH\Baselines\baseline\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA.shader" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemo1.0.1.xml" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DepthOfField.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceRaytrace.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
-     <None Include="Assets\Project\Parameters\Quadruped_Old\Baselines\baseline_p\readme.txt" />
+     <None Include="Assets\Project\Parameters\SIGGRAPH\Baselines\baseline_p\readme.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />

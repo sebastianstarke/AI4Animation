@@ -15,7 +15,6 @@ class MFNN {
     std::vector<MatrixXf*> References;
 
     std::vector<int> ControlNeurons;
-    std::vector<bool> IgnoreNeurons;
 
 	MatrixXf Xmean;
 	MatrixXf Xstd;
@@ -32,34 +31,35 @@ class MFNN {
 
     MatrixXf CP;
 
-    int CDim, XDim, HDim, YDim, ControlWeights;
+    int XDimBlend, HDimBlend, YDimBlend, XDim, HDim, YDim;
 
-    public : void Initialise(int cDim, int xDim, int hDim, int yDim, int controlWeights) {
-        CDim = cDim;
+    public : void Initialise(int xDimBlend, int hDimBlend, int yDimBlend, int xDim, int hDim, int yDim) {
+        XDimBlend = xDimBlend;
+        HDimBlend = hDimBlend;
+        YDimBlend = yDimBlend;
         XDim = xDim;
         HDim = hDim;
         YDim = yDim;
-        ControlWeights = controlWeights;
 
         Xmean = Xmean.Zero(XDim, 1);
         Xstd = Xstd.Zero(XDim, 1);
         Ymean = Ymean.Zero(YDim, 1);
         Ystd = Ystd.Zero(YDim, 1);
 
-        CW0 = CW0.Zero(CDim, CDim);
-        Cb0 = Cb0.Zero(CDim, 1);
-        CW1 = CW1.Zero(CDim, CDim);
-        Cb1 = Cb1.Zero(CDim, 1);
-        CW2 = CW2.Zero(ControlWeights, CDim);
-        Cb2 = Cb2.Zero(ControlWeights, 1);
+        CW0 = CW0.Zero(HDimBlend, XDimBlend);
+        Cb0 = Cb0.Zero(HDimBlend, 1);
+        CW1 = CW1.Zero(HDimBlend, HDimBlend);
+        Cb1 = Cb1.Zero(HDimBlend, 1);
+        CW2 = CW2.Zero(YDimBlend, HDimBlend);
+        Cb2 = Cb2.Zero(YDimBlend, 1);
 
-        CPa0.resize(ControlWeights);
-        CPa1.resize(ControlWeights);
-        CPa2.resize(ControlWeights);
-        CPb0.resize(ControlWeights);
-        CPb1.resize(ControlWeights);
-        CPb2.resize(ControlWeights);
-		for(int i=0; i<ControlWeights; i++) {
+        CPa0.resize(YDimBlend);
+        CPa1.resize(YDimBlend);
+        CPa2.resize(YDimBlend);
+        CPb0.resize(YDimBlend);
+        CPb1.resize(YDimBlend);
+        CPb2.resize(YDimBlend);
+		for(int i=0; i<YDimBlend; i++) {
             CPa0[i] = CPa0[i].Zero(HDim, XDim);
             CPb0[i] = CPb0[i].Zero(HDim, 1);
             CPa1[i] = CPa1[i].Zero(HDim, HDim);
@@ -71,7 +71,7 @@ class MFNN {
         X = X.Zero(XDim, 1);
         Y = Y.Zero(YDim, 1);
 
-        CP = CP.Zero(ControlWeights, 1);
+        CP = CP.Zero(YDimBlend, 1);
 
         References.resize(0);
         References.push_back(&Xmean);
@@ -84,7 +84,7 @@ class MFNN {
         References.push_back(&Cb1);
         References.push_back(&CW2);
         References.push_back(&Cb2);
-        for(int i=0; i<ControlWeights; i++) {
+        for(int i=0; i<YDimBlend; i++) {
             References.push_back(&CPa0[i]);
             References.push_back(&CPb0[i]);
             References.push_back(&CPa1[i]);
@@ -119,11 +119,6 @@ class MFNN {
 
     public : void AddControlNeuron(int index) {
         ControlNeurons.push_back(index);
-        IgnoreNeurons.push_back(false);
-    }
-
-    public : void IgnoreControlNeuron(int index, bool value) {
-        IgnoreNeurons[index] = value;
     }
 
     public : void Predict() {
@@ -131,7 +126,7 @@ class MFNN {
         MatrixXf _X = (X - Xmean).cwiseQuotient(Xstd);
 
         //Process MLP
-        MatrixXf CN = MatrixXf::Zero(CDim, 1);
+        MatrixXf CN = MatrixXf::Zero(XDimBlend, 1);
         for(uint i=0; i<ControlNeurons.size(); i++) {
             CN(i, 0) = _X(ControlNeurons[i], 0);
         }
@@ -140,27 +135,25 @@ class MFNN {
         CP = (CW2 * CP) + Cb2; SoftMax(CP);
 
         //Control Points
-		MatrixXf PFNNW0 = MatrixXf::Zero(HDim, XDim);
-		MatrixXf PFNNW1 = MatrixXf::Zero(HDim, HDim);
-		MatrixXf PFNNW2 = MatrixXf::Zero(YDim, HDim);
-		MatrixXf PFNNb0 = MatrixXf::Zero(HDim, 1);
-		MatrixXf PFNNb1 = MatrixXf::Zero(HDim, 1);
-		MatrixXf PFNNb2 = MatrixXf::Zero(YDim, 1);
-		for(int i=0; i<ControlWeights; i++) {
-            if(!IgnoreNeurons[i]) {
-                PFNNW0 += CPa0[i] * CP(i, 0);
-                PFNNW1 += CPa1[i] * CP(i, 0);
-                PFNNW2 += CPa2[i] * CP(i, 0);
-                PFNNb0 += CPb0[i] * CP(i, 0);
-                PFNNb1 += CPb1[i] * CP(i, 0);
-                PFNNb2 += CPb2[i] * CP(i, 0);
-            }
+		MatrixXf NNW0 = MatrixXf::Zero(HDim, XDim);
+		MatrixXf NNW1 = MatrixXf::Zero(HDim, HDim);
+		MatrixXf NNW2 = MatrixXf::Zero(YDim, HDim);
+		MatrixXf NNb0 = MatrixXf::Zero(HDim, 1);
+		MatrixXf NNb1 = MatrixXf::Zero(HDim, 1);
+		MatrixXf NNb2 = MatrixXf::Zero(YDim, 1);
+		for(int i=0; i<YDimBlend; i++) {
+            NNW0 += CPa0[i] * CP(i, 0);
+            NNW1 += CPa1[i] * CP(i, 0);
+            NNW2 += CPa2[i] * CP(i, 0);
+            NNb0 += CPb0[i] * CP(i, 0);
+            NNb1 += CPb1[i] * CP(i, 0);
+            NNb2 += CPb2[i] * CP(i, 0);
 		}
 
-        //Process PFNN
-        Y = (PFNNW0 * _X) + PFNNb0; ELU(Y);
-        Y = (PFNNW1 * Y) + PFNNb1; ELU(Y);
-        Y = (PFNNW2 * Y) + PFNNb2;
+        //Process NN
+        Y = (NNW0 * _X) + NNb0; ELU(Y);
+        Y = (NNW1 * Y) + NNb1; ELU(Y);
+        Y = (NNW2 * Y) + NNb2;
 
         //Renormalise output
         Y = Y.cwiseProduct(Ystd) + Ymean;
@@ -196,8 +189,8 @@ extern "C" {
         delete obj;
     }
 
-    void Initialise(MFNN* obj, int cDim, int xDim, int hDim, int yDim, int controlWeights) {
-        obj->Initialise(cDim, xDim, hDim, yDim, controlWeights);
+    void Initialise(MFNN* obj, int xDimBlend, int hDimBlend, int yDimBlend, int xDim, int hDim, int yDim) {
+        obj->Initialise(xDimBlend, hDimBlend, yDimBlend, xDim, hDim, yDim);
     }
 
     void SetValue(MFNN* obj, int matrix, int row, int col, float value) {
@@ -210,10 +203,6 @@ extern "C" {
 
     void AddControlNeuron(MFNN* obj, int index) {
         obj->AddControlNeuron(index);
-    }
-
-    void IgnoreControlNeuron(MFNN* obj, int index, bool value) {
-        obj->IgnoreControlNeuron(index, value);
     }
 
     void Predict(MFNN* obj) {

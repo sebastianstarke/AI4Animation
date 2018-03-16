@@ -340,23 +340,23 @@ public class Character {
 	}
 
 	
-	public void DrawSimple() {
+	public void DrawSimple(Color color) {
 		UltiDraw.Begin();
-		DrawSimple(GetRoot());
+		DrawSimple(GetRoot(), color);
 		UltiDraw.End();
 	}
 
-	private void DrawSimple(Segment segment) {
+	private void DrawSimple(Segment segment, Color color) {
 		if(segment == null) {
 			return;
 		}
 		for(int i=0; i<segment.GetChildCount(); i++) {
 			Segment child = segment.GetChild(Hierarchy, i);
-			UltiDraw.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), Color.grey);
+			UltiDraw.DrawLine(segment.GetTransformation().GetPosition(), child.GetTransformation().GetPosition(), color);
 		}
-		UltiDraw.DrawCircle(segment.GetTransformation().GetPosition(), 0.01f, Color.black);
+		UltiDraw.DrawCircle(segment.GetTransformation().GetPosition(), 0.02f, Color.Lerp(color, UltiDraw.Black, 0.25f));
 		for(int i=0; i<segment.GetChildCount(); i++) {
-			DrawSimple(segment.GetChild(Hierarchy, i));
+			DrawSimple(segment.GetChild(Hierarchy, i), color);
 		}
 	}
 	

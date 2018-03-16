@@ -18,7 +18,7 @@ public class BlendingActivation : MonoBehaviour {
 	}
 
 	void Initialise() {
-		Values = new Queue<float>[Animation.MFNN.ControlWeights];
+		Values = new Queue<float>[Animation.MFNN.YDimBlend];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
@@ -28,7 +28,7 @@ public class BlendingActivation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
-		if(Values.Length != Animation.MFNN.ControlWeights) {
+		if(Values.Length != Animation.MFNN.YDimBlend) {
 			Initialise();
 		}
 
@@ -51,7 +51,7 @@ public class BlendingActivation : MonoBehaviour {
 			new Vector2(width, height),
 			UltiDraw.White);
 
-		Color[] colors = UltiDraw.GetRainbowColors(Animation.MFNN.ControlWeights);
+		Color[] colors = UltiDraw.GetRainbowColors(Animation.MFNN.YDimBlend);
 		for(int i=0; i<colors.Length; i++) {
 			DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, Values[i], colors[i]);
 		}

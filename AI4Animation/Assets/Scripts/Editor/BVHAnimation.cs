@@ -720,7 +720,7 @@ public class BVHAnimation : ScriptableObject {
 				}
 				string[] names = new string[Character.Hierarchy.Length];
 				for(int i=0; i<Character.Hierarchy.Length; i++) {
-					names[i] = Character.Hierarchy[i].GetName();
+					names[i] = (i+1) + ": " + Character.Hierarchy[i].GetName();
 				}
 				for(int i=0; i<Character.Hierarchy.Length; i++) {
 					EditorGUILayout.BeginHorizontal();
@@ -896,7 +896,7 @@ public class BVHAnimation : ScriptableObject {
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
 					Character.Hierarchy[j].SetTransformation(t[j]);
 				}
-				Character.DrawSimple();
+				Character.DrawSimple(UltiDraw.Grey);
 			}
 		}
 
@@ -904,9 +904,20 @@ public class BVHAnimation : ScriptableObject {
 			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
 
-		Matrix4x4[] transformations = ShowZero ? ExtractZeroPosture(ShowMirrored) : ExtractPosture(CurrentFrame, ShowMirrored);
+		//Previous postures
+		for(int t=0; t<6; t++) {
+			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp - 1f + (float)t/6f, 0f, GetTotalTime());
+			Matrix4x4[] previousPosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
+			for(int j=0; j<Character.Hierarchy.Length; j++) {
+				Character.Hierarchy[j].SetTransformation(previousPosture[j]);
+			}
+			Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(t+1)/6f));
+		}
+
+		//Current posture
+		Matrix4x4[] posture = ShowZero ? ExtractZeroPosture(ShowMirrored) : ExtractPosture(CurrentFrame, ShowMirrored);
 		for(int i=0; i<Character.Hierarchy.Length; i++) {
-			Character.Hierarchy[i].SetTransformation(transformations[i]);
+			Character.Hierarchy[i].SetTransformation(posture[i]);
 		}
 		Character.Draw();
 
@@ -918,8 +929,8 @@ public class BVHAnimation : ScriptableObject {
 				red.a = 0.25f;
 				Color green = UltiDraw.Green;
 				green.a = 0.25f;
-				UltiDraw.DrawCircle(ShowMirrored ? transformations[Symmetry[i]].GetPosition() : transformations[i].GetPosition(), Character.BoneSize*1.25f, green);
-				UltiDraw.DrawCircle(ShowMirrored ? transformations[i].GetPosition() : transformations[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
+				UltiDraw.DrawCircle(ShowMirrored ? posture[Symmetry[i]].GetPosition() : posture[i].GetPosition(), Character.BoneSize*1.25f, green);
+				UltiDraw.DrawCircle(ShowMirrored ? posture[i].GetPosition() : posture[Symmetry[i]].GetPosition(), Character.BoneSize*1.25f, red);
 			}
 		}
 		UltiDraw.End();
@@ -930,8 +941,8 @@ public class BVHAnimation : ScriptableObject {
 			UltiDraw.Begin();
 			for(int i=0; i<Character.Hierarchy.Length; i++) {
 				UltiDraw.DrawArrow(
-					transformations[i].GetPosition(),
-					transformations[i].GetPosition() + velocities[i],
+					posture[i].GetPosition(),
+					posture[i].GetPosition() + velocities[i],
 					0.75f,
 					0.0075f,
 					0.05f,

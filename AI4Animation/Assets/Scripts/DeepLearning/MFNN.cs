@@ -12,11 +12,12 @@ public class MFNN {
 
 	public string Folder = string.Empty;
 	
-	public int CDim = 12;
+	public int XDimBlend = 12;
+	public int HDimBlend = 12;
+	public int YDimBlend = 4;
 	public int XDim = 504;
 	public int HDim = 512;
 	public int YDim = 352;
-	public int ControlWeights = 4;
 	public int[] ControlNeurons = new int[0];
 
 	public NetworkParameters Parameters;
@@ -28,15 +29,13 @@ public class MFNN {
     [DllImport("MFNN")]
     private static extern IntPtr Delete(IntPtr obj);
     [DllImport("MFNN")]
-    private static extern void Initialise(IntPtr obj, int cDim, int xDim, int hDim, int yDim, int controlWeights);
+    private static extern void Initialise(IntPtr obj, int xDimBlend, int hDimBlend, int yDimBlend, int xDim, int hDim, int yDim);
     [DllImport("MFNN")]
     private static extern void SetValue(IntPtr obj, int matrix, int row, int col, float value);
     [DllImport("MFNN")]
     private static extern float GetValue(IntPtr obj, int matrix, int row, int col);
     [DllImport("MFNN")]
     private static extern float AddControlNeuron(IntPtr obj, int index);
-    [DllImport("MFNN")]
-    private static extern float IgnoreControlNeuron(IntPtr obj, int index, bool value);
     [DllImport("MFNN")]
     private static extern void Predict(IntPtr obj);
 
@@ -55,16 +54,16 @@ public class MFNN {
 		Parameters.StoreMatrix(Folder+"/Ymean.bin", YDim, 1);
 		Parameters.StoreMatrix(Folder+"/Ystd.bin", YDim, 1);
 
-		Parameters.StoreMatrix(Folder+"/wc0_w.bin", CDim, CDim);
-		Parameters.StoreMatrix(Folder+"/wc0_b.bin", CDim, 1);
+		Parameters.StoreMatrix(Folder+"/wc0_w.bin", HDimBlend, XDimBlend);
+		Parameters.StoreMatrix(Folder+"/wc0_b.bin", HDimBlend, 1);
 
-		Parameters.StoreMatrix(Folder+"/wc1_w.bin", CDim, CDim);
-		Parameters.StoreMatrix(Folder+"/wc1_b.bin", CDim, 1);
+		Parameters.StoreMatrix(Folder+"/wc1_w.bin", HDimBlend, HDimBlend);
+		Parameters.StoreMatrix(Folder+"/wc1_b.bin", HDimBlend, 1);
 		
-		Parameters.StoreMatrix(Folder+"/wc2_w.bin", ControlWeights, CDim);
-		Parameters.StoreMatrix(Folder+"/wc2_b.bin", ControlWeights, 1);
+		Parameters.StoreMatrix(Folder+"/wc2_w.bin", YDimBlend, HDimBlend);
+		Parameters.StoreMatrix(Folder+"/wc2_b.bin", YDimBlend, 1);
 
-		for(int i=0; i<ControlWeights; i++) {
+		for(int i=0; i<YDimBlend; i++) {
 			Parameters.StoreMatrix(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
 			Parameters.StoreMatrix(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1);
 
@@ -81,7 +80,7 @@ public class MFNN {
 			Debug.Log("Building MFNN failed because no parameters were loaded.");
 			return;
 		}
-		Initialise(Network, CDim, XDim, HDim, YDim, ControlWeights);
+		Initialise(Network, XDimBlend, HDimBlend, YDimBlend, XDim, HDim, YDim);
 		for(int i=0; i<ControlNeurons.Length; i++) {
 			AddControlNeuron(ControlNeurons[i]);
 		}
@@ -103,15 +102,6 @@ public class MFNN {
 		for(int i=0; i<YDim; i++) {
 			Debug.Log("Y Std " + i +": " + GetValue(Network, 3, i, 0));
 		}
-		/*
-		for(int i=0; i<XDim; i++) {
-			SetInput(i, 0f);
-		}
-		Predict();
-		for(int i=0; i<YDim; i++) {
-			Debug.Log("Output " + i + ": " + GetOutput(i));
-		}
-		*/
 	}
 
 	private void SetupMatrix(int index) {
@@ -131,7 +121,7 @@ public class MFNN {
 			Debug.Log("Setting out of bounds " + index + ".");
 			return;
 		}
-		SetValue(Network, 10+ControlWeights*6, index, 0, value);
+		SetValue(Network, 10+YDimBlend*6, index, 0, value);
 	}
 
 	public float GetOutput(int index) {
@@ -142,7 +132,7 @@ public class MFNN {
 			Debug.Log("Returning out of bounds " + index + ".");
 			return 0f;
 		}
-		return GetValue(Network, 10+ControlWeights*6+1, index, 0);
+		return GetValue(Network, 10+YDimBlend*6+1, index, 0);
 	}
 
 	public void AddControlNeuron(int index) {
@@ -152,18 +142,11 @@ public class MFNN {
 		AddControlNeuron(Network, index);
 	}
 
-	public void IgnoreControlNeuron(int index, bool value) {
-		if(Parameters == null) {
-			return;
-		}
-		IgnoreControlNeuron(Network, index, value);
-	}
-
 	public float GetControlPoint(int index) {
 		if(Parameters == null) {
 			return 0f;
 		}
-		return GetValue(Network, 10+ControlWeights*6+2, index, 0);
+		return GetValue(Network, 10+YDimBlend*6+2, index, 0);
 	}
 
 	public void Predict() {
@@ -185,11 +168,12 @@ public class MFNN {
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Folder = EditorGUILayout.TextField("Folder", Folder);
-					CDim = EditorGUILayout.IntField("CDim", CDim);
+					XDimBlend = EditorGUILayout.IntField("XDimBlend", XDimBlend);
+					HDimBlend = EditorGUILayout.IntField("HDimBlend", HDimBlend);
+					YDimBlend = EditorGUILayout.IntField("YDimBlend", YDimBlend);
 					XDim = EditorGUILayout.IntField("XDim", XDim);
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
-					ControlWeights = EditorGUILayout.IntField("Control Weights", ControlWeights);
 					Array.Resize(ref ControlNeurons, EditorGUILayout.IntField("Control Neurons", ControlNeurons.Length));
 					for(int i=0; i<ControlNeurons.Length; i++) {
 						ControlNeurons[i] = EditorGUILayout.IntField("Neuron " + (i+1), ControlNeurons[i]);
