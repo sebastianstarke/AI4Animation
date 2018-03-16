@@ -221,9 +221,6 @@ public class BVHProcessor : EditorWindow {
 	private IEnumerator ExportData() {
 		Exporting = true;
 
-		int batchSize = 5;
-		int item = 0;
-
 		if(Animations.Length == 0) {
 			Debug.Log("No animations specified.");
 			yield return new WaitForSeconds(0f);
@@ -242,10 +239,13 @@ public class BVHProcessor : EditorWindow {
 
 			StreamWriter data = File.CreateText(filename+".txt");
 			int sequence = 0;
-			bool mirrored;
+			int batchSize = 5;
+			int item = 0;
+			
 			//WriteAnimations(ref data, ref sequence, false);
 			//WriteAnimations(ref data, ref sequence, true);
 
+			bool mirrored;
 			mirrored = false;
 			for(int i=0; i<Animations.Length; i++) {
 				if(Use[i]) {
