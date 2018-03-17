@@ -166,9 +166,16 @@ class MFNN {
         }
     }
 
-    void SoftMax(MatrixXf& m) {
-        float frac = 0.0f;
+    void TanH(MatrixXf& m) {
         int rows = m.rows();
+        for(int i=0; i<rows; i++) {
+            m(i, 0) = std::tanh(m(i ,0));
+        }
+    }
+
+    void SoftMax(MatrixXf& m) {
+        int rows = m.rows();
+        float frac = 0.0f;
         for(int i=0; i<rows; i++) {
             m(i, 0) = std::exp(m(i, 0));
             frac += m(i, 0);

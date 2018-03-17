@@ -246,10 +246,10 @@ public class BioAnimation : MonoBehaviour {
 		}
 		start += TrajectoryDimIn*PointSamples;
 
-		//Input Previous Bone Positions / Velocities
 		Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
 		previousRoot[1,3] = 0f; //Fix for flat terrain
 
+		//Input Previous Bone Positions / Velocities
 		for(int i=0; i<Joints.Length; i++) {
 			Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 			Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
@@ -269,7 +269,30 @@ public class BioAnimation : MonoBehaviour {
 			MFNN.SetInput(start + i*JointDimIn + 11, vel.z);
 		}
 		start += JointDimIn*Joints.Length;
-		
+
+		//Input Past Posture
+		for(int i=0; i<6; i++) {
+			for(int j=0; j<Joints.Length; j++) {
+				Vector3 pos = PastPositions[j][i*10].GetRelativePositionTo(previousRoot);
+				Vector3 forward = PastForwards[j][i*10].GetRelativeDirectionTo(previousRoot);
+				Vector3 up = PastUps[j][i*10].GetRelativeDirectionTo(previousRoot);
+				Vector3 vel = PastVelocities[j][i*10].GetRelativeDirectionTo(previousRoot);
+				MFNN.SetInput(start + j*JointDimIn + 0, pos.x);
+				MFNN.SetInput(start + j*JointDimIn + 1, pos.y);
+				MFNN.SetInput(start + j*JointDimIn + 2, pos.z);
+				MFNN.SetInput(start + j*JointDimIn + 3, forward.x);
+				MFNN.SetInput(start + j*JointDimIn + 4, forward.y);
+				MFNN.SetInput(start + j*JointDimIn + 5, forward.z);
+				MFNN.SetInput(start + j*JointDimIn + 6, up.x);
+				MFNN.SetInput(start + j*JointDimIn + 7, up.y);
+				MFNN.SetInput(start + j*JointDimIn + 8, up.z);
+				MFNN.SetInput(start + j*JointDimIn + 9, vel.x);
+				MFNN.SetInput(start + j*JointDimIn + 10, vel.y);
+				MFNN.SetInput(start + j*JointDimIn + 11, vel.z);
+			}
+			start += JointDimIn*Joints.Length;
+		}
+
 		//Predict
 		MFNN.Predict();
 
@@ -552,12 +575,12 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		if(Application.isPlaying) {
-			for(int i=0; i<60; i+=10) {
+			for(int i=0; i<6; i++) {
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
-					Matrix4x4 mat = Matrix4x4.TRS(PastPositions[j][i], Quaternion.LookRotation(PastForwards[j][i], PastUps[j][i]), Vector3.one);
+					Matrix4x4 mat = Matrix4x4.TRS(PastPositions[j][i*10], Quaternion.LookRotation(PastForwards[j][i*10], PastUps[j][i*10]), Vector3.one);
 					Character.Hierarchy[j].SetTransformation(mat);
 				}
-				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/60f));
+				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f));
 			}
 		}
 		
