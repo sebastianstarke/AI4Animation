@@ -208,27 +208,15 @@ public class BioAnimation : MonoBehaviour {
 		int start = 0;
 		//Input Trajectory Positions / Directions / Velocities / Styles
 		for(int i=0; i<PointSamples; i++) {
-			//Debug.Log("Point " + i + ": " + (int)(start + i*TrajectoryDimIn + 4));
-			//Debug.Log("Point " + i + ": " + (int)(start + i*TrajectoryDimIn + 5));
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
-			/*
-			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 1, 0f);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 2, pos.z);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.x);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 4, dir.z);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 5, 0f);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 6, 0f);
-			*/
 			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-			
 			for(int j=0; j<GetSample(i).Styles.Length; j++) {
 				MFNN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
@@ -240,7 +228,6 @@ public class BioAnimation : MonoBehaviour {
 		previousRoot[1,3] = 0f; //Fix for flat terrain
 
 		for(int i=0; i<Joints.Length; i++) {
-			//Debug.Log("Joint " + Joints[i].name + " at " + (start + i*JointDimIn));
 			Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 			Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 			Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
@@ -280,8 +267,8 @@ public class BioAnimation : MonoBehaviour {
 		Vector3 translationalOffset = new Vector3(MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 0), 0f, MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 1));
 		float rotationalOffset = MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 2);
 
-		//translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
-		//rotationalOffset *= Utility.Exponential01(Mathf.Abs(rotationalOffset) / 0.01f);
+		translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
+		rotationalOffset *= Utility.Exponential01(Mathf.Abs(rotationalOffset) / 0.01f);
 		
 		Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 		Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rotationalOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
@@ -289,10 +276,6 @@ public class BioAnimation : MonoBehaviour {
 		Trajectory.Points[RootPointIndex].Postprocess();
 		Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 		nextRoot[1,3] = 0f; //Fix for flat terrain
-
-		//Debug.Log("1T: " + translationalOffset.ToString("F3"));
-		//Debug.Log("1R: " + rotationalOffset);
-		//Debug.Log("2T: " + new Vector3(MFNN.GetOutput(6), 0f, MFNN.GetOutput(7)).ToString("F3"));
 
 		//Update Future Trajectory
 		for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
