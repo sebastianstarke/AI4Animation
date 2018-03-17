@@ -147,14 +147,15 @@ public class BVHProcessor : EditorWindow {
 		
 		string name = "Labels";
 		string filename = string.Empty;
-		if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
-			filename = Application.dataPath+"/Project/"+name;
+		string folder = Application.dataPath + "/../../../Export/";
+		if(!File.Exists(folder+name+".txt")) {
+			filename = folder+name;
 		} else {
 			int i = 1;
-			while(File.Exists(Application.dataPath+"/Project/"+name+" ("+i+").txt")) {
+			while(File.Exists(folder+name+" ("+i+").txt")) {
 				i += 1;
 			}
-			filename = Application.dataPath+"/Project/"+name+" ("+i+")";
+			filename = folder+name+" ("+i+")";
 		}
 
 		StreamWriter labels = File.CreateText(filename+".txt");
@@ -227,14 +228,15 @@ public class BVHProcessor : EditorWindow {
 		} else {
 			string name = "Data";
 			string filename = string.Empty;
-			if(!File.Exists(Application.dataPath+"/Project/"+name+".txt")) {
-				filename = Application.dataPath+"/Project/"+name;
+			string folder = Application.dataPath + "/../../../Export/";
+			if(!File.Exists(folder+name+".txt")) {
+				filename = folder+name;
 			} else {
 				int i = 1;
-				while(File.Exists(Application.dataPath+"/Project/"+name+" ("+i+").txt")) {
+				while(File.Exists(folder+name+" ("+i+").txt")) {
 					i += 1;
 				}
-				filename = Application.dataPath+"/Project/"+name+" ("+i+")";
+				filename = folder+name+" ("+i+")";
 			}
 
 			StreamWriter data = File.CreateText(filename+".txt");

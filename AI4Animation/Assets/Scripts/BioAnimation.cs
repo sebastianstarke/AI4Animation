@@ -37,12 +37,14 @@ public class BioAnimation : MonoBehaviour {
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 
+	//State
 	private Vector3[] Positions = new Vector3[0];
 	private Vector3[] Forwards = new Vector3[0];
 	private Vector3[] Ups = new Vector3[0];
 	private Vector3[] Velocities = new Vector3[0];
 	
 	//Trajectory for 60 Hz framerate
+	private const int Points = 111;
 	private const int PointSamples = 12;
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
@@ -61,7 +63,7 @@ public class BioAnimation : MonoBehaviour {
 		Forwards = new Vector3[Joints.Length];
 		Ups = new Vector3[Joints.Length];
 		Velocities = new Vector3[Joints.Length];
-		Trajectory = new Trajectory(111, Controller.Styles.Length, transform.position, TargetDirection);
+		Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
 		if(Controller.Styles.Length > 0) {
 			for(int i=0; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].Styles[0] = 1f;
@@ -83,7 +85,6 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
-		//MFNN.Test();
 	}
 
 	public Trajectory GetTrajectory() {
@@ -385,16 +386,15 @@ public class BioAnimation : MonoBehaviour {
 
 		//Compute Posture
 		for(int i=0; i<Joints.Length; i++) {
-			Vector3 position = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 0), MFNN.GetOutput(start + i*JointDimOut + 1), MFNN.GetOutput(start + i*JointDimOut + 2));
-			Vector3 forward = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 3), MFNN.GetOutput(start + i*JointDimOut + 4), MFNN.GetOutput(start + i*JointDimOut + 5)).normalized;
-			Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized;
-			Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11));
+			Vector3 position = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 0), MFNN.GetOutput(start + i*JointDimOut + 1), MFNN.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
+			Vector3 forward = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 3), MFNN.GetOutput(start + i*JointDimOut + 4), MFNN.GetOutput(start + i*JointDimOut + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
+			Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
+			Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11)).GetRelativeDirectionFrom(currentRoot);
 
-			//Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity / Framerate, position, 0.5f).GetRelativePositionFrom(currentRoot);
-			Positions[i] = Vector3.Lerp(Positions[i] + velocity.GetRelativeDirectionFrom(currentRoot) / Framerate, position.GetRelativePositionFrom(currentRoot), 0.5f);
-			Forwards[i] = forward.GetRelativeDirectionFrom(currentRoot);
-			Ups[i] = up.GetRelativeDirectionFrom(currentRoot);
-			Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
+			Positions[i] = Vector3.Lerp(Positions[i] + velocity / Framerate, position, 0.5f);
+			Forwards[i] = forward;
+			Ups[i] = up;
+			Velocities[i] = velocity;
 		}
 		start += JointDimOut*Joints.Length;
 		

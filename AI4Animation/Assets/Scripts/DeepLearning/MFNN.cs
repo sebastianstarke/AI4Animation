@@ -89,21 +89,6 @@ public class MFNN {
 		}
 	}
 
-	public void Test() {
-		for(int i=0; i<XDim; i++) {
-			Debug.Log("X Mean " + i +": " + GetValue(Network, 0, i, 0));
-		}
-		for(int i=0; i<XDim; i++) {
-			Debug.Log("X Std " + i +": " + GetValue(Network, 1, i, 0));
-		}
-		for(int i=0; i<YDim; i++) {
-			Debug.Log("Y Mean " + i +": " + GetValue(Network, 2, i, 0));
-		}
-		for(int i=0; i<YDim; i++) {
-			Debug.Log("Y Std " + i +": " + GetValue(Network, 3, i, 0));
-		}
-	}
-
 	private void SetupMatrix(int index) {
 		NetworkParameters.FloatMatrix matrix = Parameters.GetMatrix(index);
 		for(int i=0; i<matrix.Rows; i++) {
