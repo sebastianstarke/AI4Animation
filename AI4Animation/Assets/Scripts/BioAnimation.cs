@@ -42,6 +42,11 @@ public class BioAnimation : MonoBehaviour {
 	private Vector3[] Forwards = new Vector3[0];
 	private Vector3[] Ups = new Vector3[0];
 	private Vector3[] Velocities = new Vector3[0];
+
+	private List<Vector3>[] PastPositions = new List<Vector3>[0];
+	private List<Vector3>[] PastForwards = new List<Vector3>[0];
+	private List<Vector3>[] PastUps = new List<Vector3>[0];
+	private List<Vector3>[] PastVelocities = new List<Vector3>[0];
 	
 	//Trajectory for 60 Hz framerate
 	private const int Points = 111;
@@ -76,6 +81,24 @@ public class BioAnimation : MonoBehaviour {
 			Ups[i] = Joints[i].up;
 			Velocities[i] = Vector3.zero;
 		}
+		//
+		PastPositions = new List<Vector3>[Joints.Length];
+		PastForwards = new List<Vector3>[Joints.Length];
+		PastUps = new List<Vector3>[Joints.Length];
+		PastVelocities = new List<Vector3>[Joints.Length];
+		for(int i=0; i<Joints.Length; i++) {
+			PastPositions[i] = new List<Vector3>();
+			PastForwards[i] = new List<Vector3>();
+			PastUps[i] = new List<Vector3>();
+			PastVelocities[i] = new List<Vector3>();
+			for(int j=0; j<60; j++) {
+				PastPositions[i].Add(Positions[i]);
+				PastForwards[i].Add(Forwards[i]);
+				PastUps[i].Add(Ups[i]);
+				PastVelocities[i].Add(Velocities[i]);
+			}
+		}
+		//
 		if(MFNN.Parameters == null) {
 			Debug.Log("No parameters loaded.");
 			return;
@@ -367,6 +390,18 @@ public class BioAnimation : MonoBehaviour {
 		}
 		*/
 
+		//Update Previous Posture
+		for(int i=0; i<Joints.Length; i++) {
+			PastPositions[i].RemoveAt(0);
+			PastPositions[i].Add(Positions[i]);
+			PastForwards[i].RemoveAt(0);
+			PastForwards[i].Add(Forwards[i]);
+			PastUps[i].RemoveAt(0);
+			PastUps[i].Add(Ups[i]);
+			PastVelocities[i].RemoveAt(0);
+			PastVelocities[i].Add(Velocities[i]);
+		}
+
 		//Compute Posture
 		for(int i=0; i<Joints.Length; i++) {
 			Vector3 position = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 0), MFNN.GetOutput(start + i*JointDimOut + 1), MFNN.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
@@ -381,7 +416,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		start += JointDimOut*Joints.Length;
 		
-		//Update Posture
+		//Assign Posture
 		transform.position = nextRoot.GetPosition();
 		transform.rotation = nextRoot.GetRotation();
 		for(int i=0; i<Joints.Length; i++) {
@@ -515,10 +550,18 @@ public class BioAnimation : MonoBehaviour {
 				Trajectory.Draw(10);
 			}
 		}
-		
-		if(!Application.isPlaying) {
-			Character.FetchTransformations(transform);
+
+		if(Application.isPlaying) {
+			for(int i=0; i<60; i+=10) {
+				for(int j=0; j<Character.Hierarchy.Length; j++) {
+					Matrix4x4 mat = Matrix4x4.TRS(PastPositions[j][i], Quaternion.LookRotation(PastForwards[j][i], PastUps[j][i]), Vector3.one);
+					Character.Hierarchy[j].SetTransformation(mat);
+				}
+				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/60f));
+			}
 		}
+		
+		Character.FetchTransformations(transform);
 		Character.Draw();
 
 		if(ShowVelocities) {

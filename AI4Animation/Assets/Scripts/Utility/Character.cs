@@ -325,10 +325,10 @@ public class Character {
 		if(DrawTransforms) {
 			Action<Segment> recursion = null;
 			recursion = new Action<Segment>((segment) => {
-				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
-				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
-				UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
-				//UltiDraw.DrawTranslateGizmo(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetRotation(), 0.075f);
+				//UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.forward), 0.75f, 0.005f, 0.025f, Color.blue);
+				//UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.up), 0.75f, 0.005f, 0.025f, Color.green);
+				//UltiDraw.DrawArrow(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetPosition() + 0.05f * (segment.GetTransformation().GetRotation() * Vector3.right), 0.75f, 0.005f, 0.025f, Color.red);
+				UltiDraw.DrawTranslateGizmo(segment.GetTransformation().GetPosition(), segment.GetTransformation().GetRotation(), 0.05f);
 				for(int i=0; i<segment.GetChildCount(); i++) {
 					recursion(segment.GetChild(Hierarchy, i));
 				}
@@ -377,9 +377,6 @@ public class Character {
 					BoneColor = EditorGUILayout.ColorField("Bone Color", BoneColor);
 					DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", DrawSkeleton);
 					DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", DrawTransforms);
-					//if(Utility.GUIButton("Clear", UltiDraw.DarkRed, UltiDraw.White)) {
-					//	Utility.Clear(ref Hierarchy);
-					//}
 					if(root == null) {
 						if(Hierarchy.Length == 0) {
 							EditorGUILayout.HelpBox("No skeleton available.", MessageType.Warning);
