@@ -231,6 +231,7 @@ public class BioAnimation : MonoBehaviour {
 		int start = 0;
 		//Input Trajectory Positions / Directions / Velocities / Styles
 		for(int i=0; i<PointSamples; i++) {
+			//Debug.Log("Trajectory sample " + i + " starts at " + (start + i*TrajectoryDimIn));
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
@@ -240,7 +241,7 @@ public class BioAnimation : MonoBehaviour {
 			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			MFNN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-			for(int j=0; j<GetSample(i).Styles.Length; j++) {
+			for(int j=0; j<Controller.Styles.Length; j++) {
 				MFNN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
 		}
@@ -251,6 +252,7 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Previous Bone Positions / Velocities
 		for(int i=0; i<Joints.Length; i++) {
+			//Debug.Log("Joint " + Joints[i].name + " starts at " + (start + i*JointDimIn));
 			Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 			Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 			Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
@@ -313,8 +315,8 @@ public class BioAnimation : MonoBehaviour {
 		Vector3 translationalOffset = new Vector3(MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 0), 0f, MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 1));
 		float rotationalOffset = MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 2);
 
-		translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
-		rotationalOffset *= Utility.Exponential01(Mathf.Abs(rotationalOffset) / 0.01f);
+		//translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
+		//rotationalOffset *= Utility.Exponential01(Mathf.Abs(rotationalOffset) / 0.01f);
 		
 		Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 		Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rotationalOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());

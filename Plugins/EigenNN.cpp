@@ -72,6 +72,13 @@ extern "C" {
         }
     }
 
+    void Sigmoid(MatrixXf* m) {
+        int rows = (*m).rows();
+        for(int i=0; i<rows; i++) {
+            (*m)(i, 0) = 1.0f / (1.0f + std::exp(-(*m)(i,0)));
+        }
+    }
+
     void TanH(MatrixXf* m) {
         int rows = (*m).rows();
         for(int i=0; i<rows; i++) {
@@ -91,19 +98,7 @@ extern "C" {
         }
     }
 
-    void Clear(MatrixXf* m) {
-        int rows = (*m).rows();
-        int cols = (*m).cols();
-        *m = (*m).Zero(rows, cols);
-    }
-
-    void Performance(int rows, int cols, int iterations) {
-        //float value = 10.0f;
-        MatrixXf a = MatrixXf(rows, cols);
-        MatrixXf b = MatrixXf(rows, cols);
-        MatrixXf c = MatrixXf(rows, cols);
-        for(int i=0; i<iterations; i++) {
-            c = a * b;
-        }
+    void SetZero(MatrixXf* m) {
+        *m = (*m).Zero((*m).rows(), (*m).cols());
     }
 }

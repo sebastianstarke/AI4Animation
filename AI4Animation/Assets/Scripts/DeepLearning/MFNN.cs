@@ -34,35 +34,35 @@ public class MFNN {
 
 	private List<IntPtr> Ptrs;
 
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern IntPtr Create(int rows, int cols);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern IntPtr Delete(IntPtr m);
-	[DllImport("Eigen")]
-    private static extern void Clear(IntPtr m);
-    [DllImport("Eigen")]
+	[DllImport("EigenNN")]
+    private static extern void SetZero(IntPtr m);
+    [DllImport("EigenNN")]
     private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void Sub(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void Multiply(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void Scale(IntPtr lhs, float value, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void PointwiseMultiply(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void PointwiseDivide(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void SetValue(IntPtr m, int row, int col, float value);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern float GetValue(IntPtr m, int row, int col);
-	[DllImport("Eigen")]
+	[DllImport("EigenNN")]
     private static extern void Layer(IntPtr x, IntPtr y, IntPtr W, IntPtr b);
-	[DllImport("Eigen")]
+	[DllImport("EigenNN")]
     private static extern void Blend(IntPtr m, IntPtr W, float w, IntPtr result);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void ELU(IntPtr m);
-    [DllImport("Eigen")]
+    [DllImport("EigenNN")]
     private static extern void SoftMax(IntPtr m);
 
 	public MFNN() {
@@ -178,8 +178,8 @@ public class MFNN {
 		Layer(CP, CP, BW2, Bb2); SoftMax(CP);
 
         //Control Points
-		Clear(NNW0); Clear(NNW1); Clear(NNW2);
-		Clear(NNb0); Clear(NNb1); Clear(NNb2);
+		SetZero(NNW0); SetZero(NNW1); SetZero(NNW2);
+		SetZero(NNb0); SetZero(NNb1); SetZero(NNb2);
 		for(int i=0; i<YDimBlend; i++) {
 			Blend(NNW0, M[6*i + 0], GetValue(CP, i, 0), NNW0);
 			Blend(NNb0, M[6*i + 1], GetValue(CP, i, 0), NNb0);

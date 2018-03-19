@@ -1,1 +1,1 @@
-g++ -Wall -I ../../Eigen -fPIC -shared -O2 -o lib<PLUGIN>.so <FILE>.cpp
+g++ -Wall -I ../../Eigen -fPIC -shared -O2 -o libEigenNN.so EigenNN.cpp
