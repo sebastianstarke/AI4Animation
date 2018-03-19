@@ -670,10 +670,10 @@ public class BioAnimation : MonoBehaviour {
 						Target.MotionEditing = EditorGUILayout.Toggle("Motion Editing", Target.MotionEditing);
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Expand(ref Target.IKSolvers);
+							Arrays.Expand(ref Target.IKSolvers);
 						}
 						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Shrink(ref Target.IKSolvers);
+							Arrays.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
 						for(int i=0; i<Target.IKSolvers.Length; i++) {

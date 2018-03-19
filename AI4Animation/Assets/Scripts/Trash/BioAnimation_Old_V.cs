@@ -151,7 +151,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetDirection(Vector3.Lerp(Trajectory.Points[i].GetDirection(), TargetDirection, scale_dir));
 
-				Trajectory.Points[i].SetSpeed(TargetVelocity.magnitude); //Set Desired Speed
+				//Trajectory.Points[i].SetSpeed(TargetVelocity.magnitude); //Set Desired Speed
 				
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Trajectory.Points[RootPointIndex].Styles[j];
@@ -171,7 +171,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
+				//Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
@@ -181,25 +181,20 @@ public class BioAnimation_Old_V : MonoBehaviour {
 		if(MFNN.Parameters != null) {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref currentRoot,
-				new Vector3(currentRoot.GetPosition().x, 0f, currentRoot.GetPosition().z)
-			);
-			//
+			currentRoot[1,3] = 0f; //Fix for flat terrain
 
 			int start = 0;
 			//Input Trajectory Positions / Directions
 			for(int i=0; i<PointSamples; i++) {
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
-				float vel = GetSample(i).GetSpeed();
+				//float vel = GetSample(i).GetSpeed();
 				MFNN.SetInput(start + i*8 + 0, pos.x);
 				MFNN.SetInput(start + i*8 + 1, 0f); //pos y
 				MFNN.SetInput(start + i*8 + 2, pos.z);
 				MFNN.SetInput(start + i*8 + 3, dir.x);
 				MFNN.SetInput(start + i*8 + 4, dir.z);
-				MFNN.SetInput(start + i*8 + 5, vel);
+				//MFNN.SetInput(start + i*8 + 5, vel);
 				MFNN.SetInput(start + i*8 + 6, 0f); //left height
 				MFNN.SetInput(start + i*8 + 7, 0f); //right height
 			}
@@ -216,12 +211,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 			//Input Previous Bone Positions / Velocities
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref previousRoot,
-				new Vector3(previousRoot.GetPosition().x, 0f, previousRoot.GetPosition().z)
-			);
-			//
+			previousRoot[1,3] = 0f; //Fix for flat terrain
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
@@ -250,7 +240,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 			for(int i=0; i<RootPointIndex; i++) {
 				Trajectory.Points[i].SetPosition(Trajectory.Points[i+1].GetPosition());
 				Trajectory.Points[i].SetDirection(Trajectory.Points[i+1].GetDirection());
-				Trajectory.Points[i].SetSpeed(Trajectory.Points[i+1].GetSpeed());
+				//Trajectory.Points[i].SetSpeed(Trajectory.Points[i+1].GetSpeed());
 				Trajectory.Points[i].SetLeftsample(Trajectory.Points[i+1].GetLeftSample());
 				Trajectory.Points[i].SetRightSample(Trajectory.Points[i+1].GetRightSample());
 				Trajectory.Points[i].SetSlope(Trajectory.Points[i+1].GetSlope());
@@ -271,12 +261,7 @@ public class BioAnimation_Old_V : MonoBehaviour {
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref nextRoot,
-				new Vector3(nextRoot.GetPosition().x, 0f, nextRoot.GetPosition().z)
-			);
-			//
+			nextRoot[1,3] = 0f; //Fix for flat terrain
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -332,13 +317,13 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
 				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
+				//Trajectory.Points[i].SetSpeed((1f-factor)*prev.GetSpeed() + factor*next.GetSpeed());
 				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
 				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
 				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
 			}
 
-			Trajectory.Points[RootPointIndex].SetSpeed((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Root Velocity
+			//Trajectory.Points[RootPointIndex].SetSpeed((Trajectory.GetLast().GetPosition() - transform.position).magnitude); //Correct Root Velocity
 
 			//Compute Posture
 			for(int i=0; i<Joints.Length; i++) {
@@ -611,10 +596,10 @@ public class BioAnimation_Old_V : MonoBehaviour {
 
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Expand(ref Target.IKSolvers);
+							Arrays.Expand(ref Target.IKSolvers);
 						}
 						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Shrink(ref Target.IKSolvers);
+							Arrays.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
 						Target.MotionEditing = EditorGUILayout.Toggle("Motion Editing", Target.MotionEditing);

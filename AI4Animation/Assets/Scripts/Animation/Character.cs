@@ -191,7 +191,7 @@ public class Character {
 	}
 
 	public void BuildHierarchy(Transform root) {
-		Utility.Clear(ref Hierarchy);
+		Arrays.Clear(ref Hierarchy);
 		Action<Transform, Segment> recursion = null;
 		recursion = new Action<Transform, Segment>((transform, parent) => {
 			Segment segment = AddSegment(transform.name, parent);
@@ -203,7 +203,7 @@ public class Character {
 	}
 
 	public void BuildHierarchy(Transform root, string[] names) {
-		Utility.Clear(ref Hierarchy);
+		Arrays.Clear(ref Hierarchy);
 		Action<Transform, Segment> recursion = null;
 		recursion = new Action<Transform, Segment>((transform, parent) => {
 			Segment segment = Array.Exists(names, x => x == transform.name) ? AddSegment(transform.name, parent) : parent;
@@ -215,11 +215,11 @@ public class Character {
 	}
 
 	public void BuildHierarchy(string[] names, string[] parents) {
-		Utility.Clear(ref Hierarchy);
+		Arrays.Clear(ref Hierarchy);
 		for(int i=0; i<names.Length; i++) {
 			if(FindSegment(names[i]) != null) {
 				Debug.Log("Failed building hierarchy because there were multiple segments with name " + names[i] + ".");
-				Utility.Clear(ref Hierarchy);
+				Arrays.Clear(ref Hierarchy);
 				return;
 			}
 			AddSegment(names[i], FindSegment(parents[i]));
@@ -228,7 +228,7 @@ public class Character {
 
 	private Segment AddSegment(string name, Segment parent) {
 		Segment segment = new Segment(name, parent, Hierarchy.Length);
-		Utility.Add(ref Hierarchy, segment);
+		Arrays.Add(ref Hierarchy, segment);
 		return segment;
 	}
 
@@ -245,7 +245,7 @@ public class Character {
 			Index = index;
 			if(parent != null) {
 				Parent = parent.Index;
-				Utility.Add(ref parent.Childs, index);
+				Arrays.Add(ref parent.Childs, index);
 			}
 			Childs = new int[0];
 			Transformation = Matrix4x4.identity;
@@ -406,11 +406,11 @@ public class Character {
 			if(Utility.GUIButton("Bone", segment == null ? UltiDraw.White : UltiDraw.DarkGrey, segment == null ? UltiDraw.DarkGrey : UltiDraw.White)) {
 				if(segment == null) {
 					string[] names = GetBoneNames();
-					Utility.Add(ref names, transform.name);
+					Arrays.Add(ref names, transform.name);
 					BuildHierarchy(root, names);
 				} else {
 					string[] names = GetBoneNames();
-					Utility.Remove(ref names, transform.name);
+					Arrays.Remove(ref names, transform.name);
 					BuildHierarchy(root, names);
 				}
 			}

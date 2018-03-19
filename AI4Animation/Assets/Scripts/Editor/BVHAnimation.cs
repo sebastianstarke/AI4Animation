@@ -1690,15 +1690,15 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void AddStyle(string name = "Style") {
-			Utility.Add(ref Styles, new BVHStyle(name, Animation.GetTotalFrames()));
+			Arrays.Add(ref Styles, new BVHStyle(name, Animation.GetTotalFrames()));
 		}
 
 		public void RemoveStyle() {
-			Utility.Shrink(ref Styles);
+			Arrays.Shrink(ref Styles);
 		}
 
 		public void RemoveStyle(string name) {
-			Utility.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
+			Arrays.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
 		}
 
 		public BVHStyle GetStyle(string name) {

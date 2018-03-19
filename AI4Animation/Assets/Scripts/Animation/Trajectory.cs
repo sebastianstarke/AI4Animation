@@ -65,7 +65,6 @@ public class Trajectory {
 		[SerializeField] private Vector3 Velocity;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
-		[SerializeField] private float Speed;
 		[SerializeField] private float Slope;
 		public float[] Styles = new float[0];
 
@@ -75,7 +74,6 @@ public class Trajectory {
 			Velocity = Vector3.zero;
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
-			Speed = 0f;
 			Slope = 0f;
 			Styles = new float[styles];
 		}
@@ -97,7 +95,7 @@ public class Trajectory {
 		}
 
 		public void SetPosition(Vector3 position) {
-			Transformations.SetPosition(ref Transformation, position);
+			MatrixExtensions.SetPosition(ref Transformation, position);
 		}
 
 		public Vector3 GetPosition() {
@@ -105,7 +103,7 @@ public class Trajectory {
 		}
 
 		public void SetRotation(Quaternion rotation) {
-			Transformations.SetRotation(ref Transformation, rotation);
+			MatrixExtensions.SetRotation(ref Transformation, rotation);
 		}
 
 		public Quaternion GetRotation() {
@@ -142,14 +140,6 @@ public class Trajectory {
 
 		public Vector3 GetRightSample() {
 			return RightSample;
-		}
-
-		public void SetSpeed(float speed) {
-			Speed = speed;
-		}
-
-		public float GetSpeed() {
-			return Speed;
 		}
 
 		public void SetSlope(float slope) {

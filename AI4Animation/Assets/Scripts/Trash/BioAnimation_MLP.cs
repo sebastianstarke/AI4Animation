@@ -190,12 +190,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 		if(MLP.Parameters != null) {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref currentRoot,
-				new Vector3(currentRoot.GetPosition().x, 0f, currentRoot.GetPosition().z)
-			);
-			//
+			currentRoot[1,3] = 0f; //Fix for flat terrain
 
 			int start = 0;
 			//Input Trajectory Positions / Directions / Heights / Styles
@@ -217,12 +212,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 			//Input Previous Bone Positions / Velocities
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref previousRoot,
-				new Vector3(previousRoot.GetPosition().x, 0f, previousRoot.GetPosition().z)
-			);
-			//
+			previousRoot[1,3] = 0f; //Fix for flat terrain
 			for(int i=0; i<Joints.Length; i++) {
 				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
@@ -270,12 +260,7 @@ public class BioAnimation_MLP : MonoBehaviour {
 			Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(angularOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			//Fix for flat terrain
-			Transformations.SetPosition(
-				ref nextRoot,
-				new Vector3(nextRoot.GetPosition().x, 0f, nextRoot.GetPosition().z)
-			);
-			//
+			nextRoot[1,3] = 0f; //Fix for flat terrain
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -599,10 +584,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Expand(ref Target.IKSolvers);
+							Arrays.Expand(ref Target.IKSolvers);
 						}
 						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Utility.Shrink(ref Target.IKSolvers);
+							Arrays.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
 						Target.SolveIK = EditorGUILayout.Toggle("Motion Editing", Target.SolveIK);

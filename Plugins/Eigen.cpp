@@ -13,7 +13,7 @@ extern "C" {
         return new MatrixXf(rows, cols);
     }
 
-    void Destroy(MatrixXf* m) {
+    void Delete(MatrixXf* m) {
         delete m;
     }
 
@@ -41,18 +41,25 @@ extern "C" {
         return (*m)(row, col);
     }
 
-    void PointwiseMultiply(MatrixXf* m, MatrixXf* value) {
-        *m = (*m).cwiseProduct(*value);
+    void PointwiseMultiply(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+        *result = (*lhs).cwiseProduct(*rhs);
     }
 
-    void PointwiseDivide(MatrixXf* m, MatrixXf* value) {
-        *m = (*m).cwiseQuotient(*value);
+    void PointwiseDivide(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+        *result = (*lhs).cwiseQuotient(*rhs);
     }
 
     void ELU(MatrixXf* m) {
         int rows = (*m).rows();
         for(int i=0; i<rows; i++) {
             (*m)(i, 0) = std::max((*m)(i, 0), 0.0f) + std::exp(std::min((*m)(i, 0), 0.0f)) - 1.0f;
+        }
+    }
+
+    void TanH(MatrixXf* m) {
+        int rows = (*m).rows();
+        for(int i=0; i<rows; i++) {
+            (*m)(i, 0) = std::tanh((*m)(i, 0));
         }
     }
 
@@ -83,47 +90,3 @@ extern "C" {
         }
     }
 }
-
-
-
-
-
-
-
-/*
-//PFNN Class
-class Test {
-    int Value;
-
-    public : void Update(int value) {
-        Value += value;
-    }
-
-    public : int Get() {
-        return Value;
-    }
-
-    //Initialise
-
-    //Predict
-};
-*/
-
-/*
-Test* Create() {
-    Test* obj = new Test();
-    return obj;
-}
-
-void Destroy(Test* obj) {
-    delete obj;
-}
-
-void UpdateValue(Test* obj, int value) {
-    obj->Update(value);
-}
-
-int GetValue(Test* obj) {
-    return obj->Get();
-}
-*/

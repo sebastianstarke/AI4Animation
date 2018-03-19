@@ -4,10 +4,10 @@ using System;
 
 public class EigenTest : MonoBehaviour {
 
+    public int dim = 100;
+    public int iter = 100;
+
     void Start() {
-        /*
-        int dim = 100;
-        int iter = 1;
 
         System.DateTime t1 = Utility.GetTimestamp();
         IntPtr A = Create(dim, dim);
@@ -16,21 +16,16 @@ public class EigenTest : MonoBehaviour {
         for(int i=0; i<iter; i++) {
             Multiply(A, B, C);
         }
-        Debug.Log("Time Eigen C# / C++: " + Utility.GetElapsedTime(t1) + "s");
-
-        System.DateTime t2 = Utility.GetTimestamp();
-        Matrix a = new Matrix(dim, dim);
-        Matrix b = new Matrix(dim, dim);        for(int i=0; i<iter; i++) {
-            Matrix c = a * b;
-        }
-
-        Debug.Log("Time Matrix C#: " + Utility.GetElapsedTime(t2) + "s");
+        Debug.Log("Time Eigen C#/C++: " + Utility.GetElapsedTime(t1) + "s");
 
         System.DateTime t3 = Utility.GetTimestamp();
         Performance(dim, dim, iter);
         Debug.Log("Time Eigen C++: " + Utility.GetElapsedTime(t3) + "s");
-        */
-        
+
+        Delete(A);
+        Delete(B);
+        Delete(C);
+
         /*
         System.DateTime t1 = Utility.GetTimestamp();
         IntPtr a = Create(10000, 10000);
@@ -82,51 +77,3 @@ public class EigenTest : MonoBehaviour {
     private static extern void Performance(int rows, int cols, int iterations);
 
 }
-
-
-
-
-
-/*
-public class Test {
-    private IntPtr Ptr = IntPtr.Zero;
-    public Test() {
-        Ptr = Create();
-    }
-
-    ~Test() {
-        Destroy();
-    }
-    
-    public void Destroy() {
-        Destroy(Ptr);
-    }
-    
-    public void Update(int value) {
-        UpdateValue(Ptr, value);
-    }
-
-    public int Get() {
-        return GetValue(Ptr);
-    }
-
-    [DllImport("Eigen")]
-    private static extern IntPtr Create();
-    [DllImport("Eigen")]
-    private static extern void Destroy(IntPtr obj);
-    [DllImport("Eigen")]
-    private static extern void UpdateValue(IntPtr obj, int value);
-    [DllImport("Eigen")]
-    private static extern int GetValue(IntPtr obj);
-}
-*/
-
-//Test test = new Test();
-/*
-IntPtr A = GetMatrix(4,4);
-SetMatrixValue(A, 0, 0, UnityEngine.Random.value);
-IntPtr B = GetMatrix(4,4);
-SetMatrixValue(B, 0, 0, UnityEngine.Random.value);
-IntPtr C = Multiply(A,B);
-Debug.Log(GetMatrixValue(C, 0, 0));
-*/
