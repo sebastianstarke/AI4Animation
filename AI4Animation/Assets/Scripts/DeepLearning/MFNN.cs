@@ -63,6 +63,10 @@ public class MFNN {
     [DllImport("EigenNN")]
     private static extern void ELU(IntPtr m);
     [DllImport("EigenNN")]
+    private static extern void Sigmoid(IntPtr m);
+    [DllImport("EigenNN")]
+    private static extern void TanH(IntPtr m);
+    [DllImport("EigenNN")]
     private static extern void SoftMax(IntPtr m);
 
 	public MFNN() {

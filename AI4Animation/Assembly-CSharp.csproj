@@ -117,6 +117,7 @@
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\EigenNN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\MFNN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NetworkParameters.cs" />
@@ -126,7 +127,7 @@
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
      <Compile Include="Assets\Scripts\Libraries\Arrays.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix.cs" />
-     <Compile Include="Assets\Scripts\Libraries\MatrixExtensions.cs" />
+     <Compile Include="Assets\Scripts\Libraries\Matrix4x4Extensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\QuaternionExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\TransformExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Utility.cs" />

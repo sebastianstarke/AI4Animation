@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class MatrixExtensions {
+public static class Matrix4x4Extensions {
 
 	public static void SetPosition(ref Matrix4x4 matrix, Vector3 position) {
 		matrix[0,3] = position.x;

@@ -95,7 +95,7 @@ public class Trajectory {
 		}
 
 		public void SetPosition(Vector3 position) {
-			MatrixExtensions.SetPosition(ref Transformation, position);
+			Matrix4x4Extensions.SetPosition(ref Transformation, position);
 		}
 
 		public Vector3 GetPosition() {
@@ -103,7 +103,7 @@ public class Trajectory {
 		}
 
 		public void SetRotation(Quaternion rotation) {
-			MatrixExtensions.SetRotation(ref Transformation, rotation);
+			Matrix4x4Extensions.SetRotation(ref Transformation, rotation);
 		}
 
 		public Quaternion GetRotation() {
