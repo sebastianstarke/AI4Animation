@@ -22,12 +22,15 @@ public class MFNN {
 	public int[] ControlNeurons = new int[0];
 
 	public NetworkParameters Parameters;
-	
-	/*
+
 	private IntPtr Xmean, Xstd, Ymean, Ystd;
 	private IntPtr BW0, BW1, BW2, Bb0, Bb1, Bb2;
 	private IntPtr[] M;
 	private IntPtr X, Y;
+
+	private IntPtr CN, CP;
+	private IntPtr NNW0, NNW1, NNW2, NNb0, NNb1, NNb2;
+	private IntPtr Temp;
 
 	private List<IntPtr> Ptrs;
 
@@ -35,6 +38,8 @@ public class MFNN {
     private static extern IntPtr Create(int rows, int cols);
     [DllImport("Eigen")]
     private static extern IntPtr Delete(IntPtr m);
+	[DllImport("Eigen")]
+    private static extern void Clear(IntPtr m);
     [DllImport("Eigen")]
     private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("Eigen")]
@@ -51,6 +56,10 @@ public class MFNN {
     private static extern void SetValue(IntPtr m, int row, int col, float value);
     [DllImport("Eigen")]
     private static extern float GetValue(IntPtr m, int row, int col);
+	[DllImport("Eigen")]
+    private static extern void Layer(IntPtr x, IntPtr y, IntPtr W, IntPtr b);
+	[DllImport("Eigen")]
+    private static extern void Blend(IntPtr m, IntPtr W, float w, IntPtr result);
     [DllImport("Eigen")]
     private static extern void ELU(IntPtr m);
     [DllImport("Eigen")]
@@ -120,6 +129,16 @@ public class MFNN {
 		Ptrs.Add(X);
 		Y = Create(YDim, 1);
 		Ptrs.Add(Y);
+
+		CN = Create(ControlNeurons.Length, 1); Ptrs.Add(CN);
+		CP = Create(YDimBlend, 1); Ptrs.Add(CP);
+		NNW0 = Create(HDim, XDim); Ptrs.Add(NNW0);
+		NNW1 = Create(HDim, HDim); Ptrs.Add(NNW1);
+		NNW2 = Create(YDim, HDim); Ptrs.Add(NNW2);
+		NNb0 = Create(HDim, 1); Ptrs.Add(NNb0);
+		NNb1 = Create(HDim, 1); Ptrs.Add(NNb1);
+		NNb2 = Create(YDim, 1); Ptrs.Add(NNb2);
+		Temp = Create(1, 1); Ptrs.Add(Temp);
 	}
 
 	private IntPtr Generate(NetworkParameters.FloatMatrix matrix) {
@@ -146,17 +165,6 @@ public class MFNN {
 	}
 
 	public void Predict() {
-		//Setup
-		IntPtr CN = Create(ControlNeurons.Length, 1);
-		IntPtr CP = Create(YDimBlend, 1);
-		IntPtr NNW0 = Create(HDim, XDim);
-		IntPtr NNW1 = Create(HDim, HDim);
-		IntPtr NNW2 = Create(YDim, HDim);
-		IntPtr NNb0 = Create(HDim, 1);
-		IntPtr NNb1 = Create(HDim, 1);
-		IntPtr NNb2 = Create(YDim, 1);
-		IntPtr tmp = Create(1, 1);
-
         //Normalise input
 		Sub(X, Xmean, Y);
 		PointwiseDivide(Y, Xstd, Y);
@@ -165,53 +173,33 @@ public class MFNN {
         for(int i=0; i<ControlNeurons.Length; i++) {
             SetValue(CN, i, 0, GetValue(Y, ControlNeurons[i], 0));
         }
-        Multiply(BW0, CN, CP); Add(CP, Bb0, CP); ELU(CP);
-        Multiply(BW1, CP, CP); Add(CP, Bb1, CP); ELU(CP);
-        Multiply(BW2, CP, CP); Add(CP, Bb2, CP); SoftMax(CP);
+		Layer(CN, CP, BW0, Bb0); ELU(CP);
+		Layer(CP, CP, BW1, Bb1); ELU(CP);
+		Layer(CP, CP, BW2, Bb2); SoftMax(CP);
 
         //Control Points
-		for(int i=0; i<4; i++) {
-			Scale(M[6*i + 0], GetValue(CP, i, 0), tmp);
-			Add(NNW0, tmp, NNW0);
-
-			Scale(M[6*i + 1], GetValue(CP, i, 0), tmp);
-			Add(NNb0, tmp, NNb0);
-
-			Scale(M[6*i + 2], GetValue(CP, i, 0), tmp);
-			Add(NNW1, tmp, NNW1);
-
-			Scale(M[6*i + 3], GetValue(CP, i, 0), tmp);
-			Add(NNb1, tmp, NNb1);
-
-			Scale(M[6*i + 4], GetValue(CP, i, 0), tmp);
-			Add(NNW2, tmp, NNW2);
-			
-			Scale(M[6*i + 5], GetValue(CP, i, 0), tmp);
-			Add(NNb2, tmp, NNb2);
+		Clear(NNW0); Clear(NNW1); Clear(NNW2);
+		Clear(NNb0); Clear(NNb1); Clear(NNb2);
+		for(int i=0; i<YDimBlend; i++) {
+			Blend(NNW0, M[6*i + 0], GetValue(CP, i, 0), NNW0);
+			Blend(NNb0, M[6*i + 1], GetValue(CP, i, 0), NNb0);
+			Blend(NNW1, M[6*i + 2], GetValue(CP, i, 0), NNW1);
+			Blend(NNb1, M[6*i + 3], GetValue(CP, i, 0), NNb1);
+			Blend(NNW2, M[6*i + 4], GetValue(CP, i, 0), NNW2);
+			Blend(NNb2, M[6*i + 5], GetValue(CP, i, 0), NNb2);
 		}
 
         //Process Mode-Functioned Network
-		Multiply(NNW0, Y, Y); Add(Y, NNb0, Y); ELU(Y);
-		Multiply(NNW1, Y, Y); Add(Y, NNb1, Y); ELU(Y);
-		Multiply(NNW2, Y, Y); Add(Y, NNb2, Y);
+		Layer(Y, Y, NNW0, NNb0); ELU(Y);
+		Layer(Y, Y, NNW1, NNb1); ELU(Y);
+		Layer(Y, Y, NNW2, NNb2);
 
         //Renormalise output
 		PointwiseMultiply(Y, Ystd, Y);
 		Add(Y, Ymean, Y);
-
-		//Cleanup
-		Delete(CN);
-		Delete(CP);
-		Delete(NNW0);
-		Delete(NNW1);
-		Delete(NNW2);
-		Delete(NNb0);
-		Delete(NNb1);
-		Delete(NNb2);
-		Delete(tmp);
 	}
-	*/
-
+	
+	/*
 	private IntPtr Network;
 
     [DllImport("MFNN")]
@@ -330,6 +318,7 @@ public class MFNN {
 		}
 		Predict(Network);
 	}
+	*/
 
 	#if UNITY_EDITOR
 	public void Inspector() {

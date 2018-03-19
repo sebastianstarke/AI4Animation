@@ -10,7 +10,7 @@ using namespace Eigen;
 
 extern "C" {
     MatrixXf* Create(int rows, int cols) {
-        return new MatrixXf(rows, cols);
+        return new MatrixXf(MatrixXf::Zero(rows, cols));
     }
 
     void Delete(MatrixXf* m) {
@@ -49,6 +49,22 @@ extern "C" {
         *result = (*lhs).cwiseQuotient(*rhs);
     }
 
+    void Normalise(MatrixXf* m, MatrixXf* mean, MatrixXf* std, MatrixXf* result) {
+        *result = (*m - *mean).cwiseQuotient(*std);
+    }
+
+    void Renormalise(MatrixXf* m, MatrixXf* mean, MatrixXf* std, MatrixXf* result) {
+        *result = (*m).cwiseProduct(*std) + *mean;
+    }
+
+    void Layer(MatrixXf* x, MatrixXf* y, MatrixXf* W, MatrixXf* b) {
+        *y = *W * *x + *b;
+    }
+
+    void Blend(MatrixXf* m, MatrixXf* W, float w, MatrixXf* result) {
+        *result = *m + *W * w;
+    }
+
     void ELU(MatrixXf* m) {
         int rows = (*m).rows();
         for(int i=0; i<rows; i++) {
@@ -82,6 +98,7 @@ extern "C" {
     }
 
     void Performance(int rows, int cols, int iterations) {
+        //float value = 10.0f;
         MatrixXf a = MatrixXf(rows, cols);
         MatrixXf b = MatrixXf(rows, cols);
         MatrixXf c = MatrixXf(rows, cols);

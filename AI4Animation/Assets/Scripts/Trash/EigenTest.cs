@@ -23,7 +23,7 @@ public class EigenTest : MonoBehaviour {
         Debug.Log("Time Eigen C++: " + Utility.GetElapsedTime(t3) + "s");
 
         Delete(A);
-        Delete(B);
+        //Delete(B);
         Delete(C);
 
         /*
@@ -64,6 +64,8 @@ public class EigenTest : MonoBehaviour {
     private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("Eigen")]
     private static extern void Multiply(IntPtr lhs, IntPtr rhs, IntPtr result);
+    [DllImport("Eigen")]
+    private static extern void Scale(IntPtr lhs, float value, IntPtr result);
     [DllImport("Eigen")]
     private static extern void SetValue(IntPtr m, int row, int col, float value);
     [DllImport("Eigen")]
