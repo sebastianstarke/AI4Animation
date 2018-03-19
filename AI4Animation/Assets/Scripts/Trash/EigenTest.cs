@@ -8,7 +8,7 @@ public class EigenTest : MonoBehaviour {
     public int iter = 100;
 
     void Start() {
-
+        /*
         System.DateTime t1 = Utility.GetTimestamp();
         IntPtr A = Create(dim, dim);
         IntPtr B = Create(dim, dim);
@@ -25,6 +25,7 @@ public class EigenTest : MonoBehaviour {
         Delete(A);
         //Delete(B);
         Delete(C);
+        */
 
         /*
         System.DateTime t1 = Utility.GetTimestamp();
@@ -37,6 +38,12 @@ public class EigenTest : MonoBehaviour {
         SoftMax(ref b);
         Debug.Log("Unity: " + Utility.GetElapsedTime(t2));
         */
+    }
+
+    void Update() {
+        for(int i=0; i<1; i++) {
+		    EigenNN.Tensor t = new EigenNN.Tensor(1000, 1000);
+        }
     }
 
 	private void ELU(ref Matrix m) {

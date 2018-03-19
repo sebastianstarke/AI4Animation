@@ -21,11 +21,11 @@ extern "C" {
         *result = *lhs + *rhs;
     }
 
-    void Sub(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+    void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
         *result = *lhs - *rhs;
     }
 
-    void Multiply(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+    void Product(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
         *result = *lhs * *rhs;
     }
 
@@ -41,11 +41,11 @@ extern "C" {
         return (*m)(row, col);
     }
 
-    void PointwiseMultiply(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+    void PointwiseProduct(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
         *result = (*lhs).cwiseProduct(*rhs);
     }
 
-    void PointwiseDivide(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
+    void PointwiseQuotient(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
         *result = (*lhs).cwiseQuotient(*rhs);
     }
 

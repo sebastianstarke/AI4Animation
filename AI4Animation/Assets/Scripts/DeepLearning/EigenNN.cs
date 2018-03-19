@@ -15,15 +15,15 @@ public class EigenNN {
     [DllImport("EigenNN")]
     private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void Sub(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void Multiply(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
     private static extern void Scale(IntPtr lhs, float value, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void PointwiseMultiply(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void PointwiseDivide(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
     private static extern void SetValue(IntPtr m, int row, int col, float value);
     [DllImport("EigenNN")]
@@ -41,27 +41,42 @@ public class EigenNN {
     [DllImport("EigenNN")]
     private static extern void SoftMax(IntPtr m);
 
-	private List<IntPtr> Ptrs;
+    public static void Add(Tensor lhs, Tensor rhs, Tensor result) {
+        Add(lhs.Ptr, rhs.Ptr, result.Ptr);
+    }
 
-	public EigenNN() {
-		Ptrs = new List<IntPtr>();
-	}
+    public static void Subtract(Tensor lhs, Tensor rhs, Tensor result) {
+        Subtract(lhs.Ptr, rhs.Ptr, result.Ptr);
+    }
 
-	~EigenNN() {
-		for(int i=0; i<Ptrs.Count; i++) {
-			Delete(Ptrs[i]);
-		}
-	}
+    public static void Product(Tensor lhs, Tensor rhs, Tensor result) {
+        Product(lhs.Ptr, rhs.Ptr, result.Ptr);
+    }
 
-	public IntPtr CreateMatrix(int rows, int cols) {
-		IntPtr m = Create(rows, cols);
-		Ptrs.Add(m);
-		return m;
-	}
+    public static void Scale(Tensor lhs, float value, Tensor result) {
+        Scale(lhs.Ptr, value, result.Ptr);
+    }
 
-	public void DeleteMatrix(IntPtr m) {
-		Ptrs.Remove(m);
-		Delete(m);
-	}
+    public class Tensor {
+
+        public IntPtr Ptr;
+        
+        public Tensor(int rows, int cols) {
+            Ptr = EigenNN.Create(rows, cols);
+        }
+
+        ~Tensor() {
+            EigenNN.Delete(Ptr);
+        }
+
+        public void SetValue(int row, int col, float value) {
+            EigenNN.SetValue(Ptr, row, col, value);
+        }
+
+        public float GetValue(int row, int col) {
+            return EigenNN.GetValue(Ptr, row, col);
+        }
+
+    }
 
 }

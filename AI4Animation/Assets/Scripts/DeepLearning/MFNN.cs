@@ -43,19 +43,24 @@ public class MFNN {
     [DllImport("EigenNN")]
     private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void Sub(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void Multiply(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
     private static extern void Scale(IntPtr lhs, float value, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void PointwiseMultiply(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void PointwiseDivide(IntPtr lhs, IntPtr rhs, IntPtr result);
+    private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr result);
     [DllImport("EigenNN")]
     private static extern void SetValue(IntPtr m, int row, int col, float value);
     [DllImport("EigenNN")]
     private static extern float GetValue(IntPtr m, int row, int col);
+
+	[DllImport("EigenNN")]
+    private static extern void Normalise(IntPtr m, IntPtr mean, IntPtr std, IntPtr result);
+	[DllImport("EigenNN")]
+    private static extern void Renormalise(IntPtr m, IntPtr mean, IntPtr std, IntPtr result);
 	[DllImport("EigenNN")]
     private static extern void Layer(IntPtr x, IntPtr y, IntPtr W, IntPtr b);
 	[DllImport("EigenNN")]
@@ -170,9 +175,8 @@ public class MFNN {
 
 	public void Predict() {
         //Normalise input
-		Sub(X, Xmean, Y);
-		PointwiseDivide(Y, Xstd, Y);
-		
+		Normalise(X, Xmean, Xstd, Y);
+
         //Process Blending Network
         for(int i=0; i<ControlNeurons.Length; i++) {
             SetValue(CN, i, 0, GetValue(Y, ControlNeurons[i], 0));
@@ -199,8 +203,7 @@ public class MFNN {
 		Layer(Y, Y, NNW2, NNb2);
 
         //Renormalise output
-		PointwiseMultiply(Y, Ystd, Y);
-		Add(Y, Ymean, Y);
+		Renormalise(Y, Ymean, Ystd, Y);
 	}
 
 	#if UNITY_EDITOR
