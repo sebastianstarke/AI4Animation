@@ -37,42 +37,48 @@ public class MFNN {
     [DllImport("EigenNN")]
     private static extern IntPtr Create(int rows, int cols);
     [DllImport("EigenNN")]
-    private static extern IntPtr Delete(IntPtr m);
-	[DllImport("EigenNN")]
-    private static extern void SetZero(IntPtr m);
-    [DllImport("EigenNN")]
-    private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void Scale(IntPtr lhs, float value, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr result);
-    [DllImport("EigenNN")]
-    private static extern void SetValue(IntPtr m, int row, int col, float value);
-    [DllImport("EigenNN")]
-    private static extern float GetValue(IntPtr m, int row, int col);
+    private static extern IntPtr Delete(IntPtr T);
 
-	[DllImport("EigenNN")]
-    private static extern void Normalise(IntPtr m, IntPtr mean, IntPtr std, IntPtr result);
-	[DllImport("EigenNN")]
-    private static extern void Renormalise(IntPtr m, IntPtr mean, IntPtr std, IntPtr result);
-	[DllImport("EigenNN")]
-    private static extern void Layer(IntPtr x, IntPtr y, IntPtr W, IntPtr b);
-	[DllImport("EigenNN")]
-    private static extern void Blend(IntPtr m, IntPtr W, float w, IntPtr result);
     [DllImport("EigenNN")]
-    private static extern void ELU(IntPtr m);
+    private static extern int GetRows(IntPtr T);
     [DllImport("EigenNN")]
-    private static extern void Sigmoid(IntPtr m);
+    private static extern int GetCols(IntPtr T);
+	[DllImport("EigenNN")]
+    private static extern void SetZero(IntPtr T);
     [DllImport("EigenNN")]
-    private static extern void TanH(IntPtr m);
+    private static extern void SetValue(IntPtr T, int row, int col, float value);
     [DllImport("EigenNN")]
-    private static extern void SoftMax(IntPtr m);
+    private static extern float GetValue(IntPtr T, int row, int col);
+
+    [DllImport("EigenNN")]
+    private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+    [DllImport("EigenNN")]
+    private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+    [DllImport("EigenNN")]
+    private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+    [DllImport("EigenNN")]
+    private static extern void Scale(IntPtr lhs, float value, IntPtr OUT);
+    [DllImport("EigenNN")]
+    private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+    [DllImport("EigenNN")]
+    private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+
+    [DllImport("EigenNN")]
+    private static extern void Normalise(IntPtr IN, IntPtr mean, IntPtr std, IntPtr OUT);
+	[DllImport("EigenNN")]
+    private static extern void Renormalise(IntPtr IN, IntPtr mean, IntPtr std, IntPtr OUT);
+	[DllImport("EigenNN")]
+    private static extern void Layer(IntPtr IN, IntPtr W, IntPtr b, IntPtr OUT);
+	[DllImport("EigenNN")]
+    private static extern void Blend(IntPtr T, IntPtr W, float w);
+    [DllImport("EigenNN")]
+    private static extern void ELU(IntPtr T);
+    [DllImport("EigenNN")]
+    private static extern void Sigmoid(IntPtr T);
+    [DllImport("EigenNN")]
+    private static extern void TanH(IntPtr T);
+    [DllImport("EigenNN")]
+    private static extern void SoftMax(IntPtr T);
 
 	public MFNN() {
 		Ptrs = new List<IntPtr>();
@@ -181,26 +187,26 @@ public class MFNN {
         for(int i=0; i<ControlNeurons.Length; i++) {
             SetValue(CN, i, 0, GetValue(Y, ControlNeurons[i], 0));
         }
-		Layer(CN, CP, BW0, Bb0); ELU(CP);
-		Layer(CP, CP, BW1, Bb1); ELU(CP);
-		Layer(CP, CP, BW2, Bb2); SoftMax(CP);
+		Layer(CN, BW0, Bb0, CP); ELU(CP);
+		Layer(CP, BW1, Bb1, CP); ELU(CP);
+		Layer(CP, BW2, Bb2, CP); SoftMax(CP);
 
         //Control Points
 		SetZero(NNW0); SetZero(NNW1); SetZero(NNW2);
 		SetZero(NNb0); SetZero(NNb1); SetZero(NNb2);
 		for(int i=0; i<YDimBlend; i++) {
-			Blend(NNW0, M[6*i + 0], GetValue(CP, i, 0), NNW0);
-			Blend(NNb0, M[6*i + 1], GetValue(CP, i, 0), NNb0);
-			Blend(NNW1, M[6*i + 2], GetValue(CP, i, 0), NNW1);
-			Blend(NNb1, M[6*i + 3], GetValue(CP, i, 0), NNb1);
-			Blend(NNW2, M[6*i + 4], GetValue(CP, i, 0), NNW2);
-			Blend(NNb2, M[6*i + 5], GetValue(CP, i, 0), NNb2);
+			Blend(NNW0, M[6*i + 0], GetValue(CP, i, 0));
+			Blend(NNb0, M[6*i + 1], GetValue(CP, i, 0));
+			Blend(NNW1, M[6*i + 2], GetValue(CP, i, 0));
+			Blend(NNb1, M[6*i + 3], GetValue(CP, i, 0));
+			Blend(NNW2, M[6*i + 4], GetValue(CP, i, 0));
+			Blend(NNb2, M[6*i + 5], GetValue(CP, i, 0));
 		}
 
         //Process Mode-Functioned Network
-		Layer(Y, Y, NNW0, NNb0); ELU(Y);
-		Layer(Y, Y, NNW1, NNb1); ELU(Y);
-		Layer(Y, Y, NNW2, NNb2);
+		Layer(Y, NNW0, NNb0, Y); ELU(Y);
+		Layer(Y, NNW1, NNb1, Y); ELU(Y);
+		Layer(Y, NNW2, NNb2, Y);
 
         //Renormalise output
 		Renormalise(Y, Ymean, Ystd, Y);

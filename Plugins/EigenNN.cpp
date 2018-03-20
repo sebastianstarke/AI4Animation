@@ -13,100 +13,100 @@ extern "C" {
         return new MatrixXf(MatrixXf::Zero(rows, cols));
     }
 
-    void Delete(MatrixXf* m) {
-        delete m;
+    void Delete(MatrixXf* T) {
+        delete T;
     }
 
-    int GetRows(MatrixXf* m) {
-        return (*m).rows();
+    int GetRows(MatrixXf* T) {
+        return (*T).rows();
     }
 
-    int GetCols(MatrixXf* m) {
-        return (*m).cols();
+    int GetCols(MatrixXf* T) {
+        return (*T).cols();
     }
 
-    void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
-        *result = *lhs + *rhs;
+    void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
+        *OUT = *lhs + *rhs;
     }
 
-    void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
-        *result = *lhs - *rhs;
+    void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
+        *OUT = *lhs - *rhs;
     }
 
-    void Product(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
-        *result = *lhs * *rhs;
+    void Product(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
+        *OUT = *lhs * *rhs;
     }
 
-    void Scale(MatrixXf* lhs, float value, MatrixXf* result) {
-        *result = *lhs * value;
+    void Scale(MatrixXf* lhs, float value, MatrixXf* OUT) {
+        *OUT = *lhs * value;
     }
 
-    void SetValue(MatrixXf* m, int row, int col, float value) {
-        (*m)(row, col) = value;
+    void SetValue(MatrixXf* T, int row, int col, float value) {
+        (*T)(row, col) = value;
     }
 
-    float GetValue(MatrixXf* m, int row, int col) {
-        return (*m)(row, col);
+    float GetValue(MatrixXf* T, int row, int col) {
+        return (*T)(row, col);
     }
 
-    void PointwiseProduct(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
-        *result = (*lhs).cwiseProduct(*rhs);
+    void PointwiseProduct(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
+        *OUT = (*lhs).cwiseProduct(*rhs);
     }
 
-    void PointwiseQuotient(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
-        *result = (*lhs).cwiseQuotient(*rhs);
+    void PointwiseQuotient(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
+        *OUT = (*lhs).cwiseQuotient(*rhs);
     }
 
-    void Normalise(MatrixXf* m, MatrixXf* mean, MatrixXf* std, MatrixXf* result) {
-        *result = (*m - *mean).cwiseQuotient(*std);
+    void Normalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* OUT) {
+        *OUT = (*T - *mean).cwiseQuotient(*std);
     }
 
-    void Renormalise(MatrixXf* m, MatrixXf* mean, MatrixXf* std, MatrixXf* result) {
-        *result = (*m).cwiseProduct(*std) + *mean;
+    void Renormalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* OUT) {
+        *OUT = (*T).cwiseProduct(*std) + *mean;
     }
 
-    void Layer(MatrixXf* x, MatrixXf* y, MatrixXf* W, MatrixXf* b) {
-        *y = *W * *x + *b;
+    void Layer(MatrixXf* IN, MatrixXf* W, MatrixXf* b, MatrixXf* OUT) {
+        *OUT = *W * *IN + *b;
     }
 
-    void Blend(MatrixXf* m, MatrixXf* W, float w, MatrixXf* result) {
-        *result = *m + *W * w;
+    void Blend(MatrixXf* IN, MatrixXf* W, float w) {
+        *IN += *W * w;
     }
 
-    void ELU(MatrixXf* m) {
-        int rows = (*m).rows();
+    void ELU(MatrixXf* T) {
+        int rows = (*T).rows();
         for(int i=0; i<rows; i++) {
-            (*m)(i, 0) = std::max((*m)(i, 0), 0.0f) + std::exp(std::min((*m)(i, 0), 0.0f)) - 1.0f;
+            (*T)(i, 0) = std::max((*T)(i, 0), 0.0f) + std::exp(std::min((*T)(i, 0), 0.0f)) - 1.0f;
         }
     }
 
-    void Sigmoid(MatrixXf* m) {
-        int rows = (*m).rows();
+    void Sigmoid(MatrixXf* T) {
+        int rows = (*T).rows();
         for(int i=0; i<rows; i++) {
-            (*m)(i, 0) = 1.0f / (1.0f + std::exp(-(*m)(i,0)));
+            (*T)(i, 0) = 1.0f / (1.0f + std::exp(-(*T)(i,0)));
         }
     }
 
-    void TanH(MatrixXf* m) {
-        int rows = (*m).rows();
+    void TanH(MatrixXf* T) {
+        int rows = (*T).rows();
         for(int i=0; i<rows; i++) {
-            (*m)(i, 0) = std::tanh((*m)(i, 0));
+            (*T)(i, 0) = std::tanh((*T)(i, 0));
         }
     }
 
-    void SoftMax(MatrixXf* m) {
+    void SoftMax(MatrixXf* T) {
         float frac = 0.0f;
-        int rows = (*m).rows();
+        int rows = (*T).rows();
         for(int i=0; i<rows; i++) {
-            (*m)(i, 0) = std::exp((*m)(i, 0));
-            frac += (*m)(i, 0);
+            (*T)(i, 0) = std::exp((*T)(i, 0));
+            frac += (*T)(i, 0);
         }
         for(int i=0; i<rows; i++) {
-            (*m)(i, 0) /= frac;
+            (*T)(i, 0) /= frac;
         }
     }
 
-    void SetZero(MatrixXf* m) {
-        *m = (*m).Zero((*m).rows(), (*m).cols());
+    void SetZero(MatrixXf* T) {
+        *T = (*T).Zero((*T).rows(), (*T).cols());
     }
 }
