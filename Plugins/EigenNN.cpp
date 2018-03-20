@@ -17,6 +17,14 @@ extern "C" {
         delete m;
     }
 
+    int GetRows(MatrixXf* m) {
+        return (*m).rows();
+    }
+
+    int GetCols(MatrixXf* m) {
+        return (*m).cols();
+    }
+
     void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* result) {
         *result = *lhs + *rhs;
     }
