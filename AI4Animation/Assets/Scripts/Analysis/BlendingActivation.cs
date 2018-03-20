@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BlendingActivation : MonoBehaviour {
 
-	public int Frames = 180;
+	public int Frames = 150;
 
 	private BioAnimation Animation;
 	private Queue<float>[] Values;

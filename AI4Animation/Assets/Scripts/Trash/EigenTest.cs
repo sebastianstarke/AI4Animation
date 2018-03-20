@@ -42,7 +42,7 @@ public class EigenTest : MonoBehaviour {
 
     void Update() {
         for(int i=0; i<1; i++) {
-		    EigenNN.Tensor t = new EigenNN.Tensor(1000, 1000);
+//		    EigenNN.Tensor t = new EigenNN.Tensor(1000, 1000);
         }
     }
 

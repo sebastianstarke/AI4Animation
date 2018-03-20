@@ -117,11 +117,12 @@
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\EigenNN.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\MFNN.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\MLP.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\NetworkParameters.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\PFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Architectures\MFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Architectures\MLP.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Architectures\PFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />
      <Compile Include="Assets\Scripts\IK\FootIK_Jacobian.cs" />
      <Compile Include="Assets\Scripts\IK\IK.cs" />
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
@@ -157,6 +158,7 @@
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GamePad.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
+     <Compile Include="Assets\Scripts\Trash\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\ComparisonDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\FunctionDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\GeometryDemo.cs" />
