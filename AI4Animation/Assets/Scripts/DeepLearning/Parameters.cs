@@ -6,11 +6,11 @@ namespace DeepLearning {
     public class Parameters : ScriptableObject {
         public FloatMatrix[] Matrices = new FloatMatrix[0];
 
-        public void StoreParameters(string fn, int rows, int cols) {
+        public void Save(string fn, int rows, int cols) {
             Arrays.Add(ref Matrices, ReadBinary(fn, rows, cols));
         }
 
-        public FloatMatrix GetParameters(int index) {
+        public FloatMatrix Load(int index) {
             return Matrices[index];
         }
 

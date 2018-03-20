@@ -70,16 +70,9 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						BVHAnimation animation = Animations[i];
-						for(int k=0; k<animation.GetTotalFrames(); k++) {
-							if(animation.StyleFunction.Styles[1].Flags[k] || animation.StyleFunction.Styles[2].Flags[k]) {
-								animation.StyleFunction.Styles[1].Flags[k] = true;
-							}
-						}
-						animation.StyleFunction.Styles[1].Name = "Move";
-						animation.StyleFunction.RemoveStyle("Run");
-						animation.StyleFunction.Recompute();
-                        EditorUtility.SetDirty(Animations[i]);
+						//BVHAnimation animation = Animations[i];
+
+                        //EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

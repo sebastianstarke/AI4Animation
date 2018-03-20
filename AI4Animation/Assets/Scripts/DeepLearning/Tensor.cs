@@ -38,14 +38,23 @@ namespace DeepLearning {
         private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr OUT);
 
         public IntPtr Ptr;
+
+        private bool Deleted;
         
         public Tensor(int rows, int cols) {
-            System.GC.Collect();
             Ptr = Create(rows, cols);
+            Deleted = false;
         }
 
         ~Tensor() {
-            Delete(Ptr);
+            Delete();
+        }
+
+        public void Delete() {
+            if(!Deleted) {
+                Delete(Ptr);
+                Deleted = true;
+            }
         }
 
         public int GetRows() {

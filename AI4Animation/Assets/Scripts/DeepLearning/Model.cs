@@ -25,40 +25,44 @@ namespace DeepLearning {
         [DllImport("DeepLearning")]
         private static extern void SoftMax(IntPtr T);
 
-        public static Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
+        public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
             return OUT;
         }
         
-        public static Tensor Renormalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
+        public Tensor Renormalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             Renormalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
             return OUT;
         }
 
-        public static Tensor Layer(Tensor IN, Tensor W, Tensor b, Tensor OUT) {
+        public Tensor Layer(Tensor IN, Tensor W, Tensor b, Tensor OUT) {
             Layer(IN.Ptr, W.Ptr, b.Ptr, OUT.Ptr);
             return OUT;
         }
 
-        public static Tensor Blend(Tensor T, Tensor W, float w) {
+        public Tensor Blend(Tensor T, Tensor W, float w) {
             Blend(T.Ptr, W.Ptr, w);
             return T;
         }
 
-        public static void ELU(Tensor T) {
+        public Tensor ELU(Tensor T) {
             ELU(T.Ptr);
+            return T;
         }
 
-        public static void Sigmoid(Tensor T) {
+        public Tensor Sigmoid(Tensor T) {
             Sigmoid(T.Ptr);
+            return T;
         }
 
-        public static void TanH(Tensor T) {
+        public Tensor TanH(Tensor T) {
             TanH(T.Ptr);
+            return T;
         }
 
-        public static void SoftMax(Tensor T) {
+        public Tensor SoftMax(Tensor T) {
             SoftMax(T.Ptr);
+            return T;
         }
     }
     
