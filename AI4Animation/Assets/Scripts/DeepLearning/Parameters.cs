@@ -53,6 +53,16 @@ namespace DeepLearning {
                 }
             }
 
+            public Tensor MakeTensor() {
+                Tensor tensor = new Tensor(Rows, Cols);
+                for(int x=0; x<Rows; x++) {
+                    for(int y=0; y<Cols; y++) {
+                        tensor.SetValue(x, y, Values[x].Values[y]);
+                    }
+                }
+                return tensor;
+            }
+
             public Matrix Build() {
                 Matrix matrix = new Matrix(Rows, Cols);
                 for(int i=0; i<Rows; i++) {

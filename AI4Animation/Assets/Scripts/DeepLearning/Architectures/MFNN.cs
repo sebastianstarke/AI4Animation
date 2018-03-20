@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 using DeepLearning;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -64,21 +63,21 @@ public class MFNN {
 			Debug.Log("Building MFNN failed because no parameters were loaded.");
 			return;
 		}
-		Xmean = Generate(Parameters.GetParameters(0));
-		Xstd = Generate(Parameters.GetParameters(1));
-		Ymean = Generate(Parameters.GetParameters(2));
-		Ystd = Generate(Parameters.GetParameters(3));
+		Xmean = Parameters.GetParameters(0).MakeTensor();
+		Xstd = Parameters.GetParameters(1).MakeTensor();
+		Ymean = Parameters.GetParameters(2).MakeTensor();
+		Ystd = Parameters.GetParameters(3).MakeTensor();
 
-		BW0 = Generate(Parameters.GetParameters(4));
-		Bb0 = Generate(Parameters.GetParameters(5));
-		BW1 = Generate(Parameters.GetParameters(6));
-		Bb1 = Generate(Parameters.GetParameters(7));
-		BW2 = Generate(Parameters.GetParameters(8));
-		Bb2 = Generate(Parameters.GetParameters(9));
+		BW0 = Parameters.GetParameters(4).MakeTensor();
+		Bb0 = Parameters.GetParameters(5).MakeTensor();
+		BW1 = Parameters.GetParameters(6).MakeTensor();
+		Bb1 = Parameters.GetParameters(7).MakeTensor();
+		BW2 = Parameters.GetParameters(8).MakeTensor();
+		Bb2 = Parameters.GetParameters(9).MakeTensor();
 
 		M = new Tensor[YDimBlend*6];
 		for(int i=0; i<YDimBlend*6; i++) {
-			M[i] = Generate(Parameters.GetParameters(10+i));
+			M[i] = Parameters.GetParameters(10+i).MakeTensor();
 		}
 		
 		X = new Tensor(XDim, 1);
@@ -92,16 +91,6 @@ public class MFNN {
 		NNb0 = new Tensor(HDim, 1);
 		NNb1 = new Tensor(HDim, 1);
 		NNb2 = new Tensor(YDim, 1);
-	}
-
-	private Tensor Generate(Parameters.FloatMatrix matrix) {
-		Tensor tensor = new Tensor(matrix.Rows, matrix.Cols);
-		for(int x=0; x<matrix.Rows; x++) {
-			for(int y=0; y<matrix.Cols; y++) {
-				tensor.SetValue(x, y, matrix.Values[x].Values[y]);
-			}
-		}
-		return tensor;
 	}
 
 	public void SetInput(int index, float value) {
@@ -127,9 +116,9 @@ public class MFNN {
         for(int i=0; i<ControlNeurons.Length; i++) {
             BX.SetValue(i, 0, Y.GetValue(ControlNeurons[i], 0));
         }
-		Model.Layer(BX, BW0, Bb0, BY).ELU();
-		Model.Layer(BY, BW1, Bb1, BY).ELU();
-		Model.Layer(BY, BW2, Bb2, BY).SoftMax();
+		Model.ELU(Model.Layer(BX, BW0, Bb0, BY));
+		Model.ELU(Model.Layer(BY, BW1, Bb1, BY));
+		Model.SoftMax(Model.Layer(BY, BW2, Bb2, BY));
 
         //Generate Network Weights
 		NNW0.SetZero();	NNb0.SetZero();
@@ -145,8 +134,8 @@ public class MFNN {
 		}
 
         //Process Mode-Functioned Network
-		Model.Layer(Y, NNW0, NNb0, Y).ELU();
-		Model.Layer(Y, NNW1, NNb1, Y).ELU();
+		Model.ELU(Model.Layer(Y, NNW0, NNb0, Y));
+		Model.ELU(Model.Layer(Y, NNW1, NNb1, Y));
 		Model.Layer(Y, NNW2, NNb2, Y);
 
         //Renormalise Output

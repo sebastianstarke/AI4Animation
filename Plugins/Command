@@ -1,1 +1,1 @@
-g++ -Wall -I ../../Eigen -fPIC -shared -O2 -o ../AI4Animation/Assets/Plugins/libEigenNN.so EigenNN.cpp
+g++ -Wall -I ../../Eigen -fPIC -shared -O2 -o ../AI4Animation/Assets/Plugins/libDeepLearning.so DeepLearning.cpp

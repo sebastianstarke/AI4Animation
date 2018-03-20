@@ -6,32 +6,36 @@ namespace DeepLearning {
 
     public class Tensor {
         //Default
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern IntPtr Create(int rows, int cols);
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern IntPtr Delete(IntPtr T);
 
         //Setters and Getters
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern int GetRows(IntPtr T);
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern int GetCols(IntPtr T);
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern void SetZero(IntPtr T);
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern void SetValue(IntPtr T, int row, int col, float value);
-        [DllImport("EigenNN")]
+        [DllImport("DeepLearning")]
         private static extern float GetValue(IntPtr T, int row, int col);
 
-        //Activations
-        [DllImport("EigenNN")]
-        private static extern void ELU(IntPtr T);
-        [DllImport("EigenNN")]
-        private static extern void Sigmoid(IntPtr T);
-        [DllImport("EigenNN")]
-        private static extern void TanH(IntPtr T);
-        [DllImport("EigenNN")]
-        private static extern void SoftMax(IntPtr T);
+        //Arithmetics
+        [DllImport("DeepLearning")]
+        private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void Scale(IntPtr lhs, float value, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr OUT);
 
         public IntPtr Ptr;
         
@@ -72,20 +76,54 @@ namespace DeepLearning {
             return GetValue(Ptr, row, col);
         }
 
-        public void ELU() {
-            ELU(Ptr);
+        public static Tensor Add(Tensor lhs, Tensor rhs, Tensor OUT) {
+            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+                Debug.Log("Incompatible tensor dimensions.");
+            } else {
+                Add(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+            }
+            return OUT;
         }
 
-        public void Sigmoid() {
-            Sigmoid(Ptr);
+        public static Tensor Subtract(Tensor lhs, Tensor rhs, Tensor OUT) {
+            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+                Debug.Log("Incompatible tensor dimensions.");
+            } else {
+                Subtract(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+            }
+            return OUT;
         }
 
-        public void TanH() {
-            TanH(Ptr);
+        public static Tensor Product(Tensor lhs, Tensor rhs, Tensor OUT) {
+            if(lhs.GetCols() != rhs.GetRows()) {
+                Debug.Log("Incompatible tensor dimensions.");
+            } else { 
+                Product(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+            }
+            return OUT;
         }
 
-        public void SoftMax() {
-            SoftMax(Ptr);
+        public static Tensor Scale(Tensor lhs, float value, Tensor OUT) {
+            Scale(lhs.Ptr, value, OUT.Ptr);
+            return OUT;
+        }
+
+        public static Tensor PointwiseProduct(Tensor lhs, Tensor rhs, Tensor OUT) {
+            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+                Debug.Log("Incompatible tensor dimensions.");
+            } else {
+                PointwiseProduct(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+            }
+            return OUT;
+        }
+
+        public static Tensor PointwiseQuotient(Tensor lhs, Tensor rhs, Tensor OUT) {
+            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+                Debug.Log("Incompatible tensor dimensions.");
+            } else {
+                PointwiseQuotient(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+            }
+            return OUT;
         }
     }
 
