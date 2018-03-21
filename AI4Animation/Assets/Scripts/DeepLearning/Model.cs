@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -24,6 +26,51 @@ namespace DeepLearning {
         private static extern void TanH(IntPtr T);
         [DllImport("DeepLearning")]
         private static extern void SoftMax(IntPtr T);
+
+        /*
+        private List<Tensor> Tensors = new List<Tensor>();
+        private List<string> Identifiers = new List<string>();
+
+        public Tensor AddTensor(int rows, int cols, string id) {
+            if(Identifiers.Contains(id)) {
+                Debug.Log("Tensor with ID " + id + " already contained.");
+                return null;
+            }
+            Tensor T = new Tensor(rows, cols);
+            Tensors.Add(T);
+            Identifiers.Add(id);
+            return T;
+        }
+
+        public void DeleteTensor(Tensor T) {
+            if(!Tensors.Contains(T)) {
+                Debug.Log("Tensor not contained");
+                return;
+            }
+            int index = Tensors.IndexOf(T);
+            Tensors.RemoveAt(index);
+            Identifiers.RemoveAt(index);
+            T.Delete();
+        }
+
+        public Tensor GetTensor(string id) {
+            if(!Identifiers.Contains(id)) {
+                Debug.Log("ID not contained");
+                return null;
+            }
+            int index = Identifiers.IndexOf(id);
+            return Tensors[index];
+        }
+
+        public string GetID(Tensor T) {
+            if(!Tensors.Contains(T)) {
+                Debug.Log("Tensor not contained");
+                return null;
+            }
+            int index = Tensors.IndexOf(T);
+            return Identifiers[index];
+        }
+        */
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);

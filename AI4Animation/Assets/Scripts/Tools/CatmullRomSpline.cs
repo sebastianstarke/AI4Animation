@@ -40,7 +40,12 @@ public class CatmullRomSpline : MonoBehaviour {
 			float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = targetTrajectory.Points[60+i+1];
 			point.SetPosition(future[i].GetPosition());
-			point.SetDirection(future[i].GetDirection());
+			//point.SetDirection(future[i].GetDirection());
+			if(i == future.Length-1) {
+				point.SetDirection(future[i].GetDirection());
+			} else {
+				point.SetDirection(future[future.Length-1].GetPosition() - point.GetPosition());
+			}
 			//point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
 			//point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
 			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
@@ -93,10 +98,10 @@ public class CatmullRomSpline : MonoBehaviour {
 		if(Visualise) {
 			UltiDraw.Begin();
 			for(int i=1; i<Trajectory.Points.Length; i++) {
-				UltiDraw.DrawLine(Trajectory.Points[i-1].GetPosition(), Trajectory.Points[i].GetPosition(), 0.025f, UltiDraw.Magenta);
+				UltiDraw.DrawLine(Trajectory.Points[i-1].GetPosition(), Trajectory.Points[i].GetPosition(), 0.025f, UltiDraw.Brown);
 			}
 			for(int i=0; i<ControlPoints.Length; i++) {
-				UltiDraw.DrawSphere(ControlPoints[i].position, Quaternion.identity, 0.05f, UltiDraw.Cyan.Transparent(0.75f));
+				UltiDraw.DrawSphere(ControlPoints[i].position, Quaternion.identity, 0.1f, UltiDraw.Cyan.Transparent(0.75f));
 			}
 			UltiDraw.End();
 		}
