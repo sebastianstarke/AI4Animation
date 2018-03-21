@@ -29,6 +29,9 @@ public class TensorActivation : MonoBehaviour {
             Values[i] = T.ColSum(i);
             Minimum = Mathf.Min(Minimum, Values[i]);
             Maximum = Mathf.Max(Maximum, Values[i]);
+            //if(Values[i] < 1f) {
+            //    Debug.Log(i + " is inactive.");
+            //}
         }
 		UltiDraw.Begin();
         UltiDraw.DrawGUIRectangle(

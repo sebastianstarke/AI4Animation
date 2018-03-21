@@ -911,8 +911,9 @@ public class BVHAnimation : ScriptableObject {
 			for(int j=0; j<Character.Hierarchy.Length; j++) {
 				Character.Hierarchy[j].SetTransformation(previousPosture[j]);
 			}
-			Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(t+1)/6f));
+			Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(t+1)/6f).Transparent(0.75f));
 		}
+		//
 
 		//Current posture
 		Matrix4x4[] posture = ShowZero ? ExtractZeroPosture(ShowMirrored) : ExtractPosture(CurrentFrame, ShowMirrored);
@@ -920,6 +921,18 @@ public class BVHAnimation : ScriptableObject {
 			Character.Hierarchy[i].SetTransformation(posture[i]);
 		}
 		Character.Draw();
+		//
+
+		//Future postures
+		for(int t=1; t<6; t++) {
+			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp + (float)t/5f, 0f, GetTotalTime());
+			Matrix4x4[] futurePosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
+			for(int j=0; j<Character.Hierarchy.Length; j++) {
+				Character.Hierarchy[j].SetTransformation(futurePosture[j]);
+			}
+			Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(t+1)/5f).Transparent(0.75f));
+		}
+		//
 
 		UltiDraw.Begin();
 		BVHPhaseFunction function = ShowMirrored ? MirroredPhaseFunction : PhaseFunction;

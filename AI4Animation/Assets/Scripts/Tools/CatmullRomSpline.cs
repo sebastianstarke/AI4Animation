@@ -39,10 +39,10 @@ public class CatmullRomSpline : MonoBehaviour {
 		for(int i=0; i<future.Length; i++) {
 			float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = targetTrajectory.Points[60+i+1];
-			//point.SetPosition(future[i].GetPosition());
-			point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
-			//point.SetDirection(future[i].GetDirection());
-			point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
+			point.SetPosition(future[i].GetPosition());
+			point.SetDirection(future[i].GetDirection());
+			//point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
+			//point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
 			//point.SetDirection((future[i].GetDirection() + (future[future.Length-1].GetPosition() - point.GetPosition()).normalized).normalized);
 			if(i==0) {
 				point.SetVelocity((future[0].GetPosition() - pivot.GetPosition()) * 60f);
