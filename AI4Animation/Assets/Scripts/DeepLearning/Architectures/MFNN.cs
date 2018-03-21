@@ -96,12 +96,12 @@ namespace DeepLearning {
 			return Y.GetValue(index, 0);
 		}
 
-		public Tensor GetW0() {
-			return W0;
+		public Tensor GetBW0() {
+			return BW0;
 		}
 
-		public Tensor Getb0() {
-			return b0;
+		public Tensor GetW0() {
+			return W0;
 		}
 
 		public float GetControlPoint(int index) {

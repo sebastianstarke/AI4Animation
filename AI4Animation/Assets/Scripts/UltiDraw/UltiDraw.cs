@@ -986,6 +986,10 @@ public static class UltiDraw {
 		return colors;
 	}
 
+	public static Color GetRandomColor() {
+		return new Color(Random.value, Random.value, Random.value, 1f);
+	}
+
 	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
 		if(valueMax-valueMin != 0f) {
 			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;
