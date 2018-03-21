@@ -36,6 +36,13 @@ namespace DeepLearning {
         private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr OUT);
         [DllImport("DeepLearning")]
         private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr OUT);
+        [DllImport("DeepLearning")]
+        private static extern void PointwiseAbsolute(IntPtr IN, IntPtr OUT);
+
+        [DllImport("DeepLearning")]
+        private static extern float RowSum(IntPtr T, int row);
+        [DllImport("DeepLearning")]
+        private static extern float ColSum(IntPtr T, int col);
 
         public IntPtr Ptr;
 
@@ -133,6 +140,27 @@ namespace DeepLearning {
                 PointwiseQuotient(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
+        }
+
+        public static Tensor PointwiseAbsolute(Tensor IN, Tensor OUT) {
+            PointwiseAbsolute(IN.Ptr, OUT.Ptr);
+            return OUT;
+        }
+
+        public float RowSum(int row) {
+            if(row >= GetRows()) {
+                Debug.Log("Accessing out of bounds.");
+                return 0f;
+            }
+            return RowSum(Ptr, row);
+        }
+
+        public float ColSum(int col) {
+            if(col >= GetCols()) {
+                Debug.Log("Accessing out of bounds.");
+                return 0f;
+            }
+            return ColSum(Ptr, col);
         }
     }
 

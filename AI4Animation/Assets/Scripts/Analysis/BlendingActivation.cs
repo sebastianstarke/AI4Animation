@@ -6,6 +6,8 @@ public class BlendingActivation : MonoBehaviour {
 
 	public int Frames = 150;
 
+    [Range(0f, 1f)] public float Y = 0.1f;
+
 	private BioAnimation Animation;
 	private Queue<float>[] Values;
 
@@ -38,7 +40,7 @@ public class BlendingActivation : MonoBehaviour {
 		}
 
 		UltiDraw.Begin();
-		Vector2 center = new Vector2(0.5f, 0.1f);
+		Vector2 center = new Vector2(0.5f, Y);
 		float width = 0.95f;
 		float height = 0.1f;
 		float border = 0.0025f;
@@ -55,12 +57,6 @@ public class BlendingActivation : MonoBehaviour {
 		for(int i=0; i<colors.Length; i++) {
 			DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, Values[i], colors[i]);
 		}
-		/*
-		DrawControlPoint(x, y, width, height, CW[0], Utility.Red);
-		DrawControlPoint(x, y, width, height, CW[1], Utility.DarkGreen);
-		DrawControlPoint(x, y, width, height, CW[2], Utility.Purple);
-		DrawControlPoint(x, y, width, height, CW[3], Utility.Orange);
-		*/
 		UltiDraw.End();
 	}
 

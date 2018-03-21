@@ -113,6 +113,7 @@
      <Compile Include="Assets\Scripts\Analysis\AgilityMeasure.cs" />
      <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
      <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
+     <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />

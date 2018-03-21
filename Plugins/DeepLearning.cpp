@@ -57,6 +57,18 @@ extern "C" {
         *OUT = (*lhs).cwiseQuotient(*rhs);
     }
 
+    void PointwiseAbsolute(MatrixXf* IN, MatrixXf* OUT) {
+        *OUT = (*IN).cwiseAbs();
+    }
+
+    float RowSum(MatrixXf* T, int row) {
+        return (*T).row(row).sum();
+    }
+
+    float ColSum(MatrixXf* T, int col) {
+        return (*T).col(col).sum();
+    }
+
     void Normalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* OUT) {
         *OUT = (*T - *mean).cwiseQuotient(*std);
     }
