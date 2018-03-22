@@ -9,7 +9,7 @@ public class Hierarchy {
 	public Segment[] Segments;
 
 	public void Build(Transform root) {
-		Arrays.Clear(ref Segments);
+		ArrayExtensions.Clear(ref Segments);
 		Action<Transform, Segment> recursion = null;
 		recursion = new Action<Transform, Segment>((transform, parent) => {
 			Segment segment = AddSegment(transform.name, parent);
@@ -21,7 +21,7 @@ public class Hierarchy {
 	}
 
 	public void Build(Transform root, string[] names) {
-		Arrays.Clear(ref Segments);
+		ArrayExtensions.Clear(ref Segments);
 		Action<Transform, Segment> recursion = null;
 		recursion = new Action<Transform, Segment>((transform, parent) => {
 			Segment segment = Array.Exists(names, x => x == transform.name) ? AddSegment(transform.name, parent) : parent;
@@ -33,11 +33,11 @@ public class Hierarchy {
 	}
 
 	public void Build(string[] names, string[] parents) {
-		Arrays.Clear(ref Segments);
+		ArrayExtensions.Clear(ref Segments);
 		for(int i=0; i<names.Length; i++) {
 			if(FindSegment(names[i]) != null) {
 				Debug.Log("Failed building hierarchy because there were multiple segments with name " + names[i] + ".");
-				Arrays.Clear(ref Segments);
+				ArrayExtensions.Clear(ref Segments);
 				return;
 			}
 			AddSegment(names[i], FindSegment(parents[i]));
@@ -194,7 +194,7 @@ public class Hierarchy {
 
 	private Segment AddSegment(string name, Segment parent) {
 		Segment segment = new Segment(name, parent, Segments.Length);
-		Arrays.Add(ref Segments, segment);
+		ArrayExtensions.Add(ref Segments, segment);
 		return segment;
 	}
 	
@@ -211,7 +211,7 @@ public class Hierarchy {
 			Index = index;
 			if(parent != null) {
 				Parent = parent.Index;
-				Arrays.Add(ref parent.Childs, index);
+				ArrayExtensions.Add(ref parent.Childs, index);
 			}
 			Childs = new int[0];
 			Transformation = Matrix4x4.identity;

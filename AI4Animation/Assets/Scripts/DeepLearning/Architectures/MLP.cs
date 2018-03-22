@@ -14,7 +14,6 @@ namespace DeepLearning {
 		public int XDim = 0;
 		public int HDim = 512;
 		public int YDim = 0;
-		public Parameters Parameters;
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor W0, W1, W2, b0, b1, b2;
@@ -82,7 +81,7 @@ namespace DeepLearning {
 			Utility.SetGUIColor(Color.grey);
 			using(new GUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				if(Utility.GUIButton("MLP", UltiDraw.DarkGrey, UltiDraw.White)) {
+				if(Utility.GUIButton("Neural Network", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Inspect = !Inspect;
 				}
 

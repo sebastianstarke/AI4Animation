@@ -124,11 +124,11 @@ public class Controller {
 		}
 
 		public void AddMultiplier() {
-			Arrays.Add(ref Multipliers, new Multiplier());
+			ArrayExtensions.Add(ref Multipliers, new Multiplier());
 		}
 
 		public void RemoveMultiplier() {
-			Arrays.Shrink(ref Multipliers);
+			ArrayExtensions.Shrink(ref Multipliers);
 		}
 
 		[System.Serializable]

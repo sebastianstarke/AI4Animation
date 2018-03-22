@@ -1703,15 +1703,15 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void AddStyle(string name = "Style") {
-			Arrays.Add(ref Styles, new BVHStyle(name, Animation.GetTotalFrames()));
+			ArrayExtensions.Add(ref Styles, new BVHStyle(name, Animation.GetTotalFrames()));
 		}
 
 		public void RemoveStyle() {
-			Arrays.Shrink(ref Styles);
+			ArrayExtensions.Shrink(ref Styles);
 		}
 
 		public void RemoveStyle(string name) {
-			Arrays.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
+			ArrayExtensions.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
 		}
 
 		public BVHStyle GetStyle(string name) {

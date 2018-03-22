@@ -49,6 +49,11 @@ public class BioAnimation : MonoBehaviour {
 	private List<Vector3>[] PastUps = new List<Vector3>[0];
 	private List<Vector3>[] PastVelocities = new List<Vector3>[0];
 	
+	private List<Vector3>[] FuturePositions = new List<Vector3>[0];
+	private List<Vector3>[] FutureForwards = new List<Vector3>[0];
+	private List<Vector3>[] FutureUps = new List<Vector3>[0];
+	private List<Vector3>[] FutureVelocities = new List<Vector3>[0];
+
 	//Trajectory for 60 Hz framerate
 	private const int Points = 111;
 	private const int PointSamples = 12;
@@ -97,6 +102,24 @@ public class BioAnimation : MonoBehaviour {
 				PastForwards[i].Add(Forwards[i]);
 				PastUps[i].Add(Ups[i]);
 				PastVelocities[i].Add(Velocities[i]);
+			}
+		}
+		//
+		//
+		FuturePositions = new List<Vector3>[Joints.Length];
+		FutureForwards = new List<Vector3>[Joints.Length];
+		FutureUps = new List<Vector3>[Joints.Length];
+		FutureVelocities = new List<Vector3>[Joints.Length];
+		for(int i=0; i<Joints.Length; i++) {
+			FuturePositions[i] = new List<Vector3>();
+			FutureForwards[i] = new List<Vector3>();
+			FutureUps[i] = new List<Vector3>();
+			FutureVelocities[i] = new List<Vector3>();
+			for(int j=0; j<5; j++) {
+				FuturePositions[i].Add(Positions[i]);
+				FutureForwards[i].Add(Forwards[i]);
+				FutureUps[i].Add(Ups[i]);
+				FutureVelocities[i].Add(Velocities[i]);
 			}
 		}
 		//
@@ -416,7 +439,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		*/
 
-		//Update Previous Posture
+		//Update Previous Postures
 		for(int i=0; i<Joints.Length; i++) {
 			PastPositions[i].RemoveAt(0);
 			PastPositions[i].Add(Positions[i]);
@@ -427,6 +450,24 @@ public class BioAnimation : MonoBehaviour {
 			PastVelocities[i].RemoveAt(0);
 			PastVelocities[i].Add(Velocities[i]);
 		}
+
+		/*
+		//Compute Future Postures
+		for(int p=0; p<5; p++) {
+			int pivot = TrajectoryDimOut*6 + JointDimOut*Joints.Length + 3 + p*JointDimOut*Joints.Length;
+			for(int i=0; i<Joints.Length; i++) {
+				Vector3 position = new Vector3(MFNN.GetOutput(pivot + 0), MFNN.GetOutput(pivot + 1), MFNN.GetOutput(pivot + 2)).GetRelativePositionFrom(currentRoot);
+				Vector3 forward = new Vector3(MFNN.GetOutput(pivot + 3), MFNN.GetOutput(pivot + 4), MFNN.GetOutput(pivot + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 up = new Vector3(MFNN.GetOutput(pivot + 6), MFNN.GetOutput(pivot + 7), MFNN.GetOutput(pivot + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 velocity = new Vector3(MFNN.GetOutput(pivot + 9), MFNN.GetOutput(pivot + 10), MFNN.GetOutput(pivot + 11)).GetRelativeDirectionFrom(currentRoot);
+				pivot += JointDimOut;
+				FuturePositions[i][p] = Vector3.Lerp(FuturePositions[i][p] + velocity / Framerate, position, 0.5f);
+				FutureForwards[i][p] = forward;
+				FutureUps[i][p] = up;
+				FutureVelocities[i][p] = velocity;
+			}
+		}
+		*/
 
 		//Compute Posture
 		for(int i=0; i<Joints.Length; i++) {
@@ -585,6 +626,13 @@ public class BioAnimation : MonoBehaviour {
 				}
 				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f));
 			}
+			for(int i=0; i<5; i++) {
+				for(int j=0; j<Character.Hierarchy.Length; j++) {
+					Matrix4x4 mat = Matrix4x4.TRS(FuturePositions[j][i], Quaternion.LookRotation(FutureForwards[j][i], FutureUps[j][i]), Vector3.one);
+					Character.Hierarchy[j].SetTransformation(mat);
+				}
+				Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, 1f - (float)(i+1)/5f).Transparent(0.75f));
+			}
 		}
 		
 		Character.FetchTransformations(transform);
@@ -673,10 +721,10 @@ public class BioAnimation : MonoBehaviour {
 						Target.MotionEditing = EditorGUILayout.Toggle("Motion Editing", Target.MotionEditing);
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Arrays.Expand(ref Target.IKSolvers);
+							ArrayExtensions.Expand(ref Target.IKSolvers);
 						}
 						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							Arrays.Shrink(ref Target.IKSolvers);
+							ArrayExtensions.Shrink(ref Target.IKSolvers);
 						}
 						EditorGUILayout.EndHorizontal();
 						for(int i=0; i<Target.IKSolvers.Length; i++) {

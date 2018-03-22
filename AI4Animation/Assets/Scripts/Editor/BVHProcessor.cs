@@ -401,20 +401,20 @@ public class BVHProcessor : EditorWindow {
 		//Future postures
 		for(int t=1; t<6; t++) {
 			float timestamp = Mathf.Clamp(frame.Timestamp + (float)t/5f, 0f, animation.GetTotalTime());
-			Matrix4x4[] previousPosture = animation.ExtractPosture(animation.GetFrame(timestamp), mirrored);
-			Vector3[] previousVelocities = animation.ExtractBoneVelocities(animation.GetFrame(timestamp), mirrored);
+			Matrix4x4[] futurePosture = animation.ExtractPosture(animation.GetFrame(timestamp), mirrored);
+			Vector3[] futureVelocities = animation.ExtractBoneVelocities(animation.GetFrame(timestamp), mirrored);
 			//Previous bone data
 			for(int k=0; k<animation.Character.Hierarchy.Length; k++) {
 				if(animation.Bones[k]) {
 					//Position
-					line += FormatVector3(previousPosture[k].GetPosition().GetRelativePositionTo(root));
+					line += FormatVector3(futurePosture[k].GetPosition().GetRelativePositionTo(root));
 
 					//Rotation
-					line += FormatVector3(previousPosture[k].GetForward().GetRelativeDirectionTo(root));
-					line += FormatVector3(previousPosture[k].GetUp().GetRelativeDirectionTo(root));
+					line += FormatVector3(futurePosture[k].GetForward().GetRelativeDirectionTo(root));
+					line += FormatVector3(futurePosture[k].GetUp().GetRelativeDirectionTo(root));
 
 					//Bone Velocity
-					line += FormatVector3(previousVelocities[k].GetRelativeDirectionTo(root));
+					line += FormatVector3(futureVelocities[k].GetRelativeDirectionTo(root));
 				}
 			}
 		}

@@ -13,7 +13,7 @@ public class NetworkParameters : ScriptableObject {
 	*/
 
 	public void StoreMatrix(string fn, int rows, int cols) {
-		Arrays.Add(ref Matrices, LoadMatrix(fn, rows, cols));
+		ArrayExtensions.Add(ref Matrices, LoadMatrix(fn, rows, cols));
 	}
 
 	/*

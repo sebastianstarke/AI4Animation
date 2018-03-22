@@ -149,7 +149,7 @@ public class PFNN {
 		Utility.SetGUIColor(Color.grey);
 		using(new GUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
-			if(Utility.GUIButton("PFNN", UltiDraw.DarkGrey, UltiDraw.White)) {
+			if(Utility.GUIButton("Neural Network", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Inspect = !Inspect;
 			}
 

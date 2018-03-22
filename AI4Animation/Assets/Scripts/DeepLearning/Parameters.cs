@@ -7,7 +7,7 @@ namespace DeepLearning {
         public FloatMatrix[] Matrices = new FloatMatrix[0];
 
         public void Save(string fn, int rows, int cols) {
-            Arrays.Add(ref Matrices, ReadBinary(fn, rows, cols));
+            ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols));
         }
 
         public FloatMatrix Load(int index) {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public static class Arrays {
+public static class ArrayExtensions {
 	
 	public static void Add<T>(ref T[] array, T element) {
 		Expand(ref array);

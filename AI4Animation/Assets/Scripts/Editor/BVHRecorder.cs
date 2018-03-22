@@ -49,7 +49,7 @@ public class BVHRecorder : EditorWindow {
 			BVHAnimation.BVHFrame frame = new BVHAnimation.BVHFrame(Data, Data.GetTotalFrames()+1, Data.GetTotalFrames()*FrameTime);
 			frame.Local = Data.Character.GetLocalTransformations();
 			frame.World = Data.Character.GetWorldTransformations();
-			Arrays.Add(ref Data.Frames, frame);
+			ArrayExtensions.Add(ref Data.Frames, frame);
 			
 			//Trajectory
 			Trajectory.Point point = new Trajectory.Point(Data.Trajectory.Points.Length, Animation.Controller.Styles.Length);
@@ -60,40 +60,40 @@ public class BVHRecorder : EditorWindow {
 			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
 				point.Styles[i] = Animation.GetTrajectory().Points[60].Styles[i];
 			}
-			Arrays.Add(ref Data.Trajectory.Points, point);
+			ArrayExtensions.Add(ref Data.Trajectory.Points, point);
 
 			//Phase Function
 			/*
-			Arrays.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase() / (2f*Mathf.PI), 1f));
-			Arrays.Add(ref Data.PhaseFunction.Keys, index == 0 ? true : Data.PhaseFunction.Phase[index-1] > Data.PhaseFunction.Phase[index]);
-			Arrays.Add(ref Data.PhaseFunction.Cycle, 0f);
-			Arrays.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
-			Arrays.Add(ref Data.PhaseFunction.Velocities, 0f);
-			Arrays.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
-			Arrays.Add(ref Data.PhaseFunction.Heights, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Phase, Mathf.Repeat(Animation.GetPhase() / (2f*Mathf.PI), 1f));
+			ArrayExtensions.Add(ref Data.PhaseFunction.Keys, index == 0 ? true : Data.PhaseFunction.Phase[index-1] > Data.PhaseFunction.Phase[index]);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Cycle, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Velocities, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Heights, 0f);
 			*/
-			Arrays.Add(ref Data.PhaseFunction.Phase, 0f);
-			Arrays.Add(ref Data.PhaseFunction.Keys, false);
-			Arrays.Add(ref Data.PhaseFunction.Cycle, 0f);
-			Arrays.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
-			Arrays.Add(ref Data.PhaseFunction.Velocities, 0f);
-			Arrays.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
-			Arrays.Add(ref Data.PhaseFunction.Heights, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Phase, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Keys, false);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Cycle, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.NormalisedCycle, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Velocities, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.NormalisedVelocities, 0f);
+			ArrayExtensions.Add(ref Data.PhaseFunction.Heights, 0f);
 
 			//Mirrored Phase Function
-			Arrays.Add(ref Data.MirroredPhaseFunction.Phase, 0f);
-			Arrays.Add(ref Data.MirroredPhaseFunction.Keys, false);
-			Arrays.Add(ref Data.MirroredPhaseFunction.Cycle, 0f);
-			Arrays.Add(ref Data.MirroredPhaseFunction.NormalisedCycle, 0f);
-			Arrays.Add(ref Data.MirroredPhaseFunction.Velocities, 0f);
-			Arrays.Add(ref Data.MirroredPhaseFunction.NormalisedVelocities, 0f);
-			Arrays.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.Phase, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.Keys, false);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.Cycle, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.NormalisedCycle, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.Velocities, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.NormalisedVelocities, 0f);
+			ArrayExtensions.Add(ref Data.MirroredPhaseFunction.Heights, 0f);
 
 			//Style Function
 			bool styleUpdate = false;
 			for(int i=0; i<Animation.Controller.Styles.Length; i++) {
-				Arrays.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query());
-				Arrays.Add(ref Data.StyleFunction.Styles[i].Values, Animation.GetTrajectory().Points[60].Styles[i]);
+				ArrayExtensions.Add(ref Data.StyleFunction.Styles[i].Flags, Animation.Controller.Styles[i].Query());
+				ArrayExtensions.Add(ref Data.StyleFunction.Styles[i].Values, Animation.GetTrajectory().Points[60].Styles[i]);
 				if(index == 0) {
 					styleUpdate = true;
 				} else {
@@ -102,7 +102,7 @@ public class BVHRecorder : EditorWindow {
 					}
 				}
 			}
-			Arrays.Add(ref Data.StyleFunction.Keys, styleUpdate);
+			ArrayExtensions.Add(ref Data.StyleFunction.Keys, styleUpdate);
 
 			index += 1;
 		}

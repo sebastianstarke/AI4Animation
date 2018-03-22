@@ -127,7 +127,8 @@
      <Compile Include="Assets\Scripts\IK\FootIK_Jacobian.cs" />
      <Compile Include="Assets\Scripts\IK\IK.cs" />
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
-     <Compile Include="Assets\Scripts\Libraries\Arrays.cs" />
+     <Compile Include="Assets\Scripts\Libraries\ArrayExtensions.cs" />
+     <Compile Include="Assets\Scripts\Libraries\Eigen.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix4x4Extensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\QuaternionExtensions.cs" />

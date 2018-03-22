@@ -12,14 +12,15 @@ namespace DeepLearning {
 		public bool Inspect = false;
 
 		public string Folder = string.Empty;
-		public int XDimBlend = 12;
-		public int HDimBlend = 12;
-		public int YDimBlend = 4;
+
 		public int XDim = 504;
 		public int HDim = 512;
 		public int YDim = 352;
+
+		public int XDimBlend = 12;
+		public int HDimBlend = 12;
+		public int YDimBlend = 4;
 		public int[] ControlNeurons = new int[0];
-		public Parameters Parameters;
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor X, Y;
@@ -142,19 +143,19 @@ namespace DeepLearning {
 			Utility.SetGUIColor(Color.grey);
 			using(new GUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-				if(Utility.GUIButton("MFNN", UltiDraw.DarkGrey, UltiDraw.White)) {
+				if(Utility.GUIButton("Neural Network", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Inspect = !Inspect;
 				}
 
 				if(Inspect) {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Folder = EditorGUILayout.TextField("Folder", Folder);
-						XDimBlend = EditorGUILayout.IntField("XDimBlend", XDimBlend);
-						HDimBlend = EditorGUILayout.IntField("HDimBlend", HDimBlend);
-						YDimBlend = EditorGUILayout.IntField("YDimBlend", YDimBlend);
 						XDim = EditorGUILayout.IntField("XDim", XDim);
 						HDim = EditorGUILayout.IntField("HDim", HDim);
 						YDim = EditorGUILayout.IntField("YDim", YDim);
+						XDimBlend = EditorGUILayout.IntField("XDimBlend", XDimBlend);
+						HDimBlend = EditorGUILayout.IntField("HDimBlend", HDimBlend);
+						YDimBlend = EditorGUILayout.IntField("YDimBlend", YDimBlend);
 						Array.Resize(ref ControlNeurons, EditorGUILayout.IntField("Control Neurons", ControlNeurons.Length));
 						for(int i=0; i<ControlNeurons.Length; i++) {
 							ControlNeurons[i] = EditorGUILayout.IntField("Neuron " + (i+1), ControlNeurons[i]);

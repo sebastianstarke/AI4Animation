@@ -1,55 +1,16 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace DeepLearning {
 
     public class Tensor {
-        //Default
-        [DllImport("DeepLearning")]
-        private static extern IntPtr Create(int rows, int cols);
-        [DllImport("DeepLearning")]
-        private static extern IntPtr Delete(IntPtr T);
-
-        //Setters and Getters
-        [DllImport("DeepLearning")]
-        private static extern int GetRows(IntPtr T);
-        [DllImport("DeepLearning")]
-        private static extern int GetCols(IntPtr T);
-        [DllImport("DeepLearning")]
-        private static extern void SetZero(IntPtr T);
-        [DllImport("DeepLearning")]
-        private static extern void SetValue(IntPtr T, int row, int col, float value);
-        [DllImport("DeepLearning")]
-        private static extern float GetValue(IntPtr T, int row, int col);
-
-        //Arithmetics
-        [DllImport("DeepLearning")]
-        private static extern void Add(IntPtr lhs, IntPtr rhs, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void Subtract(IntPtr lhs, IntPtr rhs, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void Product(IntPtr lhs, IntPtr rhs, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void Scale(IntPtr lhs, float value, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void PointwiseProduct(IntPtr lhs, IntPtr rhs, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void PointwiseQuotient(IntPtr lhs, IntPtr rhs, IntPtr OUT);
-        [DllImport("DeepLearning")]
-        private static extern void PointwiseAbsolute(IntPtr IN, IntPtr OUT);
-
-        [DllImport("DeepLearning")]
-        private static extern float RowSum(IntPtr T, int row);
-        [DllImport("DeepLearning")]
-        private static extern float ColSum(IntPtr T, int col);
 
         public IntPtr Ptr;
 
         private bool Deleted;
         
         public Tensor(int rows, int cols) {
-            Ptr = Create(rows, cols);
+            Ptr = Eigen.Create(rows, cols);
             Deleted = false;
         }
 
@@ -59,21 +20,21 @@ namespace DeepLearning {
 
         public void Delete() {
             if(!Deleted) {
-                Delete(Ptr);
+                Eigen.Delete(Ptr);
                 Deleted = true;
             }
         }
 
         public int GetRows() {
-            return GetRows(Ptr);
+            return Eigen.GetRows(Ptr);
         }
 
         public int GetCols() {
-            return GetCols(Ptr);
+            return Eigen.GetCols(Ptr);
         }
 
         public void SetZero() {
-            SetZero(Ptr);
+            Eigen.SetZero(Ptr);
         }
 
         public void SetValue(int row, int col, float value) {
@@ -81,7 +42,7 @@ namespace DeepLearning {
                 Debug.Log("Accessing out of bounds.");
                 return;
             }
-            SetValue(Ptr, row, col, value);
+            Eigen.SetValue(Ptr, row, col, value);
         }
 
         public float GetValue(int row, int col) {
@@ -89,14 +50,14 @@ namespace DeepLearning {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
-            return GetValue(Ptr, row, col);
+            return Eigen.GetValue(Ptr, row, col);
         }
 
         public static Tensor Add(Tensor lhs, Tensor rhs, Tensor OUT) {
             if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
-                Add(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+                Eigen.Add(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
         }
@@ -105,7 +66,7 @@ namespace DeepLearning {
             if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
-                Subtract(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+                Eigen.Subtract(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
         }
@@ -114,13 +75,13 @@ namespace DeepLearning {
             if(lhs.GetCols() != rhs.GetRows()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else { 
-                Product(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+                Eigen.Product(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
         }
 
         public static Tensor Scale(Tensor lhs, float value, Tensor OUT) {
-            Scale(lhs.Ptr, value, OUT.Ptr);
+            Eigen.Scale(lhs.Ptr, value, OUT.Ptr);
             return OUT;
         }
 
@@ -128,7 +89,7 @@ namespace DeepLearning {
             if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
-                PointwiseProduct(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+                Eigen.PointwiseProduct(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
         }
@@ -137,13 +98,13 @@ namespace DeepLearning {
             if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
-                PointwiseQuotient(lhs.Ptr, rhs.Ptr, OUT.Ptr);
+                Eigen.PointwiseQuotient(lhs.Ptr, rhs.Ptr, OUT.Ptr);
             }
             return OUT;
         }
 
         public static Tensor PointwiseAbsolute(Tensor IN, Tensor OUT) {
-            PointwiseAbsolute(IN.Ptr, OUT.Ptr);
+            Eigen.PointwiseAbsolute(IN.Ptr, OUT.Ptr);
             return OUT;
         }
 
@@ -152,7 +113,7 @@ namespace DeepLearning {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
-            return RowSum(Ptr, row);
+            return Eigen.RowSum(Ptr, row);
         }
 
         public float ColSum(int col) {
@@ -160,7 +121,7 @@ namespace DeepLearning {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
-            return ColSum(Ptr, col);
+            return Eigen.ColSum(Ptr, col);
         }
     }
 

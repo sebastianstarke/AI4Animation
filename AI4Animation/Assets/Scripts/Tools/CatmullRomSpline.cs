@@ -253,14 +253,14 @@ public class CatmullRomSpline : MonoBehaviour {
 		cp.name = "ControlPoint";
 		cp.gameObject.AddComponent<MouseDrag>();
 		cp.SetParent(transform);
-		Arrays.Add(ref ControlPoints, cp);
+		ArrayExtensions.Add(ref ControlPoints, cp);
 		//Create();
 		return ControlPoints[ControlPoints.Length-1];
 	}
 
 	private void RemoveControlPoint() {
 		Utility.Destroy(ControlPoints[ControlPoints.Length-1].gameObject);
-		Arrays.Shrink(ref ControlPoints);
+		ArrayExtensions.Shrink(ref ControlPoints);
 		//Create();
 	}
 	
