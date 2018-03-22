@@ -42,20 +42,20 @@ namespace DeepLearning {
 				return;
 			}
 
-			Xmean = Parameters.Load(0).MakeTensor();
-			Xstd = Parameters.Load(1).MakeTensor();
-			Ymean = Parameters.Load(2).MakeTensor();
-			Ystd = Parameters.Load(3).MakeTensor();
+			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
+			Xstd = CreateTensor(Parameters.Load(1), "Xstd");
+			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
+			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
 
-			W0 = Parameters.Load(4).MakeTensor();
-			W1 = Parameters.Load(5).MakeTensor();
-			W2 = Parameters.Load(6).MakeTensor();
-			b0 = Parameters.Load(7).MakeTensor();
-			b1 = Parameters.Load(8).MakeTensor();
-			b2 = Parameters.Load(9).MakeTensor();
+			W0 = CreateTensor(Parameters.Load(4), "W0");
+			W1 = CreateTensor(Parameters.Load(5), "W1");
+			W2 = CreateTensor(Parameters.Load(6), "W2");
+			b0 = CreateTensor(Parameters.Load(7), "b0");
+			b1 = CreateTensor(Parameters.Load(8), "b1");
+			b2 = CreateTensor(Parameters.Load(9), "b2");
 
-			X = new Tensor(XDim, 1);
-			Y = new Tensor(YDim, 1);
+			X = CreateTensor(XDim, 1, "X");
+			Y = CreateTensor(YDim, 1, "Y");
 		}
 
 		public void SetInput(int i, float value) {

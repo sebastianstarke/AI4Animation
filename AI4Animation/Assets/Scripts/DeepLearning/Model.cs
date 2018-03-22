@@ -27,13 +27,12 @@ namespace DeepLearning {
         [DllImport("DeepLearning")]
         private static extern void SoftMax(IntPtr T);
 
-        /*
         private List<Tensor> Tensors = new List<Tensor>();
         private List<string> Identifiers = new List<string>();
 
-        public Tensor AddTensor(int rows, int cols, string id) {
+        public Tensor CreateTensor(int rows, int cols, string id) {
             if(Identifiers.Contains(id)) {
-                Debug.Log("Tensor with ID " + id + " already contained.");
+                //Debug.Log("Tensor with ID " + id + " already contained.");
                 return null;
             }
             Tensor T = new Tensor(rows, cols);
@@ -42,35 +41,50 @@ namespace DeepLearning {
             return T;
         }
 
+        public Tensor CreateTensor(Parameters.FloatMatrix matrix, string id) {
+            if(Identifiers.Contains(id)) {
+                //Debug.Log("Tensor with ID " + id + " already contained.");
+                return null;
+            }
+            Tensor T = new Tensor(matrix.Rows, matrix.Cols);
+            for(int x=0; x<matrix.Rows; x++) {
+                for(int y=0; y<matrix.Cols; y++) {
+                    T.SetValue(x, y, matrix.Values[x].Values[y]);
+                }
+            }
+            Tensors.Add(T);
+            Identifiers.Add(id);
+            return T;
+        }
+
         public void DeleteTensor(Tensor T) {
-            if(!Tensors.Contains(T)) {
-                Debug.Log("Tensor not contained");
+            int index = Tensors.IndexOf(T);
+            if(index == -1) {
+               // Debug.Log("Tensor not found.");
                 return;
             }
-            int index = Tensors.IndexOf(T);
             Tensors.RemoveAt(index);
             Identifiers.RemoveAt(index);
             T.Delete();
         }
 
         public Tensor GetTensor(string id) {
-            if(!Identifiers.Contains(id)) {
-                Debug.Log("ID not contained");
+            int index = Identifiers.IndexOf(id);
+            if(index == -1) {
+                //Debug.Log("ID not found.");
                 return null;
             }
-            int index = Identifiers.IndexOf(id);
             return Tensors[index];
         }
 
         public string GetID(Tensor T) {
-            if(!Tensors.Contains(T)) {
-                Debug.Log("Tensor not contained");
+            int index = Tensors.IndexOf(T);
+            if(index == -1) {
+                //Debug.Log("Tensor not found.");
                 return null;
             }
-            int index = Tensors.IndexOf(T);
             return Identifiers[index];
         }
-        */
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);

@@ -5,33 +5,48 @@ using UnityEngine;
 
 public class TensorActivation : MonoBehaviour {
 
+    public enum AXIS {X, Y};
+
     [Range(0f, 1f)] public float Y = 0.1f;
 
-	private BioAnimation Animation;
-	private float[] Values;
+    public string ID;
+    public AXIS Axis;
 
+    private MFNN Model;
     private Tensor T;
-    private float Minimum = float.MaxValue;
-    private float Maximum = float.MinValue;
+    private float[] Values;
 
 	void Awake() {
-		Animation = GetComponent<BioAnimation>();
+		Model = GetComponent<BioAnimation>().MFNN;
 	}
 
     void Start() {
-        Values = new float[Animation.MFNN.XDim];
         T = new Tensor(1, 1);
     }
 
 	void OnRenderObject() {
-        T = Tensor.PointwiseAbsolute(Animation.MFNN.GetW0(), T);
-        for(int i=0; i<Animation.MFNN.XDim; i++) {
-            Values[i] = T.ColSum(i);
-            Minimum = Mathf.Min(Minimum, Values[i]);
-            Maximum = Mathf.Max(Maximum, Values[i]);
-            //if(Values[i] < 1f) {
-            //    Debug.Log(i + " is inactive.");
-            //}
+        Tensor t = Model.GetTensor(ID);
+        if(t == null) {
+            return;
+        }
+        T = Tensor.PointwiseAbsolute(t, T);
+        float minimum = float.MaxValue;
+        float maximum = float.MinValue;
+        if(Axis == AXIS.X) {
+            Values = new float[T.GetRows()];
+            for(int i=0; i<T.GetRows(); i++) {
+                Values[i] = T.RowSum(i);
+                minimum = Mathf.Min(minimum, Values[i]);
+                maximum = Mathf.Max(maximum, Values[i]);
+            }
+        }
+        if(Axis == AXIS.Y) {
+            Values = new float[T.GetCols()];
+            for(int i=0; i<T.GetCols(); i++) {
+                Values[i] = T.ColSum(i);
+                minimum = Mathf.Min(minimum, Values[i]);
+                maximum = Mathf.Max(maximum, Values[i]);
+            }
         }
 		UltiDraw.Begin();
         UltiDraw.DrawGUIRectangle(
@@ -43,8 +58,8 @@ public class TensorActivation : MonoBehaviour {
             new Vector2(0.5f, Y),
             new Vector2(0.95f, 0.2f),
             Values,
-            Minimum,
-            Maximum,
+            minimum,
+            maximum,
             UltiDraw.White.Transparent(0.5f),
             UltiDraw.Black
         );

@@ -53,6 +53,7 @@ namespace DeepLearning {
                 }
             }
 
+            /*
             public Tensor MakeTensor() {
                 Tensor tensor = new Tensor(Rows, Cols);
                 for(int x=0; x<Rows; x++) {
@@ -62,6 +63,7 @@ namespace DeepLearning {
                 }
                 return tensor;
             }
+            */
 
             public Matrix Build() {
                 Matrix matrix = new Matrix(Rows, Cols);

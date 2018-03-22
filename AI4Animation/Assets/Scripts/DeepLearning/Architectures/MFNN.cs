@@ -58,34 +58,34 @@ namespace DeepLearning {
 				Debug.Log("Building MFNN failed because no parameters were loaded.");
 				return;
 			}
-			Xmean = Parameters.Load(0).MakeTensor();
-			Xstd = Parameters.Load(1).MakeTensor();
-			Ymean = Parameters.Load(2).MakeTensor();
-			Ystd = Parameters.Load(3).MakeTensor();
+			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
+			Xstd = CreateTensor(Parameters.Load(1), "Xstd");
+			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
+			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
 
-			BW0 = Parameters.Load(4).MakeTensor();
-			Bb0 = Parameters.Load(5).MakeTensor();
-			BW1 = Parameters.Load(6).MakeTensor();
-			Bb1 = Parameters.Load(7).MakeTensor();
-			BW2 = Parameters.Load(8).MakeTensor();
-			Bb2 = Parameters.Load(9).MakeTensor();
+			BW0 = CreateTensor(Parameters.Load(4), "BW0");
+			Bb0 = CreateTensor(Parameters.Load(5), "Bb0");
+			BW1 = CreateTensor(Parameters.Load(6), "BW1");
+			Bb1 = CreateTensor(Parameters.Load(7), "Bb1");
+			BW2 = CreateTensor(Parameters.Load(8), "BW2");
+			Bb2 = CreateTensor(Parameters.Load(9), "Bb2");
 
 			CW = new Tensor[YDimBlend*6];
 			for(int i=0; i<YDimBlend*6; i++) {
-				CW[i] = Parameters.Load(10+i).MakeTensor();
+				CW[i] = CreateTensor(Parameters.Load(10+i), "CW"+i);
 			}
 			
-			X = new Tensor(XDim, 1);
-			Y = new Tensor(YDim, 1);
+			X = CreateTensor(XDim, 1, "X");
+			Y = CreateTensor(YDim, 1, "Y");
 
-			BX = new Tensor(ControlNeurons.Length, 1);
-			BY = new Tensor(YDimBlend, 1);
-			W0 = new Tensor(HDim, XDim);
-			W1 = new Tensor(HDim, HDim);
-			W2 = new Tensor(YDim, HDim);
-			b0 = new Tensor(HDim, 1);
-			b1 = new Tensor(HDim, 1);
-			b2 = new Tensor(YDim, 1);
+			BX = CreateTensor(ControlNeurons.Length, 1, "BX");
+			BY = CreateTensor(YDimBlend, 1, "BY");
+			W0 = CreateTensor(HDim, XDim, "W0");
+			W1 = CreateTensor(HDim, HDim, "W1");
+			W2 = CreateTensor(YDim, HDim, "W2");
+			b0 = CreateTensor(HDim, 1, "b0");
+			b1 = CreateTensor(HDim, 1, "b1");
+			b2 = CreateTensor(YDim, 1, "b2");
 		}
 
 		public void SetInput(int index, float value) {

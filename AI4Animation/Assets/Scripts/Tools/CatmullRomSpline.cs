@@ -37,7 +37,7 @@ public class CatmullRomSpline : MonoBehaviour {
 		
 		Trajectory targetTrajectory = Target.GetTrajectory();
 		for(int i=0; i<future.Length; i++) {
-			float weight = (float)(i+1) / (float)future.Length;
+			//float weight = (float)(i+1) / (float)future.Length;
 			Trajectory.Point point = targetTrajectory.Points[60+i+1];
 			point.SetPosition(future[i].GetPosition());
 			//point.SetDirection(future[i].GetDirection());
