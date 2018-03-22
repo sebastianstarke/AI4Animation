@@ -17,9 +17,7 @@ namespace DeepLearning {
 		public Parameters Parameters;
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
-
 		private Tensor W0, W1, W2, b0, b1, b2;
-
 		private Tensor X, Y;
 
 		public void LoadParameters() {
@@ -58,14 +56,6 @@ namespace DeepLearning {
 			Y = CreateTensor(YDim, 1, "Y");
 		}
 
-		public void SetInput(int i, float value) {
-			X.SetValue(i, 0, value);
-		}
-
-		public float GetOutput(int i) {
-			return Y.GetValue(i, 0);
-		}
-
 		public void Predict() {
 			//Normalise Input
 			Normalise(X, Xmean, Xstd, Y);
@@ -77,6 +67,14 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
+		}
+
+		public void SetInput(int i, float value) {
+			X.SetValue(i, 0, value);
+		}
+
+		public float GetOutput(int i) {
+			return Y.GetValue(i, 0);
 		}
 
 		#if UNITY_EDITOR

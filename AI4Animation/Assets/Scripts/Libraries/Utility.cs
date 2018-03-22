@@ -3,6 +3,14 @@ using System;
 using System.IO;
 using System.Reflection;
 
+[System.Serializable]
+public class GUIRect {
+	[Range(0f, 1f)] public float X = 0.5f;
+	[Range(0f, 1f)] public float Y = 0.5f;
+	[Range(0f, 1f)] public float W = 0.5f;
+	[Range(0f, 1f)] public float H = 0.5f;
+}
+
 public static class Utility {
 
 	public static void Screenshot(string name, int x, int y, int width, int height) {

@@ -32,7 +32,7 @@ namespace DeepLearning {
 
         public Tensor CreateTensor(int rows, int cols, string id) {
             if(Identifiers.Contains(id)) {
-                //Debug.Log("Tensor with ID " + id + " already contained.");
+                Debug.Log("Tensor with ID " + id + " already contained.");
                 return null;
             }
             Tensor T = new Tensor(rows, cols);
@@ -43,7 +43,7 @@ namespace DeepLearning {
 
         public Tensor CreateTensor(Parameters.FloatMatrix matrix, string id) {
             if(Identifiers.Contains(id)) {
-                //Debug.Log("Tensor with ID " + id + " already contained.");
+                Debug.Log("Tensor with ID " + id + " already contained.");
                 return null;
             }
             Tensor T = new Tensor(matrix.Rows, matrix.Cols);
@@ -60,7 +60,7 @@ namespace DeepLearning {
         public void DeleteTensor(Tensor T) {
             int index = Tensors.IndexOf(T);
             if(index == -1) {
-               // Debug.Log("Tensor not found.");
+                Debug.Log("Tensor not found.");
                 return;
             }
             Tensors.RemoveAt(index);
@@ -71,7 +71,6 @@ namespace DeepLearning {
         public Tensor GetTensor(string id) {
             int index = Identifiers.IndexOf(id);
             if(index == -1) {
-                //Debug.Log("ID not found.");
                 return null;
             }
             return Tensors[index];
@@ -80,7 +79,6 @@ namespace DeepLearning {
         public string GetID(Tensor T) {
             int index = Tensors.IndexOf(T);
             if(index == -1) {
-                //Debug.Log("Tensor not found.");
                 return null;
             }
             return Identifiers[index];

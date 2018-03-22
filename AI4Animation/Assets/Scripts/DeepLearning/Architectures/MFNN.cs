@@ -88,29 +88,6 @@ namespace DeepLearning {
 			b2 = CreateTensor(YDim, 1, "b2");
 		}
 
-		public void SetInput(int index, float value) {
-			X.SetValue(index, 0, value);
-		}
-
-		public float GetOutput(int index) {
-			return Y.GetValue(index, 0);
-		}
-
-		public Tensor GetBW0() {
-			return BW0;
-		}
-
-		public Tensor GetW0() {
-			return W0;
-		}
-
-		public float GetControlPoint(int index) {
-			if(BY == null) {
-				return 0f;
-			}
-			return BY.GetValue(index, 0);
-		}
-
 		public void Predict() {
 			//Normalise Input
 			Normalise(X, Xmean, Xstd, Y);
@@ -143,6 +120,21 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
+		}
+
+		public void SetInput(int index, float value) {
+			X.SetValue(index, 0, value);
+		}
+
+		public float GetOutput(int index) {
+			return Y.GetValue(index, 0);
+		}
+
+		public float GetControlPoint(int index) {
+			if(BY == null) {
+				return 0f;
+			}
+			return BY.GetValue(index, 0);
 		}
 
 		#if UNITY_EDITOR

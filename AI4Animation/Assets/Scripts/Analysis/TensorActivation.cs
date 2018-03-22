@@ -7,8 +7,7 @@ public class TensorActivation : MonoBehaviour {
 
     public enum AXIS {X, Y};
 
-    [Range(0f, 1f)] public float Y = 0.1f;
-
+    public GUIRect Rect;
     public string ID;
     public AXIS Axis;
 
@@ -50,13 +49,13 @@ public class TensorActivation : MonoBehaviour {
         }
 		UltiDraw.Begin();
         UltiDraw.DrawGUIRectangle(
-            new Vector2(0.5f, Y),
-            new Vector2(0.95f + 0.01f/Screen.width*Screen.height, 0.2f + 0.01f),
+            new Vector2(Rect.X, Rect.Y),
+            new Vector2(Rect.W + 0.01f/Screen.width*Screen.height, Rect.H + 0.01f),
             UltiDraw.Black.Transparent(0.5f)
         );
         UltiDraw.DrawFunction(
-            new Vector2(0.5f, Y),
-            new Vector2(0.95f, 0.2f),
+            new Vector2(Rect.X, Rect.Y),
+            new Vector2(Rect.W, Rect.H),
             Values,
             minimum,
             maximum,
