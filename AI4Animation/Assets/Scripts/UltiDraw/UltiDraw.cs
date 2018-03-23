@@ -542,6 +542,34 @@ public static class UltiDraw {
 		}
 	}
 
+	public static void DrawBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
+			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
+			float pivot = 0.5f * (bottom.x + top.x);
+			bottom.x = pivot; top.x = pivot;
+			DrawGUILine(bottom, top, line);
+		}
+	}
+
+	public static void DrawBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line) {
+		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
+			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
+			float pivot = 0.5f * (bottom.x + top.x);
+			bottom.x = pivot; top.x = pivot;
+			DrawGUILine(bottom, top, thickness, line);
+		}
+	}
+
 	//------------------------------------------------------------------------------------------
 	//UTILITY FUNCTIONS
 	//------------------------------------------------------------------------------------------

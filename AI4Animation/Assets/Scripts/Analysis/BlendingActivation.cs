@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DeepLearning;
 using UnityEngine;
 
 public class BlendingActivation : MonoBehaviour {
@@ -8,38 +9,27 @@ public class BlendingActivation : MonoBehaviour {
 
     [Range(0f, 1f)] public float Y = 0.1f;
 
-	//private BioAnimation Animation;
-	//private Queue<float>[] Values;
+	private Model Model;
+	private Queue<float>[] Values;
 
 	void Awake() {
-		//Animation = GetComponent<BioAnimation>();
+		Model = GetComponent<BioAnimation>().NN.Model;
 	}
 
 	void Start() {
-		Initialise();
-	}
-
-	void Initialise() {
-		/*
-		Values = new Queue<float>[Animation.MFNN.YDimBlend];
+		Values = new Queue<float>[Model.GetTensor("BY").GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
 				Values[i].Enqueue(0f);
 			}
 		}
-		*/
 	}
 
 	void OnRenderObject() {
-		/*
-		if(Values.Length != Animation.MFNN.YDimBlend) {
-			Initialise();
-		}
-
 		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
-			Values[i].Enqueue(Animation.MFNN.GetControlPoint(i));
+			Values[i].Enqueue(Model.GetTensor("BY").GetValue(i, 0));
 		}
 
 		UltiDraw.Begin();
@@ -56,12 +46,11 @@ public class BlendingActivation : MonoBehaviour {
 			new Vector2(width, height),
 			UltiDraw.White.Transparent(0.5f));
 
-		Color[] colors = UltiDraw.GetRainbowColors(Animation.MFNN.YDimBlend);
+		Color[] colors = UltiDraw.GetRainbowColors(Values.Length);
 		for(int i=0; i<colors.Length; i++) {
 			DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, Values[i], colors[i]);
 		}
 		UltiDraw.End();
-		*/
 	}
 
 	private void DrawControlPoint(float x, float y, float width, float height, Queue<float> values, Color color) {

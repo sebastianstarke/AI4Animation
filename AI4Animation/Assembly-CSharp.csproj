@@ -150,14 +150,12 @@
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
      <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
-     <Compile Include="Assets\Scripts\Trash\BioAnimation_MLP.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_Old.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_Old_V.cs" />
      <Compile Include="Assets\Scripts\Trash\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\Trash\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\ConstantTorque.cs" />
-     <Compile Include="Assets\Scripts\Trash\EigenTest.cs" />
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GamePad.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />

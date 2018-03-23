@@ -101,12 +101,13 @@ namespace DeepLearning {
 			W1.SetZero(); b1.SetZero();
 			W2.SetZero(); b2.SetZero();
 			for(int i=0; i<YDimBlend; i++) {
-				Blend(W0, CW[6*i + 0], BY.GetValue(i, 0));
-				Blend(b0, CW[6*i + 1], BY.GetValue(i, 0));
-				Blend(W1, CW[6*i + 2], BY.GetValue(i, 0));
-				Blend(b1, CW[6*i + 3], BY.GetValue(i, 0));
-				Blend(W2, CW[6*i + 4], BY.GetValue(i, 0));
-				Blend(b2, CW[6*i + 5], BY.GetValue(i, 0));
+				float weight = BY.GetValue(i, 0);
+				Blend(W0, CW[6*i + 0], weight);
+				Blend(b0, CW[6*i + 1], weight);
+				Blend(W1, CW[6*i + 2], weight);
+				Blend(b1, CW[6*i + 3], weight);
+				Blend(W2, CW[6*i + 4], weight);
+				Blend(b2, CW[6*i + 5], weight);
 			}
 
 			//Process Mode-Functioned Network

@@ -628,6 +628,7 @@ public class BioAnimation : MonoBehaviour {
 				}
 				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f));
 			}
+			/*
 			for(int i=0; i<5; i++) {
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
 					Matrix4x4 mat = Matrix4x4.TRS(FuturePositions[j][i], Quaternion.LookRotation(FutureForwards[j][i], FutureUps[j][i]), Vector3.one);
@@ -635,6 +636,7 @@ public class BioAnimation : MonoBehaviour {
 				}
 				Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, 1f - (float)(i+1)/5f).Transparent(0.75f));
 			}
+			*/
 		}
 		
 		Character.FetchTransformations(transform);

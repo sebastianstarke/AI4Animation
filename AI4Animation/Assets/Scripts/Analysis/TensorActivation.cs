@@ -11,20 +11,19 @@ public class TensorActivation : MonoBehaviour {
     public string ID;
     public AXIS Axis;
 
-    private MFNN Model;
+    private Model Model;
     private Tensor T;
     private float[] Values;
 
 	void Awake() {
-		//Model = GetComponent<BioAnimation>().MFNN;
+		Model = GetComponent<BioAnimation>().NN.Model;
 	}
 
     void Start() {
-       // T = new Tensor(1, 1);
+        T = new Tensor(1, 1);
     }
 
 	void OnRenderObject() {
-        /*
         Tensor t = Model.GetTensor(ID);
         if(t == null) {
             return;
@@ -64,7 +63,6 @@ public class TensorActivation : MonoBehaviour {
             UltiDraw.Black
         );
 		UltiDraw.End();
-        */
 	}
 
 }
