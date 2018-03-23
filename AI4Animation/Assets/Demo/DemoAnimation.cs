@@ -114,7 +114,7 @@ public class DemoAnimation : MonoBehaviour {
 			float bias_dir = 1.25f;
 			float scale_pos = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_pos));
 			float scale_dir = (1.0f - Mathf.Pow(1.0f - ((float)(i - RootPointIndex) / (RootPointIndex)), bias_dir));
-			float vel_boost = 1f;
+			float vel_boost = PoolBias();
 
 			float rescale = 1f / (Trajectory.Points.Length - (RootPointIndex + 1f));
 
@@ -300,6 +300,27 @@ public class DemoAnimation : MonoBehaviour {
 			//Update Phase
 			PFNN.SetPhase(Mathf.Repeat(PFNN.GetPhase() + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
 		}
+	}
+
+	private float PoolBias() {
+		float[] styles = Trajectory.Points[RootPointIndex].Styles;
+		float bias = 0f;
+		for(int i=0; i<styles.Length; i++) {
+			float _bias = Controller.Styles[i].Bias;
+			float max = 0f;
+			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
+				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
+					max = Mathf.Max(max, Controller.Styles[i].Bias * Controller.Styles[i].Multipliers[j].Value);
+				}
+			}
+			for(int j=0; j<Controller.Styles[i].Multipliers.Length; j++) {
+				if(Input.GetKey(Controller.Styles[i].Multipliers[j].Key)) {
+					_bias = Mathf.Min(max, _bias * Controller.Styles[i].Multipliers[j].Value);
+				}
+			}
+			bias += styles[i] * _bias;
+		}
+		return bias;
 	}
 
 	private Trajectory.Point GetSample(int index) {
