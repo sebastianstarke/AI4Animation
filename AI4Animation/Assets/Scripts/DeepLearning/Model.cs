@@ -1,14 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace DeepLearning {
-    
-    public abstract class Model {
 
+    public enum TYPE {Vanilla, MFNN};
+
+    public abstract class Model : ScriptableObject {
+
+		public string Folder = string.Empty;
         public Parameters Parameters;
 
         private List<Tensor> Tensors = new List<Tensor>();
         private List<string> Identifiers = new List<string>();
+
+        public abstract void StoreParameters();
+        public abstract void LoadParameters();
+        public abstract void Predict();
+        public abstract void SetInput(int index, float value);
+        public abstract float GetOutput(int index);
+		#if UNITY_EDITOR
+		public abstract void Inspector();
+		#endif
 
         public Tensor CreateTensor(int rows, int cols, string id) {
             if(Identifiers.Contains(id)) {

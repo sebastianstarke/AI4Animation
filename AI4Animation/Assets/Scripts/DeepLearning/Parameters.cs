@@ -6,7 +6,7 @@ namespace DeepLearning {
     public class Parameters : ScriptableObject {
         public FloatMatrix[] Matrices = new FloatMatrix[0];
 
-        public void Save(string fn, int rows, int cols) {
+        public void Store(string fn, int rows, int cols) {
             ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols));
         }
 
@@ -52,18 +52,6 @@ namespace DeepLearning {
                     Values[i] = new FloatVector(cols);
                 }
             }
-
-            /*
-            public Tensor MakeTensor() {
-                Tensor tensor = new Tensor(Rows, Cols);
-                for(int x=0; x<Rows; x++) {
-                    for(int y=0; y<Cols; y++) {
-                        tensor.SetValue(x, y, Values[x].Values[y]);
-                    }
-                }
-                return tensor;
-            }
-            */
 
             public Matrix Build() {
                 Matrix matrix = new Matrix(Rows, Cols);

@@ -29,9 +29,9 @@ public class PFNN {
 		
 	}
 
-	public void Initialise() {
+	public void LoadParameters() {
 		if(Parameters == null) {
-			Debug.Log("Building PFNN failed because no parameters were loaded.");
+			Debug.Log("Building PFNN failed because no parameters were saved.");
 			return;
 		}
 
@@ -61,7 +61,7 @@ public class PFNN {
 		Phase = 0f;
 	}
 
-	public void LoadParameters() {
+	public void SaveParameters() {
 		Parameters = ScriptableObject.CreateInstance<NetworkParameters>();
 		Parameters.StoreMatrix(Folder+"/Xmean.bin", XDim, 1);
 		Parameters.StoreMatrix(Folder+"/Xstd.bin", XDim, 1);
@@ -160,8 +160,8 @@ public class PFNN {
 					HDim = EditorGUILayout.IntField("HDim", HDim);
 					YDim = EditorGUILayout.IntField("YDim", YDim);
 					EditorGUILayout.BeginHorizontal();
-					if(GUILayout.Button("Load Parameters")) {
-						LoadParameters();
+					if(GUILayout.Button("Save Parameters")) {
+						SaveParameters();
 					}
 					Parameters = (NetworkParameters)EditorGUILayout.ObjectField(Parameters, typeof(NetworkParameters), true);
 					EditorGUILayout.EndHorizontal();

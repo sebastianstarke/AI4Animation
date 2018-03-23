@@ -759,9 +759,11 @@ public class BVHAnimation : ScriptableObject {
 		skeleton.SetParent(root.transform);
 
 		BioAnimation animation = root.gameObject.AddComponent<BioAnimation>();
+		/*
 		animation.Joints = new Transform[active];
 		int index = 0;
 		AssignJoints(skeleton, ref animation.Joints, ref index);
+		*/
 	}
 
 	private Transform ExportSkeleton(Character.Segment bone, Transform parent, ref int active) {

@@ -71,10 +71,10 @@ public class BioAnimation_PFNN : MonoBehaviour {
 			Velocities[i] = Vector3.zero;
 		}
 		if(PFNN.Parameters == null) {
-			Debug.Log("No parameters loaded.");
+			Debug.Log("No parameters saved.");
 			return;
 		}
-		PFNN.Initialise();
+		PFNN.LoadParameters();
 	}
 
 	void Start() {

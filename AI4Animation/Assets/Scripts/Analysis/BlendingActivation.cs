@@ -8,11 +8,11 @@ public class BlendingActivation : MonoBehaviour {
 
     [Range(0f, 1f)] public float Y = 0.1f;
 
-	private BioAnimation Animation;
-	private Queue<float>[] Values;
+	//private BioAnimation Animation;
+	//private Queue<float>[] Values;
 
 	void Awake() {
-		Animation = GetComponent<BioAnimation>();
+		//Animation = GetComponent<BioAnimation>();
 	}
 
 	void Start() {
@@ -20,6 +20,7 @@ public class BlendingActivation : MonoBehaviour {
 	}
 
 	void Initialise() {
+		/*
 		Values = new Queue<float>[Animation.MFNN.YDimBlend];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
@@ -27,9 +28,11 @@ public class BlendingActivation : MonoBehaviour {
 				Values[i].Enqueue(0f);
 			}
 		}
+		*/
 	}
 
 	void OnRenderObject() {
+		/*
 		if(Values.Length != Animation.MFNN.YDimBlend) {
 			Initialise();
 		}
@@ -58,6 +61,7 @@ public class BlendingActivation : MonoBehaviour {
 			DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, Values[i], colors[i]);
 		}
 		UltiDraw.End();
+		*/
 	}
 
 	private void DrawControlPoint(float x, float y, float width, float height, Queue<float> values, Color color) {

@@ -71,10 +71,10 @@ public class BioAnimation_Old : MonoBehaviour {
 		}
 
 		if(MFNN.Parameters == null) {
-			Debug.Log("No parameters loaded.");
+			Debug.Log("No parameters saved.");
 			return;
 		}
-		MFNN.Initialise();
+		MFNN.LoadParameters();
 	}
 
 	void Start() {

@@ -101,10 +101,10 @@ public class BioAnimation_MLP : MonoBehaviour {
 		}
 		//
 		if(MLP.Parameters == null) {
-			Debug.Log("No parameters loaded.");
+			Debug.Log("No parameters saved.");
 			return;
 		}
-		MLP.Initialise();
+		MLP.LoadParameters();
 	}
 
 	void Start() {

@@ -16,14 +16,15 @@ public class TensorActivation : MonoBehaviour {
     private float[] Values;
 
 	void Awake() {
-		Model = GetComponent<BioAnimation>().MFNN;
+		//Model = GetComponent<BioAnimation>().MFNN;
 	}
 
     void Start() {
-        T = new Tensor(1, 1);
+       // T = new Tensor(1, 1);
     }
 
 	void OnRenderObject() {
+        /*
         Tensor t = Model.GetTensor(ID);
         if(t == null) {
             return;
@@ -63,6 +64,7 @@ public class TensorActivation : MonoBehaviour {
             UltiDraw.Black
         );
 		UltiDraw.End();
+        */
 	}
 
 }

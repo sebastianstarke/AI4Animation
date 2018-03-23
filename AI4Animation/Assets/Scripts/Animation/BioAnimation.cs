@@ -24,11 +24,9 @@ public class BioAnimation : MonoBehaviour {
 	public int JointDimIn = 12;
 	public int JointDimOut = 12;
 
-	public Transform[] Joints = new Transform[0];
-
 	public Controller Controller;
 	public Character Character;
-	public MFNN MFNN;
+	public NeuralNetwork NN;
 
 	public bool MotionEditing = true;
 	public SerialCCD[] IKSolvers = new SerialCCD[0];
@@ -39,6 +37,8 @@ public class BioAnimation : MonoBehaviour {
 	private Vector3 TargetVelocity;
 
 	//State
+	private Transform[] Joints;
+
 	private Vector3[] Positions = new Vector3[0];
 	private Vector3[] Forwards = new Vector3[0];
 	private Vector3[] Ups = new Vector3[0];
@@ -64,10 +64,12 @@ public class BioAnimation : MonoBehaviour {
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
-		MFNN = new MFNN();
+		NN = new NeuralNetwork(TYPE.Vanilla);
 	}
 
 	void Awake() {
+		DetectJoints();
+		
 		TargetDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
 		TargetVelocity = Vector3.zero;
 		Positions = new Vector3[Joints.Length];
@@ -123,11 +125,11 @@ public class BioAnimation : MonoBehaviour {
 			}
 		}
 		//
-		if(MFNN.Parameters == null) {
-			Debug.Log("No parameters loaded.");
+		if(NN.Model.Parameters == null) {
+			Debug.Log("No parameters saved.");
 			return;
 		}
-		MFNN.Initialise();
+		NN.Model.LoadParameters();
 	}
 
 	void Start() {
@@ -167,7 +169,7 @@ public class BioAnimation : MonoBehaviour {
 			PredictTrajectory();
 		}
 
-		if(MFNN.Parameters != null) {
+		if(NN.Model.Parameters != null) {
 			Animate();
 		}
 
@@ -259,14 +261,14 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
-			MFNN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
+			NN.Model.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
 			for(int j=0; j<Controller.Styles.Length; j++) {
-				MFNN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
+				NN.Model.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
 		}
 		start += TrajectoryDimIn*PointSamples;
@@ -281,18 +283,18 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 			Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
 			Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-			MFNN.SetInput(start + i*JointDimIn + 0, pos.x);
-			MFNN.SetInput(start + i*JointDimIn + 1, pos.y);
-			MFNN.SetInput(start + i*JointDimIn + 2, pos.z);
-			MFNN.SetInput(start + i*JointDimIn + 3, forward.x);
-			MFNN.SetInput(start + i*JointDimIn + 4, forward.y);
-			MFNN.SetInput(start + i*JointDimIn + 5, forward.z);
-			MFNN.SetInput(start + i*JointDimIn + 6, up.x);
-			MFNN.SetInput(start + i*JointDimIn + 7, up.y);
-			MFNN.SetInput(start + i*JointDimIn + 8, up.z);
-			MFNN.SetInput(start + i*JointDimIn + 9, vel.x);
-			MFNN.SetInput(start + i*JointDimIn + 10, vel.y);
-			MFNN.SetInput(start + i*JointDimIn + 11, vel.z);
+			NN.Model.SetInput(start + i*JointDimIn + 0, pos.x);
+			NN.Model.SetInput(start + i*JointDimIn + 1, pos.y);
+			NN.Model.SetInput(start + i*JointDimIn + 2, pos.z);
+			NN.Model.SetInput(start + i*JointDimIn + 3, forward.x);
+			NN.Model.SetInput(start + i*JointDimIn + 4, forward.y);
+			NN.Model.SetInput(start + i*JointDimIn + 5, forward.z);
+			NN.Model.SetInput(start + i*JointDimIn + 6, up.x);
+			NN.Model.SetInput(start + i*JointDimIn + 7, up.y);
+			NN.Model.SetInput(start + i*JointDimIn + 8, up.z);
+			NN.Model.SetInput(start + i*JointDimIn + 9, vel.x);
+			NN.Model.SetInput(start + i*JointDimIn + 10, vel.y);
+			NN.Model.SetInput(start + i*JointDimIn + 11, vel.z);
 		}
 		start += JointDimIn*Joints.Length;
 
@@ -303,24 +305,24 @@ public class BioAnimation : MonoBehaviour {
 				Vector3 forward = PastForwards[j][i*10].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = PastUps[j][i*10].GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = PastVelocities[j][i*10].GetRelativeDirectionTo(previousRoot);
-				MFNN.SetInput(start + j*JointDimIn + 0, pos.x);
-				MFNN.SetInput(start + j*JointDimIn + 1, pos.y);
-				MFNN.SetInput(start + j*JointDimIn + 2, pos.z);
-				MFNN.SetInput(start + j*JointDimIn + 3, forward.x);
-				MFNN.SetInput(start + j*JointDimIn + 4, forward.y);
-				MFNN.SetInput(start + j*JointDimIn + 5, forward.z);
-				MFNN.SetInput(start + j*JointDimIn + 6, up.x);
-				MFNN.SetInput(start + j*JointDimIn + 7, up.y);
-				MFNN.SetInput(start + j*JointDimIn + 8, up.z);
-				MFNN.SetInput(start + j*JointDimIn + 9, vel.x);
-				MFNN.SetInput(start + j*JointDimIn + 10, vel.y);
-				MFNN.SetInput(start + j*JointDimIn + 11, vel.z);
+				NN.Model.SetInput(start + j*JointDimIn + 0, pos.x);
+				NN.Model.SetInput(start + j*JointDimIn + 1, pos.y);
+				NN.Model.SetInput(start + j*JointDimIn + 2, pos.z);
+				NN.Model.SetInput(start + j*JointDimIn + 3, forward.x);
+				NN.Model.SetInput(start + j*JointDimIn + 4, forward.y);
+				NN.Model.SetInput(start + j*JointDimIn + 5, forward.z);
+				NN.Model.SetInput(start + j*JointDimIn + 6, up.x);
+				NN.Model.SetInput(start + j*JointDimIn + 7, up.y);
+				NN.Model.SetInput(start + j*JointDimIn + 8, up.z);
+				NN.Model.SetInput(start + j*JointDimIn + 9, vel.x);
+				NN.Model.SetInput(start + j*JointDimIn + 10, vel.y);
+				NN.Model.SetInput(start + j*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Joints.Length;
 		}
 
 		//Predict
-		MFNN.Predict();
+		NN.Model.Predict();
 
 		//Update Past Trajectory
 		for(int i=0; i<RootPointIndex; i++) {
@@ -336,8 +338,8 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		//Update Current Trajectory
-		Vector3 translationalOffset = new Vector3(MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 0), 0f, MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 1));
-		float rotationalOffset = MFNN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 2);
+		Vector3 translationalOffset = new Vector3(NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 0), 0f, NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 1));
+		float rotationalOffset = NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Joints.Length + 2);
 
 		translationalOffset *= Utility.Exponential01(translationalOffset.magnitude / 0.001f);
 		rotationalOffset *= Utility.Exponential01(Mathf.Abs(rotationalOffset) / 0.01f);
@@ -364,35 +366,35 @@ public class BioAnimation : MonoBehaviour {
 			float factor = (float)(i % PointDensity) / PointDensity;
 
 			Vector3 prevPos = new Vector3(
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0),
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0),
 				0f,
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1)
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1)
 			).GetRelativePositionFrom(nextRoot);
 			Vector3 prevDir = new Vector3(
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2),
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2),
 				0f,
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3)
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3)
 			).normalized.GetRelativeDirectionFrom(nextRoot);
 			Vector3 prevVel = new Vector3(
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 4),
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 4),
 				0f,
-				MFNN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 5)
+				NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 5)
 			).GetRelativeDirectionFrom(nextRoot);
 
 			Vector3 nextPos = new Vector3(
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0),
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0),
 				0f,
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1)
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1)
 			).GetRelativePositionFrom(nextRoot);
 			Vector3 nextDir = new Vector3(
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2),
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2),
 				0f,
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3)
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3)
 			).normalized.GetRelativeDirectionFrom(nextRoot);
 			Vector3 nextVel = new Vector3(
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 4),
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 4),
 				0f,
-				MFNN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 5)
+				NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 5)
 			).GetRelativeDirectionFrom(nextRoot);
 
 			Vector3 pos = (1f - factor) * prevPos + factor * nextPos;
@@ -456,10 +458,10 @@ public class BioAnimation : MonoBehaviour {
 		for(int p=0; p<5; p++) {
 			int pivot = TrajectoryDimOut*6 + JointDimOut*Joints.Length + 3 + p*JointDimOut*Joints.Length;
 			for(int i=0; i<Joints.Length; i++) {
-				Vector3 position = new Vector3(MFNN.GetOutput(pivot + 0), MFNN.GetOutput(pivot + 1), MFNN.GetOutput(pivot + 2)).GetRelativePositionFrom(currentRoot);
-				Vector3 forward = new Vector3(MFNN.GetOutput(pivot + 3), MFNN.GetOutput(pivot + 4), MFNN.GetOutput(pivot + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
-				Vector3 up = new Vector3(MFNN.GetOutput(pivot + 6), MFNN.GetOutput(pivot + 7), MFNN.GetOutput(pivot + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
-				Vector3 velocity = new Vector3(MFNN.GetOutput(pivot + 9), MFNN.GetOutput(pivot + 10), MFNN.GetOutput(pivot + 11)).GetRelativeDirectionFrom(currentRoot);
+				Vector3 position = new Vector3(NN.Model.GetOutput(pivot + 0), NN.Model.GetOutput(pivot + 1), NN.Model.GetOutput(pivot + 2)).GetRelativePositionFrom(currentRoot);
+				Vector3 forward = new Vector3(NN.Model.GetOutput(pivot + 3), NN.Model.GetOutput(pivot + 4), NN.Model.GetOutput(pivot + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 up = new Vector3(NN.Model.GetOutput(pivot + 6), NN.Model.GetOutput(pivot + 7), NN.Model.GetOutput(pivot + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 velocity = new Vector3(NN.Model.GetOutput(pivot + 9), NN.Model.GetOutput(pivot + 10), NN.Model.GetOutput(pivot + 11)).GetRelativeDirectionFrom(currentRoot);
 				pivot += JointDimOut;
 				FuturePositions[i][p] = Vector3.Lerp(FuturePositions[i][p] + velocity / Framerate, position, 0.5f);
 				FutureForwards[i][p] = forward;
@@ -471,10 +473,10 @@ public class BioAnimation : MonoBehaviour {
 
 		//Compute Posture
 		for(int i=0; i<Joints.Length; i++) {
-			Vector3 position = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 0), MFNN.GetOutput(start + i*JointDimOut + 1), MFNN.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
-			Vector3 forward = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 3), MFNN.GetOutput(start + i*JointDimOut + 4), MFNN.GetOutput(start + i*JointDimOut + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
-			Vector3 up = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 6), MFNN.GetOutput(start + i*JointDimOut + 7), MFNN.GetOutput(start + i*JointDimOut + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
-			Vector3 velocity = new Vector3(MFNN.GetOutput(start + i*JointDimOut + 9), MFNN.GetOutput(start + i*JointDimOut + 10), MFNN.GetOutput(start + i*JointDimOut + 11)).GetRelativeDirectionFrom(currentRoot);
+			Vector3 position = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 0), NN.Model.GetOutput(start + i*JointDimOut + 1), NN.Model.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
+			Vector3 forward = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 3), NN.Model.GetOutput(start + i*JointDimOut + 4), NN.Model.GetOutput(start + i*JointDimOut + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
+			Vector3 up = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 6), NN.Model.GetOutput(start + i*JointDimOut + 7), NN.Model.GetOutput(start + i*JointDimOut + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
+			Vector3 velocity = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 9), NN.Model.GetOutput(start + i*JointDimOut + 10), NN.Model.GetOutput(start + i*JointDimOut + 11)).GetRelativeDirectionFrom(currentRoot);
 
 			Positions[i] = Vector3.Lerp(Positions[i] + velocity / Framerate, position, 0.5f);
 			Forwards[i] = forward;
@@ -681,7 +683,7 @@ public class BioAnimation : MonoBehaviour {
 			Inspector();
 			Target.Controller.Inspector();
 			Target.Character.Inspector(Target.transform);
-			Target.MFNN.Inspector();
+			Target.NN.Inspector();
 
 			if(GUI.changed) {
 				EditorUtility.SetDirty(Target);
@@ -731,6 +733,7 @@ public class BioAnimation : MonoBehaviour {
 							Target.IKSolvers[i] = (SerialCCD)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialCCD), true);
 						}
 
+						/*
 						if(Utility.GUIButton("Detect Joints", UltiDraw.DarkGrey, UltiDraw.White)) {
 							Target.DetectJoints();
 						}
@@ -746,6 +749,7 @@ public class BioAnimation : MonoBehaviour {
 							EditorGUILayout.EndHorizontal();
 							Utility.ResetGUIColor();
 						}
+						*/
 					}
 				}
 			}

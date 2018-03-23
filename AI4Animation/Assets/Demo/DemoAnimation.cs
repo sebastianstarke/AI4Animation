@@ -48,7 +48,7 @@ public class DemoAnimation : MonoBehaviour {
 		Velocities = new Vector3[Joints.Length];
 		Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 		Trajectory.Postprocess();
-		PFNN.Initialise();
+		PFNN.LoadParameters();
 	}
 
 	void Start() {
