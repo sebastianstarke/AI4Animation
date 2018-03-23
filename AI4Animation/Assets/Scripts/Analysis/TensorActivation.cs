@@ -6,9 +6,11 @@ using UnityEngine;
 public class TensorActivation : MonoBehaviour {
 
     public enum AXIS {X, Y};
+    public enum TYPE {AbsSum, AbsDiff};
 
     public GUIRect Rect;
     public string ID;
+    public TYPE Type;
     public AXIS Axis;
 
     private Model Model;
@@ -28,25 +30,30 @@ public class TensorActivation : MonoBehaviour {
         if(t == null) {
             return;
         }
+
         T = Tensor.PointwiseAbsolute(t, T);
         float minimum = float.MaxValue;
         float maximum = float.MinValue;
-        if(Axis == AXIS.X) {
-            Values = new float[T.GetRows()];
-            for(int i=0; i<T.GetRows(); i++) {
-                Values[i] = T.RowSum(i);
-                minimum = Mathf.Min(minimum, Values[i]);
-                maximum = Mathf.Max(maximum, Values[i]);
+        
+        if(Type == TYPE.AbsSum) {
+            if(Axis == AXIS.X) {
+                Values = new float[T.GetRows()];
+                for(int i=0; i<T.GetRows(); i++) {
+                    Values[i] = T.RowSum(i);
+                    minimum = Mathf.Min(minimum, Values[i]);
+                    maximum = Mathf.Max(maximum, Values[i]);
+                }
+            }
+            if(Axis == AXIS.Y) {
+                Values = new float[T.GetCols()];
+                for(int i=0; i<T.GetCols(); i++) {
+                    Values[i] = T.ColSum(i);
+                    minimum = Mathf.Min(minimum, Values[i]);
+                    maximum = Mathf.Max(maximum, Values[i]);
+                }
             }
         }
-        if(Axis == AXIS.Y) {
-            Values = new float[T.GetCols()];
-            for(int i=0; i<T.GetCols(); i++) {
-                Values[i] = T.ColSum(i);
-                minimum = Mathf.Min(minimum, Values[i]);
-                maximum = Mathf.Max(maximum, Values[i]);
-            }
-        }
+
 		UltiDraw.Begin();
         UltiDraw.DrawGUIRectangle(
             new Vector2(Rect.X, Rect.Y),

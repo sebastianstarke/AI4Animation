@@ -19,7 +19,7 @@ namespace DeepLearning {
 		}
 
 		public void SetModel(TYPE type) {
-			if(Type == type) {
+			if(Type == type && Model != null) {
 				return;
 			}
 			Type = type;

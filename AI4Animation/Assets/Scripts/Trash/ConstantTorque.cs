@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ConstantTorque : MonoBehaviour {
 
+	/*
 	public Vector3 Direction;
 
 	private Rigidbody RB;
@@ -11,13 +12,15 @@ public class ConstantTorque : MonoBehaviour {
 	private CharacterJoint Joint;
 
 	void Awake() {
-		//RB = GetComponent<Rigidbody>();
-		//Joint = GetComponent<CharacterJoint>();
-		//DefaultRotation = transform.localRotation;
+		RB = GetComponent<Rigidbody>();
+		Joint = GetComponent<CharacterJoint>();
+		DefaultRotation = transform.localRotation;
 	}
 
 	void FixedUpdate() {
 		//Debug.Log(Joint.currentTorque);
-		//RB.AddTorque(Direction);
+		RB.AddTorque(Direction);
 	}
+	*/
+	
 }

@@ -8,6 +8,8 @@ using UnityEditor;
 
 public class BioAnimation : MonoBehaviour {
 
+	public int InstanceID = 0;
+
 	public bool Inspect = false;
 
 	public int Framerate = 60;
@@ -61,6 +63,7 @@ public class BioAnimation : MonoBehaviour {
 	private const int PointDensity = 10;
 
 	void Reset() {
+		InstanceID = GetInstanceID();
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
@@ -634,7 +637,7 @@ public class BioAnimation : MonoBehaviour {
 					Matrix4x4 mat = Matrix4x4.TRS(FuturePositions[j][i], Quaternion.LookRotation(FutureForwards[j][i], FutureUps[j][i]), Vector3.one);
 					Character.Hierarchy[j].SetTransformation(mat);
 				}
-				Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, 1f - (float)(i+1)/5f).Transparent(0.75f));
+				Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f));
 			}
 			*/
 		}
@@ -677,6 +680,14 @@ public class BioAnimation : MonoBehaviour {
 
 		void Awake() {
 			Target = (BioAnimation)target;
+			CopyHandle();
+		}
+
+		private void CopyHandle() {
+			if(Target.InstanceID != Target.GetInstanceID()) {
+				Target.InstanceID = Target.GetInstanceID();
+				Target.NN = new NeuralNetwork(TYPE.Vanilla);
+			}
 		}
 
 		public override void OnInspectorGUI() {
@@ -692,7 +703,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 		}
 
-		private void Inspector() {			
+		private void Inspector() {
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();

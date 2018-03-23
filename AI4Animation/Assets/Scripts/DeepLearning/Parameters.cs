@@ -52,16 +52,6 @@ namespace DeepLearning {
                     Values[i] = new FloatVector(cols);
                 }
             }
-
-            public Matrix Build() {
-                Matrix matrix = new Matrix(Rows, Cols);
-                for(int i=0; i<Rows; i++) {
-                    for(int j=0; j<Cols; j++) {
-                        matrix.Values[i][j] = Values[i].Values[j];
-                    }
-                }
-                return matrix;
-            }
         }
     }
 	

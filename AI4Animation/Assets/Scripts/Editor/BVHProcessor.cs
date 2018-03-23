@@ -68,18 +68,17 @@ public class BVHProcessor : EditorWindow {
 
 				EditorGUILayout.LabelField("Export Time: " + GetExportTime() + "s");
 				
-				/*
+				
                 if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
-						animation.Character.BoneColor = UltiDraw.Black;
-						animation.Character.JointColor = UltiDraw.Mustard;
+						animation.StyleFunction.SetTransition(1f);
                        	EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
-				*/
+				
 
 				Framerate = EditorGUILayout.IntField("Framerate", Framerate);				
 				
