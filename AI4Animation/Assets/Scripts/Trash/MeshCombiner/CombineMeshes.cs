@@ -18,9 +18,13 @@
     [ContextMenu("Detect Meshes")]
     public void Detect() {
         MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
-        Objects = new GameObject[meshFilters.Length];
+        SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        Objects = new GameObject[meshFilters.Length + skinnedMeshRenderers.Length];
         for(int i=0; i<Objects.Length; i++) {
             Objects[i] = meshFilters[i].gameObject;
+        }
+        for(int i=0; i<Objects.Length; i++) {
+            Objects[i+meshFilters.Length] = skinnedMeshRenderers[i].gameObject;
         }
     }
 
@@ -64,6 +68,37 @@
                      combineInstance.transform = meshRenderer.transform.localToWorldMatrix;
                      combineInstance.subMeshIndex = s;
                      combineInstance.mesh = meshFilter.sharedMesh;
+                     (combineInstanceArrays [materialArrayIndex] as ArrayList).Add (combineInstance);
+                 }
+             }
+
+             SkinnedMeshRenderer[] renderers = obj.GetComponentsInChildren<SkinnedMeshRenderer>();
+              
+             foreach( SkinnedMeshRenderer renderer in renderers   )
+             {
+                 
+                 // Handle bad input
+                 if(!renderer) { 
+                     Debug.LogError("MeshFilter does not have a coresponding MeshRenderer."); 
+                     continue; 
+                 }
+                 if(renderer.materials.Length != renderer.sharedMesh.subMeshCount) { 
+                     Debug.LogError("Mismatch between material count and submesh count. Is this the correct MeshRenderer?"); 
+                     continue; 
+                 }
+                 
+ for (int s = 0; s < renderer.sharedMesh.subMeshCount; s++) {
+                     int materialArrayIndex = Contains (materials, renderer.sharedMaterials [s].name);
+                     if (materialArrayIndex == -1) {
+                         materials.Add (renderer.sharedMaterials [s]);
+                         materialArrayIndex = materials.Count - 1;
+                     } 
+                     combineInstanceArrays.Add (new ArrayList ());
+ 
+                     CombineInstance combineInstance = new CombineInstance ();
+                     combineInstance.transform = renderer.transform.localToWorldMatrix;
+                     combineInstance.subMeshIndex = s;
+                     combineInstance.mesh = renderer.sharedMesh;
                      (combineInstanceArrays [materialArrayIndex] as ArrayList).Add (combineInstance);
                  }
              }

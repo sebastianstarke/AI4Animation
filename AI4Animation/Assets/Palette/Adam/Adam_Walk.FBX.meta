@@ -1,0 +1,3531 @@
+fileFormatVersion: 2
+guid: abff1e609cb74354792d4d21e84c0eaa
+timeCreated: 1476195747
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Adam_BloodyHeadBracket
+    100002: Adam_monitor_back
+    100004: Adam_monitor_front
+    100006: Adam_Reference
+    100008: Adam_RigCables_Front_03
+    100010: Adam_RigCables_Front_05
+    100012: Adam_RigCables_Front_06
+    100014: Adam_RigCables_Front_08
+    100016: Adam_RigNeckRubber_Bones_27
+    100018: //RootNode
+    100020: Bip01
+    100022: Bip01 Head
+    100024: Bip01 L Calf
+    100026: Bip01 L Clavicle
+    100028: Bip01 L Finger0
+    100030: Bip01 L Finger01
+    100032: Bip01 L Finger02
+    100034: Bip01 L Finger1
+    100036: Bip01 L Finger11
+    100038: Bip01 L Finger12
+    100040: Bip01 L Finger2
+    100042: Bip01 L Finger21
+    100044: Bip01 L Finger22
+    100046: Bip01 L Finger3
+    100048: Bip01 L Finger31
+    100050: Bip01 L Finger32
+    100052: Bip01 L Finger4
+    100054: Bip01 L Finger41
+    100056: Bip01 L Finger42
+    100058: Bip01 L Foot
+    100060: Bip01 L Forearm
+    100062: Bip01 L ForeTwist
+    100064: Bip01 L ForeTwist1
+    100066: Bip01 L ForeTwist2
+    100068: Bip01 L Hand
+    100070: Bip01 L Thigh
+    100072: Bip01 L Toe0
+    100074: Bip01 L Toe1
+    100076: Bip01 L Toe2
+    100078: Bip01 L Toe3
+    100080: Bip01 L Toe4
+    100082: Bip01 L UpperArm
+    100084: Bip01 Neck
+    100086: Bip01 Neck1
+    100088: Bip01 Neck2
+    100090: Bip01 Pelvis
+    100092: Bip01 R Calf
+    100094: Bip01 R Clavicle
+    100096: Bip01 R Finger0
+    100098: Bip01 R Finger01
+    100100: Bip01 R Finger02
+    100102: Bip01 R Finger1
+    100104: Bip01 R Finger11
+    100106: Bip01 R Finger12
+    100108: Bip01 R Finger2
+    100110: Bip01 R Finger21
+    100112: Bip01 R Finger22
+    100114: Bip01 R Finger3
+    100116: Bip01 R Finger31
+    100118: Bip01 R Finger32
+    100120: Bip01 R Finger4
+    100122: Bip01 R Finger41
+    100124: Bip01 R Finger42
+    100126: Bip01 R Foot
+    100128: Bip01 R Forearm
+    100130: Bip01 R ForeTwist
+    100132: Bip01 R ForeTwist1
+    100134: Bip01 R ForeTwist2
+    100136: Bip01 R Hand
+    100138: Bip01 R Thigh
+    100140: Bip01 R Toe0
+    100142: Bip01 R Toe1
+    100144: Bip01 R Toe2
+    100146: Bip01 R Toe3
+    100148: Bip01 R Toe4
+    100150: Bip01 R UpperArm
+    100152: Bip01 Spine
+    100154: Bip01 Spine1
+    100156: Bone005
+    100158: Bone006
+    100160: Bone007
+    100162: Bone011
+    100164: Bone011(mirrored)
+    100166: cables
+    100168: Eye_L_Blend_00
+    100170: Eye_L_Blend_01
+    100172: Eye_L_Blend_02
+    100174: Eye_L_Blend_03
+    100176: Eye_L_Blend_04
+    100178: Eye_L_Blend_05
+    100180: Eye_L_Blend_Null_00
+    100182: Eye_L_Blend_Null_01
+    100184: Eye_L_Blend_Null_02
+    100186: Eye_L_Blend_Null_03
+    100188: Eye_L_Blend_Null_04
+    100190: Eye_L_Blend_Null_05
+    100192: Eye_L_BlendBase
+    100194: Eye_L_BlendRoot
+    100196: Eye_L_BlendScrew_00
+    100198: Eye_L_BlendScrew_01
+    100200: Eye_L_BlendScrew_02
+    100202: Eye_L_BlendScrew_03
+    100204: Eye_L_BlendScrew_04
+    100206: Eye_L_BlendScrew_05
+    100208: Eye_L_EyelidSegment_00
+    100210: Eye_L_EyelidSegment_01
+    100212: Eye_L_EyelidSegment_02
+    100214: Eye_L_EyelidSegment_03
+    100216: Eye_L_EyelidSegment_04
+    100218: Eye_L_EyelidSegment_05
+    100220: Eye_L_EyelidSegment_06
+    100222: Eye_L_EyelidSegment_07
+    100224: Eye_L_EyelidSegment_08
+    100226: Eye_L_EyelidSegment_09
+    100228: Eye_L_EyelidSegment_10
+    100230: Eye_L_EyelidSegment_11
+    100232: Eye_L_EyelidSegment_12
+    100234: Eye_L_EyelidSegment_13
+    100236: Eye_L_EyelidSegment_14
+    100238: Eye_L_EyelidSegment_15
+    100240: Eye_L_EyelidsRig_00
+    100242: Eye_L_EyelidsRig_01
+    100244: Eye_L_EyelidsRig_02
+    100246: Eye_L_EyelidsRig_03
+    100248: Eye_L_EyelidsRig_04
+    100250: Eye_L_EyelidsRig_05
+    100252: Eye_L_EyelidsRig_12
+    100254: Eye_L_EyelidsRig_13
+    100256: Eye_L_EyelidsRig_14
+    100258: Eye_L_EyelidsRig_15
+    100260: Eye_L_EyelidsRig_16
+    100262: Eye_L_EyelidsRig_17
+    100264: Eye_L_Lens
+    100266: Eye_L_LowerEyelid
+    100268: Eye_L_Null
+    100270: Eye_L_Sclera
+    100272: Eye_L_Side1
+    100274: Eye_L_Side2
+    100276: Eye_L_UpperEyelid
+    100278: Eye_R_Blend_00
+    100280: Eye_R_Blend_01
+    100282: Eye_R_Blend_02
+    100284: Eye_R_Blend_03
+    100286: Eye_R_Blend_04
+    100288: Eye_R_Blend_05
+    100290: Eye_R_Blend_Null_00
+    100292: Eye_R_Blend_Null_01
+    100294: Eye_R_Blend_Null_02
+    100296: Eye_R_Blend_Null_03
+    100298: Eye_R_Blend_Null_04
+    100300: Eye_R_Blend_Null_05
+    100302: Eye_R_BlendBase
+    100304: Eye_R_BlendRoot
+    100306: Eye_R_BlendScrew_00
+    100308: Eye_R_BlendScrew_01
+    100310: Eye_R_BlendScrew_02
+    100312: Eye_R_BlendScrew_03
+    100314: Eye_R_BlendScrew_04
+    100316: Eye_R_BlendScrew_05
+    100318: Eye_R_EyelidSegment_00
+    100320: Eye_R_EyelidSegment_01
+    100322: Eye_R_EyelidSegment_02
+    100324: Eye_R_EyelidSegment_03
+    100326: Eye_R_EyelidSegment_04
+    100328: Eye_R_EyelidSegment_05
+    100330: Eye_R_EyelidSegment_06
+    100332: Eye_R_EyelidSegment_07
+    100334: Eye_R_EyelidSegment_08
+    100336: Eye_R_EyelidSegment_09
+    100338: Eye_R_EyelidSegment_10
+    100340: Eye_R_EyelidSegment_11
+    100342: Eye_R_EyelidSegment_12
+    100344: Eye_R_EyelidSegment_13
+    100346: Eye_R_EyelidSegment_14
+    100348: Eye_R_EyelidSegment_15
+    100350: Eye_R_EyelidsRig_00
+    100352: Eye_R_EyelidsRig_01
+    100354: Eye_R_EyelidsRig_02
+    100356: Eye_R_EyelidsRig_03
+    100358: Eye_R_EyelidsRig_04
+    100360: Eye_R_EyelidsRig_05
+    100362: Eye_R_EyelidsRig_12
+    100364: Eye_R_EyelidsRig_13
+    100366: Eye_R_EyelidsRig_14
+    100368: Eye_R_EyelidsRig_15
+    100370: Eye_R_EyelidsRig_16
+    100372: Eye_R_EyelidsRig_17
+    100374: Eye_R_Lens
+    100376: Eye_R_LowerEyelid
+    100378: Eye_R_Null
+    100380: Eye_R_Sclera
+    100382: Eye_R_Side1
+    100384: Eye_R_Side2
+    100386: Eye_R_UpperEyelid
+    100388: mesh_Adam_arms
+    100390: mesh_Adam_head
+    100392: mesh_Adam_legs
+    100394: mesh_Adam_LSleeve
+    100396: mesh_Adam_mask
+    100398: mesh_Adam_RSleeve
+    100400: mesh_Adam_spine
+    100402: mesh_Adam_torso
+    100404: Rig_BellyStretchyL_00
+    100406: Rig_BellyStretchyL_01
+    100408: Rig_BellyStretchyL_012
+    100410: Rig_BellyStretchyL_013
+    100412: Rig_BellyStretchyL_014
+    100414: Rig_BellyStretchyL_015
+    100416: Rig_BellyStretchyL_016
+    100418: Rig_BellyStretchyL_017
+    100420: Rig_BellyStretchyL_018
+    100422: Rig_BellyStretchyL_019
+    100424: Rig_BellyStretchyL_02
+    100426: Rig_BellyStretchyL_020
+    100428: Rig_BellyStretchyL_021
+    100430: Rig_BellyStretchyL_022
+    100432: Rig_BellyStretchyL_023
+    100434: Rig_BellyStretchyL_024
+    100436: Rig_BellyStretchyL_025
+    100438: Rig_BellyStretchyL_026
+    100440: Rig_BellyStretchyL_027
+    100442: Rig_BellyStretchyL_028
+    100444: Rig_BellyStretchyL_029
+    100446: Rig_BellyStretchyL_03
+    100448: Rig_BellyStretchyL_030
+    100450: Rig_BellyStretchyL_031
+    100452: Rig_BellyStretchyL_04
+    100454: Rig_BellyStretchyL_05
+    100456: Rig_BellyStretchyL_06
+    100458: Rig_BellyStretchyL_07
+    100460: Rig_BellyStretchyL_08
+    100462: Rig_BellyStretchyL_09
+    100464: Rig_BellyStretchyL_10
+    100466: Rig_BellyStretchyL_11
+    100468: Rig_BellyStretchyR_00
+    100470: Rig_BellyStretchyR_01
+    100472: Rig_BellyStretchyR_02
+    100474: Rig_BellyStretchyR_03
+    100476: Rig_BellyStretchyR_04
+    100478: Rig_BellyStretchyR_05
+    100480: Rig_BellyStretchyR_06
+    100482: Rig_BellyStretchyR_07
+    100484: Rig_BellyStretchyR_08
+    100486: Rig_BellyStretchyR_09
+    100488: Rig_BellyStretchyR_10
+    100490: Rig_BellyStretchyR_11
+    100492: Rig_L Clavicle
+    100494: Rig_L Clavicle_Constraint
+    100496: Rig_L Clavicle_LookAt
+    100498: Rig_L Forearm_01
+    100500: Rig_L Forearm_02
+    100502: Rig_L Shoulder
+    100504: Rig_L UpperArm_Ring
+    100506: Rig_L UpperArm_Ring_Upnode
+    100508: Rig_L UpperArm_Upnode
+    100510: Rig_L_Scapula
+    100512: Rig_L_Scapula_LookAt1
+    100514: Rig_L_Scapula_LookAt2
+    100516: Rig_L_Scapula_LookAtUpnode
+    100518: Rig_L_Scapula_pos
+    100520: Rig_R Clavicle
+    100522: Rig_R Clavicle_Constraint
+    100524: Rig_R Clavicle_LookAt
+    100526: Rig_R Forearm_01
+    100528: Rig_R Forearm_02
+    100530: Rig_R Shoulder
+    100532: Rig_R UpperArm_Ring
+    100534: Rig_R UpperArm_Ring_Upnode
+    100536: Rig_R UpperArm_Upnode
+    100538: Rig_R_Scapula
+    100540: Rig_R_Scapula_LookAt1
+    100542: Rig_R_Scapula_LookAt2
+    100544: Rig_R_Scapula_LookAtUpnode
+    100546: Rig_R_Scapula_pos
+    100548: Rig_Trapezius_L_Base
+    100550: Rig_Trapezius_L_Rail
+    100552: Rig_Trapezius_L_Slider
+    100554: Rig_Trapezius_L_Slider002
+    100556: Rig_Trapezius_R_Base
+    100558: Rig_Trapezius_R_Rail
+    100560: RootMotion
+    400000: Adam_BloodyHeadBracket
+    400002: Adam_monitor_back
+    400004: Adam_monitor_front
+    400006: Adam_Reference
+    400008: Adam_RigCables_Front_03
+    400010: Adam_RigCables_Front_05
+    400012: Adam_RigCables_Front_06
+    400014: Adam_RigCables_Front_08
+    400016: Adam_RigNeckRubber_Bones_27
+    400018: //RootNode
+    400020: Bip01
+    400022: Bip01 Head
+    400024: Bip01 L Calf
+    400026: Bip01 L Clavicle
+    400028: Bip01 L Finger0
+    400030: Bip01 L Finger01
+    400032: Bip01 L Finger02
+    400034: Bip01 L Finger1
+    400036: Bip01 L Finger11
+    400038: Bip01 L Finger12
+    400040: Bip01 L Finger2
+    400042: Bip01 L Finger21
+    400044: Bip01 L Finger22
+    400046: Bip01 L Finger3
+    400048: Bip01 L Finger31
+    400050: Bip01 L Finger32
+    400052: Bip01 L Finger4
+    400054: Bip01 L Finger41
+    400056: Bip01 L Finger42
+    400058: Bip01 L Foot
+    400060: Bip01 L Forearm
+    400062: Bip01 L ForeTwist
+    400064: Bip01 L ForeTwist1
+    400066: Bip01 L ForeTwist2
+    400068: Bip01 L Hand
+    400070: Bip01 L Thigh
+    400072: Bip01 L Toe0
+    400074: Bip01 L Toe1
+    400076: Bip01 L Toe2
+    400078: Bip01 L Toe3
+    400080: Bip01 L Toe4
+    400082: Bip01 L UpperArm
+    400084: Bip01 Neck
+    400086: Bip01 Neck1
+    400088: Bip01 Neck2
+    400090: Bip01 Pelvis
+    400092: Bip01 R Calf
+    400094: Bip01 R Clavicle
+    400096: Bip01 R Finger0
+    400098: Bip01 R Finger01
+    400100: Bip01 R Finger02
+    400102: Bip01 R Finger1
+    400104: Bip01 R Finger11
+    400106: Bip01 R Finger12
+    400108: Bip01 R Finger2
+    400110: Bip01 R Finger21
+    400112: Bip01 R Finger22
+    400114: Bip01 R Finger3
+    400116: Bip01 R Finger31
+    400118: Bip01 R Finger32
+    400120: Bip01 R Finger4
+    400122: Bip01 R Finger41
+    400124: Bip01 R Finger42
+    400126: Bip01 R Foot
+    400128: Bip01 R Forearm
+    400130: Bip01 R ForeTwist
+    400132: Bip01 R ForeTwist1
+    400134: Bip01 R ForeTwist2
+    400136: Bip01 R Hand
+    400138: Bip01 R Thigh
+    400140: Bip01 R Toe0
+    400142: Bip01 R Toe1
+    400144: Bip01 R Toe2
+    400146: Bip01 R Toe3
+    400148: Bip01 R Toe4
+    400150: Bip01 R UpperArm
+    400152: Bip01 Spine
+    400154: Bip01 Spine1
+    400156: Bone005
+    400158: Bone006
+    400160: Bone007
+    400162: Bone011
+    400164: Bone011(mirrored)
+    400166: cables
+    400168: Eye_L_Blend_00
+    400170: Eye_L_Blend_01
+    400172: Eye_L_Blend_02
+    400174: Eye_L_Blend_03
+    400176: Eye_L_Blend_04
+    400178: Eye_L_Blend_05
+    400180: Eye_L_Blend_Null_00
+    400182: Eye_L_Blend_Null_01
+    400184: Eye_L_Blend_Null_02
+    400186: Eye_L_Blend_Null_03
+    400188: Eye_L_Blend_Null_04
+    400190: Eye_L_Blend_Null_05
+    400192: Eye_L_BlendBase
+    400194: Eye_L_BlendRoot
+    400196: Eye_L_BlendScrew_00
+    400198: Eye_L_BlendScrew_01
+    400200: Eye_L_BlendScrew_02
+    400202: Eye_L_BlendScrew_03
+    400204: Eye_L_BlendScrew_04
+    400206: Eye_L_BlendScrew_05
+    400208: Eye_L_EyelidSegment_00
+    400210: Eye_L_EyelidSegment_01
+    400212: Eye_L_EyelidSegment_02
+    400214: Eye_L_EyelidSegment_03
+    400216: Eye_L_EyelidSegment_04
+    400218: Eye_L_EyelidSegment_05
+    400220: Eye_L_EyelidSegment_06
+    400222: Eye_L_EyelidSegment_07
+    400224: Eye_L_EyelidSegment_08
+    400226: Eye_L_EyelidSegment_09
+    400228: Eye_L_EyelidSegment_10
+    400230: Eye_L_EyelidSegment_11
+    400232: Eye_L_EyelidSegment_12
+    400234: Eye_L_EyelidSegment_13
+    400236: Eye_L_EyelidSegment_14
+    400238: Eye_L_EyelidSegment_15
+    400240: Eye_L_EyelidsRig_00
+    400242: Eye_L_EyelidsRig_01
+    400244: Eye_L_EyelidsRig_02
+    400246: Eye_L_EyelidsRig_03
+    400248: Eye_L_EyelidsRig_04
+    400250: Eye_L_EyelidsRig_05
+    400252: Eye_L_EyelidsRig_12
+    400254: Eye_L_EyelidsRig_13
+    400256: Eye_L_EyelidsRig_14
+    400258: Eye_L_EyelidsRig_15
+    400260: Eye_L_EyelidsRig_16
+    400262: Eye_L_EyelidsRig_17
+    400264: Eye_L_Lens
+    400266: Eye_L_LowerEyelid
+    400268: Eye_L_Null
+    400270: Eye_L_Sclera
+    400272: Eye_L_Side1
+    400274: Eye_L_Side2
+    400276: Eye_L_UpperEyelid
+    400278: Eye_R_Blend_00
+    400280: Eye_R_Blend_01
+    400282: Eye_R_Blend_02
+    400284: Eye_R_Blend_03
+    400286: Eye_R_Blend_04
+    400288: Eye_R_Blend_05
+    400290: Eye_R_Blend_Null_00
+    400292: Eye_R_Blend_Null_01
+    400294: Eye_R_Blend_Null_02
+    400296: Eye_R_Blend_Null_03
+    400298: Eye_R_Blend_Null_04
+    400300: Eye_R_Blend_Null_05
+    400302: Eye_R_BlendBase
+    400304: Eye_R_BlendRoot
+    400306: Eye_R_BlendScrew_00
+    400308: Eye_R_BlendScrew_01
+    400310: Eye_R_BlendScrew_02
+    400312: Eye_R_BlendScrew_03
+    400314: Eye_R_BlendScrew_04
+    400316: Eye_R_BlendScrew_05
+    400318: Eye_R_EyelidSegment_00
+    400320: Eye_R_EyelidSegment_01
+    400322: Eye_R_EyelidSegment_02
+    400324: Eye_R_EyelidSegment_03
+    400326: Eye_R_EyelidSegment_04
+    400328: Eye_R_EyelidSegment_05
+    400330: Eye_R_EyelidSegment_06
+    400332: Eye_R_EyelidSegment_07
+    400334: Eye_R_EyelidSegment_08
+    400336: Eye_R_EyelidSegment_09
+    400338: Eye_R_EyelidSegment_10
+    400340: Eye_R_EyelidSegment_11
+    400342: Eye_R_EyelidSegment_12
+    400344: Eye_R_EyelidSegment_13
+    400346: Eye_R_EyelidSegment_14
+    400348: Eye_R_EyelidSegment_15
+    400350: Eye_R_EyelidsRig_00
+    400352: Eye_R_EyelidsRig_01
+    400354: Eye_R_EyelidsRig_02
+    400356: Eye_R_EyelidsRig_03
+    400358: Eye_R_EyelidsRig_04
+    400360: Eye_R_EyelidsRig_05
+    400362: Eye_R_EyelidsRig_12
+    400364: Eye_R_EyelidsRig_13
+    400366: Eye_R_EyelidsRig_14
+    400368: Eye_R_EyelidsRig_15
+    400370: Eye_R_EyelidsRig_16
+    400372: Eye_R_EyelidsRig_17
+    400374: Eye_R_Lens
+    400376: Eye_R_LowerEyelid
+    400378: Eye_R_Null
+    400380: Eye_R_Sclera
+    400382: Eye_R_Side1
+    400384: Eye_R_Side2
+    400386: Eye_R_UpperEyelid
+    400388: mesh_Adam_arms
+    400390: mesh_Adam_head
+    400392: mesh_Adam_legs
+    400394: mesh_Adam_LSleeve
+    400396: mesh_Adam_mask
+    400398: mesh_Adam_RSleeve
+    400400: mesh_Adam_spine
+    400402: mesh_Adam_torso
+    400404: Rig_BellyStretchyL_00
+    400406: Rig_BellyStretchyL_01
+    400408: Rig_BellyStretchyL_012
+    400410: Rig_BellyStretchyL_013
+    400412: Rig_BellyStretchyL_014
+    400414: Rig_BellyStretchyL_015
+    400416: Rig_BellyStretchyL_016
+    400418: Rig_BellyStretchyL_017
+    400420: Rig_BellyStretchyL_018
+    400422: Rig_BellyStretchyL_019
+    400424: Rig_BellyStretchyL_02
+    400426: Rig_BellyStretchyL_020
+    400428: Rig_BellyStretchyL_021
+    400430: Rig_BellyStretchyL_022
+    400432: Rig_BellyStretchyL_023
+    400434: Rig_BellyStretchyL_024
+    400436: Rig_BellyStretchyL_025
+    400438: Rig_BellyStretchyL_026
+    400440: Rig_BellyStretchyL_027
+    400442: Rig_BellyStretchyL_028
+    400444: Rig_BellyStretchyL_029
+    400446: Rig_BellyStretchyL_03
+    400448: Rig_BellyStretchyL_030
+    400450: Rig_BellyStretchyL_031
+    400452: Rig_BellyStretchyL_04
+    400454: Rig_BellyStretchyL_05
+    400456: Rig_BellyStretchyL_06
+    400458: Rig_BellyStretchyL_07
+    400460: Rig_BellyStretchyL_08
+    400462: Rig_BellyStretchyL_09
+    400464: Rig_BellyStretchyL_10
+    400466: Rig_BellyStretchyL_11
+    400468: Rig_BellyStretchyR_00
+    400470: Rig_BellyStretchyR_01
+    400472: Rig_BellyStretchyR_02
+    400474: Rig_BellyStretchyR_03
+    400476: Rig_BellyStretchyR_04
+    400478: Rig_BellyStretchyR_05
+    400480: Rig_BellyStretchyR_06
+    400482: Rig_BellyStretchyR_07
+    400484: Rig_BellyStretchyR_08
+    400486: Rig_BellyStretchyR_09
+    400488: Rig_BellyStretchyR_10
+    400490: Rig_BellyStretchyR_11
+    400492: Rig_L Clavicle
+    400494: Rig_L Clavicle_Constraint
+    400496: Rig_L Clavicle_LookAt
+    400498: Rig_L Forearm_01
+    400500: Rig_L Forearm_02
+    400502: Rig_L Shoulder
+    400504: Rig_L UpperArm_Ring
+    400506: Rig_L UpperArm_Ring_Upnode
+    400508: Rig_L UpperArm_Upnode
+    400510: Rig_L_Scapula
+    400512: Rig_L_Scapula_LookAt1
+    400514: Rig_L_Scapula_LookAt2
+    400516: Rig_L_Scapula_LookAtUpnode
+    400518: Rig_L_Scapula_pos
+    400520: Rig_R Clavicle
+    400522: Rig_R Clavicle_Constraint
+    400524: Rig_R Clavicle_LookAt
+    400526: Rig_R Forearm_01
+    400528: Rig_R Forearm_02
+    400530: Rig_R Shoulder
+    400532: Rig_R UpperArm_Ring
+    400534: Rig_R UpperArm_Ring_Upnode
+    400536: Rig_R UpperArm_Upnode
+    400538: Rig_R_Scapula
+    400540: Rig_R_Scapula_LookAt1
+    400542: Rig_R_Scapula_LookAt2
+    400544: Rig_R_Scapula_LookAtUpnode
+    400546: Rig_R_Scapula_pos
+    400548: Rig_Trapezius_L_Base
+    400550: Rig_Trapezius_L_Rail
+    400552: Rig_Trapezius_L_Slider
+    400554: Rig_Trapezius_L_Slider002
+    400556: Rig_Trapezius_R_Base
+    400558: Rig_Trapezius_R_Rail
+    400560: RootMotion
+    2300000: Adam_BloodyHeadBracket
+    2300002: Adam_monitor_back
+    2300004: Adam_monitor_front
+    2300006: Eye_L_Blend_00
+    2300008: Eye_L_Blend_01
+    2300010: Eye_L_Blend_02
+    2300012: Eye_L_Blend_03
+    2300014: Eye_L_Blend_04
+    2300016: Eye_L_Blend_05
+    2300018: Eye_L_BlendBase
+    2300020: Eye_L_BlendScrew_00
+    2300022: Eye_L_BlendScrew_01
+    2300024: Eye_L_BlendScrew_02
+    2300026: Eye_L_BlendScrew_03
+    2300028: Eye_L_BlendScrew_04
+    2300030: Eye_L_BlendScrew_05
+    2300032: Eye_L_EyelidSegment_00
+    2300034: Eye_L_EyelidSegment_01
+    2300036: Eye_L_EyelidSegment_02
+    2300038: Eye_L_EyelidSegment_03
+    2300040: Eye_L_EyelidSegment_04
+    2300042: Eye_L_EyelidSegment_05
+    2300044: Eye_L_EyelidSegment_06
+    2300046: Eye_L_EyelidSegment_07
+    2300048: Eye_L_EyelidSegment_08
+    2300050: Eye_L_EyelidSegment_09
+    2300052: Eye_L_EyelidSegment_10
+    2300054: Eye_L_EyelidSegment_11
+    2300056: Eye_L_EyelidSegment_12
+    2300058: Eye_L_EyelidSegment_13
+    2300060: Eye_L_EyelidSegment_14
+    2300062: Eye_L_EyelidSegment_15
+    2300064: Eye_L_Lens
+    2300066: Eye_L_LowerEyelid
+    2300068: Eye_L_Sclera
+    2300070: Eye_L_Side1
+    2300072: Eye_L_Side2
+    2300074: Eye_L_UpperEyelid
+    2300076: Eye_R_Blend_00
+    2300078: Eye_R_Blend_01
+    2300080: Eye_R_Blend_02
+    2300082: Eye_R_Blend_03
+    2300084: Eye_R_Blend_04
+    2300086: Eye_R_Blend_05
+    2300088: Eye_R_BlendBase
+    2300090: Eye_R_BlendScrew_00
+    2300092: Eye_R_BlendScrew_01
+    2300094: Eye_R_BlendScrew_02
+    2300096: Eye_R_BlendScrew_03
+    2300098: Eye_R_BlendScrew_04
+    2300100: Eye_R_BlendScrew_05
+    2300102: Eye_R_EyelidSegment_00
+    2300104: Eye_R_EyelidSegment_01
+    2300106: Eye_R_EyelidSegment_02
+    2300108: Eye_R_EyelidSegment_03
+    2300110: Eye_R_EyelidSegment_04
+    2300112: Eye_R_EyelidSegment_05
+    2300114: Eye_R_EyelidSegment_06
+    2300116: Eye_R_EyelidSegment_07
+    2300118: Eye_R_EyelidSegment_08
+    2300120: Eye_R_EyelidSegment_09
+    2300122: Eye_R_EyelidSegment_10
+    2300124: Eye_R_EyelidSegment_11
+    2300126: Eye_R_EyelidSegment_12
+    2300128: Eye_R_EyelidSegment_13
+    2300130: Eye_R_EyelidSegment_14
+    2300132: Eye_R_EyelidSegment_15
+    2300134: Eye_R_Lens
+    2300136: Eye_R_LowerEyelid
+    2300138: Eye_R_Sclera
+    2300140: Eye_R_Side1
+    2300142: Eye_R_Side2
+    2300144: Eye_R_UpperEyelid
+    2300146: mesh_Adam_mask
+    2300148: Rig_Trapezius_L_Base
+    2300150: Rig_Trapezius_L_Rail
+    2300152: Rig_Trapezius_L_Slider
+    2300154: Rig_Trapezius_L_Slider002
+    2300156: Rig_Trapezius_R_Base
+    2300158: Rig_Trapezius_R_Rail
+    2300160: RootMotion
+    3300000: Adam_BloodyHeadBracket
+    3300002: Adam_monitor_back
+    3300004: Adam_monitor_front
+    3300006: Eye_L_Blend_00
+    3300008: Eye_L_Blend_01
+    3300010: Eye_L_Blend_02
+    3300012: Eye_L_Blend_03
+    3300014: Eye_L_Blend_04
+    3300016: Eye_L_Blend_05
+    3300018: Eye_L_BlendBase
+    3300020: Eye_L_BlendScrew_00
+    3300022: Eye_L_BlendScrew_01
+    3300024: Eye_L_BlendScrew_02
+    3300026: Eye_L_BlendScrew_03
+    3300028: Eye_L_BlendScrew_04
+    3300030: Eye_L_BlendScrew_05
+    3300032: Eye_L_EyelidSegment_00
+    3300034: Eye_L_EyelidSegment_01
+    3300036: Eye_L_EyelidSegment_02
+    3300038: Eye_L_EyelidSegment_03
+    3300040: Eye_L_EyelidSegment_04
+    3300042: Eye_L_EyelidSegment_05
+    3300044: Eye_L_EyelidSegment_06
+    3300046: Eye_L_EyelidSegment_07
+    3300048: Eye_L_EyelidSegment_08
+    3300050: Eye_L_EyelidSegment_09
+    3300052: Eye_L_EyelidSegment_10
+    3300054: Eye_L_EyelidSegment_11
+    3300056: Eye_L_EyelidSegment_12
+    3300058: Eye_L_EyelidSegment_13
+    3300060: Eye_L_EyelidSegment_14
+    3300062: Eye_L_EyelidSegment_15
+    3300064: Eye_L_Lens
+    3300066: Eye_L_LowerEyelid
+    3300068: Eye_L_Sclera
+    3300070: Eye_L_Side1
+    3300072: Eye_L_Side2
+    3300074: Eye_L_UpperEyelid
+    3300076: Eye_R_Blend_00
+    3300078: Eye_R_Blend_01
+    3300080: Eye_R_Blend_02
+    3300082: Eye_R_Blend_03
+    3300084: Eye_R_Blend_04
+    3300086: Eye_R_Blend_05
+    3300088: Eye_R_BlendBase
+    3300090: Eye_R_BlendScrew_00
+    3300092: Eye_R_BlendScrew_01
+    3300094: Eye_R_BlendScrew_02
+    3300096: Eye_R_BlendScrew_03
+    3300098: Eye_R_BlendScrew_04
+    3300100: Eye_R_BlendScrew_05
+    3300102: Eye_R_EyelidSegment_00
+    3300104: Eye_R_EyelidSegment_01
+    3300106: Eye_R_EyelidSegment_02
+    3300108: Eye_R_EyelidSegment_03
+    3300110: Eye_R_EyelidSegment_04
+    3300112: Eye_R_EyelidSegment_05
+    3300114: Eye_R_EyelidSegment_06
+    3300116: Eye_R_EyelidSegment_07
+    3300118: Eye_R_EyelidSegment_08
+    3300120: Eye_R_EyelidSegment_09
+    3300122: Eye_R_EyelidSegment_10
+    3300124: Eye_R_EyelidSegment_11
+    3300126: Eye_R_EyelidSegment_12
+    3300128: Eye_R_EyelidSegment_13
+    3300130: Eye_R_EyelidSegment_14
+    3300132: Eye_R_EyelidSegment_15
+    3300134: Eye_R_Lens
+    3300136: Eye_R_LowerEyelid
+    3300138: Eye_R_Sclera
+    3300140: Eye_R_Side1
+    3300142: Eye_R_Side2
+    3300144: Eye_R_UpperEyelid
+    3300146: mesh_Adam_mask
+    3300148: Rig_Trapezius_L_Base
+    3300150: Rig_Trapezius_L_Rail
+    3300152: Rig_Trapezius_L_Slider
+    3300154: Rig_Trapezius_L_Slider002
+    3300156: Rig_Trapezius_R_Base
+    3300158: Rig_Trapezius_R_Rail
+    3300160: RootMotion
+    4300000: Eye_L_Sclera
+    4300002: Eye_L_Lens
+    4300004: Eye_L_Blend_00
+    4300006: Eye_L_BlendScrew_00
+    4300008: Eye_L_Blend_05
+    4300010: Eye_L_BlendScrew_05
+    4300012: Eye_L_Blend_04
+    4300014: Eye_L_BlendScrew_04
+    4300016: Eye_L_Blend_03
+    4300018: Eye_L_BlendScrew_03
+    4300020: Eye_L_Blend_02
+    4300022: Eye_L_BlendScrew_01
+    4300024: Eye_L_Blend_01
+    4300026: Eye_L_BlendScrew_02
+    4300028: Eye_L_BlendBase
+    4300030: Eye_L_Side1
+    4300032: Eye_L_Side2
+    4300034: Eye_L_UpperEyelid
+    4300036: Eye_L_EyelidSegment_00
+    4300038: Eye_L_EyelidSegment_07
+    4300040: Eye_L_LowerEyelid
+    4300042: Eye_L_EyelidSegment_15
+    4300044: Eye_L_EyelidSegment_08
+    4300046: Eye_L_EyelidSegment_02
+    4300048: Eye_L_EyelidSegment_01
+    4300050: Eye_L_EyelidSegment_03
+    4300052: Eye_L_EyelidSegment_04
+    4300054: Eye_L_EyelidSegment_05
+    4300056: Eye_L_EyelidSegment_06
+    4300058: Eye_L_EyelidSegment_14
+    4300060: Eye_L_EyelidSegment_13
+    4300062: Eye_L_EyelidSegment_12
+    4300064: Eye_L_EyelidSegment_11
+    4300066: Eye_L_EyelidSegment_10
+    4300068: Eye_L_EyelidSegment_09
+    4300070: Eye_R_Sclera
+    4300072: Eye_R_Lens
+    4300074: Eye_R_Blend_00
+    4300076: Eye_R_BlendScrew_00
+    4300078: Eye_R_Blend_05
+    4300080: Eye_R_BlendScrew_05
+    4300082: Eye_R_Blend_04
+    4300084: Eye_R_BlendScrew_04
+    4300086: Eye_R_Blend_03
+    4300088: Eye_R_BlendScrew_03
+    4300090: Eye_R_Blend_02
+    4300092: Eye_R_BlendScrew_01
+    4300094: Eye_R_Blend_01
+    4300096: Eye_R_BlendScrew_02
+    4300098: Eye_R_BlendBase
+    4300100: Eye_R_Side1
+    4300102: Eye_R_Side2
+    4300104: Eye_R_UpperEyelid
+    4300106: Eye_R_EyelidSegment_00
+    4300108: Eye_R_EyelidSegment_07
+    4300110: Eye_R_LowerEyelid
+    4300112: Eye_R_EyelidSegment_15
+    4300114: Eye_R_EyelidSegment_08
+    4300116: Eye_R_EyelidSegment_03
+    4300118: Eye_R_EyelidSegment_02
+    4300120: Eye_R_EyelidSegment_01
+    4300122: Eye_R_EyelidSegment_04
+    4300124: Eye_R_EyelidSegment_05
+    4300126: Eye_R_EyelidSegment_06
+    4300128: Eye_R_EyelidSegment_09
+    4300130: Eye_R_EyelidSegment_10
+    4300132: Eye_R_EyelidSegment_11
+    4300134: Eye_R_EyelidSegment_12
+    4300136: Eye_R_EyelidSegment_13
+    4300138: Eye_R_EyelidSegment_14
+    4300140: mesh_Adam_mask
+    4300142: Adam_monitor_back
+    4300144: Adam_BloodyHeadBracket
+    4300146: Rig_Trapezius_L_Base
+    4300148: Rig_Trapezius_L_Rail
+    4300150: Rig_Trapezius_L_Slider
+    4300152: Rig_Trapezius_R_Base
+    4300154: Rig_Trapezius_R_Rail
+    4300156: Rig_Trapezius_L_Slider002
+    4300158: Adam_monitor_front
+    4300160: RootMotion
+    4300162: mesh_Adam_torso
+    4300164: mesh_Adam_legs
+    4300166: mesh_Adam_head
+    4300168: mesh_Adam_arms
+    4300170: mesh_Adam_RSleeve
+    4300172: mesh_Adam_LSleeve
+    4300174: mesh_Adam_spine
+    4300176: cables
+    7400000: Adam_Walk
+    9500000: //RootNode
+    13700000: cables
+    13700002: mesh_Adam_arms
+    13700004: mesh_Adam_head
+    13700006: mesh_Adam_legs
+    13700008: mesh_Adam_LSleeve
+    13700010: mesh_Adam_RSleeve
+    13700012: mesh_Adam_spine
+    13700014: mesh_Adam_torso
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
+      might lower retargeting quality:\n\t'Bip01 Neck' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'Bip01 Neck2' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n"
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Adam_Walk
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 87
+      wrapMode: 0
+      orientationOffsetY: -0.2
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Adam_Reference
+        weight: 1
+      - path: Adam_Reference/Bip01
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot/Bip01 L Toe0
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot/Bip01 L Toe1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot/Bip01 L Toe2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot/Bip01 L Toe3
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 L Thigh/Bip01 L Calf/Bip01 L
+          Foot/Bip01 L Toe4
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot/Bip01 R Toe0
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot/Bip01 R Toe1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot/Bip01 R Toe2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot/Bip01 R Toe3
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 R Thigh/Bip01 R Calf/Bip01 R
+          Foot/Bip01 R Toe4
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Adam_RigCables_Front_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Adam_RigCables_Front_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Adam_RigCables_Front_06
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Adam_RigCables_Front_08
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Adam_monitor_front
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L ForeTwist
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L ForeTwist/Bip01 L ForeTwist1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L ForeTwist/Bip01 L ForeTwist1/Bip01 L
+          ForeTwist2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger0
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger0/Bip01 L Finger01
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger0/Bip01 L Finger01/Bip01
+          L Finger02
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger1
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger1/Bip01 L Finger11
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger1/Bip01 L Finger11/Bip01
+          L Finger12
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger2
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger2/Bip01 L Finger21
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger2/Bip01 L Finger21/Bip01
+          L Finger22
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger3
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger3/Bip01 L Finger31
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger3/Bip01 L Finger31/Bip01
+          L Finger32
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger4
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger4/Bip01 L Finger41
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Bip01 L Hand/Bip01 L Finger4/Bip01 L Finger41/Bip01
+          L Finger42
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Rig_L Forearm_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Bip01 L Forearm/Rig_L Forearm_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Rig_L Shoulder
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Rig_L Shoulder/Rig_L UpperArm_Ring
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Bip01
+          L UpperArm/Rig_L Shoulder/Rig_L UpperArm_Ring/Rig_L Clavicle_Constraint
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Rig_L
+          Clavicle
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Rig_L
+          UpperArm_Upnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 L Clavicle/Rig_L_Scapula_LookAt1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Adam_RigNeckRubber_Bones_27
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Adam_BloodyHeadBracket
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Adam_monitor_back
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_00/Eye_L_EyelidSegment_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_01/Eye_L_EyelidSegment_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_02/Eye_L_EyelidSegment_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_03/Eye_L_EyelidSegment_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_04/Eye_L_EyelidSegment_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_05/Eye_L_EyelidSegment_06
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_12
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_12/Eye_L_EyelidSegment_14
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_13
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_13/Eye_L_EyelidSegment_13
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_14
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_14/Eye_L_EyelidSegment_12
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_15
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_15/Eye_L_EyelidSegment_11
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_16
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_16/Eye_L_EyelidSegment_10
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_17
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_EyelidsRig_17/Eye_L_EyelidSegment_09
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_LowerEyelid
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_LowerEyelid/Eye_L_EyelidSegment_08
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_LowerEyelid/Eye_L_EyelidSegment_15
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_00/Eye_L_Blend_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_00/Eye_L_BlendScrew_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_01/Eye_L_Blend_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_01/Eye_L_BlendScrew_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_02/Eye_L_Blend_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_02/Eye_L_BlendScrew_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_03/Eye_L_Blend_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_03/Eye_L_BlendScrew_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_04/Eye_L_Blend_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_04/Eye_L_BlendScrew_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_05/Eye_L_Blend_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_Blend_Null_05/Eye_L_BlendScrew_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_BlendRoot/Eye_L_BlendBase
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Sclera/Eye_L_Lens
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Side1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_Side2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_UpperEyelid
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_UpperEyelid/Eye_L_EyelidSegment_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_L_Null/Eye_L_UpperEyelid/Eye_L_EyelidSegment_07
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_00/Eye_R_EyelidSegment_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_01/Eye_R_EyelidSegment_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_02/Eye_R_EyelidSegment_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_03/Eye_R_EyelidSegment_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_04/Eye_R_EyelidSegment_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_05/Eye_R_EyelidSegment_06
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_12
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_12/Eye_R_EyelidSegment_14
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_13
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_13/Eye_R_EyelidSegment_13
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_14
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_14/Eye_R_EyelidSegment_12
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_15
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_15/Eye_R_EyelidSegment_11
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_16
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_16/Eye_R_EyelidSegment_10
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_17
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_EyelidsRig_17/Eye_R_EyelidSegment_09
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_LowerEyelid
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_LowerEyelid/Eye_R_EyelidSegment_08
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_LowerEyelid/Eye_R_EyelidSegment_15
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_00/Eye_R_Blend_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_00/Eye_R_BlendScrew_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_01/Eye_R_Blend_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_01/Eye_R_BlendScrew_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_02/Eye_R_Blend_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_02/Eye_R_BlendScrew_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_03/Eye_R_Blend_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_03/Eye_R_BlendScrew_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_04/Eye_R_Blend_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_04/Eye_R_BlendScrew_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_05/Eye_R_Blend_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_Blend_Null_05/Eye_R_BlendScrew_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_BlendRoot/Eye_R_BlendBase
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Sclera/Eye_R_Lens
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Side1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_Side2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_UpperEyelid
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_UpperEyelid/Eye_R_EyelidSegment_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/Eye_R_Null/Eye_R_UpperEyelid/Eye_R_EyelidSegment_07
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 Neck/Bip01
+          Neck1/Bip01 Neck2/Bip01 Head/mesh_Adam_mask
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R ForeTwist
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R ForeTwist/Bip01 R ForeTwist1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R ForeTwist/Bip01 R ForeTwist1/Bip01 R
+          ForeTwist2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger0
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger0/Bip01 R Finger01
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger0/Bip01 R Finger01/Bip01
+          R Finger02
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger1
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger1/Bip01 R Finger11
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger1/Bip01 R Finger11/Bip01
+          R Finger12
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger2
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger2/Bip01 R Finger21
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger2/Bip01 R Finger21/Bip01
+          R Finger22
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger3
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger3/Bip01 R Finger31
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger3/Bip01 R Finger31/Bip01
+          R Finger32
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger4
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger4/Bip01 R Finger41
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Bip01 R Hand/Bip01 R Finger4/Bip01 R Finger41/Bip01
+          R Finger42
+        weight: 1
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Rig_R Forearm_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Bip01 R Forearm/Rig_R Forearm_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Rig_R Shoulder
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Rig_R Shoulder/Rig_R UpperArm_Ring
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Bip01
+          R UpperArm/Rig_R Shoulder/Rig_R UpperArm_Ring/Rig_R Clavicle_Constraint
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Rig_R
+          Clavicle
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Rig_R
+          UpperArm_Upnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bip01 R Clavicle/Rig_R_Scapula_LookAt1
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bone005
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bone011
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Bone011(mirrored)
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L Clavicle_LookAt
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L UpperArm_Ring_Upnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L_Scapula
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L_Scapula_LookAt2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L_Scapula_LookAtUpnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_L_Scapula_pos
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R Clavicle_LookAt
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R UpperArm_Ring_Upnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R_Scapula
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R_Scapula_LookAt2
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R_Scapula_LookAtUpnode
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_R_Scapula_pos
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_L_Base
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_L_Base/Rig_Trapezius_L_Rail
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_L_Base/Rig_Trapezius_L_Rail/Rig_Trapezius_L_Slider
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_R_Base
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_R_Base/Rig_Trapezius_R_Rail
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bip01 Spine1/Rig_Trapezius_R_Base/Rig_Trapezius_R_Rail/Rig_Trapezius_L_Slider002
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bone006
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Bone007
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_06
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_07
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_08
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_09
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_10
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_11
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_012
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_013
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_014
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_015
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_016
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_017
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_018
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_019
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_020
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_021
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_022
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_023
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_024
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_025
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_026
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_027
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_028
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_029
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_030
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyL_031
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_00
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_01
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_02
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_03
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_04
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_05
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_06
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_07
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_08
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_09
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_10
+        weight: 0
+      - path: Adam_Reference/Bip01/Bip01 Pelvis/Bip01 Spine/Rig_BellyStretchyR_11
+        weight: 0
+      - path: Adam_Reference/Bip01/RootMotion
+        weight: 0
+      - path: cables
+        weight: 0
+      - path: mesh_Adam_arms
+        weight: 0
+      - path: mesh_Adam_head
+        weight: 0
+      - path: mesh_Adam_legs
+        weight: 0
+      - path: mesh_Adam_LSleeve
+        weight: 0
+      - path: mesh_Adam_RSleeve
+        weight: 0
+      - path: mesh_Adam_spine
+        weight: 0
+      - path: mesh_Adam_torso
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 1
+  humanDescription:
+    human:
+    - boneName: Bip01
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Thigh
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: -60, y: -60, z: -90}
+        max: {x: 60, y: 60, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Thigh
+      humanName: RightUpperLeg
+      limit:
+        min: {x: -60, y: -60, z: -90}
+        max: {x: 60, y: 60, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Calf
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Calf
+      humanName: RightLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Foot
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: -30, z: -50}
+        max: {x: 0, y: 30, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Foot
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: -30, z: -50}
+        max: {x: 0, y: 30, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 Spine
+      humanName: Spine
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 Spine1
+      humanName: Chest
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 Neck1
+      humanName: Neck
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 Head
+      humanName: Head
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Clavicle
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: -15, z: -15}
+        max: {x: 0, y: 15, z: 30}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Clavicle
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: -15, z: -15}
+        max: {x: 0, y: 15, z: 30}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L UpperArm
+      humanName: LeftUpperArm
+      limit:
+        min: {x: -90, y: -100, z: -60}
+        max: {x: 90, y: 100, z: 100}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R UpperArm
+      humanName: RightUpperArm
+      limit:
+        min: {x: -90, y: -100, z: -60}
+        max: {x: 90, y: 100, z: 100}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Forearm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Forearm
+      humanName: RightLowerArm
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Hand
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Hand
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Toe4
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: -50}
+        max: {x: 0, y: 0, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Toe4
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: -50}
+        max: {x: 0, y: 0, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Eye_L_Sclera
+      humanName: LeftEye
+      limit:
+        min: {x: 0, y: -20, z: -10}
+        max: {x: 0, y: 20, z: 15}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Eye_R_Sclera
+      humanName: RightEye
+      limit:
+        min: {x: 0, y: -20, z: -10}
+        max: {x: 0, y: 20, z: 15}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger0
+      humanName: Left Thumb Proximal
+      limit:
+        min: {x: 0, y: -25, z: -20}
+        max: {x: 0, y: 25, z: 20}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger01
+      humanName: Left Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -40}
+        max: {x: 0, y: 0, z: 35}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger02
+      humanName: Left Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: -40}
+        max: {x: 0, y: 0, z: 35}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger1
+      humanName: Left Index Proximal
+      limit:
+        min: {x: 0, y: -20, z: -50}
+        max: {x: 0, y: 20, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger11
+      humanName: Left Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger12
+      humanName: Left Index Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger2
+      humanName: Left Middle Proximal
+      limit:
+        min: {x: 0, y: -7.5, z: -50}
+        max: {x: 0, y: 7.5, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger21
+      humanName: Left Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger22
+      humanName: Left Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger3
+      humanName: Left Ring Proximal
+      limit:
+        min: {x: 0, y: -7.5, z: -50}
+        max: {x: 0, y: 7.5, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger31
+      humanName: Left Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger32
+      humanName: Left Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger4
+      humanName: Left Little Proximal
+      limit:
+        min: {x: 0, y: -20, z: -50}
+        max: {x: 0, y: 20, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger41
+      humanName: Left Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 L Finger42
+      humanName: Left Little Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger0
+      humanName: Right Thumb Proximal
+      limit:
+        min: {x: 0, y: -25, z: -20}
+        max: {x: 0, y: 25, z: 20}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger01
+      humanName: Right Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -40}
+        max: {x: 0, y: 0, z: 35}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger02
+      humanName: Right Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: -40}
+        max: {x: 0, y: 0, z: 35}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger1
+      humanName: Right Index Proximal
+      limit:
+        min: {x: 0, y: -20, z: -50}
+        max: {x: 0, y: 20, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger11
+      humanName: Right Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger12
+      humanName: Right Index Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger2
+      humanName: Right Middle Proximal
+      limit:
+        min: {x: 0, y: -7.5, z: -50}
+        max: {x: 0, y: 7.5, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger21
+      humanName: Right Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger22
+      humanName: Right Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger3
+      humanName: Right Ring Proximal
+      limit:
+        min: {x: 0, y: -7.5, z: -50}
+        max: {x: 0, y: 7.5, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger31
+      humanName: Right Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger32
+      humanName: Right Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger4
+      humanName: Right Little Proximal
+      limit:
+        min: {x: 0, y: -20, z: -50}
+        max: {x: 0, y: 20, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger41
+      humanName: Right Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01 R Finger42
+      humanName: Right Little Distal
+      limit:
+        min: {x: 0, y: 0, z: -45}
+        max: {x: 0, y: 0, z: 45}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: Adam(Clone)
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Adam_Reference
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01
+      position: {x: -0, y: 0.97024626, z: 0.0038361496}
+      rotation: {x: -0.5000005, y: 0.49999955, z: 0.49999955, w: 0.5000005}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 Pelvis
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.5, y: 0.5, z: 0.4999993, w: 0.5000007}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 L Thigh
+      position: {x: 0.000000076293944, y: 0.00000015646219, z: 0.082196206}
+      rotation: {x: 0.013656701, y: 0.998872, z: 0.043903984, w: 0.011865625}
+      scale: {x: 1, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 L Calf
+      position: {x: -0.45435137, y: 0.0000000035762786, z: 0}
+      rotation: {x: 0.0000000029079352, y: 9.389383e-10, z: 0.00261783, w: 0.9999966}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 L Foot
+      position: {x: -0.42102617, y: -0.0000000011920929, z: 0}
+      rotation: {x: -0.02009877, y: 0.012768903, z: -0.015485804, w: 0.99959654}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Toe0
+      position: {x: -0.08719904, y: 0.11142115, z: -0.039456263}
+      rotation: {x: -0.000000015454312, y: 0.000000015454312, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Toe1
+      position: {x: -0.07846247, y: 0.12172385, z: -0.02467946}
+      rotation: {x: -0.000000015454312, y: 0.000000015454312, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Toe2
+      position: {x: -0.07468361, y: 0.12825294, z: -0.009731559}
+      rotation: {x: -0.000000015454312, y: 0.000000015454312, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Toe3
+      position: {x: -0.074534684, y: 0.13144274, z: 0.0062104412}
+      rotation: {x: -0.000000015454312, y: 0.000000015454312, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Toe4
+      position: {x: -0.07732399, y: 0.1320936, z: 0.029335007}
+      rotation: {x: -0.000000015454312, y: 0.000000015454312, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Thigh
+      position: {x: -0.000000076293944, y: -0.00000007182359, z: -0.082196206}
+      rotation: {x: 0.013656651, y: 0.99887186, z: -0.04390538, w: -0.011867079}
+      scale: {x: 0.99999994, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Calf
+      position: {x: -0.45435143, y: 0, z: 0}
+      rotation: {x: -0.0000000016880166, y: -4.418954e-12, z: 0.002617829, w: 0.9999966}
+      scale: {x: 1, y: 0.9999999, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Foot
+      position: {x: -0.42102617, y: 0, z: 0}
+      rotation: {x: 0.020098764, y: -0.012768995, z: -0.015485818, w: 0.99959654}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 R Toe0
+      position: {x: -0.08719904, y: 0.11142116, z: 0.039456252}
+      rotation: {x: 0.000000020722668, y: -0.000000010185955, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Toe1
+      position: {x: -0.07846247, y: 0.12172384, z: 0.02467946}
+      rotation: {x: 0.000000020722668, y: -0.000000010185955, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Toe2
+      position: {x: -0.07468361, y: 0.12825294, z: 0.009731559}
+      rotation: {x: 0.000000020722668, y: -0.000000010185955, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Toe3
+      position: {x: -0.074534684, y: 0.13144276, z: -0.006210451}
+      rotation: {x: 0.000000020722668, y: -0.000000010185955, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Toe4
+      position: {x: -0.07732399, y: 0.1320936, z: -0.029335022}
+      rotation: {x: 0.000000020722668, y: -0.000000010185955, z: -0.7071068, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 Spine
+      position: {x: -0.13653854, y: 0.0013093811, z: 0.00000018527236}
+      rotation: {x: -0.000001981842, y: 0.000000798202, z: 0.045583956, w: 0.99896055}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Adam_RigCables_Front_03
+      position: {x: -0.08068985, y: 0.11872062, z: -0.0368851}
+      rotation: {x: -0.44450846, y: 0.54992014, z: 0.44450802, w: 0.5499207}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Adam_RigCables_Front_05
+      position: {x: -0.08068985, y: 0.11872058, z: 0.036885273}
+      rotation: {x: 0.4445085, y: -0.54992014, z: 0.44450805, w: 0.5499207}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Adam_RigCables_Front_06
+      position: {x: -0.030265426, y: 0.10959991, z: -0.036885105}
+      rotation: {x: 0.5352014, y: 0.46212512, z: -0.5352007, w: 0.4621257}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Adam_RigCables_Front_08
+      position: {x: -0.030265426, y: 0.109599836, z: 0.03688527}
+      rotation: {x: 0.5352012, y: 0.46212527, z: 0.5352007, w: -0.46212566}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 Spine1
+      position: {x: -0.14196198, y: -0.0002155304, z: -6.007235e-10}
+      rotation: {x: 0.0000000067259633, y: -0.00000006920405, z: 0.025473531, w: 0.9996755}
+      scale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Adam_monitor_front
+      position: {x: 0.000000076293944, y: -0.000000038146972, z: -0.00000007629394}
+      rotation: {x: -0.00000023841852, y: -2.131628e-14, z: 0.000000014901161, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 L Clavicle
+      position: {x: -0.20867546, y: 0.027390633, z: 0.11031285}
+      rotation: {x: -0.7188635, y: -0.0073126294, z: 0.6950778, w: 0.006990062}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L UpperArm
+      position: {x: -0.07789734, y: 0.000000019073486, z: 0}
+      rotation: {x: 0.13121381, y: -0.022040522, z: 0.03349846, w: 0.99054277}
+      scale: {x: 0.9999999, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 L Forearm
+      position: {x: -0.27191085, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 L ForeTwist
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 L ForeTwist1
+      position: {x: -0.09470047, y: 0.0000000047683715, z: 0}
+      rotation: {x: 0.0052934587, y: 0, z: -0, w: 0.999986}
+      scale: {x: 1, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 L ForeTwist2
+      position: {x: -0.09470047, y: 0.0000000047683715, z: -0.000000038146972}
+      rotation: {x: 0.0052934582, y: -0.000000007470195, z: -0.0000000036857983, w: 0.999986}
+      scale: {x: 1.0000001, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 L Hand
+      position: {x: -0.2841015, y: 0.000000009536743, z: -0.000000038146972}
+      rotation: {x: -0.69161785, y: -0.022329647, z: -0.03172575, w: 0.72122097}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger0
+      position: {x: -0.040035017, y: 0.012057075, z: -0.031324413}
+      rotation: {x: 0.6220402, y: -0.26516235, z: 0.27926645, w: 0.68173695}
+      scale: {x: 1, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 L Finger01
+      position: {x: -0.033689193, y: 0.000000038146972, z: 0}
+      rotation: {x: -0.000000119209204, y: 0.000002279876, z: -0.037544165, w: 0.999295}
+      scale: {x: 1.0000001, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger02
+      position: {x: -0.023862991, y: 0, z: 0}
+      rotation: {x: -0.0000000103407185, y: -0.00000002058871, z: -0.21868716, w: 0.97579503}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger1
+      position: {x: -0.09452446, y: -0.005023575, z: -0.025325682}
+      rotation: {x: -0.018210318, y: -0.005228736, z: -0.02665894, w: 0.99946505}
+      scale: {x: 1.0000001, y: 0.9999999, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger11
+      position: {x: -0.032909468, y: -0.000000019073486, z: -5.9604643e-10}
+      rotation: {x: -0.00000020116563, y: -0.000000507105, z: -0.031830844, w: 0.99949336}
+      scale: {x: 0.9999999, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger12
+      position: {x: -0.021589585, y: 0, z: 0}
+      rotation: {x: 0.000000005763416, y: -0.0000000014211267, z: -0.04434446, w: 0.99901634}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger2
+      position: {x: -0.097246855, y: -0.009752159, z: -0.005922897}
+      rotation: {x: -0.026860552, y: -0.012666944, z: -0.026945231, w: 0.9991957}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 L Finger21
+      position: {x: -0.03607445, y: 0.000000028610229, z: -0.0000000011920929}
+      rotation: {x: 0.000000076368416, y: -0.00000094901725, z: -0.03187169, w: 0.99949205}
+      scale: {x: 1.0000001, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger22
+      position: {x: -0.023492966, y: 0, z: 0}
+      rotation: {x: 0.0000000017017161, y: 0.000000001797194, z: -0.039276898, w: 0.99922836}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.9999999}
+      transformModified: 1
+    - name: Bip01 L Finger3
+      position: {x: -0.09439911, y: -0.0063291546, z: 0.010944839}
+      rotation: {x: -0.026322857, y: -0.019830637, z: -0.023539832, w: 0.99917954}
+      scale: {x: 1, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 L Finger31
+      position: {x: -0.032414094, y: 0.000000019073486, z: -0.0000000047683715}
+      rotation: {x: 0.000000016763801, y: -0.0000008754429, z: -0.03202686, w: 0.99948704}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger32
+      position: {x: -0.021078033, y: 0, z: -0.0000000047683715}
+      rotation: {x: 0.0000000015651698, y: -0.0000000014690479, z: -0.045087874, w: 0.998983}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger4
+      position: {x: -0.08508812, y: -0.0029920577, z: 0.029501293}
+      rotation: {x: -0.0075193318, y: -0.024470547, z: -0.020618197, w: 0.9994597}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger41
+      position: {x: -0.027843552, y: -0.000000019073486, z: -0.0000000047683715}
+      rotation: {x: 0.00000006658953, y: -0.00000004842875, z: -0.030747376, w: 0.9995272}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 L Finger42
+      position: {x: -0.018170165, y: 0, z: -0.0000000047683715}
+      rotation: {x: 0.0000000018231466, y: -0.0000000010064518, z: -0.04075003, w: 0.99916935}
+      scale: {x: 1.0000001, y: 0.99999994, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_L Forearm_01
+      position: {x: -0.05933014, y: -0.00000017166137, z: 0}
+      rotation: {x: 0.010586765, y: -0.00000092514057, z: -0.0000036337435, w: 0.999944}
+      scale: {x: 0.99999994, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Rig_L Forearm_02
+      position: {x: -0.2724005, y: -0.00000016450882, z: 0.000000038146972}
+      rotation: {x: 0.021172347, y: -0.0000018083675, z: -0.0000072704984, w: 0.9997758}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L Shoulder
+      position: {x: -0.00000015258789, y: 0.000000019073486, z: 0}
+      rotation: {x: 0.9999994, y: 0.000000052037468, z: 0.00000010436633, w: 0.0011174246}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L UpperArm_Ring
+      position: {x: 0.00000061035155, y: 0.000000095367426, z: -0.008470612}
+      rotation: {x: 0.000006573738, y: -0.000019864323, z: -0.05361941, w: 0.99856144}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L Clavicle_Constraint
+      position: {x: 0.049972687, y: 0.006017685, z: -0.00019664764}
+      rotation: {x: -0.1027627, y: 0.7693073, z: -0.19943367, w: 0.5981909}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L Clavicle
+      position: {x: -0.058878172, y: -0.015310954, z: 0.044860076}
+      rotation: {x: 0.17543116, y: 0.03574092, z: 0.9630752, w: 0.20107853}
+      scale: {x: 0.9999999, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Rig_L UpperArm_Upnode
+      position: {x: -0.013181305, y: 0.000000095367426, z: -0.029207}
+      rotation: {x: 0.0000001564622, y: 0.000000044703498, z: 0.000000033527613, w: 1}
+      scale: {x: 0.9999999, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Rig_L_Scapula_LookAt1
+      position: {x: -0.06965839, y: 0.081146665, z: 0.012904205}
+      rotation: {x: 0.06981589, y: 0.20984831, z: -0.015023323, w: 0.97512245}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 Neck
+      position: {x: -0.29771933, y: 0.039018877, z: 0.0000004003237}
+      rotation: {x: 0.000000058488745, y: 0.0000012277029, z: -0.40039754, w: 0.91634154}
+      scale: {x: 1.0000001, y: 1.0000001, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 Neck1
+      position: {x: -0.041208494, y: -0.000032577515, z: -9.022187e-11}
+      rotation: {x: 0.000000038290167, y: -0.00000012971405, z: 0.064738445, w: 0.9979023}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Adam_RigNeckRubber_Bones_27
+      position: {x: 0.02594757, y: 0.013087311, z: 0.054765623}
+      rotation: {x: -0.27650186, y: 0.5358223, z: 0.78297085, w: 0.15296379}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 Neck2
+      position: {x: -0.041208647, y: -0.000032653807, z: -9.080395e-11}
+      rotation: {x: 5.7171966e-14, y: -0.00000014954882, z: 0.05391862, w: 0.99854535}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 Head
+      position: {x: -0.04121185, y: -0.000000076293944, z: -1.4551915e-13}
+      rotation: {x: -0.0000005882222, y: -0.0000010343865, z: 0.17961992, w: 0.9837361}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Adam_BloodyHeadBracket
+      position: {x: -0.00000015258789, y: 0.000000009536743, z: 0.00000015258789}
+      rotation: {x: 0.00000052054855, y: 0.00000007549788, z: -0.000000048428806,
+        w: 1}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Adam_monitor_back
+      position: {x: -0.00000015258789, y: 0.000000009536743, z: 0.00000015258789}
+      rotation: {x: 1.6098233e-13, y: 1.065814e-14, z: -0.000000007450581, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Eye_L_Null
+      position: {x: -0.06269439, y: 0.10165221, z: 0.02857974}
+      rotation: {x: 0.52534497, y: -0.47329986, z: -0.5253441, w: -0.47330067}
+      scale: {x: 0.99999994, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_00
+      position: {x: -0.009800279, y: 0.0073695374, z: -0.0009216308}
+      rotation: {x: 0.28953668, y: -0.013111449, z: 0.0039664526, w: 0.9570689}
+      scale: {x: 1.0000002, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_01
+      position: {x: 0.009821844, y: -0.005771942, z: 0.0046279905}
+      rotation: {x: -0.28951666, y: 0.01311172, z: -0.0039664065, w: 0.95707494}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_01
+      position: {x: -0.0065307594, y: 0.010338745, z: -0.0013049316}
+      rotation: {x: 0.2865234, y: -0.022361292, z: 0.006689437, w: 0.9577889}
+      scale: {x: 0.99999994, y: 0.9999999, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_02
+      position: {x: 0.0065845367, y: -0.008091583, z: 0.0065122982}
+      rotation: {x: -0.2865248, y: 0.022361115, z: -0.006689643, w: 0.9577885}
+      scale: {x: 1, y: 0.99999994, z: 0.9999998}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_02
+      position: {x: -0.0021316505, y: 0.012020721, z: -0.0014721679}
+      rotation: {x: 0.27185574, y: -0.018197125, z: 0.0051415786, w: 0.96215224}
+      scale: {x: 1, y: 1, z: 0.99999976}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_03
+      position: {x: 0.0021793365, y: -0.009382172, z: 0.007644729}
+      rotation: {x: -0.2800263, y: 0.015931712, z: -0.0046480056, w: 0.9598489}
+      scale: {x: 1.0000001, y: 0.9999999, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_03
+      position: {x: 0.0023690844, y: 0.011976623, z: -0.0014746094}
+      rotation: {x: 0.26741046, y: -0.010827748, z: 0.0030050897, w: 0.96351725}
+      scale: {x: 1, y: 1.0000001, z: 0.9999999}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_04
+      position: {x: -0.0023270606, y: -0.009328766, z: 0.0076670074}
+      rotation: {x: -0.276346, y: 0.0133952135, z: -0.0038521518, w: 0.96095717}
+      scale: {x: 0.99999994, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_04
+      position: {x: 0.0068713427, y: 0.010127716, z: -0.0012255668}
+      rotation: {x: 0.27818444, y: -0.001822893, z: 0.00052792724, w: 0.9605258}
+      scale: {x: 0.9999999, y: 0.99999976, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_05
+      position: {x: -0.006866641, y: -0.007891388, z: 0.006470108}
+      rotation: {x: -0.2781737, y: 0.0018225453, z: -0.00052788435, w: 0.96052897}
+      scale: {x: 1, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_05
+      position: {x: 0.010026215, y: 0.0070666503, z: -0.0008642578}
+      rotation: {x: 0.2585225, y: -0.020554475, z: 0.005502149, w: 0.96577084}
+      scale: {x: 0.9999998, y: 1.0000004, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_06
+      position: {x: -0.009980365, y: -0.005477295, z: 0.0046479795}
+      rotation: {x: -0.25852633, y: 0.020554433, z: -0.0055024, w: 0.9657698}
+      scale: {x: 0.9999999, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_12
+      position: {x: -0.010222628, y: -0.0065098573, z: -0.0020876122}
+      rotation: {x: -0.20462297, y: -0.005391549, z: -0.0011271472, w: 0.9788254}
+      scale: {x: 1.0000001, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_14
+      position: {x: 0.010233583, y: 0.0051963804, z: 0.0044174194}
+      rotation: {x: 0.2860549, y: 0.005781572, z: 0.0017258291, w: 0.95819426}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.99999976}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_13
+      position: {x: -0.006861417, y: -0.009734955, z: -0.0030618953}
+      rotation: {x: -0.19678219, y: 0.0016145937, z: 0.00032404606, w: 0.98044586}
+      scale: {x: 1, y: 1.0000001, z: 1.0000002}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_13
+      position: {x: 0.0068563865, y: 0.00778656, z: 0.0066020964}
+      rotation: {x: 0.27837747, y: -0.0017271802, z: -0.00050070306, w: 0.9604701}
+      scale: {x: 1.0000001, y: 1.0000002, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_14
+      position: {x: -0.0023612927, y: -0.011511688, z: -0.0036245917}
+      rotation: {x: -0.19632089, y: -0.0036972011, z: -0.00074019644, w: 0.98053247}
+      scale: {x: 1, y: 0.99999946, z: 0.9999998}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_12
+      position: {x: 0.0023743438, y: 0.00923233, z: 0.0077693937}
+      rotation: {x: 0.27834472, y: 0.0038233125, z: 0.0011078923, w: 0.960473}
+      scale: {x: 0.99999994, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_15
+      position: {x: 0.0024292038, y: -0.011499176, z: -0.003619995}
+      rotation: {x: -0.19524571, y: -0.001909467, z: -0.0003801591, w: 0.98075247}
+      scale: {x: 1, y: 0.9999999, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_11
+      position: {x: -0.0024219847, y: 0.009227447, z: 0.007760391}
+      rotation: {x: 0.27705526, y: 0.002097873, z: 0.00060485187, w: 0.9608515}
+      scale: {x: 0.9999998, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_16
+      position: {x: 0.0068518114, y: -0.009741363, z: -0.0030617618}
+      rotation: {x: -0.19814505, y: 0.0049628722, z: 0.0010032305, w: 0.98015964}
+      scale: {x: 0.9999998, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_10
+      position: {x: -0.006866753, y: 0.0078279115, z: 0.0065412903}
+      rotation: {x: 0.27970478, y: -0.007132398, z: -0.0020781313, w: 0.9600573}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_L_EyelidsRig_17
+      position: {x: 0.010204443, y: -0.0065216064, z: -0.0021365832}
+      rotation: {x: -0.20766339, y: 0.012702694, z: 0.0026968648, w: 0.9781142}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_09
+      position: {x: -0.010229227, y: 0.0052522277, z: 0.004359207}
+      rotation: {x: 0.28899246, y: -0.013638275, z: -0.004117713, w: 0.9572254}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1.0000002}
+      transformModified: 1
+    - name: Eye_L_LowerEyelid
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.000000009800334, y: -0.15289792, z: 0.98824203, w: 0.0000000748799}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_08
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000011543489, y: -0.152898, z: 0.98824203, w: -0.0000000746102}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_15
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000011543489, y: -0.152898, z: 0.98824203, w: -0.0000000746102}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_Sclera
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.00053665263, y: -0.006736652, z: 0.000336354, w: 0.9999771}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendRoot
+      position: {x: -0.0000000166893, y: -0.00000015258789, z: 0.009079456}
+      rotation: {x: 0.0000001192093, y: 1, z: 0.0000002384186, w: -0.000000044330623}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_00
+      position: {x: 0.0000000023841857, y: 0.0042498778, z: 0}
+      rotation: {x: -2.0810213e-20, y: 7.150334e-10, z: 2.9103834e-11, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_00
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 8.64219e-12, y: 2.1170278e-10, z: 0.23527355, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_00
+      position: {x: -0, y: 0, z: -0.000068378446}
+      rotation: {x: 0.00000005960466, y: 0.000000088409365, z: -0.00000008739881,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_01
+      position: {x: -0.0037025951, y: 0.0021574402, z: 0}
+      rotation: {x: 0.000000035619887, y: 0.000000020901219, z: 0.5000001, w: 0.8660253}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_01
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -3.4297823e-10, y: -8.3024254e-11, z: 0.23527353, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_02
+      position: {x: -0, y: 0, z: -0.000068359375}
+      rotation: {x: 0.00000016306876, y: -0.000000043481155, z: -0.0000001937151,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_02
+      position: {x: -0.0036805915, y: -0.0021249389, z: -0.000000019073486}
+      rotation: {x: 0.00000004390097, y: 0.00000016311739, z: 0.8660254, w: 0.49999997}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_02
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 3.749449e-11, y: -6.497004e-10, z: 0.23527354, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_01
+      position: {x: -0, y: 0, z: -0.0000683403}
+      rotation: {x: 0.00000004403409, y: -0.00000004417961, z: -0.000000044703476,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_03
+      position: {x: 0.00000021934508, y: -0.0042498778, z: -0.000000019073486}
+      rotation: {x: -0.000000042999986, y: 0.00000016292326, z: 1, w: -0.0000002384768}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_03
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 1.0304239e-10, y: 5.639425e-10, z: 0.23527355, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_03
+      position: {x: 0.0000000023841857, y: 0, z: -0.000068359375}
+      rotation: {x: 0.00000016292326, y: -0.000000044260684, z: -0.000000043684846,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_04
+      position: {x: 0.0036803293, y: -0.0021249389, z: 0}
+      rotation: {x: 0.000000015515322, y: -0.00000017832963, z: -0.8660253, w: 0.5000001}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_04
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 9.3673326e-11, y: -2.1687979e-10, z: 0.23527353, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_04
+      position: {x: -0, y: 0, z: -0.000068378446}
+      rotation: {x: 0.000000044034095, y: -0.000000043830376, z: -0.00000005960465,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_Null_05
+      position: {x: 0.0036806369, y: 0.0021250916, z: 0}
+      rotation: {x: -0.000000008935434, y: -0.0000000958614, z: -0.5, w: 0.8660254}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Blend_05
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 1.8162107e-10, y: -2.554792e-10, z: 0.23527353, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendScrew_05
+      position: {x: 0.00000015258789, y: 0, z: -0.000068378446}
+      rotation: {x: 0.00000004359753, y: -0.000000043655756, z: -0.00000014901161,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_BlendBase
+      position: {x: -0.0000000166893, y: 0, z: 0.00051511766}
+      rotation: {x: -2.0810213e-20, y: 7.150334e-10, z: 2.9103834e-11, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Lens
+      position: {x: -0, y: 0, z: 0.0046347617}
+      rotation: {x: 0.00000007643482, y: 0.00000047682641, z: 1, w: -0.00000004368252}
+      scale: {x: 1.1306409, y: 1.1306409, z: 1.1306409}
+      transformModified: 1
+    - name: Eye_L_Side1
+      position: {x: -0.01087311, y: -0.00000015258789, z: 0.000068359375}
+      rotation: {x: 0.70710695, y: -0.000000053385065, z: -0.7071066, w: -0.00000005338509}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_Side2
+      position: {x: 0.010947875, y: -0.00000015258789, z: 0.000068378446}
+      rotation: {x: 0.00000010677018, y: 0.7071066, z: -0.00000010677013, w: 0.70710695}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_UpperEyelid
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.16178578, y: -0.0000000017406407, z: -2.8537042e-10, w: 0.9868259}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_00
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.16178577, y: -0.000000017187576, z: 0.0000000028178218, w: 0.9868259}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_L_EyelidSegment_07
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.16178577, y: -0.000000009634614, z: 0.0000000015795532, w: 0.9868259}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_Null
+      position: {x: -0.06269455, y: 0.10165235, z: -0.028580045}
+      rotation: {x: 0.52534497, y: -0.47329986, z: -0.5253441, w: -0.47330067}
+      scale: {x: 0.99999994, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_00
+      position: {x: -0.009800272, y: 0.0073693846, z: -0.0009216499}
+      rotation: {x: 0.28951642, y: -0.0131121, z: 0.00396643, w: 0.95707506}
+      scale: {x: 1, y: 1.0000001, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_01
+      position: {x: 0.009821844, y: -0.005771942, z: 0.0046281433}
+      rotation: {x: -0.28951663, y: 0.013111734, z: -0.0039663585, w: 0.957075}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_01
+      position: {x: -0.0065307566, y: 0.010338898, z: -0.0013049507}
+      rotation: {x: 0.28652814, y: -0.022361446, z: 0.0066895653, w: 0.9577875}
+      scale: {x: 0.9999999, y: 0.9999998, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_02
+      position: {x: 0.006584532, y: -0.008091888, z: 0.0065122982}
+      rotation: {x: -0.2865248, y: 0.022361096, z: -0.006689629, w: 0.95778847}
+      scale: {x: 1, y: 0.99999994, z: 0.9999998}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_02
+      position: {x: -0.0021316505, y: 0.012020874, z: -0.0014722061}
+      rotation: {x: 0.27414763, y: -0.017564906, z: 0.0050081257, w: 0.9615142}
+      scale: {x: 1.0000001, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_03
+      position: {x: 0.0021793342, y: -0.009382019, z: 0.007644729}
+      rotation: {x: -0.28002632, y: 0.015931707, z: -0.004648007, w: 0.9598489}
+      scale: {x: 1.0000001, y: 0.9999999, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_03
+      position: {x: 0.0023690867, y: 0.011976776, z: -0.0014746285}
+      rotation: {x: 0.26580834, y: -0.010370728, z: 0.0028596825, w: 0.9639659}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_04
+      position: {x: -0.0023270582, y: -0.0093289185, z: 0.0076670074}
+      rotation: {x: -0.27634594, y: 0.0133952135, z: -0.003852152, w: 0.96095717}
+      scale: {x: 0.99999994, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_04
+      position: {x: 0.0068713427, y: 0.010127716, z: -0.0012255859}
+      rotation: {x: 0.27817965, y: -0.001822805, z: 0.0005279438, w: 0.9605272}
+      scale: {x: 0.9999999, y: 0.99999994, z: 0.9999998}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_05
+      position: {x: -0.0068666385, y: -0.007891235, z: 0.0064700316}
+      rotation: {x: -0.27817374, y: 0.0018225452, z: -0.00052788417, w: 0.9605289}
+      scale: {x: 1, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_05
+      position: {x: 0.010026214, y: 0.0070666503, z: -0.0008642769}
+      rotation: {x: 0.25852242, y: -0.02055443, z: 0.00550212, w: 0.9657709}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_06
+      position: {x: -0.009980366, y: -0.005477295, z: 0.004647903}
+      rotation: {x: -0.2585263, y: 0.020554435, z: -0.005502381, w: 0.9657699}
+      scale: {x: 0.9999999, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_12
+      position: {x: -0.010222624, y: -0.0065100095, z: -0.0020876313}
+      rotation: {x: -0.20462298, y: -0.005391718, z: -0.0011271788, w: 0.9788254}
+      scale: {x: 0.9999998, y: 0.9999999, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_14
+      position: {x: 0.010233583, y: 0.0051962277, z: 0.0044174194}
+      rotation: {x: 0.28605488, y: 0.0057815933, z: 0.0017258431, w: 0.95819426}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.99999976}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_13
+      position: {x: -0.0068614148, y: -0.009735107, z: -0.0030619144}
+      rotation: {x: -0.19678774, y: 0.0016144965, z: 0.00032407226, w: 0.9804447}
+      scale: {x: 1, y: 1.0000001, z: 1.0000002}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_13
+      position: {x: 0.006856384, y: 0.007786407, z: 0.00660202}
+      rotation: {x: 0.27837747, y: -0.0017271893, z: -0.00050071464, w: 0.9604701}
+      scale: {x: 1.0000001, y: 1.0000002, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_14
+      position: {x: -0.0023612904, y: -0.011511841, z: -0.0036246204}
+      rotation: {x: -0.19660945, y: -0.0036166657, z: -0.00072518055, w: 0.98047495}
+      scale: {x: 1, y: 0.9999996, z: 0.9999998}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_12
+      position: {x: 0.0023743392, y: 0.00923233, z: 0.0077693937}
+      rotation: {x: 0.2783447, y: 0.0038233139, z: 0.0011079087, w: 0.960473}
+      scale: {x: 0.99999994, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_15
+      position: {x: 0.0024292087, y: -0.011499176, z: -0.003620014}
+      rotation: {x: -0.19492762, y: -0.0018177138, z: -0.00036128188, w: 0.9808159}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_11
+      position: {x: -0.0024219893, y: 0.009227447, z: 0.007760391}
+      rotation: {x: 0.27705526, y: 0.0020978653, z: 0.0006048519, w: 0.9608515}
+      scale: {x: 0.9999998, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_16
+      position: {x: 0.0068518114, y: -0.009741363, z: -0.003061781}
+      rotation: {x: -0.1981505, y: 0.0049630385, z: 0.0010033153, w: 0.98015857}
+      scale: {x: 0.9999999, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_10
+      position: {x: -0.0068667578, y: 0.0078279115, z: 0.006541366}
+      rotation: {x: 0.2797048, y: -0.007132407, z: -0.0020781413, w: 0.9600573}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Eye_R_EyelidsRig_17
+      position: {x: 0.010204444, y: -0.0065216064, z: -0.0021366023}
+      rotation: {x: -0.20767127, y: 0.012702637, z: 0.002697, w: 0.9781125}
+      scale: {x: 1, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_09
+      position: {x: -0.010229227, y: 0.0052522277, z: 0.0043592835}
+      rotation: {x: 0.28899243, y: -0.013638266, z: -0.0041177254, w: 0.9572254}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1.0000002}
+      transformModified: 1
+    - name: Eye_R_LowerEyelid
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.000000009800334, y: -0.15289792, z: 0.98824203, w: 0.0000000748799}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_08
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000011543489, y: -0.152898, z: 0.98824203, w: -0.0000000746102}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_15
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.000000011543489, y: -0.152898, z: 0.98824203, w: -0.0000000746102}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_Sclera
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.0005353332, y: 0.016233178, z: -0.0002382816, w: 0.9998681}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendRoot
+      position: {x: -0.000000014305114, y: 0, z: 0.009079456}
+      rotation: {x: 0.0000001192093, y: 1, z: 0.00000023847682, w: -0.000000043424677}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_00
+      position: {x: -0, y: 0.0042498778, z: 0.000000019073486}
+      rotation: {x: 6.973546e-21, y: 4.7921844e-10, z: -1.4551915e-11, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_00
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -2.7927896e-10, y: 4.1150566e-10, z: 0.23527354, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_00
+      position: {x: -0.0000000023841857, y: 0, z: -0.0000683403}
+      rotation: {x: 0.00000005948824, y: 0.00000008817354, z: -0.000000087442466,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_01
+      position: {x: -0.0037025928, y: 0.0021574402, z: 0.000000019073486}
+      rotation: {x: 0.000000035749807, y: 0.000000020909019, z: 0.5000001, w: 0.8660253}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_01
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -5.8352423e-10, y: -0.0000000010994735, z: 0.23527354, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_02
+      position: {x: -0.00000015258789, y: 0, z: -0.000068359375}
+      rotation: {x: 0.00000016400007, y: -0.000000043015493, z: -0.00000017881393,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_02
+      position: {x: -0.0036805915, y: -0.0021250916, z: 0.000000038146972}
+      rotation: {x: 0.000000043047635, y: 0.0000001628035, z: 0.8660254, w: 0.5}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_02
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 2.0249515e-10, y: 6.479056e-10, z: 0.23527355, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_01
+      position: {x: -0.00000015258789, y: 0, z: -0.0000683403}
+      rotation: {x: 0.000000043888576, y: -0.000000043481126, z: -0.00000001490116,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_03
+      position: {x: 0.00000021934508, y: -0.0042498778, z: 0.000000019073486}
+      rotation: {x: -0.000000042770136, y: 0.00000016292324, z: 1, w: -0.00000023840403}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_03
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -9.945273e-11, y: -8.396318e-11, z: 0.23527354, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_03
+      position: {x: 0.0000000023841857, y: 0, z: -0.000068359375}
+      rotation: {x: 0.00000016292326, y: -0.000000042915055, z: -0.000000043699394,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_04
+      position: {x: 0.0036803316, y: -0.0021249389, z: 0.000000019073486}
+      rotation: {x: 0.000000015740373, y: -0.00000017860299, z: -0.8660253, w: 0.5000001}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_04
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 5.8422385e-11, y: 7.3280765e-10, z: 0.23527354, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_04
+      position: {x: -0, y: 0.000000076293944, z: -0.0000683403}
+      rotation: {x: 0.000000044121403, y: -0.000000043015465, z: -0.000000074505806,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_Null_05
+      position: {x: 0.0036806357, y: 0.0021249389, z: 0}
+      rotation: {x: -0.00000000805146, y: -0.000000096775025, z: -0.50000006, w: 0.8660254}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Blend_05
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 7.643107e-10, y: -6.8337175e-10, z: 0.23527355, w: 0.9719292}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendScrew_05
+      position: {x: -0, y: 0, z: -0.0000683403}
+      rotation: {x: 0.000000044790788, y: -0.000000044121414, z: -0.00000016391277,
+        w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_BlendBase
+      position: {x: -0.000000014305114, y: 0, z: 0.0005151558}
+      rotation: {x: 6.973546e-21, y: 4.7921844e-10, z: -1.4551915e-11, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Lens
+      position: {x: 0.0000000023841857, y: 0, z: 0.0046347617}
+      rotation: {x: 0.00000007929768, y: 0.0000004769293, z: 1, w: -0.000000043708262}
+      scale: {x: 1.1306409, y: 1.1306409, z: 1.1306409}
+      transformModified: 1
+    - name: Eye_R_Side1
+      position: {x: -0.010873106, y: -0.00000015258789, z: 0.0000683403}
+      rotation: {x: 0.70710695, y: -0.000000053385065, z: -0.7071066, w: -0.00000005338509}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_Side2
+      position: {x: 0.0109478785, y: -0.00000015258789, z: 0.000068359375}
+      rotation: {x: 0.00000010677018, y: 0.7071066, z: -0.00000010677013, w: 0.70710695}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_UpperEyelid
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.16178578, y: -0.0000000017406407, z: -2.8537042e-10, w: 0.9868259}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_00
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.16178577, y: -0.000000017187576, z: 0.0000000028178218, w: 0.9868259}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1.0000001}
+      transformModified: 1
+    - name: Eye_R_EyelidSegment_07
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.16178577, y: -0.000000009634614, z: 0.0000000015795532, w: 0.9868259}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1.0000001}
+      transformModified: 1
+    - name: mesh_Adam_mask
+      position: {x: -0.00000015258789, y: -0.000000009536743, z: 0.00000015258789}
+      rotation: {x: 0.00000004371139, y: -0.000000043711385, z: -0.00000028684732,
+        w: 1}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 R Clavicle
+      position: {x: -0.20867561, y: 0.027391242, z: -0.11031268}
+      rotation: {x: 0.5816099, y: 0.007034781, z: 0.81343037, w: 0.00340379}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R UpperArm
+      position: {x: -0.07789738, y: 0.000000019073486, z: 0.00000030517577}
+      rotation: {x: -0.1270676, y: -0.15356936, z: -0.011841043, w: 0.9798623}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Forearm
+      position: {x: -0.271911, y: 0, z: 0.000000038146972}
+      rotation: {x: 0.0006640924, y: -0.006404741, z: 0.038754135, w: 0.9992281}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 R ForeTwist
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 R ForeTwist1
+      position: {x: -0.09470047, y: 0, z: -0.000000038146972}
+      rotation: {x: -0.005293471, y: 1.9719714e-11, z: -0.0000000037252377, w: 0.999986}
+      scale: {x: 1.0000001, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R ForeTwist2
+      position: {x: -0.094700545, y: 0.000000009536743, z: 0}
+      rotation: {x: -0.0052934694, y: 0, z: -0, w: 0.999986}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 R Hand
+      position: {x: -0.2841014, y: -0.0000000047683715, z: 0}
+      rotation: {x: 0.69161785, y: 0.02232965, z: -0.03172575, w: 0.72122097}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger0
+      position: {x: -0.040034942, y: 0.012057075, z: 0.03132441}
+      rotation: {x: -0.6232758, y: 0.26805574, z: 0.27576405, w: 0.6809021}
+      scale: {x: 1, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Finger01
+      position: {x: -0.033689115, y: 0.000000038146972, z: -0.000000019073486}
+      rotation: {x: -0.000000059604602, y: -0.0000047087638, z: -0.03754193, w: 0.9992951}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger02
+      position: {x: -0.023863144, y: -0.000000019073486, z: 0}
+      rotation: {x: 0.000000004732113, y: -0.000000008695917, z: -0.21868715, w: 0.97579503}
+      scale: {x: 1, y: 1.0000001, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Finger1
+      position: {x: -0.09452446, y: -0.0050236126, z: 0.025325678}
+      rotation: {x: 0.01821064, y: 0.0052294857, z: -0.026656346, w: 0.9994651}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger11
+      position: {x: -0.032909393, y: 0.000000019073486, z: -5.9604643e-10}
+      rotation: {x: -0.000000029802305, y: -0.0000008372585, z: -0.0318322, w: 0.9994933}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Bip01 R Finger12
+      position: {x: -0.021589432, y: -0.000000019073486, z: -5.9604643e-10}
+      rotation: {x: -2.3260162e-10, y: 1.0324743e-11, z: -0.044344433, w: 0.99901634}
+      scale: {x: 1, y: 1, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Finger2
+      position: {x: -0.09724678, y: -0.009752159, z: 0.005922897}
+      rotation: {x: 0.026860757, y: 0.012667034, z: -0.026943825, w: 0.99919575}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger21
+      position: {x: -0.036074296, y: 0.000000009536743, z: 0.0000000035762786}
+      rotation: {x: -0.00000008009369, y: 0.0000005541366, z: -0.031872205, w: 0.999492}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger22
+      position: {x: -0.023493042, y: -0.000000038146972, z: -0.0000000023841857}
+      rotation: {x: -0.0000000102915125, y: -9.935321e-10, z: -0.039276868, w: 0.99922836}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger3
+      position: {x: -0.09439903, y: -0.0063291546, z: -0.010944836}
+      rotation: {x: 0.02632277, y: 0.019831445, z: -0.023540108, w: 0.99917954}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger31
+      position: {x: -0.032414094, y: 0, z: 0}
+      rotation: {x: 0.000000067055204, y: -0.00000044517202, z: -0.03202119, w: 0.9994872}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger32
+      position: {x: -0.021078033, y: 0, z: 0}
+      rotation: {x: 0.0000000023154407, y: -3.3757228e-10, z: -0.045087878, w: 0.998983}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Bip01 R Finger4
+      position: {x: -0.08508812, y: -0.0029920577, z: -0.029501285}
+      rotation: {x: 0.0075193285, y: 0.024470331, z: -0.020618692, w: 0.9994597}
+      scale: {x: 1, y: 1.0000001, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Finger41
+      position: {x: -0.027843552, y: 0, z: -0.0000000047683715}
+      rotation: {x: 0.00000006752085, y: -0.00000005774197, z: -0.030746834, w: 0.9995273}
+      scale: {x: 1.0000001, y: 0.99999994, z: 0.99999994}
+      transformModified: 1
+    - name: Bip01 R Finger42
+      position: {x: -0.018170165, y: -0.000000038146972, z: 0.0000000047683715}
+      rotation: {x: -3.7951416e-11, y: -9.30549e-10, z: -0.04075002, w: 0.99916935}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_R Forearm_01
+      position: {x: -0.059330214, y: 0.00000044822693, z: 0.0000010681152}
+      rotation: {x: -0.010587072, y: -0.000024686797, z: 0.0000093038425, w: 0.999944}
+      scale: {x: 0.99999994, y: 1.0000001, z: 0.9999999}
+      transformModified: 1
+    - name: Rig_R Forearm_02
+      position: {x: -0.2724006, y: 0.0000004529953, z: 0.0000011444091}
+      rotation: {x: -0.021172948, y: -0.00004927351, z: 0.000018613677, w: 0.9997758}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_R Shoulder
+      position: {x: -0.00000030517577, y: 0.00000064849854, z: 0.0000010299682}
+      rotation: {x: 0.9999994, y: 0.0000011941189, z: 0.000001809156, w: -0.0011193297}
+      scale: {x: 0.9999999, y: 0.9999999, z: 1}
+      transformModified: 1
+    - name: Rig_R UpperArm_Ring
+      position: {x: 0.0000012207031, y: 0.0000002479553, z: 0.008470573}
+      rotation: {x: 0.99856186, y: -0.05361152, z: -0.00007429356, w: 0.00001823035}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_R Clavicle_Constraint
+      position: {x: 0.049970854, y: -0.0060167694, z: -0.00020683288}
+      rotation: {x: 0.1027748, y: 0.7693396, z: 0.19943991, w: 0.5981451}
+      scale: {x: 1, y: 0.99999964, z: 0.99999976}
+      transformModified: 1
+    - name: Rig_R Clavicle
+      position: {x: -0.058881566, y: -0.015310249, z: -0.044860993}
+      rotation: {x: 0.20107628, y: 0.96307594, z: 0.03574038, w: 0.17543015}
+      scale: {x: 1, y: 0.99999994, z: 0.9999999}
+      transformModified: 1
+    - name: Rig_R UpperArm_Upnode
+      position: {x: -0.013181725, y: 0.00000047683716, z: 0.029206848}
+      rotation: {x: 0.000000014901163, y: 0.000000014901161, z: -0.000000020489097,
+        w: 1}
+      scale: {x: 0.99999994, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Rig_R_Scapula_LookAt1
+      position: {x: -0.06966114, y: 0.08114738, z: -0.012904968}
+      rotation: {x: 0.01502536, y: 0.9751227, z: -0.06981544, w: 0.20984732}
+      scale: {x: 1, y: 0.99999994, z: 1}
+      transformModified: 1
+    - name: Bone005
+      position: {x: -0.06667747, y: -0.06221108, z: -0.0000001566566}
+      rotation: {x: 0.00000070943355, y: -0.0000007964221, z: 0.99847126, w: -0.0552736}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Bone011
+      position: {x: -0.2537844, y: 0.09455742, z: -0.024686277}
+      rotation: {x: -0.1244745, y: -0.752881, z: 0.14902207, w: 0.62886316}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Bone011(mirrored)
+      position: {x: -0.2537844, y: 0.09455738, z: 0.024690092}
+      rotation: {x: -0.6288606, y: -0.14902723, z: 0.75288147, w: 0.12447807}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_L Clavicle_LookAt
+      position: {x: -0.23283546, y: 0.10371141, z: 0.046849955}
+      rotation: {x: -0.030562209, y: -0.7064457, z: -0.030562181, w: 0.70644635}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L UpperArm_Ring_Upnode
+      position: {x: -0.32978705, y: 0.05523365, z: 0.07980992}
+      rotation: {x: -0.477922, y: 0.5211435, z: 0.47792163, w: 0.5211439}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_L_Scapula
+      position: {x: -0.255698, y: -0.03262537, z: 0.07428727}
+      rotation: {x: 0.1581034, y: 0.8797004, z: -0.047668364, w: 0.4459352}
+      scale: {x: 1.0000002, y: 1.0000004, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_L_Scapula_LookAt2
+      position: {x: -0.22835715, y: -0.048539817, z: 0.10115992}
+      rotation: {x: -0.5175078, y: -0.377141, z: 0.74083114, w: -0.20277967}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_L_Scapula_LookAtUpnode
+      position: {x: -0.12531914, y: -0.076397166, z: 0.0668402}
+      rotation: {x: 0.7053217, y: -0.0502162, z: -0.70532113, w: -0.05021624}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_L_Scapula_pos
+      position: {x: -0.2626632, y: -0.030125512, z: 0.06278993}
+      rotation: {x: 0.7053218, y: -0.050216537, z: -0.7053211, w: -0.050216585}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_R Clavicle_LookAt
+      position: {x: -0.2328356, y: 0.10371152, z: -0.046849918}
+      rotation: {x: -0.030562967, y: -0.70644563, z: -0.030562935, w: 0.70644635}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_R UpperArm_Ring_Upnode
+      position: {x: -0.3297869, y: 0.05523376, z: -0.07981017}
+      rotation: {x: -0.4779221, y: 0.52114344, z: 0.47792175, w: 0.52114385}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_R_Scapula
+      position: {x: -0.255698, y: -0.032625236, z: -0.07428611}
+      rotation: {x: 0.44594297, y: -0.047671717, z: 0.87969655, w: 0.15810232}
+      scale: {x: 1.0000002, y: 1.0000004, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_R_Scapula_LookAt2
+      position: {x: -0.22835715, y: -0.048539627, z: -0.10115935}
+      rotation: {x: 0.20278013, y: -0.74083155, z: 0.3771403, w: 0.5175075}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_R_Scapula_LookAtUpnode
+      position: {x: -0.12531899, y: -0.07639706, z: -0.06683669}
+      rotation: {x: 0.7053217, y: -0.0502162, z: -0.70532113, w: -0.05021624}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_R_Scapula_pos
+      position: {x: -0.2626632, y: -0.030125398, z: -0.06278829}
+      rotation: {x: 0.7053218, y: -0.050216537, z: -0.7053211, w: -0.050216585}
+      scale: {x: 0.99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_Trapezius_L_Base
+      position: {x: -0.30159065, y: 0.051334362, z: -0.044863295}
+      rotation: {x: -0.020892477, y: -0.8170459, z: 0.16730948, w: 0.5513683}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_Trapezius_L_Rail
+      position: {x: -0.09847168, y: -0.014336586, z: 0.00064544677}
+      rotation: {x: 0.000000029802322, y: 2.2204466e-16, z: 0.0000000074505815, w: 1}
+      scale: {x: 0.9999999, y: 1, z: 1}
+      transformModified: 1
+    - name: Rig_Trapezius_L_Slider
+      position: {x: 0.000000038146972, y: -0.000000076293944, z: 0}
+      rotation: {x: 0.000000089406925, y: -0.00000010430812, z: -0.000000089406946,
+        w: 1}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1}
+      transformModified: 1
+    - name: Rig_Trapezius_R_Base
+      position: {x: -0.3015905, y: 0.051334303, z: 0.044860024}
+      rotation: {x: -0.5513682, y: -0.16731054, z: 0.8170458, w: 0.02089251}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_Trapezius_R_Rail
+      position: {x: -0.09847145, y: 0.014336624, z: 0.0006455993}
+      rotation: {x: 4.72955e-14, y: 0.00000017881393, z: -0.0000002644956, w: 1}
+      scale: {x: 1, y: 1, z: 1.0000002}
+      transformModified: 1
+    - name: Rig_Trapezius_L_Slider002
+      position: {x: -0.000000114440915, y: 0.000000038146972, z: -0.00000015258789}
+      rotation: {x: 0.00000002235174, y: 0.000000029802326, z: -0.00000013783577,
+        w: 1}
+      scale: {x: 0.9999999, y: 1.0000002, z: 0.9999998}
+      transformModified: 1
+    - name: Bone006
+      position: {x: -0.16392799, y: -0.05898534, z: -0.00000014329781}
+      rotation: {x: -0.00000047078254, y: -0.0000003369427, z: 0.9961794, w: -0.087330826}
+      scale: {x: 1, y: 1.0000002, z: 1.0000004}
+      transformModified: 1
+    - name: Bone007
+      position: {x: -0.09499672, y: -0.04680592, z: -0.000000077146495}
+      rotation: {x: -0.0000003022446, y: -0.00000043799238, z: 0.999634, w: -0.02705384}
+      scale: {x: 1.0000007, y: 1.0000006, z: 1.0000001}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_00
+      position: {x: -0.079108045, y: 0.025484027, z: 0.12725057}
+      rotation: {x: -0.44608095, y: -0.5338034, z: -0.4086905, w: 0.5907942}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_01
+      position: {x: -0.083393626, y: 0.05437742, z: 0.122606836}
+      rotation: {x: 0.56881386, y: 0.5927584, z: 0.3193125, w: -0.472364}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_02
+      position: {x: -0.085772395, y: 0.07642391, z: 0.10985776}
+      rotation: {x: 0.6263209, y: 0.63282, z: 0.24279109, w: -0.3851149}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_03
+      position: {x: -0.089195475, y: 0.09721672, z: 0.093318805}
+      rotation: {x: 0.6330423, y: 0.62118787, z: 0.19796602, w: -0.41736385}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_04
+      position: {x: -0.050715636, y: 0.03735771, z: 0.12480663}
+      rotation: {x: 0.52981204, y: 0.5725094, z: 0.42361102, w: -0.46052784}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_05
+      position: {x: -0.048525084, y: 0.062283706, z: 0.11548994}
+      rotation: {x: 0.63777184, y: 0.57285106, z: 0.3623923, w: -0.365733}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_06
+      position: {x: -0.044748764, y: 0.08374519, z: 0.10049923}
+      rotation: {x: 0.66715336, y: 0.6190777, z: 0.29746544, w: -0.2883809}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_07
+      position: {x: -0.04278076, y: 0.10149765, z: 0.08150853}
+      rotation: {x: 0.6849472, y: 0.65137154, z: 0.1823154, w: -0.2707833}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_08
+      position: {x: -0.022378998, y: 0.047600497, z: 0.1235019}
+      rotation: {x: 0.5966648, y: 0.6488915, z: 0.4137774, w: -0.22741868}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_09
+      position: {x: -0.01422348, y: 0.06838585, z: 0.10940942}
+      rotation: {x: 0.67176116, y: 0.57785183, z: 0.3897076, w: -0.25090277}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_10
+      position: {x: -0.005248947, y: 0.08893803, z: 0.09198469}
+      rotation: {x: 0.710212, y: 0.5879786, z: 0.32413283, w: -0.21170278}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_11
+      position: {x: 0.0015721893, y: 0.103467844, z: 0.07043403}
+      rotation: {x: 0.73588794, y: 0.6506851, z: 0.15238144, w: -0.10889338}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_012
+      position: {x: -0.098951794, y: 0.11275695, z: 0.060560673}
+      rotation: {x: 0.22539262, y: 0.14015163, z: -0.720589, w: 0.6405523}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_013
+      position: {x: -0.06364258, y: 0.10985487, z: 0.06060774}
+      rotation: {x: 0.2193053, y: 0.14676918, z: -0.71493316, w: 0.6474833}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_014
+      position: {x: -0.027463226, y: 0.10702175, z: 0.06063155}
+      rotation: {x: 0.20966579, y: 0.15644631, z: -0.71537393, w: 0.6479236}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_015
+      position: {x: 0.007581863, y: 0.10375664, z: 0.06038518}
+      rotation: {x: 0.19895706, y: 0.16598661, z: -0.72304165, w: 0.6403712}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_016
+      position: {x: 0.0075819395, y: 0.10375671, z: -0.06038462}
+      rotation: {x: -0.13570398, y: -0.22659425, z: -0.7065803, w: 0.65649366}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_017
+      position: {x: -0.027463073, y: 0.107021786, z: -0.06063072}
+      rotation: {x: -0.14543599, y: -0.21653576, z: -0.6997112, w: 0.66510516}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_018
+      position: {x: -0.06364243, y: 0.109854884, z: -0.060606804}
+      rotation: {x: -0.15483949, y: -0.20710237, z: -0.70002604, w: 0.6656553}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_019
+      position: {x: -0.09895172, y: 0.112757, z: -0.060559936}
+      rotation: {x: -0.1614256, y: -0.20114496, z: -0.7061998, w: 0.6593666}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_020
+      position: {x: -0.097832866, y: 0.12299484, z: -0.03553319}
+      rotation: {x: -0.0683785, y: -0.120413564, z: -0.7274183, w: 0.67207706}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_021
+      position: {x: -0.0629734, y: 0.12011015, z: -0.035568424}
+      rotation: {x: -0.0646117, y: -0.12351187, z: -0.7224295, w: 0.6772488}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_022
+      position: {x: -0.027330855, y: 0.117297836, z: -0.035586424}
+      rotation: {x: -0.05958513, y: -0.12860629, z: -0.72378093, w: 0.6753156}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_023
+      position: {x: 0.007264404, y: 0.114050135, z: -0.03540135}
+      rotation: {x: -0.054984175, y: -0.13454776, z: -0.732028, w: 0.665589}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_024
+      position: {x: 0.0072642514, y: 0.1140501, z: 0.03540192}
+      rotation: {x: 0.118687384, y: 0.07125659, z: -0.74080765, w: 0.6572974}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_025
+      position: {x: -0.027330931, y: 0.11729782, z: 0.035587277}
+      rotation: {x: 0.12435339, y: 0.065882675, z: -0.732086, w: 0.6665177}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_026
+      position: {x: -0.06297355, y: 0.12011017, z: 0.035569377}
+      rotation: {x: 0.12972143, y: 0.060744964, z: -0.73031384, w: 0.66792524}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_027
+      position: {x: -0.09783295, y: 0.12299484, z: 0.035533957}
+      rotation: {x: 0.133112, y: 0.057097215, z: -0.73501873, w: 0.66239613}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_028
+      position: {x: -0.0973217, y: 0.12767227, z: 0.00000038745617}
+      rotation: {x: 0.03248769, y: -0.032145083, z: -0.7377261, w: 0.6735514}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_029
+      position: {x: -0.06266785, y: 0.12479555, z: 0.0000004786569}
+      rotation: {x: 0.03263088, y: -0.031873956, z: -0.733364, w: 0.6783042}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_030
+      position: {x: -0.027270507, y: 0.12199272, z: 0.00000042992792}
+      rotation: {x: 0.032422844, y: -0.031856813, z: -0.73535854, w: 0.67615217}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyL_031
+      position: {x: 0.007119217, y: 0.11875297, z: 0.00000028952581}
+      rotation: {x: 0.031928107, y: -0.0321844, z: -0.7440338, w: 0.6666022}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_00
+      position: {x: -0.0791375, y: 0.025471153, z: -0.12694548}
+      rotation: {x: -0.4102176, y: -0.5895621, z: -0.4446563, w: 0.5351811}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_01
+      position: {x: -0.08341568, y: 0.054367904, z: -0.122380175}
+      rotation: {x: -0.32128477, y: -0.47329238, z: -0.56722337, w: 0.59247625}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_02
+      position: {x: -0.08578041, y: 0.076420665, z: -0.109777965}
+      rotation: {x: -0.24421321, y: -0.38649797, z: -0.62562406, w: 0.63211846}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_03
+      position: {x: -0.08919556, y: 0.09721695, z: -0.0933216}
+      rotation: {x: -0.19794218, y: -0.41733396, z: -0.6330642, w: 0.6211932}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_04
+      position: {x: -0.05070854, y: 0.037360955, z: -0.12487951}
+      rotation: {x: -0.42700845, y: -0.45655602, z: -0.52537006, w: 0.57724065}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_05
+      position: {x: -0.0485199, y: 0.062286183, z: -0.1155444}
+      rotation: {x: -0.3635763, y: -0.36335504, z: -0.6352749, w: 0.5763777}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_06
+      position: {x: -0.04474693, y: 0.08374624, z: -0.10051933}
+      rotation: {x: -0.29741177, y: -0.2876229, z: -0.6664399, w: 0.62022346}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_07
+      position: {x: -0.04278084, y: 0.10149787, z: -0.081509285}
+      rotation: {x: -0.18235652, y: -0.27076325, z: -0.6849675, w: 0.651347}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_08
+      position: {x: -0.022338867, y: 0.047618274, z: -0.12391722}
+      rotation: {x: -0.4139132, y: -0.22686617, z: -0.59600806, w: 0.6496014}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_09
+      position: {x: -0.014193573, y: 0.06839914, z: -0.10971868}
+      rotation: {x: -0.38782606, y: -0.24891183, z: -0.67149186, w: 0.5802866}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_10
+      position: {x: -0.0052381894, y: 0.088942945, z: -0.092095405}
+      rotation: {x: -0.32213238, y: -0.21027279, z: -0.7100988, w: 0.5897252}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: Rig_BellyStretchyR_11
+      position: {x: 0.0015721893, y: 0.103468016, z: -0.07043311}
+      rotation: {x: -0.1524113, y: -0.1089097, z: -0.73589516, w: 0.6506672}
+      scale: {x: 1, y: 1.0000001, z: 1}
+      transformModified: 1
+    - name: RootMotion
+      position: {x: -0.000000007152557, y: -1.2505552e-14, z: -0.97024626}
+      rotation: {x: 0.5000005, y: -0.49999955, z: -0.4999994, w: 0.5000007}
+      scale: {x: 1.0000002, y: 1, z: 1}
+      transformModified: 1
+    - name: cables
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.00000008146034, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_arms
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_head
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_legs
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_LSleeve
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.00000008146034, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_RSleeve
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.00000008146034, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_spine
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.00000008146034, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: mesh_Adam_torso
+      position: {x: -0, y: -0.01, z: 0}
+      rotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 1
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f12f2d44b2688054986e54861cc211dc,
+    type: 3}
+  animationType: 3
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

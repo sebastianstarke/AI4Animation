@@ -6,12 +6,14 @@ using UnityEngine;
 public class TensorActivation : MonoBehaviour {
 
     public enum AXIS {X, Y};
-    public enum TYPE {AbsSum, AbsDiff};
+    public enum OPERATOR {AbsSum, AbsDiff};
+    public enum PLOTTING {Curve, Bars};
 
     public GUIRect Rect;
     public string ID;
-    public TYPE Type;
     public AXIS Axis;
+    public OPERATOR Operator;
+    public PLOTTING Plotting;
 
     private Model Model;
     private Tensor T;
@@ -35,7 +37,7 @@ public class TensorActivation : MonoBehaviour {
         float minimum = float.MaxValue;
         float maximum = float.MinValue;
         
-        if(Type == TYPE.AbsSum) {
+        if(Operator == OPERATOR.AbsSum) {
             if(Axis == AXIS.X) {
                 Values = new float[T.GetRows()];
                 for(int i=0; i<T.GetRows(); i++) {
@@ -60,15 +62,29 @@ public class TensorActivation : MonoBehaviour {
             new Vector2(Rect.W + 0.01f/Screen.width*Screen.height, Rect.H + 0.01f),
             UltiDraw.Black.Transparent(0.5f)
         );
-        UltiDraw.DrawFunction(
-            new Vector2(Rect.X, Rect.Y),
-            new Vector2(Rect.W, Rect.H),
-            Values,
-            minimum,
-            maximum,
-            UltiDraw.White.Transparent(0.5f),
-            UltiDraw.Black
-        );
+        if(Plotting == PLOTTING.Curve) {
+            UltiDraw.DrawFunction(
+                new Vector2(Rect.X, Rect.Y),
+                new Vector2(Rect.W, Rect.H),
+                Values,
+                minimum,
+                maximum,
+                UltiDraw.White.Transparent(0.5f),
+                UltiDraw.Black
+            );
+        }
+        if(Plotting == PLOTTING.Bars) {
+            UltiDraw.DrawBars(
+                new Vector2(Rect.X, Rect.Y),
+                new Vector2(Rect.W, Rect.H),
+                Values,
+                minimum,
+                maximum,
+                0.75f * Rect.W / Values.Length,
+                UltiDraw.White.Transparent(0.5f),
+                UltiDraw.Black
+            );
+        }
 		UltiDraw.End();
 	}
 
