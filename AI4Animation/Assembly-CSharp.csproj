@@ -159,6 +159,8 @@
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GamePad.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
+     <Compile Include="Assets\Scripts\Trash\MeshCombiner\CombineMeshes.cs" />
+     <Compile Include="Assets\Scripts\Trash\MeshCombiner\SmartMesh.cs" />
      <Compile Include="Assets\Scripts\Trash\NetworkParameters.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\ComparisonDemo.cs" />
      <Compile Include="Assets\Scripts\UltiDraw\Demo\FunctionDemo.cs" />
@@ -177,6 +179,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
      <None Include="Assets\Palette\low poly medieval buildings\readme.txt" />
+     <None Include="Assets\Palette\Valkyrie\model\meshes\materials\textures\CMakeLists.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
@@ -189,7 +192,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.shader" />
-     <None Include="Assets\Resources\meshskinner144533400333211506875.txt" />
+     <None Include="Assets\Resources\meshskinner144533400772811506875.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\LICENSE.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />

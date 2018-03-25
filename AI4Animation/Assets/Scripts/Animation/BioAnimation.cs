@@ -8,8 +8,6 @@ using UnityEditor;
 
 public class BioAnimation : MonoBehaviour {
 
-	public int InstanceID = 0;
-
 	public bool Inspect = false;
 
 	public int Framerate = 60;
@@ -63,7 +61,6 @@ public class BioAnimation : MonoBehaviour {
 	private const int PointDensity = 10;
 
 	void Reset() {
-		InstanceID = GetInstanceID();
 		Controller = new Controller();
 		Character = new Character();
 		Character.BuildHierarchy(transform);
@@ -680,14 +677,6 @@ public class BioAnimation : MonoBehaviour {
 
 		void Awake() {
 			Target = (BioAnimation)target;
-			CopyHandle();
-		}
-
-		private void CopyHandle() {
-			if(Target.InstanceID != Target.GetInstanceID()) {
-				Target.InstanceID = Target.GetInstanceID();
-				Target.NN = new NeuralNetwork(TYPE.Vanilla);
-			}
 		}
 
 		public override void OnInspectorGUI() {

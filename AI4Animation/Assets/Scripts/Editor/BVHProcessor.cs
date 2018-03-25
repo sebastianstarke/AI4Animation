@@ -20,6 +20,8 @@ public class BVHProcessor : EditorWindow {
 	private static IEnumerator Coroutine;
 
 	private bool Exporting = false;
+	private bool Mirrored = false;
+	private int CurrentFile = 0;
 
 	[MenuItem ("Addons/BVH Processor")]
 	static void Init() {
@@ -69,10 +71,26 @@ public class BVHProcessor : EditorWindow {
 				EditorGUILayout.LabelField("Export Time: " + GetExportTime() + "s");
 				
 				
-                if(Utility.GUIButton("Fix Data", UltiDraw.DarkGreen, UltiDraw.White)) {
+                if(Utility.GUIButton("Update Data", UltiDraw.DarkRed, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
 						BVHAnimation animation = Animations[i];
+						/*
+						for(int f=0; f<animation.GetTotalFrames(); f++) {
+							if(animation.StyleFunction.Styles[3].Flags[f]) {
+								animation.StyleFunction.Styles[0].Flags[f] = false;
+								animation.StyleFunction.Styles[1].Flags[f] = false;
+								animation.StyleFunction.Styles[2].Flags[f] = false;
+								animation.StyleFunction.Styles[4].Flags[f] = false;
+							}
+							if(animation.StyleFunction.Styles[4].Flags[f]) {
+								animation.StyleFunction.Styles[0].Flags[f] = false;
+								animation.StyleFunction.Styles[1].Flags[f] = false;
+								animation.StyleFunction.Styles[2].Flags[f] = false;
+								animation.StyleFunction.Styles[3].Flags[f] = false;
+							}
+						}
 						animation.StyleFunction.SetTransition(1f);
+						*/
                        	EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
@@ -87,6 +105,8 @@ public class BVHProcessor : EditorWindow {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
 						EditorGUILayout.LabelField("Exporting...");
+						EditorGUILayout.LabelField("Mirrored: " + Mirrored);
+						EditorGUILayout.LabelField("Current File: " + Animations[CurrentFile]);
 						if(Utility.GUIButton("STOP", UltiDraw.DarkGrey, UltiDraw.White)) {
 							this.StopAllCoroutines();
 							Exporting = false;
@@ -196,8 +216,8 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "TranslationalOffsetZ"); index += 1;
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 
-		//labels.WriteLine(index + " " + "Phase"); index += 1;
-		//labels.WriteLine(index + " " + "PhaseUpdate");
+		labels.WriteLine(index + " " + "Phase"); index += 1;
+		labels.WriteLine(index + " " + "PhaseUpdate");
 
 		for(int t=1; t<=6; t++) {
 			for(int i=0; i<Animations[0].Character.Hierarchy.Length; i++) {
@@ -265,7 +285,9 @@ public class BVHProcessor : EditorWindow {
 			int batchSize = 5;
 			int item = 0;
 
+			Mirrored = false; //Info
 			for(int i=0; i<Animations.Length; i++) {
+				CurrentFile = i; //Info
 				if(Use[i]) {
 					for(int s=0; s<Animations[i].Sequences.Length; s++) {
 						for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
@@ -285,7 +307,9 @@ public class BVHProcessor : EditorWindow {
 				}
 			}
 
+			Mirrored = true; //Info
 			for(int i=0; i<Animations.Length; i++) {
+				CurrentFile = i; //Info
 				if(Use[i]) {
 					for(int s=0; s<Animations[i].Sequences.Length; s++) {
 						for(int e=0; e<Animations[i].Sequences[s].Export; e++) {
@@ -368,13 +392,11 @@ public class BVHProcessor : EditorWindow {
 		line += FormatValue(offset.GetPosition().z);
 		line += FormatValue(Vector3.SignedAngle(Vector3.forward, offset.GetForward(), Vector3.up));
 		
-		/*
 		//Phase
-		float prev = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(prevFrame) : Animations[i].PhaseFunction.GetPhase(prevFrame);
-		float current = mirrored ? Animations[i].MirroredPhaseFunction.GetPhase(frame) : Animations[i].PhaseFunction.GetPhase(frame);
+		float prev = mirrored ? animation.MirroredPhaseFunction.GetPhase(prevFrame) : animation.PhaseFunction.GetPhase(prevFrame);
+		float current = mirrored ? animation.MirroredPhaseFunction.GetPhase(frame) : animation.PhaseFunction.GetPhase(frame);
 		line += FormatValue(current);
 		line += FormatValue(GetPhaseUpdate(prev, current));
-		*/
 
 		//Previous postures
 		for(int t=0; t<6; t++) {

@@ -92,18 +92,7 @@ public class PFNN {
 	public float GetOutput(int i) {
 		return Y.Values[i][0];
 	}
-
-	public void Output() {
-		Debug.Log("====================INPUT====================");
-		for(int i=0; i<XDim; i++) {
-			Debug.Log(i + ": " + X.Values[i][0]);
-		}
-		Debug.Log("====================OUTPUT====================");
-		for(int i=0; i<YDim; i++) {
-			Debug.Log(i + ": " + Y.Values[i][0]);
-		}
-	}
-
+	
 	public void Predict() {
 		int index = (int)((Phase / (2f*M_PI)) * 50f);
 		Matrix _X = (X - Xmean).PointwiseDivide(Xstd);

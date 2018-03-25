@@ -6,11 +6,12 @@ public class BVHEditor : EditorWindow {
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
 	public static System.DateTime Timestamp;
-	public static int RefreshRate = 30;
+	public static int RefreshRate = 60;
 	
 	public bool AutoFocus = true;
 	public float FocusDistance = 2.5f;
 	public float FocusAngle = 180f;
+	public float FocusSmoothing = 0.5f;
 
 	public string Path = string.Empty;
 	public BVHAnimation Animation = null;
@@ -47,7 +48,6 @@ public class BVHEditor : EditorWindow {
 		if(Utility.GetElapsedTime(Timestamp) > 1f/(float)RefreshRate) {
 			Repaint();
 			Timestamp = Utility.GetTimestamp();
-			System.GC.Collect();
 		}
 	}
 
@@ -71,6 +71,7 @@ public class BVHEditor : EditorWindow {
 					SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", AutoFocus));
 					FocusDistance = EditorGUILayout.FloatField("Focus Distance", FocusDistance);
 					FocusAngle = EditorGUILayout.Slider("Focus Angle", FocusAngle, 0f, 360f);
+					FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", FocusSmoothing, 0f, 1f);
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -115,12 +116,14 @@ public class BVHEditor : EditorWindow {
 		if(Animation != null) {
 			Animation.Draw();
 			if(AutoFocus) {
+				Vector3 lastPosition = view.camera.transform.position;
+				Quaternion lastRotation = view.camera.transform.rotation;
 				Vector3 position = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetPosition().GetMirror(Animation.GetMirrorAxis()) : Animation.CurrentFrame.World[0].GetPosition();
 				Quaternion rotation = Animation.ShowMirrored ? Animation.CurrentFrame.World[0].GetRotation().GetMirror(Animation.GetMirrorAxis()) : Animation.CurrentFrame.World[0].GetRotation();
 				rotation.x = 0f;
 				rotation.z = 0f;
 				rotation = Quaternion.Euler(0f, Animation.ShowMirrored ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
-				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, FocusDistance);
+				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, FocusSmoothing), FocusDistance*FocusSmoothing);
 			}
 		}
 	}

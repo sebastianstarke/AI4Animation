@@ -1,0 +1,6 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Convex Hull">
+  <Param type="RichBool" value="false" name="reorient"/>
+ </filter>
+</FilterScript>
