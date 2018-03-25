@@ -125,6 +125,7 @@
      <Compile Include="Assets\Scripts\DeepLearning\NeuralNetwork.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />
+     <Compile Include="Assets\Scripts\IK\FootIK.cs" />
      <Compile Include="Assets\Scripts\IK\FootIK_Jacobian.cs" />
      <Compile Include="Assets\Scripts\IK\IK.cs" />
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />

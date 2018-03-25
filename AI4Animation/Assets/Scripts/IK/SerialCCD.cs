@@ -9,6 +9,7 @@ public class SerialCCD : MonoBehaviour {
 	public int Iterations = 10;
 	public Transform EndEffector;
 
+	public Transform Target;
 	public Vector3 TargetPosition;
 	public Quaternion TargetRotation;
 
@@ -51,6 +52,10 @@ public class SerialCCD : MonoBehaviour {
 	}
 
 	public void Solve() {
+		if(Target != null) {
+			TargetPosition = Target.position;
+			TargetRotation = Target.rotation;
+		}
 		for(int k=0; k<Iterations; k++) {
 			for(int i=0; i<Joints.Length; i++) {
 
