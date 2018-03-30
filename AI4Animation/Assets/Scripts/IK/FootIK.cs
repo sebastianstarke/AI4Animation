@@ -7,7 +7,8 @@ public class FootIK : MonoBehaviour {
 	public bool AutoUpdate = true;
 
 	public int Iterations = 10;
-	public Transform FootBase;
+	public Transform Root;
+	public Transform Base;
 	public Vector3 Normal = Vector3.down;
 	public LayerMask Ground = 0;
 
@@ -15,6 +16,9 @@ public class FootIK : MonoBehaviour {
 	private Quaternion TargetRotation;
 
 	private Transform[] Joints;
+
+	private Vector3 LastPosition;
+	private float Threshold = 1f;
 
 	void Start() {
 		Initialise();
@@ -27,12 +31,12 @@ public class FootIK : MonoBehaviour {
 	}
 
 	public void Initialise() {
-		if(FootBase == null) {
-			Debug.Log("No foot base specified.");
+		if(Base == null) {
+			Debug.Log("No ankle specified.");
 		} else {
 			Joints = null;
 			List<Transform> chain = new List<Transform>();
-			Transform joint = FootBase;
+			Transform joint = Base;
 			while(true) {
 				joint = joint.parent;
 				if(joint == null) {
@@ -46,40 +50,52 @@ public class FootIK : MonoBehaviour {
 			}
 			chain.Reverse();
 			Joints = chain.ToArray();
+			LastPosition = Base.position;
 		}
 	}
 
 	public void Solve() {
-		TargetPosition = Utility.ProjectGround(FootBase.position, Ground);
-		Vector3 groundNormal = Utility.GetNormal(FootBase.position, Ground);
-		Vector3 footNormal = FootBase.rotation * Normal;
-		TargetRotation = Quaternion.FromToRotation(footNormal, groundNormal) * FootBase.rotation;
+		float velocity = (Base.position - LastPosition).magnitude / Time.deltaTime;
+		//Vector3 groundNormal = Utility.GetNormal(Base.position, Ground);
+		//Vector3 footNormal = Base.rotation * Normal;
+		Vector3 groundPosition = Utility.ProjectGround(Base.position, Ground);
+		LastPosition = Base.position;
+		//TargetRotation = Quaternion.Slerp(TargetRotation, Quaternion.FromToRotation(footNormal, -groundNormal) * Base.rotation, 0.1f);
+
+		if(Base.position.y > groundPosition.y) {
+			float weight = 1f - Mathf.Clamp(velocity / Threshold, 0f, 1f);
+			TargetPosition = Utility.Interpolate(Base.position, groundPosition, weight);
+			Debug.Log(weight);
+		} else {
+			TargetPosition = groundPosition;
+		}
 
 		for(int k=0; k<Iterations; k++) {
+
 			for(int i=0; i<Joints.Length; i++) {
-				/*
+				//Joints[i].rotation = Quaternion.Slerp(
+				//	Joints[i].rotation,
+				//	Quaternion.Inverse(Base.rotation) * TargetRotation * Joints[i].rotation,
+				//	(float)(i+1)/(float)Joints.Length
+				//);
 				Joints[i].rotation = Quaternion.Slerp(
 					Joints[i].rotation,
-					Quaternion.Inverse(FootBase.rotation) * TargetRotation * Joints[i].rotation,
-					(float)(i+1)/(float)Joints.Length
-				);
-				*/
-				Joints[i].rotation = Quaternion.Slerp(
-					Joints[i].rotation,
-					Quaternion.FromToRotation(FootBase.position - Joints[i].position, TargetPosition - Joints[i].position) * Joints[i].rotation,
+					Quaternion.FromToRotation(Base.position - Joints[i].position, TargetPosition - Joints[i].position) * Joints[i].rotation,
 					(float)(i+1)/(float)Joints.Length
 				);
 			}
-			FootBase.rotation = TargetRotation;
+			//Base.rotation = TargetRotation;
+
 		}
 	}
 
-	void OnDrawGizmosSelected() {
-		if(FootBase == null || Normal == Vector3.zero) {
+	void OnDrawGizmos() {
+		if(Base == null || Normal == Vector3.zero) {
 			return;
 		}
 		Gizmos.color = Color.cyan;
-		Gizmos.DrawLine(FootBase.position, FootBase.position + 0.25f * (FootBase.rotation * Normal));
+		Gizmos.DrawSphere(Base.position, 0.025f);
+		Gizmos.DrawLine(Base.position, Base.position + 0.25f * (Base.rotation * Normal));
 	}
 
 }
