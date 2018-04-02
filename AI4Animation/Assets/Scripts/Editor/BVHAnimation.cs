@@ -565,6 +565,12 @@ public class BVHAnimation : ScriptableObject {
 			EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 			Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
 			EditorGUILayout.EndHorizontal();
+
+			for(int i=0; i<Frames.Length; i++) {
+				if(StyleFunction.Keys[i] && StyleFunction.Styles[2].Flags[i]) {
+					EditorGUILayout.LabelField("Jumping at frame " + (i+1));
+				}
+			}
 		}
 
 		Utility.SetGUIColor(UltiDraw.DarkGrey);
@@ -906,16 +912,18 @@ public class BVHAnimation : ScriptableObject {
 			ExtractTrajectory(CurrentFrame, ShowMirrored).Draw();
 		}
 
-		//Previous postures
-		for(int t=0; t<6; t++) {
-			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp - 1f + (float)t/6f, 0f, GetTotalTime());
-			Matrix4x4[] previousPosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
-			for(int j=0; j<Character.Hierarchy.Length; j++) {
-				Character.Hierarchy[j].SetTransformation(previousPosture[j]);
+		if(ShowFlow) {
+			//Previous postures
+			for(int t=0; t<6; t++) {
+				float timestamp = Mathf.Clamp(CurrentFrame.Timestamp - 1f + (float)t/6f, 0f, GetTotalTime());
+				Matrix4x4[] previousPosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
+				for(int j=0; j<Character.Hierarchy.Length; j++) {
+					Character.Hierarchy[j].SetTransformation(previousPosture[j]);
+				}
+				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(t+1)/6f).Transparent(0.75f));
 			}
-			Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(t+1)/6f).Transparent(0.75f));
+			//
 		}
-		//
 
 		//Current posture
 		Matrix4x4[] posture = ShowZero ? ExtractZeroPosture(ShowMirrored) : ExtractPosture(CurrentFrame, ShowMirrored);
@@ -925,16 +933,18 @@ public class BVHAnimation : ScriptableObject {
 		Character.Draw();
 		//
 
-		//Future postures
-		for(int t=1; t<6; t++) {
-			float timestamp = Mathf.Clamp(CurrentFrame.Timestamp + (float)t/5f, 0f, GetTotalTime());
-			Matrix4x4[] futurePosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
-			for(int j=0; j<Character.Hierarchy.Length; j++) {
-				Character.Hierarchy[j].SetTransformation(futurePosture[j]);
+		if(ShowFlow) {
+			//Future postures
+			for(int t=1; t<6; t++) {
+				float timestamp = Mathf.Clamp(CurrentFrame.Timestamp + (float)t/5f, 0f, GetTotalTime());
+				Matrix4x4[] futurePosture = ExtractPosture(GetFrame(timestamp), ShowMirrored);
+				for(int j=0; j<Character.Hierarchy.Length; j++) {
+					Character.Hierarchy[j].SetTransformation(futurePosture[j]);
+				}
+				Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(t+1)/5f).Transparent(0.75f));
 			}
-			Character.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(t+1)/5f).Transparent(0.75f));
+			//
 		}
-		//
 
 		UltiDraw.Begin();
 		BVHPhaseFunction function = ShowMirrored ? MirroredPhaseFunction : PhaseFunction;

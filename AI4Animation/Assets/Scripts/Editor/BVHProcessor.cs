@@ -76,20 +76,15 @@ public class BVHProcessor : EditorWindow {
 						BVHAnimation animation = Animations[i];
 						/*
 						for(int f=0; f<animation.GetTotalFrames(); f++) {
-							if(animation.StyleFunction.Styles[3].Flags[f]) {
+							if(animation.StyleFunction.Styles[2].Flags[f]) {
 								animation.StyleFunction.Styles[0].Flags[f] = false;
 								animation.StyleFunction.Styles[1].Flags[f] = false;
-								animation.StyleFunction.Styles[2].Flags[f] = false;
-								animation.StyleFunction.Styles[4].Flags[f] = false;
-							}
-							if(animation.StyleFunction.Styles[4].Flags[f]) {
-								animation.StyleFunction.Styles[0].Flags[f] = false;
-								animation.StyleFunction.Styles[1].Flags[f] = false;
-								animation.StyleFunction.Styles[2].Flags[f] = false;
 								animation.StyleFunction.Styles[3].Flags[f] = false;
+								animation.StyleFunction.Styles[4].Flags[f] = false;
+								animation.StyleFunction.Styles[5].Flags[f] = false;
 							}
 						}
-						animation.StyleFunction.SetTransition(1f);
+						animation.StyleFunction.Recompute();
 						*/
                        	EditorUtility.SetDirty(Animations[i]);
                     }
@@ -217,7 +212,7 @@ public class BVHProcessor : EditorWindow {
 		labels.WriteLine(index + " " + "AngularOffsetY"); index += 1;
 
 		labels.WriteLine(index + " " + "Phase"); index += 1;
-		labels.WriteLine(index + " " + "PhaseUpdate");
+		labels.WriteLine(index + " " + "PhaseUpdate"); index += 1;
 
 		for(int t=1; t<=6; t++) {
 			for(int i=0; i<Animations[0].Character.Hierarchy.Length; i++) {
