@@ -152,8 +152,8 @@ public class CameraController : MonoBehaviour {
 
 		switch(Mode) {
 			case MODE.SmoothFollow:
-			EndSelfOffset = new Vector3(0f, 1f, -1.5f);
-			EndTargetOffset = new Vector3(0f, 0.25f, 1f);
+			EndSelfOffset = SelfOffset; //new Vector3(0f, 1f, -1.5f);
+			EndTargetOffset = TargetOffset; //new Vector3(0f, 0.25f, 1f);
 			EndDamping = 0.975f;
 			break;
 

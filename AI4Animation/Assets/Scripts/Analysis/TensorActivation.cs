@@ -86,6 +86,30 @@ public class TensorActivation : MonoBehaviour {
             );
         }
 		UltiDraw.End();
+
+        /*
+        Feature[] features = new Feature[Values.Length];
+        for(int i=0; i<Values.Length; i++) {
+            features[i] = new Feature(i, Values[i]);
+        }
+        System.Array.Sort(features,
+			delegate(Feature a, Feature b) {
+				return b.Value.CompareTo(a.Value);
+			}
+		);
+        for(int i=0; i<30; i++) {
+            Debug.Log(i + " - " + "Value: " + features[i].Value + " Index: " + features[i].Index);
+        }
+        */
 	}
+
+    public struct Feature {
+        public int Index;
+        public float Value;
+        public Feature(int index, float value) {
+            Index = index;
+            Value = value;
+        }
+    }
 
 }

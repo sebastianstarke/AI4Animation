@@ -268,6 +268,7 @@ public class BioAnimation : MonoBehaviour {
 			NN.Model.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			NN.Model.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
 			for(int j=0; j<Controller.Styles.Length; j++) {
+				//Debug.Log(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j);
 				NN.Model.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
 		}
@@ -295,6 +296,11 @@ public class BioAnimation : MonoBehaviour {
 			NN.Model.SetInput(start + i*JointDimIn + 9, vel.x);
 			NN.Model.SetInput(start + i*JointDimIn + 10, vel.y);
 			NN.Model.SetInput(start + i*JointDimIn + 11, vel.z);
+			//if(Joints[i].name == "LeftHand" || Joints[i].name == "RightHand" || Joints[i].name == "LeftToeBase" || Joints[i].name == "RightToeBase") {
+			//	Debug.Log(start + i*JointDimIn + 9);
+			//	Debug.Log(start + i*JointDimIn + 10);
+			//	Debug.Log(start + i*JointDimIn + 11);
+			//}
 		}
 		start += JointDimIn*Joints.Length;
 
