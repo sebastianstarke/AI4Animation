@@ -304,6 +304,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		start += JointDimIn*Joints.Length;
 
+		/*
 		//Input Past Posture
 		for(int i=0; i<6; i++) {
 			for(int j=0; j<Joints.Length; j++) {
@@ -326,6 +327,7 @@ public class BioAnimation : MonoBehaviour {
 			}
 			start += JointDimIn*Joints.Length;
 		}
+		*/
 
 		//Predict
 		NN.Model.Predict();
