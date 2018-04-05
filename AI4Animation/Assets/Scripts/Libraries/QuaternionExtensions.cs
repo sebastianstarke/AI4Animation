@@ -54,7 +54,7 @@ public static class QuaternionExtensions {
 
 	public static Quaternion GetLog(this Quaternion rotation) {
 		float mag = rotation.GetMagnitude();
-		float arg = Mathf.Atan2(mag, rotation.w) / mag;
+		float arg = (float)System.Math.Atan2(mag, rotation.w) / mag;
 		rotation.x *= arg;
 		rotation.y *= arg;
 		rotation.z *= arg;
@@ -63,14 +63,13 @@ public static class QuaternionExtensions {
 	}
 	
     public static Quaternion GetExp(this Quaternion rotation) {
-		float w = Mathf.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z);
-		Quaternion exp = new Quaternion(
-			rotation.x * Mathf.Sin(w) / w,
-			rotation.y * Mathf.Sin(w) / w,
-			rotation.z * Mathf.Sin(w) / w,
-			Mathf.Cos(w)
-		);
-		return exp.GetNormalised();
+		float w = (float)System.Math.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z);
+		Quaternion exp = Quaternion.identity;
+		exp.x = rotation.x * (float)System.Math.Sin(w) / w;
+		exp.y = rotation.y * (float)System.Math.Sin(w) / w;
+		exp.z = rotation.z * (float)System.Math.Sin(w) / w;
+		exp.w = (float)System.Math.Cos(w);
+		return exp;//exp.GetNormalised();
     }
 
 }

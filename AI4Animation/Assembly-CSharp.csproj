@@ -122,6 +122,7 @@
      <Compile Include="Assets\Scripts\DeepLearning\Models\MFNN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN_Eigen.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NeuralNetwork.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />
@@ -160,6 +161,7 @@
      <Compile Include="Assets\Scripts\Trash\Footprint.cs" />
      <Compile Include="Assets\Scripts\Trash\GamePad.cs" />
      <Compile Include="Assets\Scripts\Trash\Hierarchy.cs" />
+     <Compile Include="Assets\Scripts\Trash\LogExpTest.cs" />
      <Compile Include="Assets\Scripts\Trash\MeshCombiner\CombineMeshes.cs" />
      <Compile Include="Assets\Scripts\Trash\MeshCombiner\SmartMesh.cs" />
      <Compile Include="Assets\Scripts\Trash\NetworkParameters.cs" />
