@@ -73,7 +73,7 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Update Data", UltiDraw.DarkRed, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						BVHAnimation animation = Animations[i];
+						//BVHAnimation animation = Animations[i];
 						/*
 						for(int f=0; f<animation.GetTotalFrames(); f++) {
 							if(animation.StyleFunction.Styles[2].Flags[f]) {
@@ -86,7 +86,7 @@ public class BVHProcessor : EditorWindow {
 						}
 						animation.StyleFunction.Recompute();
 						*/
-                       	EditorUtility.SetDirty(Animations[i]);
+                       	//EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

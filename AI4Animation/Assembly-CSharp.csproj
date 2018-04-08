@@ -114,6 +114,7 @@
      <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
      <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
      <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
+     <Compile Include="Assets\Scripts\Animation\Actor.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
@@ -152,9 +153,6 @@
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
      <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
-     <Compile Include="Assets\Scripts\Trash\BioAnimation_Old.cs" />
-     <Compile Include="Assets\Scripts\Trash\BioAnimation_Old_V.cs" />
-     <Compile Include="Assets\Scripts\Trash\BioAnimation_PFNN.cs" />
      <Compile Include="Assets\Scripts\Trash\BioVisualisation.cs" />
      <Compile Include="Assets\Scripts\Trash\BodyIK.cs" />
      <Compile Include="Assets\Scripts\Trash\ConstantTorque.cs" />

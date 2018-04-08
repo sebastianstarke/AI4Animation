@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ConstantTorque : MonoBehaviour {
 
-	
+	/*
 	public Vector3 Direction;
 
 	private Rigidbody RB;
@@ -21,6 +21,6 @@ public class ConstantTorque : MonoBehaviour {
 		//Debug.Log(Joint.currentTorque);
 		RB.AddTorque(Direction);
 	}
-	
+	*/	
 	
 }

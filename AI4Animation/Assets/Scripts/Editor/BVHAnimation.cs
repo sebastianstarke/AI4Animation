@@ -764,7 +764,7 @@ public class BVHAnimation : ScriptableObject {
 		root.rotation = skeleton.rotation;
 		skeleton.SetParent(root.transform);
 
-		BioAnimation animation = root.gameObject.AddComponent<BioAnimation>();
+		//BioAnimation animation = root.gameObject.AddComponent<BioAnimation>();
 		/*
 		animation.Joints = new Transform[active];
 		int index = 0;
