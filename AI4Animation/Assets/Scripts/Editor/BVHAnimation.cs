@@ -566,11 +566,11 @@ public class BVHAnimation : ScriptableObject {
 			Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
 			EditorGUILayout.EndHorizontal();
 
-			for(int i=0; i<Frames.Length; i++) {
-				if(StyleFunction.Keys[i] && StyleFunction.Styles[2].Flags[i]) {
-					EditorGUILayout.LabelField("Jumping at frame " + (i+1));
-				}
-			}
+			//for(int i=0; i<Frames.Length; i++) {
+			//	if(StyleFunction.Keys[i] && StyleFunction.Styles[2].Flags[i]) {
+			//		EditorGUILayout.LabelField("Jumping at frame " + (i+1));
+			//	}
+			//}
 		}
 
 		Utility.SetGUIColor(UltiDraw.DarkGrey);

@@ -154,7 +154,7 @@ public static class Utility {
 	}
 
 	public static Vector3 ProjectGround(Vector3 position, LayerMask mask) {
-		position.y = GetHeight(position,mask);
+		position.y = GetHeight(position, mask);
 		return position;
 	}
 

@@ -115,6 +115,7 @@
      <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
      <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
      <Compile Include="Assets\Scripts\Animation\Actor.cs" />
+     <Compile Include="Assets\Scripts\Animation\ActorAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
@@ -139,6 +140,8 @@
      <Compile Include="Assets\Scripts\Libraries\TransformExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Utility.cs" />
      <Compile Include="Assets\Scripts\Libraries\Vector3Extensions.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionData.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />

@@ -9,20 +9,40 @@ using UnityEditor;
 
 public class Actor : MonoBehaviour {
 
-	public Bone[] Bones = new Bone[0];
+	public bool InspectSkeleton = false;
+	
+	public bool DrawRoot = true;
+	public bool DrawSkeleton = true;
+	public bool DrawTransforms = false;
 
 	public float BoneSize = 0.025f;
 	public Color BoneColor = UltiDraw.Black;
 	public Color JointColor = UltiDraw.Mustard;
-	public bool DrawSkeleton = true;
-	public bool DrawTransforms = false;
+
+	public Bone[] Bones = new Bone[0];
 
 	void Reset() {
-		BuildSkeleton();
+		ExtractSkeleton();
 	}
 
 	public Transform GetRoot() {
 		return transform;
+	}
+
+	public Transform FindTransform(string name) {
+		Transform element = null;
+		Action<Transform> recursion = null;
+		recursion = new Action<Transform>((transform) => {
+			if(transform.name == name) {
+				element = transform;
+				return;
+			}
+			for(int i=0; i<transform.childCount; i++) {
+				recursion(transform.GetChild(i));
+			}
+		});
+		recursion(GetRoot());
+		return element;
 	}
 
 	public Bone FindBone(Transform transform) {
@@ -33,7 +53,7 @@ public class Actor : MonoBehaviour {
 		return Array.Find(Bones, x => x.GetName() == name);
 	}
 
-	public void BuildSkeleton() {
+	public void ExtractSkeleton() {
 		ArrayExtensions.Clear(ref Bones);
 		Action<Transform, Bone> recursion = null;
 		recursion = new Action<Transform, Bone>((transform, parent) => {
@@ -51,7 +71,7 @@ public class Actor : MonoBehaviour {
 		recursion(GetRoot(), null);
 	}
 
-	public void BuildSkeleton(Transform[] bones) {
+	public void ExtractSkeleton(Transform[] bones) {
 		ArrayExtensions.Clear(ref Bones);
 		Action<Transform, Bone> recursion = null;
 		recursion = new Action<Transform, Bone>((transform, parent) => {
@@ -78,6 +98,11 @@ public class Actor : MonoBehaviour {
 	public void Draw(Color boneColor, Color jointColor, float alpha) {
 		UltiDraw.Begin();
 
+		if(DrawRoot) {
+			UltiDraw.DrawTranslateGizmo(GetRoot().position, GetRoot().rotation, 0.1f);
+			UltiDraw.DrawSphere(GetRoot().position, GetRoot().rotation, 0.025f, UltiDraw.Black);
+		}
+
 		if(DrawSkeleton) {
 			Action<Bone> recursion = null;
 			recursion = new Action<Bone>((bone) => {
@@ -101,7 +126,9 @@ public class Actor : MonoBehaviour {
 					recursion(bone.GetChild(i));
 				}
 			});
-			recursion(Bones[0]);
+			if(Bones.Length > 0) {
+				recursion(Bones[0]);
+			}
 		}
 
 		if(DrawTransforms) {
@@ -112,7 +139,9 @@ public class Actor : MonoBehaviour {
 					recursion(bone.GetChild(i));
 				}
 			});
-			recursion(Bones[0]);
+			if(Bones.Length > 0) {
+				recursion(Bones[0]);
+			}
 		}
 
 		UltiDraw.End();
@@ -132,7 +161,9 @@ public class Actor : MonoBehaviour {
 					recursion(bone.GetChild(i));
 				}
 			});
-			recursion(Bones[0]);
+			if(Bones.Length > 0) {
+				recursion(Bones[0]);
+			}
 		}
 
 		UltiDraw.End();
@@ -198,18 +229,28 @@ public class Actor : MonoBehaviour {
 		public override void OnInspectorGUI() {
 			Undo.RecordObject(Target, Target.name);
 	
-			Utility.SetGUIColor(Color.grey);
+			EditorGUILayout.LabelField("Name: " + Target.name);
+			EditorGUILayout.ObjectField("Root", Target.GetRoot(), typeof(Transform), true);
+			Target.DrawRoot = EditorGUILayout.Toggle("Draw Root", Target.DrawRoot);
+			Target.DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", Target.DrawSkeleton);
+			Target.DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", Target.DrawTransforms);
+
+			Utility.SetGUIColor(Color.white);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
-
+				Utility.SetGUIColor(Color.grey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					EditorGUILayout.LabelField("Skeleton Bones: " + Target.Bones.Length);
-					Target.BoneSize = EditorGUILayout.FloatField("Bone Size", Target.BoneSize);
-					Target.JointColor = EditorGUILayout.ColorField("Joint Color", Target.JointColor);
-					Target.BoneColor = EditorGUILayout.ColorField("Bone Color", Target.BoneColor);
-					Target.DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", Target.DrawSkeleton);
-					Target.DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", Target.DrawTransforms);
-					InspectHierarchy(Target.GetRoot(), 0);
+					Utility.ResetGUIColor();
+					if(Utility.GUIButton("Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+						Target.InspectSkeleton = !Target.InspectSkeleton;
+					}
+					if(Target.InspectSkeleton) {
+						EditorGUILayout.LabelField("Skeleton Bones: " + Target.Bones.Length);
+						Target.BoneSize = EditorGUILayout.FloatField("Bone Size", Target.BoneSize);
+						Target.JointColor = EditorGUILayout.ColorField("Joint Color", Target.JointColor);
+						Target.BoneColor = EditorGUILayout.ColorField("Bone Color", Target.BoneColor);
+						InspectSkeleton(Target.GetRoot(), 0);
+					}
 				}
 			}
 
@@ -218,9 +259,9 @@ public class Actor : MonoBehaviour {
 			}
 		}
 
-		private void InspectHierarchy(Transform transform, int indent) {
+		private void InspectSkeleton(Transform transform, int indent) {
 			Bone bone = Target.FindBone(transform.name);
-			Utility.SetGUIColor(bone == null ? UltiDraw.White : UltiDraw.LightGrey);
+			Utility.SetGUIColor(bone == null ? UltiDraw.LightGrey : UltiDraw.Mustard);
 			using(new EditorGUILayout.HorizontalScope ("Box")) {
 				Utility.ResetGUIColor();
 				EditorGUILayout.BeginHorizontal();
@@ -237,16 +278,16 @@ public class Actor : MonoBehaviour {
 					}
 					if(bone == null) {
 						ArrayExtensions.Add(ref bones, transform);
-						Target.BuildSkeleton(bones);
+						Target.ExtractSkeleton(bones);
 					} else {
 						ArrayExtensions.Remove(ref bones, transform);
-						Target.BuildSkeleton(bones);
+						Target.ExtractSkeleton(bones);
 					}
 				}
 				EditorGUILayout.EndHorizontal();
 			}
 			for(int i=0; i<transform.childCount; i++) {
-				InspectHierarchy(transform.GetChild(i), indent+1);
+				InspectSkeleton(transform.GetChild(i), indent+1);
 			}
 		}
 

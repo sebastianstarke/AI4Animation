@@ -44,7 +44,8 @@ public class CatmullRomSpline : MonoBehaviour {
 			if(i == future.Length-1) {
 				point.SetDirection(future[i].GetDirection());
 			} else {
-				point.SetDirection(future[future.Length-1].GetPosition() - point.GetPosition());
+				point.SetDirection(future[i].GetDirection());
+				//point.SetDirection(future[future.Length-1].GetPosition() - point.GetPosition());
 			}
 			//point.SetPosition((1f-weight) * Target.transform.position + weight * future[i].GetPosition());
 			//point.SetDirection((future[i].GetDirection() + (future[i].GetPosition()-point.GetPosition()).normalized).normalized);
