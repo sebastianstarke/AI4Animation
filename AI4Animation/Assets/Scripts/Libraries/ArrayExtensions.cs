@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public static class ArrayExtensions {
-	
+
 	public static void Add<T>(ref T[] array, T element) {
 		Expand(ref array);
 		array[array.Length-1] = element;
@@ -18,7 +18,7 @@ public static class ArrayExtensions {
 		}
 	}
 
-	public static void Remove<T>(ref T[] array, int index) {
+	public static void RemoveAt<T>(ref T[] array, int index) {
 		if(index >= 0 && index < array.Length) {
 			for(int i=index; i<array.Length-1; i++) {
 				array[i] = array[i+1];
@@ -28,7 +28,7 @@ public static class ArrayExtensions {
 	}
 
 	public static void Remove<T>(ref T[] array, T element) {
-		Remove(ref array, Array.FindIndex(array, x => x.Equals(element)));
+		RemoveAt(ref array, FindIndex(ref array, element));
 	}
 
 	public static void Expand<T>(ref T[] array) {
@@ -41,8 +41,20 @@ public static class ArrayExtensions {
 		}
 	}
 
+	public static void Resize<T>(ref T[] array, int size) {
+		Array.Resize(ref array, size);
+	}
+
 	public static void Clear<T>(ref T[] array) {
 		Array.Resize(ref array, 0);
+	}
+
+	public static int FindIndex<T>(ref T[] array, T element) {
+		return Array.FindIndex(array, x => x.Equals(element));
+	}
+
+	public static bool Contains<T>(ref T[] array, T element) {
+		return FindIndex(ref array, element) >= 0;
 	}
 
 }

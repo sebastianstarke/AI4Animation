@@ -1723,7 +1723,7 @@ public class BVHAnimation : ScriptableObject {
 		}
 
 		public void RemoveStyle(string name) {
-			ArrayExtensions.Remove(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
+			ArrayExtensions.RemoveAt(ref Styles, System.Array.FindIndex(Styles, x => x.Name == name));
 		}
 
 		public BVHStyle GetStyle(string name) {

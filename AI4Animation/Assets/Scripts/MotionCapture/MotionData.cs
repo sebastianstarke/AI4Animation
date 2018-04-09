@@ -55,44 +55,37 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void DetectSymmetry() {
-		Symmetry = new int[Source.Bones.Length];
-		for(int i=0; i<Source.Bones.Length; i++) {
-			string name = Source.Bones[i].Name;
-			if(name.Contains("Left")) {
-				BVHData.Bone bone = Source.FindBone("Right"+name.Substring(4));
-				if(bone == null) {
-					Debug.Log("Could not find mapping for " + name + ".");
-				} else {
-					Symmetry[i] = bone.Index;
-				}
-			} else if(name.Contains("Right")) {
-				BVHData.Bone bone = Source.FindBone("Left"+name.Substring(5));
-				if(bone == null) {
-					Debug.Log("Could not find mapping for " + name + ".");
-				} else {
-					Symmetry[i] = bone.Index;
-				}
-			} else if(name.StartsWith("L") && char.IsUpper(name[1])) {
-				BVHData.Bone bone = Source.FindBone("R"+name.Substring(1));
-				if(bone == null) {
-					Debug.Log("Could not find mapping for " + name + ".");
-				} else {
-					Symmetry[i] = bone.Index;
-				}
-			} else if(name.StartsWith("R") && char.IsUpper(name[1])) {
-				BVHData.Bone bone = Source.FindBone("L"+name.Substring(1));
-				if(bone == null) {
-					Debug.Log("Could not find mapping for " + name + ".");
-				} else {
-					Symmetry[i] = bone.Index;
-				}
-			} else {
-				Symmetry[i] = i;
+	public void SetUnitScale(float value) {
+		if(UnitScale != value) {
+			UnitScale = value;
+			Generate();
+		}
+	}
+
+	public void AddStyle(string name) {
+		ArrayExtensions.Add(ref Styles, name);
+		for(int i=0; i<GetTotalFrames(); i++) {
+			ArrayExtensions.Add(ref Frames[i].Style, 0);
+		}
+	}
+
+	public void RemoveStyle() {
+		ArrayExtensions.Shrink(ref Styles);
+		for(int i=0; i<GetTotalFrames(); i++) {
+			ArrayExtensions.Shrink(ref Frames[i].Style);
+		}
+	}
+
+	public void RemoveStyle(string name) {
+		int index = ArrayExtensions.FindIndex(ref Styles, name);
+		if(index >= 0) {
+			ArrayExtensions.RemoveAt(ref Styles, index);
+			for(int i=0; i<GetTotalFrames(); i++) {
+				ArrayExtensions.RemoveAt(ref Frames[i].Style, index);
 			}
 		}
 	}
-	
+
 	public void Load(string path) {
 		Name = path.Substring(path.LastIndexOf("/")+1);
 
@@ -172,7 +165,7 @@ public class MotionData : ScriptableObject {
 		while(lines[index].Length == 0) {
 			index += 1;
 		}
-		System.Array.Resize(ref Frames, Utility.ReadInt(lines[index].Substring(8)));
+		ArrayExtensions.Resize(ref Frames, Utility.ReadInt(lines[index].Substring(8)));
 
 		//Read frame time
 		index += 1;
@@ -184,13 +177,60 @@ public class MotionData : ScriptableObject {
 			Source.AddMotion(Utility.ReadArray(lines[i]));
 		}
 
-		//Generate frames
+		//Detect settings
+		DetectSymmetry();
+
+		//Create frames
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Frames[i] = new Frame(this, i+1, (float)i / Framerate);
 		}
 
-		//Finish
-		DetectSymmetry();
+		//Generate
+		Generate();
+	}
+
+	public void DetectSymmetry() {
+		Symmetry = new int[Source.Bones.Length];
+		for(int i=0; i<Source.Bones.Length; i++) {
+			string name = Source.Bones[i].Name;
+			if(name.Contains("Left")) {
+				BVHData.Bone bone = Source.FindBone("Right"+name.Substring(4));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.Contains("Right")) {
+				BVHData.Bone bone = Source.FindBone("Left"+name.Substring(5));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.StartsWith("L") && char.IsUpper(name[1])) {
+				BVHData.Bone bone = Source.FindBone("R"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.StartsWith("R") && char.IsUpper(name[1])) {
+				BVHData.Bone bone = Source.FindBone("L"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else {
+				Symmetry[i] = i;
+			}
+		}
+	}
+
+	public void Generate() {
+		for(int i=0; i<GetTotalFrames(); i++) {
+			Frames[i].Generate();
+		}
 	}
 
 	[System.Serializable]
@@ -204,8 +244,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public void AddBone(string name, string parent, Vector3 offset, int[] channels) {
-			System.Array.Resize(ref Bones, Bones.Length+1);
-			Bones[Bones.Length-1] = new Bone(Bones.Length-1, name, parent, offset, channels);
+			ArrayExtensions.Add(ref Bones, new Bone(Bones.Length, name, parent, offset, channels));
 		}
 
 		public Bone FindBone(string name) {
@@ -213,8 +252,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public void AddMotion(float[] values) {
-			System.Array.Resize(ref Motions, Motions.Length+1);
-			Motions[Motions.Length-1] = new Motion(values);
+			ArrayExtensions.Add(ref Motions, new Motion(values));
 		}
 
 		[System.Serializable]
@@ -258,6 +296,9 @@ public class MotionData : ScriptableObject {
 			Local = new Matrix4x4[Data.Source.Bones.Length];
 			World = new Matrix4x4[Data.Source.Bones.Length];
 			Style = new float[0];
+		}
+
+		public void Generate() {
 			int channel = 0;
 			BVHData.Motion motion = Data.Source.Motions[Index-1];
 			for(int i=0; i<Data.Source.Bones.Length; i++) {
