@@ -4,20 +4,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(Actor))]
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
 	public string Path = string.Empty;
 
+	public Actor Actor;
 	public MotionData Data = null;
 	
 	private bool Playing = false;
 	private float PlayTime = 0f;
 	private System.DateTime Timestamp;
 	private float Timescale = 1f;
+	private bool ShowMotion = false;
+	private bool ShowVelocities = false;
+	private bool ShowTrajectory = false;
 	private bool ShowMirrored = false;
 
 	private bool Spinning = false;
@@ -47,12 +51,28 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	void EditorUpdate() {
+		if(Data == null) {
+			return;
+		}
+
 		if(Playing) {
 			PlayTime += Timescale * (float)Utility.GetElapsedTime(Timestamp);
 			if(PlayTime > Data.GetTotalTime()) {
 				PlayTime -= Data.GetTotalTime();
 			}
 			Timestamp = Utility.GetTimestamp();
+		}
+		
+		CheckSkeleton();
+
+		MotionData.Frame frame = GetCurrentFrame();
+		Matrix4x4 root = frame.GetRoot(ShowMirrored);
+		Actor.GetRoot().position = root.GetPosition();
+		Actor.GetRoot().rotation = root.GetRotation();
+		for(int i=0; i<Actor.Bones.Length; i++) {
+			Matrix4x4 transformation = frame.GetBoneTransformation(i, ShowMirrored);
+			Actor.Bones[i].Transform.position = transformation.GetPosition();
+			Actor.Bones[i].Transform.rotation = transformation.GetRotation();
 		}
 		SceneView.RepaintAll();
 	}
@@ -74,25 +94,39 @@ public class MotionEditor : MonoBehaviour {
 		if(Data == null) {
 			return;
 		}
+
 		MotionData.Frame frame = GetCurrentFrame();
-		Matrix4x4 root = frame.GetRoot(ShowMirrored);
-		GetActor().GetRoot().position = root.GetPosition();
-		GetActor().GetRoot().rotation = root.GetRotation();
-		for(int i=0; i<GetActor().Bones.Length; i++) {
-			GetActor().Bones[i].Transform.position = frame.GetBonePosition(i, ShowMirrored);
-			GetActor().Bones[i].Transform.rotation = frame.GetBoneRotation(i, ShowMirrored);
+
+		if(ShowMotion) {
+			for(int i=0; i<6; i++) {
+				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
+				Actor.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(ShowMirrored));
+			}
+			for(int i=1; i<=5; i++) {
+				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(frame.Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
+				Actor.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(ShowMirrored));
+
+			}
+		}
+
+		if(ShowVelocities) {
 			UltiDraw.Begin();
-			UltiDraw.DrawArrow(
-				GetActor().Bones[i].Transform.position,
-				GetActor().Bones[i].Transform.position + frame.GetBoneVelocity(i, ShowMirrored),
-				0.75f,
-				0.0075f,
-				0.05f,
-				UltiDraw.Purple.Transparent(0.5f)
-			);
+			for(int i=0; i<Actor.Bones.Length; i++) {
+				UltiDraw.DrawArrow(
+					Actor.Bones[i].Transform.position,
+					Actor.Bones[i].Transform.position + frame.GetBoneVelocity(i, ShowMirrored),
+					0.75f,
+					0.0075f,
+					0.05f,
+					UltiDraw.Purple.Transparent(0.5f)
+				);
+			}
 			UltiDraw.End();
 		}
-		frame.GetTrajectory(ShowMirrored).Draw();
+
+		if(ShowTrajectory) {
+			frame.GetTrajectory(ShowMirrored).Draw();
+		}
 	}
 
 	void OnRenderObject() {
@@ -116,7 +150,6 @@ public class MotionEditor : MonoBehaviour {
 		PlayTime = 0f;
 		Timestamp = Utility.GetTimestamp();
 		Timescale = 1f;
-		CreateActor();
 	}
 
 	public void UnloadFile() {
@@ -125,39 +158,42 @@ public class MotionEditor : MonoBehaviour {
 		PlayTime = 0f;
 		Timestamp = Utility.GetTimestamp();
 		Timescale = 1f;
-		ClearActor();
 	}
 
 	public MotionData.Frame GetCurrentFrame() {
 		return Data.GetFrame(PlayTime);
 	}
 
-	public void CreateActor() {
-		string[] names = new string[Data.Source.Bones.Length];
-		string[] parents = new string[Data.Source.Bones.Length];
-		for(int i=0; i<Data.Source.Bones.Length; i++) {
-			names[i] = Data.Source.Bones[i].Name;
-			parents[i] = Data.Source.Bones[i].Parent;
+	public void CheckSkeleton() {
+		if(Actor == null) {
+			Transform actor = transform.Find("Skeleton");
+			if(actor != null) {
+				Actor = actor.GetComponent<Actor>();
+			} else {
+				Actor = new GameObject("Skeleton").AddComponent<Actor>();
+				Actor.transform.SetParent(transform);
+				string[] names = new string[Data.Source.Bones.Length];
+				string[] parents = new string[Data.Source.Bones.Length];
+				for(int i=0; i<Data.Source.Bones.Length; i++) {
+					names[i] = Data.Source.Bones[i].Name;
+					parents[i] = Data.Source.Bones[i].Parent;
+				}
+				List<Transform> instances = new List<Transform>();
+				for(int i=0; i<names.Length; i++) {
+					Transform instance = new GameObject(names[i]).transform;
+					instance.SetParent(parents[i] == "None" ? Actor.GetRoot() : Actor.FindTransform(parents[i]));
+					instances.Add(instance);
+				}
+				Actor.ExtractSkeleton(instances.ToArray());
+			}
+		} else {
+			if(Actor.transform.parent != transform) {
+				Transform actor = transform.Find("Skeleton");
+				if(actor != null) {
+					Utility.Destroy(actor.gameObject);
+				}
+			}
 		}
-		List<Transform> instances = new List<Transform>();
-		for(int i=0; i<names.Length; i++) {
-			Transform instance = new GameObject(names[i]).transform;
-			instance.SetParent(parents[i] == "None" ? GetActor().GetRoot() : GetActor().FindTransform(parents[i]));
-			instances.Add(instance);
-		}
-		GetActor().ExtractSkeleton(instances.ToArray());
-	}
-
-	public void ClearActor() {
-		Transform root = GetActor().GetRoot();
-		while(root.childCount > 0) {
-			Utility.Destroy(root.GetChild(0).gameObject);
-		}
-		GetActor().ExtractSkeleton();
-	}
-
-	public Actor GetActor() {
-		return GetComponent<Actor>();
 	}
 
 	public void Inspector() {
@@ -220,11 +256,16 @@ public class MotionEditor : MonoBehaviour {
 			if(Data == null) {
 				EditorGUILayout.LabelField("No file loaded.");
 			} else {
-				EditorGUILayout.LabelField("Name: " + Data.Name);
-
 				Utility.SetGUIColor(UltiDraw.DarkGrey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
+
+					Utility.SetGUIColor(UltiDraw.Mustard);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.LabelField("Name: " + Data.Name);
+						Actor = (Actor)EditorGUILayout.ObjectField("Actor", Actor, typeof(Actor), true);
+					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -241,6 +282,7 @@ public class MotionEditor : MonoBehaviour {
 					}
 
 					EditorGUILayout.BeginHorizontal();
+					GUILayout.FlexibleSpace();
 					if(Playing) {
 						if(Utility.GUIButton("||", Color.red, Color.black, 20f, 20f)) {
 							Stop();
@@ -250,7 +292,6 @@ public class MotionEditor : MonoBehaviour {
 							Play();
 						}
 					}
-					
 					if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
 						PlayTime = Data.GetFrame(Mathf.Clamp(GetCurrentFrame().Index-1, 1, Data.GetTotalFrames())).Timestamp;
 					}
@@ -262,16 +303,94 @@ public class MotionEditor : MonoBehaviour {
 					if(index != current) {
 						PlayTime = Data.GetFrame(index).Timestamp;
 					}
-					
 					EditorGUILayout.LabelField(GetCurrentFrame().Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
-					
+					GUILayout.FlexibleSpace();
 					EditorGUILayout.EndHorizontal();
 
+					EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Motion", ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						ShowMotion = !ShowMotion;
+					}
+					if(Utility.GUIButton("Trajectory", ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						ShowTrajectory = !ShowTrajectory;
+					}
+					if(Utility.GUIButton("Velocities", ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						ShowVelocities = !ShowVelocities;
+					}
 					if(Utility.GUIButton("Mirror", ShowMirrored ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						ShowMirrored = !ShowMirrored;
 					}
-				}
+					EditorGUILayout.EndHorizontal();
 
+					Utility.SetGUIColor(UltiDraw.Grey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Frame " + GetCurrentFrame().Index);
+						}
+
+						EditorGUILayout.LabelField("Empty");
+
+					}
+
+					Utility.SetGUIColor(UltiDraw.Grey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Settings");
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Styles");
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
+								ArrayExtensions.Add(ref Data.Styles, "Style");
+							}
+							if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
+								ArrayExtensions.Shrink(ref Data.Styles);
+							}
+							EditorGUILayout.EndHorizontal();
+							for(int i=0; i<Data.Styles.Length; i++) {
+								EditorGUILayout.BeginHorizontal();
+								Data.Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Data.Styles[i]);
+								EditorGUILayout.EndHorizontal();
+							}
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							Data.MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Data.MirrorAxis);
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Mirror Table");
+							string[] names = new string[Data.Source.Bones.Length];
+							for(int i=0; i<Data.Source.Bones.Length; i++) {
+								names[i] = Data.Source.Bones[i].Name;
+							}
+							for(int i=0; i<Data.Source.Bones.Length; i++) {
+								EditorGUILayout.BeginHorizontal();
+								EditorGUI.BeginDisabledGroup(true);
+								EditorGUILayout.TextField(names[i]);
+								EditorGUI.EndDisabledGroup();
+								Data.Symmetry[i] = EditorGUILayout.Popup(Data.Symmetry[i], names);
+								EditorGUILayout.EndHorizontal();
+							}
+						}
+					}
+
+				}
 			}
 
 		}
@@ -289,6 +408,7 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
    		 	EditorApplication.update -= Update;
+			EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 		}
 
 		void Update() {

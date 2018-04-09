@@ -169,6 +169,29 @@ public class Actor : MonoBehaviour {
 		UltiDraw.End();
 	}
 
+
+	public void DrawSimple(Color color, Matrix4x4[] transformations) {
+		UltiDraw.Begin();
+
+		if(DrawSkeleton) {
+			Action<Bone> recursion = null;
+			recursion = new Action<Bone>((bone) => {
+				if(bone.GetParent() != null) {
+					UltiDraw.DrawLine(transformations[bone.GetParent().Index].GetPosition(), transformations[bone.Index].GetPosition(), color);
+				}
+				UltiDraw.DrawCircle(transformations[bone.Index].GetPosition(), 0.02f, Color.Lerp(color, UltiDraw.Black, 0.25f));
+				for(int i=0; i<bone.Childs.Length; i++) {
+					recursion(bone.GetChild(i));
+				}
+			});
+			if(Bones.Length > 0) {
+				recursion(Bones[0]);
+			}
+		}
+
+		UltiDraw.End();
+	}
+
 	void OnRenderObject() {
 		Draw();
 	}

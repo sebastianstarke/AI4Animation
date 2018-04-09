@@ -6,13 +6,17 @@ using UnityEditor;
 
 public class MotionData : ScriptableObject {
 
+	public enum Axis {X, Y, Z};
+
 	public BVHData Source;
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
-	public Vector3 MirrorAxis = Vector3.right;
+	public string[] Styles = new string[0];
+	public Axis MirrorAxis = Axis.X;
 	public Frame[] Frames;
+	public int[] Symmetry;
 
 	public float GetTotalTime() {
 		return GetTotalFrames() / Framerate;
@@ -36,6 +40,57 @@ public class MotionData : ScriptableObject {
 			return null;
 		}
 		return GetFrame(Mathf.Min(Mathf.RoundToInt(time * Framerate) + 1, GetTotalFrames()));
+	}
+
+	public Vector3 GetMirrorAxis() {
+		switch(MirrorAxis) {
+			case Axis.X:
+			return Vector3.right;
+			case Axis.Y:
+			return Vector3.up;
+			case Axis.Z:
+			return Vector3.forward;
+			default:
+			return Vector3.zero;
+		}
+	}
+
+	public void DetectSymmetry() {
+		Symmetry = new int[Source.Bones.Length];
+		for(int i=0; i<Source.Bones.Length; i++) {
+			string name = Source.Bones[i].Name;
+			if(name.Contains("Left")) {
+				BVHData.Bone bone = Source.FindBone("Right"+name.Substring(4));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.Contains("Right")) {
+				BVHData.Bone bone = Source.FindBone("Left"+name.Substring(5));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.StartsWith("L") && char.IsUpper(name[1])) {
+				BVHData.Bone bone = Source.FindBone("R"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else if(name.StartsWith("R") && char.IsUpper(name[1])) {
+				BVHData.Bone bone = Source.FindBone("L"+name.Substring(1));
+				if(bone == null) {
+					Debug.Log("Could not find mapping for " + name + ".");
+				} else {
+					Symmetry[i] = bone.Index;
+				}
+			} else {
+				Symmetry[i] = i;
+			}
+		}
 	}
 	
 	public void Load(string path) {
@@ -133,6 +188,9 @@ public class MotionData : ScriptableObject {
 		for(int i=0; i<GetTotalFrames(); i++) {
 			Frames[i] = new Frame(this, i+1, (float)i / Framerate);
 		}
+
+		//Finish
+		DetectSymmetry();
 	}
 
 	[System.Serializable]
@@ -147,7 +205,7 @@ public class MotionData : ScriptableObject {
 
 		public void AddBone(string name, string parent, Vector3 offset, int[] channels) {
 			System.Array.Resize(ref Bones, Bones.Length+1);
-			Bones[Bones.Length-1] = new Bone(name, parent, offset, channels);
+			Bones[Bones.Length-1] = new Bone(Bones.Length-1, name, parent, offset, channels);
 		}
 
 		public Bone FindBone(string name) {
@@ -161,11 +219,13 @@ public class MotionData : ScriptableObject {
 
 		[System.Serializable]
 		public class Bone {
+			public int Index;
 			public string Name;
 			public string Parent;
 			public Vector3 Offset;
 			public int[] Channels;
-			public Bone(string name, string parent, Vector3 offset, int[] channels) {
+			public Bone(int index, string name, string parent, Vector3 offset, int[] channels) {
+				Index = index;
 				Name = name;
 				Parent = parent;
 				Offset = offset;
@@ -189,6 +249,7 @@ public class MotionData : ScriptableObject {
 		public float Timestamp;
 		public Matrix4x4[] Local;
 		public Matrix4x4[] World;
+		public float[] Style;
 
 		public Frame(MotionData data, int index, float timestamp) {
 			Data = data;
@@ -196,6 +257,7 @@ public class MotionData : ScriptableObject {
 			Timestamp = timestamp;
 			Local = new Matrix4x4[Data.Source.Bones.Length];
 			World = new Matrix4x4[Data.Source.Bones.Length];
+			Style = new float[0];
 			int channel = 0;
 			BVHData.Motion motion = Data.Source.Motions[Index-1];
 			for(int i=0; i<Data.Source.Bones.Length; i++) {
@@ -225,7 +287,7 @@ public class MotionData : ScriptableObject {
 
 				position = (position == Vector3.zero ? info.Offset : position) / Data.UnitScale;
 				Local[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
-				World[i] = info.Parent == "None" ? Local[i] : World[System.Array.FindIndex(Data.Source.Bones, x => x.Name == info.Parent)] * Local[i];
+				World[i] = info.Parent == "None" ? Local[i] : World[Data.Source.FindBone(info.Parent).Index] * Local[i];
 			}
 			//for(int i=0; i<Animation.Character.Hierarchy.Length; i++) {
 			//	Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Animation.Corrections[i]), Vector3.one);
@@ -233,29 +295,46 @@ public class MotionData : ScriptableObject {
 			//}
 		}
 
-		public Matrix4x4 GetRoot(bool mirrored) {
-			Vector3 position = Utility.ProjectGround(GetBonePosition(0, mirrored), LayerMask.GetMask("Ground"));
-			Vector3 forward = GetBoneRotation(0, mirrored).GetForward();
-			forward.y = 0f;
-			return Matrix4x4.TRS(position, Quaternion.LookRotation(forward, Vector3.up), Vector3.one);
+		public Matrix4x4[] GetBoneTransformations(bool mirrored) {
+			Matrix4x4[] transformations = new Matrix4x4[World.Length];
+			for(int i=0; i<World.Length; i++) {
+				transformations[i] = GetBoneTransformation(i, mirrored);
+			}
+			return transformations;
 		}
 
-		public Vector3 GetBonePosition(int index, bool mirrored) {
-			return mirrored ? World[index].GetPosition().GetMirror(Data.MirrorAxis) : World[index].GetPosition();
+		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
+			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetMirrorAxis()) : World[index];
 		}
 
-		public Quaternion GetBoneRotation(int index, bool mirrored) {
-			return mirrored ? World[index].GetRotation().GetMirror(Data.MirrorAxis) : World[index].GetRotation();
+		public Vector3[] GetBoneVelocities(bool mirrored) {
+			Vector3[] velocities = new Vector3[World.Length];
+			for(int i=0; i<World.Length; i++) {
+				velocities[i] = GetBoneVelocity(i, mirrored);
+			}
+			return velocities;
 		}
 
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
-			Vector3 velocity;
 			if(Index == 1) {
-				velocity = (Data.GetFrame(Index+1).World[index].GetPosition() - World[index].GetPosition()) * Data.Framerate;
+				return mirrored ? 
+				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetMirrorAxis())
+				: 
+				(Data.GetFrame(Index+1).World[index].GetPosition() - World[index].GetPosition()) * Data.Framerate;
 			} else {
-				velocity = (World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate;
+				return mirrored ? 
+				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetMirrorAxis())
+				: 
+				(World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate;
 			}
-			return mirrored ? velocity.GetMirror(Data.MirrorAxis) : velocity;
+		}
+
+		public Matrix4x4 GetRoot(bool mirrored) {
+			Matrix4x4 transformation = GetBoneTransformation(0, mirrored);
+			Vector3 position = Utility.ProjectGround(transformation.GetPosition(), LayerMask.GetMask("Ground"));
+			Vector3 forward = transformation.GetForward();
+			forward.y = 0f;
+			return Matrix4x4.TRS(position, Quaternion.LookRotation(forward, Vector3.up), Vector3.one);
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {
