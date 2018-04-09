@@ -7,6 +7,7 @@ using UnityEditor;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(Actor))]
+[UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
 	public string Path = string.Empty;
@@ -17,6 +18,7 @@ public class MotionEditor : MonoBehaviour {
 	private float PlayTime = 0f;
 	private System.DateTime Timestamp;
 	private float Timescale = 1f;
+	private bool ShowMirrored = false;
 
 	private bool Spinning = false;
 
@@ -26,7 +28,7 @@ public class MotionEditor : MonoBehaviour {
 
 	void OnDestroy() {
 		StopSpin();
-	}	
+	}
 
 	public void StartSpin() {
 		if(Spinning) {
@@ -73,16 +75,16 @@ public class MotionEditor : MonoBehaviour {
 			return;
 		}
 		MotionData.Frame frame = GetCurrentFrame();
-		Matrix4x4 root = frame.GetRoot();
+		Matrix4x4 root = frame.GetRoot(ShowMirrored);
 		GetActor().GetRoot().position = root.GetPosition();
 		GetActor().GetRoot().rotation = root.GetRotation();
 		for(int i=0; i<GetActor().Bones.Length; i++) {
-			GetActor().Bones[i].Transform.position = frame.World[i].GetPosition();
-			GetActor().Bones[i].Transform.rotation = frame.World[i].GetRotation();
+			GetActor().Bones[i].Transform.position = frame.GetBonePosition(i, ShowMirrored);
+			GetActor().Bones[i].Transform.rotation = frame.GetBoneRotation(i, ShowMirrored);
 			UltiDraw.Begin();
 			UltiDraw.DrawArrow(
 				GetActor().Bones[i].Transform.position,
-				GetActor().Bones[i].Transform.position + frame.GetBoneVelocity(i),
+				GetActor().Bones[i].Transform.position + frame.GetBoneVelocity(i, ShowMirrored),
 				0.75f,
 				0.0075f,
 				0.05f,
@@ -90,7 +92,7 @@ public class MotionEditor : MonoBehaviour {
 			);
 			UltiDraw.End();
 		}
-		frame.GetTrajectory().Draw(10);
+		frame.GetTrajectory(ShowMirrored).Draw();
 	}
 
 	void OnRenderObject() {
@@ -159,7 +161,11 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Inspector() {
-		StartSpin();
+		if(EditorApplication.isCompiling) {
+			StopSpin();
+		} else {
+			StartSpin();
+		}
 		InspectImporter();
 		InspectEditor();
 	}
@@ -224,11 +230,13 @@ public class MotionEditor : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
 						EditorGUILayout.BeginHorizontal();
+						GUILayout.FlexibleSpace();
 						EditorGUILayout.LabelField("Frames: " + Data.GetTotalFrames(), GUILayout.Width(100f));
 						EditorGUILayout.LabelField("Time: " + Data.GetTotalTime().ToString("F3") + "s", GUILayout.Width(100f));
 						EditorGUILayout.LabelField("Framerate: " + Data.Framerate.ToString("F1") + "Hz", GUILayout.Width(130f));
 						EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 						Timescale = EditorGUILayout.FloatField(Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
+						GUILayout.FlexibleSpace();
 						EditorGUILayout.EndHorizontal();
 					}
 
@@ -258,6 +266,10 @@ public class MotionEditor : MonoBehaviour {
 					EditorGUILayout.LabelField(GetCurrentFrame().Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
 					
 					EditorGUILayout.EndHorizontal();
+
+					if(Utility.GUIButton("Mirror", ShowMirrored ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						ShowMirrored = !ShowMirrored;
+					}
 				}
 
 			}
