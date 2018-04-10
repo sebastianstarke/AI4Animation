@@ -131,6 +131,10 @@ public class MotionEditor : MonoBehaviour {
 		if(ShowTrajectory) {
 			frame.GetTrajectory(ShowMirrored).Draw();
 		}
+
+		frame.GetHeightField(ShowMirrored).Draw();
+
+		frame.GetDepthField(ShowMirrored).Draw();
 	}
 
 	void OnRenderObject() {
@@ -166,16 +170,6 @@ public class MotionEditor : MonoBehaviour {
 
 	public MotionData.Frame GetCurrentFrame() {
 		return Data.GetFrame(PlayTime);
-	}
-
-	public MotionData.Frame GetPreviousStyleKey() {
-		MotionData.Frame frame = GetCurrentFrame();
-		return frame;
-	}
-
-	public MotionData.Frame GetNextStyleKey() {
-		MotionData.Frame frame = GetCurrentFrame();
-		return frame;
 	}
 
 	public void CheckSkeleton() {
@@ -339,14 +333,14 @@ public class MotionEditor : MonoBehaviour {
 
 					if(InspectFrame) {
 						MotionData.Frame frame = GetCurrentFrame();
-						Color[] colors = UltiDraw.GetRainbowColors(frame.Style.Length);
-						for(int i=0; i<frame.Style.Length; i++) {
+						Color[] colors = UltiDraw.GetRainbowColors(Data.Styles.Length);
+						for(int i=0; i<Data.Styles.Length; i++) {
 							EditorGUILayout.BeginHorizontal();
-							if(Utility.GUIButton(Data.Styles[i], frame.Style[i] == 0f ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White)) {
-								frame.Style[i] = frame.Style[i] == 0f ? 1f : 0f;
+							if(Utility.GUIButton(Data.Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White)) {
+								frame.ToggleStyle(i);
 							}
 							EditorGUI.BeginDisabledGroup(true);
-							frame.Style[i] = EditorGUILayout.Slider(frame.Style[i], 0f, 1f);
+							EditorGUILayout.Slider(frame.StyleValues[i], 0f, 1f);
 							EditorGUI.EndDisabledGroup();
 							EditorGUILayout.EndHorizontal();
 						}
@@ -366,7 +360,8 @@ public class MotionEditor : MonoBehaviour {
 					if(InspectStyleFunction) {
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-							PlayTime = GetPreviousStyleKey().Timestamp;
+							MotionData.Frame previous = GetCurrentFrame().GetPreviousStyleKey();
+							PlayTime = previous == null ? 0f : previous.Timestamp;
 						}
 						EditorGUILayout.BeginVertical(GUILayout.Height(50f));
 						Rect ctrl = EditorGUILayout.GetControlRect();
@@ -379,17 +374,18 @@ public class MotionEditor : MonoBehaviour {
 							for(int j=0; j<Data.GetTotalFrames()-1; j++) {
 								float xStart = rect.x + (float)j/(float)(Data.GetTotalFrames()-1) * rect.width;
 								float xEnd = rect.x + (float)(j+1)/(float)(Data.GetTotalFrames()-1) * rect.width;
-								float yStart = rect.y + (1f - Data.Frames[j].Style[i]) * rect.height;
-								float yEnd = rect.y + (1f - Data.Frames[j+1].Style[i]) * rect.height;
+								float yStart = rect.y + (1f - Data.Frames[j].StyleValues[i]) * rect.height;
+								float yEnd = rect.y + (1f - Data.Frames[j+1].StyleValues[i]) * rect.height;
 								UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
 							}
 						}
-						float x = rect.x + (float)(frame.Index-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
-						UltiDraw.DrawLine(new Vector3(x, rect.y, 0f), new Vector3(x, rect.y + rect.height, 0f), UltiDraw.White);
+						float pivot = rect.x + (float)(frame.Index-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+						UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
 						UltiDraw.End();
 						EditorGUILayout.EndVertical();
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-							PlayTime = GetNextStyleKey().Timestamp;
+							MotionData.Frame next = GetCurrentFrame().GetNextStyleKey();
+							PlayTime = next == null ? Data.GetTotalTime() : next.Timestamp;
 						}
 						EditorGUILayout.EndHorizontal();
 					}
@@ -429,6 +425,17 @@ public class MotionEditor : MonoBehaviour {
 								Data.RemoveStyle();
 							}
 							EditorGUILayout.EndHorizontal();
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Sensors");
+							string[] names = new string[Data.Source.Bones.Length];
+							for(int i=0; i<Data.Source.Bones.Length; i++) {
+								names[i] = Data.Source.Bones[i].Name;
+							}
+							Data.Head = EditorGUILayout.Popup("Head", Data.Head, names);
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);

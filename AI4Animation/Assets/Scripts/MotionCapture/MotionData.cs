@@ -14,8 +14,10 @@ public class MotionData : ScriptableObject {
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
 	public string[] Styles = new string[0];
+	public float StyleTransition = 1f;
 	public Axis MirrorAxis = Axis.X;
 	public Frame[] Frames;
+	public int Head;
 	public int[] Symmetry;
 
 	public float GetTotalTime() {
@@ -58,21 +60,23 @@ public class MotionData : ScriptableObject {
 	public void SetUnitScale(float value) {
 		if(UnitScale != value) {
 			UnitScale = value;
-			Generate();
+			ComputePostures();
 		}
 	}
 
 	public void AddStyle(string name) {
 		ArrayExtensions.Add(ref Styles, name);
 		for(int i=0; i<GetTotalFrames(); i++) {
-			ArrayExtensions.Add(ref Frames[i].Style, 0);
+			ArrayExtensions.Add(ref Frames[i].StyleFlags, false);
+			ArrayExtensions.Add(ref Frames[i].StyleValues, 0);
 		}
 	}
 
 	public void RemoveStyle() {
 		ArrayExtensions.Shrink(ref Styles);
 		for(int i=0; i<GetTotalFrames(); i++) {
-			ArrayExtensions.Shrink(ref Frames[i].Style);
+			ArrayExtensions.Shrink(ref Frames[i].StyleFlags);
+			ArrayExtensions.Shrink(ref Frames[i].StyleValues);
 		}
 	}
 
@@ -81,7 +85,8 @@ public class MotionData : ScriptableObject {
 		if(index >= 0) {
 			ArrayExtensions.RemoveAt(ref Styles, index);
 			for(int i=0; i<GetTotalFrames(); i++) {
-				ArrayExtensions.RemoveAt(ref Frames[i].Style, index);
+				ArrayExtensions.RemoveAt(ref Frames[i].StyleFlags, index);
+				ArrayExtensions.RemoveAt(ref Frames[i].StyleValues, index);
 			}
 		}
 	}
@@ -178,6 +183,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		//Detect settings
+		DetectHead();
 		DetectSymmetry();
 
 		//Create frames
@@ -187,6 +193,15 @@ public class MotionData : ScriptableObject {
 
 		//Generate
 		Generate();
+	}
+
+	public void DetectHead() {
+		BVHData.Bone bone = Source.FindBone("Head");
+		if(bone == null) {
+			Debug.Log("Could not find head.");
+		} else {
+			Head = bone.Index;
+		}
 	}
 
 	public void DetectSymmetry() {
@@ -228,8 +243,19 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void Generate() {
+		ComputePostures();
+		ComputeStyles();
+	}
+
+	public void ComputePostures() {
 		for(int i=0; i<GetTotalFrames(); i++) {
-			Frames[i].Generate();
+			Frames[i].ComputePosture();
+		}
+	}
+
+	public void ComputeStyles() {
+		for(int i=0; i<GetTotalFrames(); i++) {
+			Frames[i].ComputeStyle();
 		}
 	}
 
@@ -287,7 +313,8 @@ public class MotionData : ScriptableObject {
 		public float Timestamp;
 		public Matrix4x4[] Local;
 		public Matrix4x4[] World;
-		public float[] Style;
+		public bool[] StyleFlags;
+		public float[] StyleValues;
 
 		public Frame(MotionData data, int index, float timestamp) {
 			Data = data;
@@ -295,10 +322,11 @@ public class MotionData : ScriptableObject {
 			Timestamp = timestamp;
 			Local = new Matrix4x4[Data.Source.Bones.Length];
 			World = new Matrix4x4[Data.Source.Bones.Length];
-			Style = new float[0];
+			StyleFlags = new bool[0];
+			StyleValues = new float[0];
 		}
 
-		public void Generate() {
+		public void ComputePosture() {
 			int channel = 0;
 			BVHData.Motion motion = Data.Source.Motions[Index-1];
 			for(int i=0; i<Data.Source.Bones.Length; i++) {
@@ -334,6 +362,16 @@ public class MotionData : ScriptableObject {
 			//	Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Animation.Corrections[i]), Vector3.one);
 			//	World[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Animation.Corrections[i]), Vector3.one);
 			//}
+		}
+
+		public void ComputeStyle() {
+			for(int i=0; i<StyleFlags.Length; i++) {
+				if(StyleFlags[i]) {
+					StyleValues[i] = 1f;
+				} else {
+					StyleValues[i] = 0f;
+				}
+			}
 		}
 
 		public Matrix4x4[] GetBoneTransformations(bool mirrored) {
@@ -381,18 +419,108 @@ public class MotionData : ScriptableObject {
 		public Trajectory GetTrajectory(bool mirrored) {
 			Trajectory trajectory = new Trajectory(12, 0);
 			for(int i=0; i<6; i++) {
-				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
+				Frame previous = Data.GetFrame(Mathf.Clamp(Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
 				trajectory.Points[i].SetTransformation(previous.GetRoot(mirrored));
 				trajectory.Points[i].SetVelocity(previous.GetBoneVelocity(0, mirrored));
 			}
 			trajectory.Points[6].SetTransformation(GetRoot(mirrored));
 			trajectory.Points[6].SetVelocity(GetBoneVelocity(0, mirrored));
 			for(int i=1; i<=5; i++) {
-				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
+				Frame future = Data.GetFrame(Mathf.Clamp(Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				trajectory.Points[6+i].SetTransformation(future.GetRoot(mirrored));
 				trajectory.Points[6+i].SetVelocity(future.GetBoneVelocity(0, mirrored));
 			}
 			return trajectory;
+		}
+
+		public HeightField GetHeightField(bool mirrored) {
+			HeightField heightField = new HeightField();
+			heightField.Sense(GetRoot(mirrored));
+			return heightField;
+		}
+
+		public DepthField GetDepthField(bool mirrored) {
+			DepthField depthField = new DepthField();
+			depthField.Sense(GetBoneTransformation(Data.Head, mirrored));
+			return depthField;
+		}
+
+		public void ToggleStyle(int style) {
+			Frame next = GetNextStyleKey(style);
+			StyleFlags[style] = !StyleFlags[style];
+			int start = Index+1;
+			int end = next == null ? Data.GetTotalFrames() : next.Index-1;
+			for(int i=start; i<=end; i++) {
+				Data.GetFrame(i).StyleFlags[style] = StyleFlags[style];
+			}
+			Data.ComputeStyles();
+		}
+
+		public Frame GetPreviousStyleKey() {
+			Frame frame = this;
+			while(frame.Index > 1) {
+				frame = Data.GetFrame(frame.Index-1);
+				if(IsStyleKey(frame)) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public Frame GetPreviousStyleKey(int style) {
+			Frame frame = this;
+			while(frame.Index > 1) {
+				frame = Data.GetFrame(frame.Index-1);
+				if(IsStyleKey(frame, style)) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public Frame GetNextStyleKey() {
+			Frame frame = this;
+			while(frame.Index < Data.GetTotalFrames()) {
+				frame = Data.GetFrame(frame.Index+1);
+				if(IsStyleKey(frame)) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public Frame GetNextStyleKey(int style) {
+			Frame frame = this;
+			while(frame.Index < Data.GetTotalFrames()) {
+				frame = Data.GetFrame(frame.Index+1);
+				if(IsStyleKey(frame, style)) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public bool IsStyleKey(Frame frame) {
+			for(int i=0; i<frame.StyleFlags.Length; i++) {
+				if(IsStyleKey(frame, i)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public bool IsStyleKey(Frame frame, int style) {
+			Frame previous = this;
+			if(frame.Index > 1) {
+				previous = Data.GetFrame(frame.Index-1);
+			}
+			if(!frame.StyleFlags[style] && previous.StyleFlags[style]) {
+				return true;
+			}
+			if(frame.StyleFlags[style] && !previous.StyleFlags[style]) {
+				return true;
+			}
+			return false;
 		}
 	}
 

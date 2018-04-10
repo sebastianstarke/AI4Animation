@@ -119,6 +119,8 @@
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
+     <Compile Include="Assets\Scripts\Animation\DepthField.cs" />
+     <Compile Include="Assets\Scripts\Animation\HeightField.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MFNN.cs" />
