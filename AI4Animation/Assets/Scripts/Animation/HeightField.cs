@@ -8,6 +8,7 @@ public class HeightField {
 	public Vector3[] Circle = new Vector3[0];
 	public Vector3[] Positions = new Vector3[0];
 	public float[] Heights = new float[0];
+	public Matrix4x4 Pivot = Matrix4x4.identity;
 
 	private static float Radius = 0.5f;
 
@@ -31,9 +32,10 @@ public class HeightField {
 	}
 
 	public void Sense(Matrix4x4 transformation) {
+		Pivot = transformation;
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<60; i++) {
-			Positions[i] = transformation.GetPosition() + transformation.GetRotation() * Circle[i];
+			Positions[i] = Pivot.GetPosition() + Pivot.GetRotation() * Circle[i];
 			Heights[i] = Utility.GetHeight(Positions[i], mask);
 		}
 	}
@@ -41,7 +43,7 @@ public class HeightField {
 	public void Draw() {
 		UltiDraw.Begin();
 		for(int i=0; i<60; i++) {
-			UltiDraw.DrawCircle(new Vector3(Positions[i].x, Heights[i], Positions[i].z), 0.025f, UltiDraw.Brown);
+			UltiDraw.DrawCircle(new Vector3(Positions[i].x, Heights[i], Positions[i].z), 0.025f, UltiDraw.Black.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}

@@ -17,6 +17,7 @@ public class MotionData : ScriptableObject {
 	public float StyleTransition = 1f;
 	public Axis MirrorAxis = Axis.X;
 	public Frame[] Frames;
+	public int Hips;
 	public int Head;
 	public int[] Symmetry;
 
@@ -183,6 +184,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		//Detect settings
+		DetectHips();
 		DetectHead();
 		DetectSymmetry();
 
@@ -193,6 +195,15 @@ public class MotionData : ScriptableObject {
 
 		//Generate
 		Generate();
+	}
+
+	public void DetectHips() {
+		BVHData.Bone bone = Source.FindBone("Hips");
+		if(bone == null) {
+			Debug.Log("Could not find hips.");
+		} else {
+			Hips = bone.Index;
+		}
 	}
 
 	public void DetectHead() {
@@ -435,7 +446,7 @@ public class MotionData : ScriptableObject {
 
 		public HeightField GetHeightField(bool mirrored) {
 			HeightField heightField = new HeightField();
-			heightField.Sense(GetRoot(mirrored));
+			heightField.Sense(GetBoneTransformation(Data.Hips, mirrored));
 			return heightField;
 		}
 

@@ -435,6 +435,7 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<Data.Source.Bones.Length; i++) {
 								names[i] = Data.Source.Bones[i].Name;
 							}
+							Data.Hips = EditorGUILayout.Popup("Hips", Data.Hips, names);
 							Data.Head = EditorGUILayout.Popup("Head", Data.Head, names);
 						}
 
@@ -483,7 +484,9 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
    		 	EditorApplication.update -= Update;
-			EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			if(!Application.isPlaying) {
+				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			}
 		}
 
 		void Update() {
