@@ -43,7 +43,7 @@ public class HeightField {
 	public void Draw() {
 		UltiDraw.Begin();
 		for(int i=0; i<60; i++) {
-			UltiDraw.DrawCircle(new Vector3(Positions[i].x, Heights[i], Positions[i].z), 0.025f, UltiDraw.Black.Transparent(0.5f));
+			UltiDraw.DrawCircle(new Vector3(Positions[i].x, Heights[i], Positions[i].z), 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}

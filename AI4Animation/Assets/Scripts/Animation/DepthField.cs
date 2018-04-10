@@ -50,7 +50,7 @@ public class DepthField {
 		UltiDraw.Begin();
 		for(int i=0; i<Positions.Length; i++) {
 			UltiDraw.DrawLine(Pivot.GetPosition(), Positions[i], UltiDraw.DarkGreen.Transparent(0.05f));
-			UltiDraw.DrawCircle(Positions[i], 0.025f, UltiDraw.Black.Transparent(0.5f));
+			UltiDraw.DrawCircle(Positions[i], 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}
