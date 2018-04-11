@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation.cs" />
-     <Compile Include="Assets\Demo\SIGGRAPH_2018\BioAnimation.cs" />
      <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutineExtensions.cs" />
      <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutines.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
@@ -111,6 +110,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\Water.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Analysis\AgilityMeasure.cs" />
      <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
      <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
