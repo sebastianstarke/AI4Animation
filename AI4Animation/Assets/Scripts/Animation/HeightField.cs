@@ -7,6 +7,7 @@ public class HeightField {
 
 	public Vector3[] Circle = new Vector3[0];
 	public Vector3[] Positions = new Vector3[0];
+	public Vector3[] Normals = new Vector3[0];
 	public float[] Heights = new float[0];
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 
@@ -16,6 +17,7 @@ public class HeightField {
 		Inspect = false;
 		Circle = new Vector3[60];
 		Positions = new Vector3[60];
+		Normals = new Vector3[60];
 		Heights = new float[60];
 		for(int i=0; i<10; i++) {
 			float angle = 2f * Mathf.PI * (float)i / 10f;
@@ -36,6 +38,7 @@ public class HeightField {
 		LayerMask mask = LayerMask.GetMask("Ground");
 		for(int i=0; i<60; i++) {
 			Positions[i] = Pivot.GetPosition() + Pivot.GetRotation() * Circle[i];
+			Normals[i] = Utility.GetNormal(Positions[i], mask);
 			Heights[i] = Utility.GetHeight(Positions[i], mask);
 		}
 	}
@@ -44,6 +47,7 @@ public class HeightField {
 		UltiDraw.Begin();
 		for(int i=0; i<60; i++) {
 			UltiDraw.DrawCircle(new Vector3(Positions[i].x, Heights[i], Positions[i].z), 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
+			UltiDraw.DrawArrow(new Vector3(Positions[i].x, Heights[i], Positions[i].z), new Vector3(Positions[i].x, Heights[i], Positions[i].z) + 0.1f*Normals[i], 0.75f, 0.01f, 0.05f, UltiDraw.Purple.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}
