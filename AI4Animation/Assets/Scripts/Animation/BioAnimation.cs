@@ -175,8 +175,6 @@ public class BioAnimation : MonoBehaviour {
 
 		if(MotionEditing) {
 			EditMotion();
-		} else {
-			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
 		}
 		
 		//Update Skeleton
@@ -503,65 +501,7 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	private void EditMotion() {
-		transform.position = new Vector3(transform.position.x, 0f, transform.position.z); //Fix for flat terrain
 
-		//Step #1
-		for(int i=0; i<IKSolvers.Length; i++) {
-			if(IKSolvers[i].name != "Tail") {
-				float heightThreshold = 0.025f;
-				float velocityThreshold = 0.025f;
-				Vector3 target = IKSolvers[i].EndEffector.position;
-				IKSolvers[i].TargetPosition.y = target.y;
-				float velocityDelta = (target - IKSolvers[i].TargetPosition).magnitude;
-				float velocityWeight = Utility.Exponential01(velocityDelta / velocityThreshold);
-				float heightDelta = target.y;
-				float heightWeight = Utility.Exponential01(heightDelta / heightThreshold);
-				float weight = Mathf.Max(velocityWeight, heightWeight);
-				IKSolvers[i].TargetPosition = Vector3.Lerp(IKSolvers[i].TargetPosition, target, weight);
-			}
-		}
-		for(int i=0; i<IKSolvers.Length; i++) {
-			if(IKSolvers[i].name != "Tail") {
-				IKSolvers[i].Solve();
-			}
-		}
-		for(int i=0; i<Joints.Length; i++) {
-			Positions[i] = Joints[i].position;
-		}
-
-		transform.position = Trajectory.Points[RootPointIndex].GetPosition();
-	
-
-		//Step #2
-		for(int i=0; i<IKSolvers.Length; i++) {
-			IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
-			float height = Utility.GetHeight(IKSolvers[i].TargetPosition, LayerMask.GetMask("Ground"));
-			if(IKSolvers[i].name == "Tail") {
-				IKSolvers[i].TargetPosition.y = Mathf.Max(height, height + (IKSolvers[i].TargetPosition.y - transform.position.y));
-			} else {
-				IKSolvers[i].TargetPosition.y = height + (IKSolvers[i].TargetPosition.y - transform.position.y);
-			}
-		}
-		Transform spine = Array.Find(Joints, x => x.name == "Spine1");
-		Transform neck = Array.Find(Joints, x => x.name == "Neck");
-		Transform leftShoulder = Array.Find(Joints, x => x.name == "LeftShoulder");
-		Transform rightShoulder = Array.Find(Joints, x => x.name == "RightShoulder");
-		Vector3 spinePosition = spine.position;
-		Vector3 neckPosition = neck.position;
-		Vector3 leftShoulderPosition = leftShoulder.position;
-		Vector3 rightShoulderPosition = rightShoulder.position;
-		float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
-		float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
-		float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
-		float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
-		spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - transform.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
-		spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - transform.position.y), spinePosition.z);
-		neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - transform.position.y), neckPosition.z);
-		leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - transform.position.y), leftShoulderPosition.z);
-		rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - transform.position.y), rightShoulderPosition.z);
-		for(int i=0; i<IKSolvers.Length; i++) {
-			IKSolvers[i].Solve();
-		}
 	}
 
 	private float PoolBias() {
@@ -742,24 +682,6 @@ public class BioAnimation : MonoBehaviour {
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
 							Target.IKSolvers[i] = (SerialCCD)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialCCD), true);
 						}
-
-						/*
-						if(Utility.GUIButton("Detect Joints", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.DetectJoints();
-						}
-						for(int i=0; i<Target.Joints.Length; i++) {
-							if(Target.Joints[i] != null) {
-								Utility.SetGUIColor(UltiDraw.Green);
-							} else {
-								Utility.SetGUIColor(UltiDraw.Red);
-							}
-							EditorGUILayout.BeginHorizontal();
-							EditorGUILayout.LabelField("Joint " + (i+1), GUILayout.Width(50f));
-							Target.Joints[i] = (Transform)EditorGUILayout.ObjectField(Target.Joints[i], typeof(Transform), true);
-							EditorGUILayout.EndHorizontal();
-							Utility.ResetGUIColor();
-						}
-						*/
 					}
 				}
 			}

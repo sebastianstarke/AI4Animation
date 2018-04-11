@@ -54,7 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Demo\DemoAnimation.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\BioAnimation.cs" />
      <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutineExtensions.cs" />
      <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutines.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
@@ -115,7 +116,6 @@
      <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
      <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
      <Compile Include="Assets\Scripts\Animation\Actor.cs" />
-     <Compile Include="Assets\Scripts\Animation\ActorAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
