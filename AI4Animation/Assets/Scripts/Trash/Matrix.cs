@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 
 public class Vector {
 	public float[] Values;
@@ -317,3 +318,4 @@ public static class MatrixUtility {
 	return result;
 	}
 }
+*/
