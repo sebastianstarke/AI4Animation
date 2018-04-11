@@ -12,6 +12,7 @@ This project explores the opportunities of deep learning and biologically-inspir
 SIGGRAPH 2018
 ------------
 Camera-ready version in progress.
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2018/Teaser.png" width="100%">
 
 SIGGRAPH 2017
 ------------
@@ -22,7 +23,7 @@ Video: https://www.youtube.com/watch?v=Ul0Gilv5wvY
 Paper: http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf
 
 A demo using the original weights is contained in the Assets/Demo/SIGGRAPH_2017 folder. The development is done using Unity3D, and the implementation is made available for character animation research and games development during my Ph.D. progress.
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo_PFNN.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2017/Demo.png" width="100%">
 
 Motion Capture
 ------------
