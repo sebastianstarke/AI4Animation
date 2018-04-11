@@ -301,7 +301,7 @@ namespace SIGGRAPH_2017 {
 				Character.FetchTransformations(Root);
 
 				//Update Phase
-				((PFNN_Eigen)NN.Model).SetPhase(Mathf.Repeat(((PFNN_Eigen)NN.Model).GetPhase() + (rest * 0.9f + 0.1f) * NN.Model.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
+				((PFNN)NN.Model).SetPhase(Mathf.Repeat(((PFNN)NN.Model).GetPhase() + (rest * 0.9f + 0.1f) * NN.Model.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace SIGGRAPH_2017 {
 
 			UltiDraw.Begin();
 			UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
-			Quaternion rotation = Quaternion.AngleAxis(-360f * ((PFNN_Eigen)NN.Model).GetPhase() / (2f * Mathf.PI), Vector3.forward);
+			Quaternion rotation = Quaternion.AngleAxis(-360f * ((PFNN)NN.Model).GetPhase() / (2f * Mathf.PI), Vector3.forward);
 			Vector2 a = rotation * new Vector2(-0.005f, 0f);
 			Vector2 b = rotation *new Vector3(0.005f, 0f);
 			Vector3 c = rotation * new Vector3(0f, 0.075f);

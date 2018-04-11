@@ -126,7 +126,6 @@
      <Compile Include="Assets\Scripts\DeepLearning\Models\MANN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN_Eigen.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NeuralNetwork.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />
