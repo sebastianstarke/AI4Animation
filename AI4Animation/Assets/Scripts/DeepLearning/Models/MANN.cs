@@ -132,13 +132,6 @@ namespace DeepLearning {
 			return Y.GetValue(index, 0);
 		}
 
-		public float GetControlPoint(int index) {
-			if(BY == null) {
-				return 0f;
-			}
-			return BY.GetValue(index, 0);
-		}
-
 		#if UNITY_EDITOR
 		public override void Inspector() {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
