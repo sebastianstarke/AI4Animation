@@ -11,9 +11,13 @@ This project explores the opportunities of deep learning and biologically-inspir
 
 SIGGRAPH 2018
 ------------
-Camera-ready version in progres.
+Camera-ready version in progress.
 
 SIGGRAPH 2017
 ------------
 This work continues the recent work on PFNN (Phase-Functioned Neural Networks) for character control (Video: https://www.youtube.com/watch?v=Ul0Gilv5wvY, Paper: http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf). A demo using the original weights is contained in the Assets/Demo/SIGGRAPH_2017 folder. The development is done using Unity3D, and the implementation is made available for character animation research and games development during my Ph.D. progress.
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/Demo_PFNN.png" width="100%">
+
+Motion Editing
+------------
+In progress.
