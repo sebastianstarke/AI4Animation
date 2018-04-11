@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-	public class MFNN : Model {
+	public class MANN : Model {
 
 		public int XDim = 0;
 		public int HDim = 0;
@@ -51,7 +51,7 @@ namespace DeepLearning {
 
 		public override void LoadParameters() {
 			if(Parameters == null) {
-				Debug.Log("Building MFNN failed because no parameters are available.");
+				Debug.Log("Building MANN failed because no parameters are available.");
 				return;
 			}
 			Xmean = CreateTensor(Parameters.Load(0), "Xmean");

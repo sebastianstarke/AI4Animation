@@ -169,31 +169,16 @@ namespace SIGGRAPH_2018 {
 			for(int i=RootPointIndex; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
-			/*
-			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Point prev = GetPreviousSample(i);
-				Trajectory.Point next = GetNextSample(i);
-				float factor = (float)(i % PointDensity) / PointDensity;
-
-				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
-				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity(((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity()));
-				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
-				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
-				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
-			}
-			*/
 		}
 
 		private void Animate() {
 			//Calculate Root
 			Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			currentRoot[1,3] = 0f; //Fix for flat terrain
+			currentRoot[1,3] = 0f; //For flat terrain
 
 			int start = 0;
 			//Input Trajectory Positions / Directions / Velocities / Styles
 			for(int i=0; i<PointSamples; i++) {
-				//Debug.Log("Trajectory sample " + i + " starts at " + (start + i*TrajectoryDimIn));
 				Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
@@ -204,18 +189,16 @@ namespace SIGGRAPH_2018 {
 				NN.Model.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 				NN.Model.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
 				for(int j=0; j<Controller.Styles.Length; j++) {
-					//Debug.Log(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j);
 					NN.Model.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 				}
 			}
 			start += TrajectoryDimIn*PointSamples;
 
 			Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
-			previousRoot[1,3] = 0f; //Fix for flat terrain
+			previousRoot[1,3] = 0f; //For flat terrain
 
 			//Input Previous Bone Positions / Velocities
 			for(int i=0; i<Actor.Bones.Length; i++) {
-				//Debug.Log("Joint " + Joints[i].name + " starts at " + (start + i*JointDimIn));
 				Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
@@ -263,7 +246,7 @@ namespace SIGGRAPH_2018 {
 			Trajectory.Points[RootPointIndex].SetVelocity(translationalOffset.GetRelativeDirectionFrom(currentRoot) * Framerate);
 			Trajectory.Points[RootPointIndex].Postprocess();
 			Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
-			nextRoot[1,3] = 0f; //Fix for flat terrain
+			nextRoot[1,3] = 0f; //For flat terrain
 
 			//Update Future Trajectory
 			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
@@ -339,21 +322,6 @@ namespace SIGGRAPH_2018 {
 			for(int i=RootPointIndex+PointDensity; i<Trajectory.Points.Length; i+=PointDensity) {
 				Trajectory.Points[i].Postprocess();
 			}
-			
-			/*
-			for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-				Trajectory.Point prev = GetPreviousSample(i);
-				Trajectory.Point next = GetNextSample(i);
-				float factor = (float)(i % PointDensity) / PointDensity;
-
-				Trajectory.Points[i].SetPosition(((1f-factor)*prev.GetPosition() + factor*next.GetPosition()));
-				Trajectory.Points[i].SetDirection(((1f-factor)*prev.GetDirection() + factor*next.GetDirection()));
-				Trajectory.Points[i].SetVelocity(((1f-factor)*prev.GetVelocity() + factor*next.GetVelocity()));
-				Trajectory.Points[i].SetLeftsample((1f-factor)*prev.GetLeftSample() + factor*next.GetLeftSample());
-				Trajectory.Points[i].SetRightSample((1f-factor)*prev.GetRightSample() + factor*next.GetRightSample());
-				Trajectory.Points[i].SetSlope((1f-factor)*prev.GetSlope() + factor*next.GetSlope());
-			}
-			*/
 
 			//Compute Posture
 			for(int i=0; i<Actor.Bones.Length; i++) {
@@ -379,7 +347,7 @@ namespace SIGGRAPH_2018 {
 		}
 
 		private void EditMotion() {
-			transform.position = new Vector3(transform.position.x, 0f, transform.position.z); //Fix for flat terrain
+			transform.position = new Vector3(transform.position.x, 0f, transform.position.z); //For flat terrain
 
 			//Step #1
 			for(int i=0; i<IKSolvers.Length; i++) {

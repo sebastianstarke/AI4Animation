@@ -123,7 +123,7 @@
      <Compile Include="Assets\Scripts\Animation\HeightField.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\Models\MFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Models\MANN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN_Eigen.cs" />
