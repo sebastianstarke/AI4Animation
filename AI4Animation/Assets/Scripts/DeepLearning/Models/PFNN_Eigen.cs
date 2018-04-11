@@ -7,9 +7,9 @@ namespace DeepLearning {
 
 	public class PFNN_Eigen : Model {
 
-		public int XDim = 504;
+		public int XDim = 342;
 		public int HDim = 512;
-		public int YDim = 352;
+		public int YDim = 311;
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor[] W0, W1, W2, b0, b1, b2;
@@ -91,9 +91,6 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
-
-			//Update Phase
-			Phase = Mathf.Repeat(Phase + Y.GetValue(Y.GetRows()-1, 0), 2f*Mathf.PI);
 		}
 
 		/*
@@ -110,6 +107,14 @@ namespace DeepLearning {
 		}
 		*/
 
+		public void SetPhase(float value) {
+			Phase = value;
+		}
+
+		public float GetPhase() {
+			return Phase;
+		}
+
 		#if UNITY_EDITOR
 		public override void Inspector() {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -125,7 +130,7 @@ namespace DeepLearning {
 				HDim = EditorGUILayout.IntField("HDim", HDim);
 				YDim = EditorGUILayout.IntField("YDim", YDim);
 
-				EditorGUILayout.LabelField("Phase: " + Phase);
+				EditorGUILayout.Slider("Phase", Phase, 0f, 2f*Mathf.PI);
 			}
 		}
 		#endif

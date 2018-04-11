@@ -9,15 +9,20 @@ public class BlendingActivation : MonoBehaviour {
 
     [Range(0f, 1f)] public float Y = 0.1f;
 
-	private Model Model;
+	private NeuralNetwork NN;
 	private Queue<float>[] Values;
 
 	void Awake() {
-		Model = GetComponent<BioAnimation>().NN.Model;
+		if(GetComponent<BioAnimation>() != null) {
+			NN = GetComponent<BioAnimation>().NN;
+		}
+		if(GetComponent<SIGGRAPH_2018.BioAnimation>() != null) {
+			NN = GetComponent<SIGGRAPH_2018.BioAnimation>().NN;
+		}
 	}
 
 	void Start() {
-		Values = new Queue<float>[Model.GetTensor("BY").GetRows()];
+		Values = new Queue<float>[NN.Model.GetTensor("BY").GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
@@ -29,7 +34,7 @@ public class BlendingActivation : MonoBehaviour {
 	void OnRenderObject() {
 		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
-			Values[i].Enqueue(Model.GetTensor("BY").GetValue(i, 0));
+			Values[i].Enqueue(NN.Model.GetTensor("BY").GetValue(i, 0));
 		}
 
 		UltiDraw.Begin();

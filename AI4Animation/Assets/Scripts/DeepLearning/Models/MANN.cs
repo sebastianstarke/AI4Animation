@@ -102,6 +102,11 @@ namespace DeepLearning {
 			W2.SetZero(); b2.SetZero();
 			for(int i=0; i<YDimBlend; i++) {
 				float weight = BY.GetValue(i, 0);
+				//i=1 -> No Standing
+				//i=2 -> No Walking
+				if(i==3) {
+					weight = 0f;
+				}
 				Blend(W0, CW[6*i + 0], weight);
 				Blend(b0, CW[6*i + 1], weight);
 				Blend(W1, CW[6*i + 2], weight);

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DeepLearning;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,7 +18,7 @@ namespace SIGGRAPH_2017 {
 
 		public Controller Controller;
 		public Character Character;
-		public PFNN PFNN;
+		public NeuralNetwork NN;
 
 		private Trajectory Trajectory;
 
@@ -41,7 +42,7 @@ namespace SIGGRAPH_2017 {
 			Controller = new Controller();
 			Character = new Character();
 			Character.BuildHierarchy(transform);
-			PFNN = new PFNN();
+			NN = new NeuralNetwork(TYPE.Vanilla);
 		}
 
 		void Awake() {
@@ -50,7 +51,7 @@ namespace SIGGRAPH_2017 {
 			Velocities = new Vector3[Joints.Length];
 			Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
 			Trajectory.Postprocess();
-			PFNN.LoadParameters();
+			NN.Model.LoadParameters();
 		}
 
 		void Start() {
@@ -77,7 +78,7 @@ namespace SIGGRAPH_2017 {
 		}
 
 		void Update() {
-			if(PFNN.Parameters == null) {
+			if(NN.Model.Parameters == null) {
 				return;
 			}
 			
@@ -157,7 +158,7 @@ namespace SIGGRAPH_2017 {
 			//Avoid Collisions
 			CollisionChecks(RootPointIndex+1);
 
-			if(PFNN.Parameters != null) {
+			if(NN.Model.Parameters != null) {
 				//Calculate Root
 				Matrix4x4 currentRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 				Matrix4x4 previousRoot = Trajectory.Points[RootPointIndex-1].GetTransformation();
@@ -166,19 +167,19 @@ namespace SIGGRAPH_2017 {
 				for(int i=0; i<PointSamples; i++) {
 					Vector3 pos = Trajectory.Points[i*PointDensity].GetPosition().GetRelativePositionTo(currentRoot);
 					Vector3 dir = Trajectory.Points[i*PointDensity].GetDirection().GetRelativeDirectionTo(currentRoot);
-					PFNN.SetInput(PointSamples*0 + i, UnitScale * pos.x);
-					PFNN.SetInput(PointSamples*1 + i, UnitScale * pos.z);
-					PFNN.SetInput(PointSamples*2 + i, dir.x);
-					PFNN.SetInput(PointSamples*3 + i, dir.z);
+					NN.Model.SetInput(PointSamples*0 + i, UnitScale * pos.x);
+					NN.Model.SetInput(PointSamples*1 + i, UnitScale * pos.z);
+					NN.Model.SetInput(PointSamples*2 + i, dir.x);
+					NN.Model.SetInput(PointSamples*3 + i, dir.z);
 				}
 
 				//Input Trajectory Gaits
 				for (int i=0; i<PointSamples; i++) {
 					for(int j=0; j<Trajectory.Points[i*PointDensity].Styles.Length; j++) {
-						PFNN.SetInput(PointSamples*(4+j) + i, Trajectory.Points[i*PointDensity].Styles[j]);
+						NN.Model.SetInput(PointSamples*(4+j) + i, Trajectory.Points[i*PointDensity].Styles[j]);
 					}
 					//FOR HUMAN ONLY
-					PFNN.SetInput(PointSamples*8 + i, Trajectory.Points[i*PointDensity].GetSlope());
+					NN.Model.SetInput(PointSamples*8 + i, Trajectory.Points[i*PointDensity].GetSlope());
 					//
 				}
 
@@ -187,24 +188,24 @@ namespace SIGGRAPH_2017 {
 					int o = 10*PointSamples;
 					Vector3 pos = Joints[i].position.GetRelativePositionTo(previousRoot);
 					Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-					PFNN.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
-					PFNN.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
-					PFNN.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
-					PFNN.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
-					PFNN.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
-					PFNN.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
+					NN.Model.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
+					NN.Model.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
+					NN.Model.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
+					NN.Model.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
+					NN.Model.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
+					NN.Model.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
 				}
 
 				//Input Trajectory Heights
 				for(int i=0; i<PointSamples; i++) {
 					int o = 10*PointSamples + Joints.Length*3*2;
-					PFNN.SetInput(o + PointSamples*0 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetRightSample().y - currentRoot.GetPosition().y));
-					PFNN.SetInput(o + PointSamples*1 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetPosition().y - currentRoot.GetPosition().y));
-					PFNN.SetInput(o + PointSamples*2 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetLeftSample().y - currentRoot.GetPosition().y));
+					NN.Model.SetInput(o + PointSamples*0 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetRightSample().y - currentRoot.GetPosition().y));
+					NN.Model.SetInput(o + PointSamples*1 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetPosition().y - currentRoot.GetPosition().y));
+					NN.Model.SetInput(o + PointSamples*2 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetLeftSample().y - currentRoot.GetPosition().y));
 				}
 
 				//Predict
-				PFNN.Predict();
+				NN.Model.Predict();
 
 				//Update Past Trajectory
 				for(int i=0; i<RootPointIndex; i++) {
@@ -220,22 +221,22 @@ namespace SIGGRAPH_2017 {
 
 				//Update Current Trajectory
 				float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
-				Trajectory.Points[RootPointIndex].SetPosition((rest * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).GetRelativePositionFrom(currentRoot));
-				Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * Mathf.Rad2Deg * (-PFNN.GetOutput(2)), Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
+				Trajectory.Points[RootPointIndex].SetPosition((rest * new Vector3(NN.Model.GetOutput(0) / UnitScale, 0f, NN.Model.GetOutput(1) / UnitScale)).GetRelativePositionFrom(currentRoot));
+				Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * Mathf.Rad2Deg * (-NN.Model.GetOutput(2)), Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 				Trajectory.Points[RootPointIndex].Postprocess();
 				Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 
 				//Update Future Trajectory
 				for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
-					Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (rest * new Vector3(PFNN.GetOutput(0) / UnitScale, 0f, PFNN.GetOutput(1) / UnitScale)).GetRelativeDirectionFrom(nextRoot));
+					Trajectory.Points[i].SetPosition(Trajectory.Points[i].GetPosition() + (rest * new Vector3(NN.Model.GetOutput(0) / UnitScale, 0f, NN.Model.GetOutput(1) / UnitScale)).GetRelativeDirectionFrom(nextRoot));
 				}
 				for(int i=RootPointIndex+1; i<Trajectory.Points.Length; i++) {
 					int w = RootSampleIndex;
 					float m = Mathf.Repeat(((float)i - (float)RootPointIndex) / (float)PointDensity, 1.0f);
-					float posX = (1-m) * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*0)+(i/PointDensity)-w+1);
-					float posZ = (1-m) * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*1)+(i/PointDensity)-w+1);
-					float dirX = (1-m) * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*2)+(i/PointDensity)-w+1);
-					float dirZ = (1-m) * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w) + m * PFNN.GetOutput(8+(w*3)+(i/PointDensity)-w+1);
+					float posX = (1-m) * NN.Model.GetOutput(8+(w*0)+(i/PointDensity)-w) + m * NN.Model.GetOutput(8+(w*0)+(i/PointDensity)-w+1);
+					float posZ = (1-m) * NN.Model.GetOutput(8+(w*1)+(i/PointDensity)-w) + m * NN.Model.GetOutput(8+(w*1)+(i/PointDensity)-w+1);
+					float dirX = (1-m) * NN.Model.GetOutput(8+(w*2)+(i/PointDensity)-w) + m * NN.Model.GetOutput(8+(w*2)+(i/PointDensity)-w+1);
+					float dirZ = (1-m) * NN.Model.GetOutput(8+(w*3)+(i/PointDensity)-w) + m * NN.Model.GetOutput(8+(w*3)+(i/PointDensity)-w+1);
 					Trajectory.Points[i].SetPosition(
 						Utility.Interpolate(
 							Trajectory.Points[i].GetPosition(),
@@ -280,8 +281,8 @@ namespace SIGGRAPH_2017 {
 				int ovel = 8 + 4*RootSampleIndex + Joints.Length*3*1;
 				//int orot = 8 + 4*RootSampleIndex + Joints.Length*3*2;
 				for(int i=0; i<Joints.Length; i++) {			
-					Vector3 position = new Vector3(PFNN.GetOutput(opos+i*3+0), PFNN.GetOutput(opos+i*3+1), PFNN.GetOutput(opos+i*3+2)) / UnitScale;
-					Vector3 velocity = new Vector3(PFNN.GetOutput(ovel+i*3+0), PFNN.GetOutput(ovel+i*3+1), PFNN.GetOutput(ovel+i*3+2)) / UnitScale;
+					Vector3 position = new Vector3(NN.Model.GetOutput(opos+i*3+0), NN.Model.GetOutput(opos+i*3+1), NN.Model.GetOutput(opos+i*3+2)) / UnitScale;
+					Vector3 velocity = new Vector3(NN.Model.GetOutput(ovel+i*3+0), NN.Model.GetOutput(ovel+i*3+1), NN.Model.GetOutput(ovel+i*3+2)) / UnitScale;
 					//Quaternion rotation = new Quaternion(PFNN.GetOutput(orot+i*3+0), PFNN.GetOutput(orot+i*3+1), PFNN.GetOutput(orot+i*3+2), 0f).Exp();
 					positions[i] = Vector3.Lerp(Joints[i].position.GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 					Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
@@ -300,7 +301,7 @@ namespace SIGGRAPH_2017 {
 				Character.FetchTransformations(Root);
 
 				//Update Phase
-				PFNN.SetPhase(Mathf.Repeat(PFNN.GetPhase() + (rest * 0.9f + 0.1f) * PFNN.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
+				((PFNN_Eigen)NN.Model).SetPhase(Mathf.Repeat(((PFNN_Eigen)NN.Model).GetPhase() + (rest * 0.9f + 0.1f) * NN.Model.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
 			}
 		}
 
@@ -392,7 +393,7 @@ namespace SIGGRAPH_2017 {
 
 			UltiDraw.Begin();
 			UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
-			Quaternion rotation = Quaternion.AngleAxis(-360f * PFNN.GetPhase() / (2f * Mathf.PI), Vector3.forward);
+			Quaternion rotation = Quaternion.AngleAxis(-360f * ((PFNN_Eigen)NN.Model).GetPhase() / (2f * Mathf.PI), Vector3.forward);
 			Vector2 a = rotation * new Vector2(-0.005f, 0f);
 			Vector2 b = rotation *new Vector3(0.005f, 0f);
 			Vector3 c = rotation * new Vector3(0f, 0.075f);
@@ -455,7 +456,7 @@ namespace SIGGRAPH_2017 {
 				Inspector();
 				Target.Controller.Inspector();
 				Target.Character.Inspector(Target.transform);
-				Target.PFNN.Inspector();
+				Target.NN.Inspector();
 
 				if(GUI.changed) {
 					EditorUtility.SetDirty(Target);
