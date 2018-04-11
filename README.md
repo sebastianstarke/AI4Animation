@@ -22,7 +22,7 @@ Video: https://www.youtube.com/watch?v=Ul0Gilv5wvY
 
 Paper: http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf
 
-A demo using the original weights is contained in the Assets/Demo/SIGGRAPH_2017 folder. The development is done using Unity3D, and the implementation is made available for character animation research and games development during my Ph.D. progress.
+A demo in Unity3D using the original weights is contained in the Assets/Demo/SIGGRAPH_2017 folder.
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2017/Demo.png" width="100%">
 
 Motion Capture
