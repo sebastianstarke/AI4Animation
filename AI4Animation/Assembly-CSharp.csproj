@@ -119,8 +119,8 @@
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
-     <Compile Include="Assets\Scripts\Animation\DepthField.cs" />
-     <Compile Include="Assets\Scripts\Animation\HeightField.cs" />
+     <Compile Include="Assets\Scripts\Animation\DepthMap.cs" />
+     <Compile Include="Assets\Scripts\Animation\HeightMap.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MANN.cs" />
@@ -153,6 +153,7 @@
      <Compile Include="Assets\Scripts\Tools\Skinning.cs" />
      <Compile Include="Assets\Scripts\Tools\Stick.cs" />
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
+     <Compile Include="Assets\Scripts\Tools\WorldScaler.cs" />
      <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />
      <Compile Include="Assets\Scripts\Trash\BioVisualisation.cs" />

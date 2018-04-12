@@ -444,16 +444,16 @@ public class MotionData : ScriptableObject {
 			return trajectory;
 		}
 
-		public HeightField GetHeightField(bool mirrored) {
-			HeightField heightField = new HeightField();
-			heightField.Sense(GetBoneTransformation(Data.Hips, mirrored));
-			return heightField;
+		public HeightMap GetHeightMap(bool mirrored) {
+			HeightMap heightMap = new HeightMap();
+			heightMap.Sense(GetBoneTransformation(Data.Hips, mirrored), LayerMask.GetMask("Ground"));
+			return heightMap;
 		}
 
-		public DepthField GetDepthField(bool mirrored) {
-			DepthField depthField = new DepthField();
-			depthField.Sense(GetBoneTransformation(Data.Head, mirrored));
-			return depthField;
+		public DepthMap GetDepthMap(bool mirrored) {
+			DepthMap depthMap = new DepthMap();
+			depthMap.Sense(GetBoneTransformation(Data.Head, mirrored), LayerMask.GetMask("Ground"));
+			return depthMap;
 		}
 
 		public void ToggleStyle(int style) {

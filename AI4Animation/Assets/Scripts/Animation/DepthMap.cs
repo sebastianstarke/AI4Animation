@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class DepthField {
+public class DepthMap {
 
 	public bool Inspect = false;
 	public Vector3[] Grid = new Vector3[0];
@@ -13,7 +13,7 @@ public class DepthField {
 	private static float Size = 0.5f;
 	private static float Distance = 2f;
 
-	public DepthField() {
+	public DepthMap() {
 		Inspect = false;
 		Grid = new Vector3[Resolution * Resolution];
 		Positions = new Vector3[Resolution * Resolution];
@@ -28,9 +28,8 @@ public class DepthField {
 		}
 	}
 
-	public void Sense(Matrix4x4 transformation) {
-		Pivot = transformation;
-		LayerMask mask = LayerMask.GetMask("Ground");
+	public void Sense(Matrix4x4 pivot, LayerMask mask) {
+		Pivot = pivot;
 		RaycastHit hit;
 		for(int i=0; i<Grid.Length; i++) {
 			Vector3 target = Grid[i].GetRelativePositionFrom(Pivot);

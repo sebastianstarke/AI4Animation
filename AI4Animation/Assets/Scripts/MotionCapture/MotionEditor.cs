@@ -132,9 +132,9 @@ public class MotionEditor : MonoBehaviour {
 			frame.GetTrajectory(ShowMirrored).Draw();
 		}
 
-		frame.GetHeightField(ShowMirrored).Draw();
+		frame.GetHeightMap(ShowMirrored).Draw();
 
-		frame.GetDepthField(ShowMirrored).Draw();
+		frame.GetDepthMap(ShowMirrored).Draw();
 	}
 
 	void OnRenderObject() {
@@ -158,6 +158,7 @@ public class MotionEditor : MonoBehaviour {
 		PlayTime = 0f;
 		Timestamp = Utility.GetTimestamp();
 		Timescale = 1f;
+		CheckSkeleton();
 	}
 
 	public void UnloadFile() {
@@ -166,6 +167,7 @@ public class MotionEditor : MonoBehaviour {
 		PlayTime = 0f;
 		Timestamp = Utility.GetTimestamp();
 		Timescale = 1f;
+		CheckSkeleton();
 	}
 
 	public MotionData.Frame GetCurrentFrame() {
@@ -173,6 +175,12 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void CheckSkeleton() {
+		if(Data == null) {
+			if(Actor != null) {
+				Utility.Destroy(Actor.gameObject);
+				return;
+			}
+		}		
 		if(Actor == null) {
 			Transform actor = transform.Find("Skeleton");
 			if(actor != null) {
