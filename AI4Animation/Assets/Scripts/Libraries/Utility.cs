@@ -191,8 +191,8 @@ public static class Utility {
 	}
 
 	public static float GetHeight(Vector3 origin, LayerMask mask) {
-		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
-		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, float.PositiveInfinity, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, float.PositiveInfinity, mask);
 		if(upHits.Length == 0 && downHits.Length == 0) {
 			return origin.y;
 		}
@@ -211,8 +211,8 @@ public static class Utility {
 	}
 
 	public static float GetSlope(Vector3 origin, LayerMask mask) {
-		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
-		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, float.PositiveInfinity, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, float.PositiveInfinity, mask);
 		if(upHits.Length == 0 && downHits.Length == 0) {
 			return 0f;
 		}
@@ -234,8 +234,8 @@ public static class Utility {
 	}
 
 	public static Vector3 GetNormal(Vector3 origin, LayerMask mask) {
-		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, mask);
-		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, mask);
+		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, float.PositiveInfinity, mask);
+		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, float.PositiveInfinity, mask);
 		if(upHits.Length == 0 && downHits.Length == 0) {
 			return Vector3.up;
 		}
