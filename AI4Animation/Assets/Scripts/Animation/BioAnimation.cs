@@ -304,7 +304,7 @@ public class BioAnimation : MonoBehaviour {
 
 		/*
 		//Input Past Posture
-		for(int i=0; i<6; i++) {
+		for(int i=5; i<6; i++) {
 			for(int j=0; j<Joints.Length; j++) {
 				Vector3 pos = PastPositions[j][i*10].GetRelativePositionTo(previousRoot);
 				Vector3 forward = PastForwards[j][i*10].GetRelativeDirectionTo(previousRoot);
@@ -569,13 +569,15 @@ public class BioAnimation : MonoBehaviour {
 		}
 
 		if(Application.isPlaying) {
-			for(int i=0; i<6; i++) {
+			/*
+			for(int i=5; i<6; i++) {
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
 					Matrix4x4 mat = Matrix4x4.TRS(PastPositions[j][i*10], Quaternion.LookRotation(PastForwards[j][i*10], PastUps[j][i*10]), Vector3.one);
 					Character.Hierarchy[j].SetTransformation(mat);
 				}
 				Character.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f));
 			}
+			*/
 			/*
 			for(int i=0; i<5; i++) {
 				for(int j=0; j<Character.Hierarchy.Length; j++) {
