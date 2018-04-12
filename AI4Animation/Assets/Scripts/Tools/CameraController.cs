@@ -188,7 +188,6 @@ public class CameraController : MonoBehaviour {
 		SelfOffset = EndSelfOffset;
 		TargetOffset = EndTargetOffset;
 		Damping = EndDamping;
-	
 	}
 
 	private Vector2 GetNormalizedMousePosition() {
