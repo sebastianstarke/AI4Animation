@@ -1,42 +1,33 @@
 ﻿using UnityEngine;
 
-[System.Serializable]
 public class DepthMap {
 
-	public bool Inspect = false;
-	public Vector3[] Grid = new Vector3[0];
-	public Vector3[] Positions = new Vector3[0];
-	public float[] Depths = new float[0];
 	Matrix4x4 Pivot = Matrix4x4.identity;
+	public Vector3[] Points = new Vector3[0];
 
-	private static int Resolution = 10;
-	private static float Size = 0.5f;
-	private static float Distance = 2f;
+	private const int Resolution = 20;
+	private const float Size = 0.5f;
+	private const float Distance = 2f;
 
 	public DepthMap() {
-		Inspect = false;
-		Grid = new Vector3[Resolution * Resolution];
-		Positions = new Vector3[Resolution * Resolution];
-		Depths = new float[Resolution * Resolution];
 
-		float xStart = -Size/2f;
-		float yStart = -Size/2f;
-		for(int x=0; x<Resolution; x++) {
-			for(int y=0; y<Resolution; y++) {
-				Grid[GridToArray(x, y)] = new Vector3(xStart + (float)x/(float)(Resolution-1) * Size, yStart + (float)y/(float)(Resolution-1) * Size, Distance);
-			}
-		}
 	}
 
 	public void Sense(Matrix4x4 pivot, LayerMask mask) {
 		Pivot = pivot;
+		Points = new Vector3[Resolution*Resolution];
 		RaycastHit hit;
-		for(int i=0; i<Grid.Length; i++) {
-			Vector3 target = Grid[i].GetRelativePositionFrom(Pivot);
-			if(Physics.Raycast(Pivot.GetPosition(), target-Pivot.GetPosition(), out hit, Distance, mask)) {
-				Positions[i] = hit.point;
-			} else {
-				Positions[i] = target;
+		for(int x=0; x<Resolution; x++) {
+			for(int y=0; y<Resolution; y++) {
+				Vector3 grid = new Vector3(
+					-Size/2f + (float)x/(float)(Resolution-1) * Size, 
+					-Size/2f + (float)y/(float)(Resolution-1) * Size,
+					Distance).GetRelativePositionFrom(Pivot);
+				if(Physics.Raycast(Pivot.GetPosition(), grid-Pivot.GetPosition(), out hit, Distance, mask)) {
+					Points[GridToArray(x,y)] = hit.point;
+				} else {
+					Points[GridToArray(x,y)] = grid;
+				}
 			}
 		}
 	}
@@ -47,9 +38,10 @@ public class DepthMap {
 
 	public void Draw() {
 		UltiDraw.Begin();
-		for(int i=0; i<Positions.Length; i++) {
-			UltiDraw.DrawLine(Pivot.GetPosition(), Positions[i], UltiDraw.DarkGreen.Transparent(0.05f));
-			UltiDraw.DrawCircle(Positions[i], 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
+		UltiDraw.DrawTranslateGizmo(Pivot.GetPosition(), Pivot.GetRotation(), 0.1f);
+		for(int i=0; i<Points.Length; i++) {
+			UltiDraw.DrawLine(Pivot.GetPosition(), Points[i], UltiDraw.DarkGreen.Transparent(0.05f));
+			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}

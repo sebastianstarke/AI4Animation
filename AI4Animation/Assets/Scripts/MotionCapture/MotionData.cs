@@ -16,10 +16,14 @@ public class MotionData : ScriptableObject {
 	public string[] Styles = new string[0];
 	public float StyleTransition = 1f;
 	public Axis MirrorAxis = Axis.X;
-	public Frame[] Frames;
-	public int Hips;
-	public int Head;
 	public int[] Symmetry;
+	public LayerMask GroundMask = 0;
+	public LayerMask ObjectMask = 0;
+	public int HeightMapSensor = 0;
+	public int DepthMapSensor = 0;
+	public Axis DepthMapAxis = Axis.Z;
+
+	public Frame[] Frames;
 
 	public float GetTotalTime() {
 		return GetTotalFrames() / Framerate;
@@ -45,8 +49,8 @@ public class MotionData : ScriptableObject {
 		return GetFrame(Mathf.Min(Mathf.RoundToInt(time * Framerate) + 1, GetTotalFrames()));
 	}
 
-	public Vector3 GetMirrorAxis() {
-		switch(MirrorAxis) {
+	public Vector3 GetAxis(Axis axis) {
+		switch(axis) {
 			case Axis.X:
 			return Vector3.right;
 			case Axis.Y:
@@ -200,18 +204,18 @@ public class MotionData : ScriptableObject {
 	public void DetectHips() {
 		BVHData.Bone bone = Source.FindBone("Hips");
 		if(bone == null) {
-			Debug.Log("Could not find hips.");
+			Debug.Log("Could not find height map sensor.");
 		} else {
-			Hips = bone.Index;
+			HeightMapSensor = bone.Index;
 		}
 	}
 
 	public void DetectHead() {
 		BVHData.Bone bone = Source.FindBone("Head");
 		if(bone == null) {
-			Debug.Log("Could not find head.");
+			Debug.Log("Could not find depth map sensor.");
 		} else {
-			Head = bone.Index;
+			DepthMapSensor = bone.Index;
 		}
 	}
 
@@ -394,7 +398,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
-			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetMirrorAxis()) : World[index];
+			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
 		}
 
 		public Vector3[] GetBoneVelocities(bool mirrored) {
@@ -408,12 +412,12 @@ public class MotionData : ScriptableObject {
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
 			if(Index == 1) {
 				return mirrored ? 
-				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetMirrorAxis())
+				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
 				: 
 				(Data.GetFrame(Index+1).World[index].GetPosition() - World[index].GetPosition()) * Data.Framerate;
 			} else {
 				return mirrored ? 
-				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetMirrorAxis())
+				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
 				: 
 				(World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate;
 			}
@@ -421,7 +425,7 @@ public class MotionData : ScriptableObject {
 
 		public Matrix4x4 GetRoot(bool mirrored) {
 			Matrix4x4 transformation = GetBoneTransformation(0, mirrored);
-			Vector3 position = Utility.ProjectGround(transformation.GetPosition(), LayerMask.GetMask("Ground"));
+			Vector3 position = Utility.ProjectGround(transformation.GetPosition(), Data.GroundMask);
 			Vector3 forward = transformation.GetForward();
 			forward.y = 0f;
 			return Matrix4x4.TRS(position, Quaternion.LookRotation(forward, Vector3.up), Vector3.one);
@@ -446,13 +450,15 @@ public class MotionData : ScriptableObject {
 
 		public HeightMap GetHeightMap(bool mirrored) {
 			HeightMap heightMap = new HeightMap();
-			heightMap.Sense(GetBoneTransformation(Data.Hips, mirrored), LayerMask.GetMask("Ground"));
+			heightMap.Sense(GetBoneTransformation(Data.HeightMapSensor, mirrored), Data.GroundMask);
 			return heightMap;
 		}
 
 		public DepthMap GetDepthMap(bool mirrored) {
 			DepthMap depthMap = new DepthMap();
-			depthMap.Sense(GetBoneTransformation(Data.Head, mirrored), LayerMask.GetMask("Ground"));
+			Matrix4x4 pivot = GetBoneTransformation(Data.DepthMapSensor, mirrored);
+			pivot *= Matrix4x4.TRS(Vector3.zero, Quaternion.FromToRotation(Vector3.forward, Data.GetAxis(Data.DepthMapAxis)), Vector3.one);
+			depthMap.Sense(pivot, Data.ObjectMask);
 			return depthMap;
 		}
 

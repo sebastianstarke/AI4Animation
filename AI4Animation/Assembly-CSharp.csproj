@@ -134,6 +134,7 @@
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
      <Compile Include="Assets\Scripts\Libraries\ArrayExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Eigen.cs" />
+     <Compile Include="Assets\Scripts\Libraries\LayerMaskExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix4x4Extensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\QuaternionExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\TransformExtensions.cs" />

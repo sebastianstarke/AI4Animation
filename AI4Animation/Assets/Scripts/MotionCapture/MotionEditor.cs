@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal;
 
 [ExecuteInEditMode]
 [UnityEditor.Callbacks.DidReloadScripts]
@@ -177,10 +178,12 @@ public class MotionEditor : MonoBehaviour {
 	public void CheckSkeleton() {
 		if(Data == null) {
 			if(Actor != null) {
-				Utility.Destroy(Actor.gameObject);
-				return;
+				if(Actor.transform.parent == transform) {
+					Utility.Destroy(Actor.gameObject);
+					return;
+				}
 			}
-		}		
+		}
 		if(Actor == null) {
 			Transform actor = transform.Find("Skeleton");
 			if(actor != null) {
@@ -439,12 +442,15 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Sensors");
+							Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Data.GroundMask), InternalEditorUtility.layers));
+							Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Data.ObjectMask), InternalEditorUtility.layers));
 							string[] names = new string[Data.Source.Bones.Length];
 							for(int i=0; i<Data.Source.Bones.Length; i++) {
 								names[i] = Data.Source.Bones[i].Name;
 							}
-							Data.Hips = EditorGUILayout.Popup("Hips", Data.Hips, names);
-							Data.Head = EditorGUILayout.Popup("Head", Data.Head, names);
+							Data.HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Data.HeightMapSensor, names);
+							Data.DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Data.DepthMapSensor, names);
+							Data.DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Data.DepthMapAxis);
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);
