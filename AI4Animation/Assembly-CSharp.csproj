@@ -123,9 +123,10 @@
      <Compile Include="Assets\Scripts\Animation\HeightMap.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Models\LSTM.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MANN.cs" />
-     <Compile Include="Assets\Scripts\DeepLearning\Models\MLP.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Models\Vanilla.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\NeuralNetwork.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />

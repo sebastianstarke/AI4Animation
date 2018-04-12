@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-	public class MLP : Model {
+	public class Vanilla : Model {
 
 		public int XDim = 0;
 		public int HDim = 0;

@@ -25,7 +25,7 @@ namespace DeepLearning {
 			Type = type;
 			switch(Type) {
 				case TYPE.Vanilla:
-				Model = ScriptableObject.CreateInstance<MLP>();
+				Model = ScriptableObject.CreateInstance<Vanilla>();
 				break;
 				case TYPE.MANN:
 				Model = ScriptableObject.CreateInstance<MANN>();

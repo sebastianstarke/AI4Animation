@@ -107,7 +107,7 @@ public class Actor : MonoBehaviour {
 			Action<Bone> recursion = null;
 			recursion = new Action<Bone>((bone) => {
 				if(bone.GetParent() != null) {
-					if(bone.GetLength() > 0f) {
+					if(bone.GetLength() > 0.05f) {
 						UltiDraw.DrawBone(
 							bone.GetParent().Transform.position,
 							Quaternion.FromToRotation(bone.GetParent().Transform.forward, bone.Transform.position - bone.GetParent().Transform.position) * bone.GetParent().Transform.rotation,

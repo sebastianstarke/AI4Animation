@@ -2,10 +2,11 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-[ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
 	public enum MODE {SmoothFollow, ConstantView, FreeView}
+
+	public bool ShowGUI = true;
 
 	public MODE Mode = MODE.SmoothFollow;
 	public Transform Target;
@@ -28,7 +29,7 @@ public class CameraController : MonoBehaviour {
 	private Quaternion ZeroRotation;
 
 	void Start() {
-
+		SetMode(Mode);
 	}
 
 	void Update() {
@@ -82,6 +83,9 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void OnGUI() {
+		if(!ShowGUI) {
+			return;
+		}
 		GUI.color = UltiDraw.Mustard;
 		GUI.backgroundColor = UltiDraw.Black;
 		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.05f, 0.1f, 0.04f), "Smooth Follow")) {
@@ -159,7 +163,7 @@ public class CameraController : MonoBehaviour {
 
 			case MODE.ConstantView:
 			EndSelfOffset = new Vector3(1.5f, 0.5f, 0.25f);
-			EndTargetOffset = new Vector3(0f, 0.5f, 0.25f);
+			EndTargetOffset = new Vector3(0f, 1f/3f, 0.25f);
 			EndDamping = 0.0f;
 			break;
 			

@@ -176,12 +176,12 @@ public class Trajectory {
 		}
 
 		//Projections
-		for(int i=0; i<Points.Length; i+=step) {
-			Vector3 right = Points[i].GetRightSample();
-			Vector3 left = Points[i].GetLeftSample();
-			UltiDraw.DrawCircle(right, 0.01f, UltiDraw.Yellow);
-			UltiDraw.DrawCircle(left, 0.01f, UltiDraw.Yellow);
-		}
+		//for(int i=0; i<Points.Length; i+=step) {
+		//	Vector3 right = Points[i].GetRightSample();
+		//	Vector3 left = Points[i].GetLeftSample();
+		//	UltiDraw.DrawCircle(right, 0.01f, UltiDraw.Yellow);
+		//	UltiDraw.DrawCircle(left, 0.01f, UltiDraw.Yellow);
+		//}
 
 		//Directions
 		for(int i=0; i<Points.Length; i+=step) {
@@ -200,9 +200,9 @@ public class Trajectory {
 		}
 
 		//Slopes
-		for(int i=0; i<Points.Length; i+=step) {
-			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, UltiDraw.Blue.Transparent(0.75f));
-		}
+		//for(int i=0; i<Points.Length; i+=step) {
+		//	UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 1f * Points[i].GetSlope() * Vector3.up, 0.025f, 0f, UltiDraw.Blue.Transparent(0.75f));
+		//}
 
 		//Positions
 		for(int i=0; i<Points.Length; i+=step) {
