@@ -145,7 +145,6 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
-     <Compile Include="Assets\Scripts\Tools\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />
      <Compile Include="Assets\Scripts\Tools\FreeCamera.cs" />
      <Compile Include="Assets\Scripts\Tools\Modify.cs" />
@@ -156,6 +155,7 @@
      <Compile Include="Assets\Scripts\Tools\ReloadScene.cs" />
      <Compile Include="Assets\Scripts\Tools\Skinning.cs" />
      <Compile Include="Assets\Scripts\Tools\Stick.cs" />
+     <Compile Include="Assets\Scripts\Tools\TrajectoryController.cs" />
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
      <Compile Include="Assets\Scripts\Tools\WorldPlacer.cs" />
      <Compile Include="Assets\Scripts\Tools\WorldScaler.cs" />
