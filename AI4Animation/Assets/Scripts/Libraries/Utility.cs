@@ -11,6 +11,52 @@ public class GUIRect {
 	[Range(0f, 1f)] public float H = 0.5f;
 }
 
+public sealed class Gaussian {
+    private bool _hasDeviate;
+    private double _storedDeviate;
+    private readonly System.Random _random;
+
+    public Gaussian(System.Random random = null) {
+        _random = random ?? new System.Random();
+    }
+
+    /// <summary>
+    /// Obtains normally (Gaussian) distributed random numbers, using the Box-Muller
+    /// transformation.  This transformation takes two uniformly distributed deviates
+    /// within the unit circle, and transforms them into two independently
+    /// distributed normal deviates.
+    /// </summary>
+    /// <param name="mu">The mean of the distribution.  Default is zero.</param>
+    /// <param name="sigma">The standard deviation of the distribution.  Default is one.</param>
+    /// <returns></returns>
+    public double NextGaussian(double mu = 0, double sigma = 1) {
+        if(sigma <= 0)
+            throw new ArgumentOutOfRangeException("sigma", "Must be greater than zero.");
+
+        if(_hasDeviate) {
+            _hasDeviate = false;
+            return _storedDeviate*sigma + mu;
+        }
+
+        double v1, v2, rSquared;
+        do {
+            // two random values between -1.0 and 1.0
+            v1 = 2*_random.NextDouble() - 1;
+            v2 = 2*_random.NextDouble() - 1;
+            rSquared = v1*v1 + v2*v2;
+            // ensure within the unit circle
+        } while (rSquared >= 1 || rSquared == 0);
+
+        // calculate polar tranformation for each deviate
+        var polar = Math.Sqrt(-2*Math.Log(rSquared)/rSquared);
+        // store first deviate
+        _storedDeviate = v2*polar;
+        _hasDeviate = true;
+        // return second deviate
+        return v1*polar*sigma + mu;
+    }
+}
+
 public static class Utility {
 
 	public static Quaternion QuaternionEuler(float roll, float pitch, float yaw) {
@@ -110,13 +156,7 @@ public static class Utility {
 	public static float LinSin3(float a, float f, float s, float o, float m, float t) {
 		return a * f * f * f * -Mathf.Cos(f * (t - s) * 2f * Mathf.PI);
 	}
-
-	public static float Gaussian(float peak, float shift, float sigma, float x) {
-		float upper = (x-shift)*(x-shift);
-		float lower = 2f*sigma*sigma;
-		return peak * Mathf.Exp(-upper/lower);
-	}
-
+	
 	public static float Interpolate(float from, float to, float amount) {
 		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;

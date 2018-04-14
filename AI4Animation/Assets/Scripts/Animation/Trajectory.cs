@@ -111,7 +111,7 @@ public class Trajectory {
 		}
 
 		public void SetDirection(Vector3 direction) {
-			SetRotation(Quaternion.LookRotation(direction, Vector3.up));
+			SetRotation(Quaternion.LookRotation(direction == Vector3.zero ? Vector3.forward : direction, Vector3.up));
 		}
 
 		public Vector3 GetDirection() {
