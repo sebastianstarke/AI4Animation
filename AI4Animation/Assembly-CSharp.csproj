@@ -143,6 +143,7 @@
      <Compile Include="Assets\Scripts\Libraries\Vector3Extensions.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionData.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
+     <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\CatmullRomSpline.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />
@@ -152,9 +153,11 @@
      <Compile Include="Assets\Scripts\Tools\MouseDrag.cs" />
      <Compile Include="Assets\Scripts\Tools\Orbit.cs" />
      <Compile Include="Assets\Scripts\Tools\Perlin.cs" />
+     <Compile Include="Assets\Scripts\Tools\ReloadScene.cs" />
      <Compile Include="Assets\Scripts\Tools\Skinning.cs" />
      <Compile Include="Assets\Scripts\Tools\Stick.cs" />
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
+     <Compile Include="Assets\Scripts\Tools\WorldPlacer.cs" />
      <Compile Include="Assets\Scripts\Tools\WorldScaler.cs" />
      <Compile Include="Assets\Scripts\Trash\AngleTest.cs" />
      <Compile Include="Assets\Scripts\Trash\BFGS.cs" />

@@ -21,7 +21,7 @@ public class BioVisualisation : MonoBehaviour {
 	public Color VisualisationEnabled = UltiDraw.Cyan;
 	public Color VisualisationDisabled = UltiDraw.Grey;
 
-	public Button SmoothFollow, ConstantView, Static;
+	public Button Follow, LookAt, Free;
 	public Color CameraEnabled = UltiDraw.Mustard;
 	public Color CameraDisabled = UltiDraw.LightGrey;
 
@@ -101,19 +101,19 @@ public class BioVisualisation : MonoBehaviour {
 		UpdateColor(MotionTrails, DrawTrails ? VisualisationEnabled : VisualisationDisabled);
 	}
 
-	public void SetSmoothFollow() {
-		CameraController.SetMode(CameraController.MODE.SmoothFollow);
-		UpdateColor(SmoothFollow, CameraEnabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraDisabled);
+	public void SetFollow() {
+		CameraController.SetMode(CameraController.MODE.Follow);
+		UpdateColor(Follow, CameraEnabled); UpdateColor(LookAt, CameraDisabled); UpdateColor(Free, CameraDisabled);
 	}
 
 	public void SetConstantView() {
-		CameraController.SetMode(CameraController.MODE.ConstantView);
-		UpdateColor(SmoothFollow, CameraDisabled); UpdateColor(ConstantView, CameraEnabled); UpdateColor(Static, CameraDisabled);
+		CameraController.SetMode(CameraController.MODE.LookAt);
+		UpdateColor(Follow, CameraDisabled); UpdateColor(LookAt, CameraEnabled); UpdateColor(Free, CameraDisabled);
 	}
 
 	public void SetStatic() {
 		CameraController.SetMode(CameraController.MODE.FreeView);
-		UpdateColor(SmoothFollow, CameraDisabled); UpdateColor(ConstantView, CameraDisabled); UpdateColor(Static, CameraEnabled);
+		UpdateColor(Follow, CameraDisabled); UpdateColor(LookAt, CameraDisabled); UpdateColor(Free, CameraEnabled);
 	}
 
 	public void SetYaw(float value) {

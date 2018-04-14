@@ -371,7 +371,7 @@ public class MotionEditor : MonoBehaviour {
 					if(InspectStyleFunction) {
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-							MotionData.Frame previous = GetCurrentFrame().GetPreviousStyleKey();
+							MotionData.Frame previous = GetCurrentFrame().GetAnyPreviousStyleKey();
 							PlayTime = previous == null ? 0f : previous.Timestamp;
 						}
 						EditorGUILayout.BeginVertical(GUILayout.Height(50f));
@@ -398,7 +398,7 @@ public class MotionEditor : MonoBehaviour {
 						UltiDraw.End();
 						EditorGUILayout.EndVertical();
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-							MotionData.Frame next = GetCurrentFrame().GetNextStyleKey();
+							MotionData.Frame next = GetCurrentFrame().GetAnyNextStyleKey();
 							PlayTime = next == null ? Data.GetTotalTime() : next.Timestamp;
 						}
 						EditorGUILayout.EndHorizontal();

@@ -473,11 +473,42 @@ public class MotionData : ScriptableObject {
 			Data.ComputeStyles();
 		}
 
-		public Frame GetPreviousStyleKey() {
+		public Frame GetAnyNextStyleKey() {
+			Frame frame = this;
+			while(frame.Index < Data.GetTotalFrames()) {
+				frame = Data.GetFrame(frame.Index+1);
+				if(frame.IsAnyStyleKey()) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public Frame GetAnyPreviousStyleKey() {
 			Frame frame = this;
 			while(frame.Index > 1) {
 				frame = Data.GetFrame(frame.Index-1);
-				if(IsStyleKey(frame)) {
+				if(frame.IsAnyStyleKey()) {
+					return frame;
+				}
+			}
+			return null;
+		}
+
+		public bool IsAnyStyleKey() {
+			for(int i=0; i<StyleFlags.Length; i++) {
+				if(IsStyleKey(i)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public Frame GetNextStyleKey(int style) {
+			Frame frame = this;
+			while(frame.Index < Data.GetTotalFrames()) {
+				frame = Data.GetFrame(frame.Index+1);
+				if(frame.IsStyleKey(style)) {
 					return frame;
 				}
 			}
@@ -488,53 +519,22 @@ public class MotionData : ScriptableObject {
 			Frame frame = this;
 			while(frame.Index > 1) {
 				frame = Data.GetFrame(frame.Index-1);
-				if(IsStyleKey(frame, style)) {
+				if(frame.IsStyleKey(style)) {
 					return frame;
 				}
 			}
 			return null;
 		}
 
-		public Frame GetNextStyleKey() {
-			Frame frame = this;
-			while(frame.Index < Data.GetTotalFrames()) {
-				frame = Data.GetFrame(frame.Index+1);
-				if(IsStyleKey(frame)) {
-					return frame;
-				}
-			}
-			return null;
-		}
-
-		public Frame GetNextStyleKey(int style) {
-			Frame frame = this;
-			while(frame.Index < Data.GetTotalFrames()) {
-				frame = Data.GetFrame(frame.Index+1);
-				if(IsStyleKey(frame, style)) {
-					return frame;
-				}
-			}
-			return null;
-		}
-
-		public bool IsStyleKey(Frame frame) {
-			for(int i=0; i<frame.StyleFlags.Length; i++) {
-				if(IsStyleKey(frame, i)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public bool IsStyleKey(Frame frame, int style) {
+		public bool IsStyleKey(int style) {
 			Frame previous = this;
-			if(frame.Index > 1) {
-				previous = Data.GetFrame(frame.Index-1);
+			if(Index > 1) {
+				previous = Data.GetFrame(Index-1);
 			}
-			if(!frame.StyleFlags[style] && previous.StyleFlags[style]) {
+			if(!StyleFlags[style] && previous.StyleFlags[style]) {
 				return true;
 			}
-			if(frame.StyleFlags[style] && !previous.StyleFlags[style]) {
+			if(StyleFlags[style] && !previous.StyleFlags[style]) {
 				return true;
 			}
 			return false;
