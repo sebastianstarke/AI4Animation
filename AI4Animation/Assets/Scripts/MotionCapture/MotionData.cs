@@ -105,6 +105,14 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
+	public void ClearStyles() {
+		ArrayExtensions.Clear(ref Styles);
+		for(int i=0; i<GetTotalFrames(); i++) {
+			ArrayExtensions.Clear(ref Frames[i].StyleFlags);
+			ArrayExtensions.Clear(ref Frames[i].StyleValues);
+		}
+	}
+
 	public void Load(string path) {
 		Name = path.Substring(path.LastIndexOf("/")+1);
 

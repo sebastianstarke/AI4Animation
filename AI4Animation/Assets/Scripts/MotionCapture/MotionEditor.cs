@@ -366,12 +366,39 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUI.DrawRect(rect, UltiDraw.Black);
 						UltiDraw.Begin();
 						for(int i=0; i<Data.Styles.Length; i++) {
-							for(int j=0; j<Data.GetTotalFrames()-1; j++) {
-								float xStart = rect.x + (float)j/(float)(Data.GetTotalFrames()-1) * rect.width;
-								float xEnd = rect.x + (float)(j+1)/(float)(Data.GetTotalFrames()-1) * rect.width;
-								float yStart = rect.y + (1f - Data.Frames[j].StyleValues[i]) * rect.height;
-								float yEnd = rect.y + (1f - Data.Frames[j+1].StyleValues[i]) * rect.height;
-								UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+							int x = 0;
+							for(int j=1; j<Data.GetTotalFrames(); j++) {
+								float val = Data.Frames[j].StyleValues[i];
+								if(
+									Data.Frames[x].StyleValues[i]<1f && val==1f ||
+									Data.Frames[x].StyleValues[i]>0f && val==0f
+									) {
+									float xStart = rect.x + (float)(x-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float xEnd = rect.x + (float)j/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float yStart = rect.y + (1f - Data.Frames[x-1].StyleValues[i]) * rect.height;
+									float yEnd = rect.y + (1f - Data.Frames[j].StyleValues[i]) * rect.height;
+									UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+									x = j;
+								}
+								if(
+									Data.Frames[x].StyleValues[i]==0f && val>0f || 
+									Data.Frames[x].StyleValues[i]==1f && val<1f
+									) {
+									float xStart = rect.x + (float)(x)/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float xEnd = rect.x + (float)(j-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float yStart = rect.y + (1f - Data.Frames[x].StyleValues[i]) * rect.height;
+									float yEnd = rect.y + (1f - Data.Frames[j-1].StyleValues[i]) * rect.height;
+									UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+									x = j;
+								}
+								if(j==Data.GetTotalFrames()-1) {
+									float xStart = rect.x + (float)x/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float xEnd = rect.x + (float)(j-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+									float yStart = rect.y + (1f - Data.Frames[x].StyleValues[i]) * rect.height;
+									float yEnd = rect.y + (1f - Data.Frames[j-1].StyleValues[i]) * rect.height;
+									UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+									x = j;
+								}
 							}
 						}
 						float pivot = rect.x + (float)(frame.Index-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
@@ -410,6 +437,39 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Styles");
+							string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
+							switch(EditorGUILayout.Popup(0, presets)) {
+								case 0:
+								break;
+								case 1:
+								Data.ClearStyles();
+								Data.AddStyle("Idle");
+								Data.AddStyle("Walk");
+								Data.AddStyle("Run");
+								Data.AddStyle("Jump");
+								Data.AddStyle("Crouch");
+								break;
+								case 2:
+								Data.ClearStyles();
+								Data.AddStyle("Idle");
+								Data.AddStyle("Move");
+								Data.AddStyle("Jump");
+								Data.AddStyle("Sit");
+								Data.AddStyle("Stand");
+								Data.AddStyle("Lie");
+								break;
+								case 3:
+								Data.ClearStyles();
+								Data.AddStyle("Idle");
+								Data.AddStyle("Walk");
+								Data.AddStyle("Run");
+								Data.AddStyle("Jump");
+								Data.AddStyle("Crouch");
+								Data.AddStyle("Sit");
+								Data.AddStyle("OpenDoor");
+								Data.AddStyle("PickUp");
+								break;
+							}
 							for(int i=0; i<Data.Styles.Length; i++) {
 								EditorGUILayout.BeginHorizontal();
 								Data.Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Data.Styles[i]);
