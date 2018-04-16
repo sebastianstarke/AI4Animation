@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -66,6 +67,14 @@ public class MotionData : ScriptableObject {
 		if(UnitScale != value) {
 			UnitScale = value;
 			ComputePostures();
+		}
+	}
+
+	public void SetStyleTransition(float value) {
+		value = Mathf.Max(value, 0.1f);
+		if(StyleTransition != value) {
+			StyleTransition = value;
+			ComputeStyles();
 		}
 	}
 
@@ -263,14 +272,19 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void ComputePostures() {
-		for(int i=0; i<GetTotalFrames(); i++) {
-			Frames[i].ComputePosture();
+		for(int i=1; i<=GetTotalFrames(); i++) {
+			GetFrame(i).ComputePosture();
 		}
 	}
 
 	public void ComputeStyles() {
-		for(int i=0; i<GetTotalFrames(); i++) {
-			Frames[i].ComputeStyle();
+		for(int i=0; i<Styles.Length; i++) {
+			for(int j=1; j<=GetTotalFrames(); j++) {
+				Frame frame = GetFrame(j);
+				if(frame.IsStyleKey(i)) {
+					frame.ApplyStyleKeyValues(i);
+				}
+			}
 		}
 	}
 
@@ -379,16 +393,6 @@ public class MotionData : ScriptableObject {
 			//}
 		}
 
-		public void ComputeStyle() {
-			for(int i=0; i<StyleFlags.Length; i++) {
-				if(StyleFlags[i]) {
-					StyleValues[i] = 1f;
-				} else {
-					StyleValues[i] = 0f;
-				}
-			}
-		}
-
 		public Matrix4x4[] GetBoneTransformations(bool mirrored) {
 			Matrix4x4[] transformations = new Matrix4x4[World.Length];
 			for(int i=0; i<World.Length; i++) {
@@ -462,15 +466,53 @@ public class MotionData : ScriptableObject {
 			return depthMap;
 		}
 
-		public void ToggleStyle(int style) {
-			Frame next = GetNextStyleKey(style);
-			StyleFlags[style] = !StyleFlags[style];
+		public void ToggleStyle(int index) {
+			Frame next = GetNextStyleKey(index);
+			StyleFlags[index] = !StyleFlags[index];
 			int start = Index+1;
 			int end = next == null ? Data.GetTotalFrames() : next.Index-1;
 			for(int i=start; i<=end; i++) {
-				Data.GetFrame(i).StyleFlags[style] = StyleFlags[style];
+				Data.GetFrame(i).StyleFlags[index] = StyleFlags[index];
 			}
-			Data.ComputeStyles();
+			ApplyStyleKeyValues(index);
+		}
+
+		public void ApplyStyleKeyValues(int index) {
+			//Previous Frames
+			Frame previousKey = GetPreviousStyleKey(index);
+			previousKey = previousKey == null ? Data.GetFrame(1) : previousKey;
+			Frame pivot = Data.GetFrame(Mathf.Max(previousKey.Index, Data.GetFrame(Mathf.Max(Timestamp - Data.StyleTransition, previousKey.Timestamp)).Index));
+			if(pivot == this) {
+				StyleValues[index] = StyleFlags[index] ? 1f : 0f;
+			} else {
+				for(int i=previousKey.Index; i<=pivot.Index; i++) {
+					Data.GetFrame(i).StyleValues[index] = previousKey.StyleFlags[index] ? 1f : 0f;
+				}
+				float valA = pivot.StyleFlags[index] ? 1f : 0f;
+				float valB = this.StyleFlags[index] ? 1f : 0f;
+				for(int i=pivot.Index; i<=this.Index; i++) {
+					float weight = (float)(i-pivot.Index) / (float)(this.Index - pivot.Index);
+					Data.GetFrame(i).StyleValues[index] = (1f-weight) * valA + weight * valB;
+				}
+			}
+			//Next Frames
+			Frame nextKey = GetNextStyleKey(index);
+			nextKey = nextKey == null ? Data.GetFrame(Data.GetTotalFrames()) : nextKey;
+			for(int i=this.Index; i<=nextKey.Index; i++) {
+				Data.GetFrame(i).StyleValues[index] = StyleFlags[index] ? 1f : 0f;
+			}
+			previousKey = StyleFlags[index] ? this : previousKey;
+			pivot = Data.GetFrame(Mathf.Max(previousKey.Index, Data.GetFrame(Mathf.Max(nextKey.Timestamp - Data.StyleTransition, Timestamp)).Index));
+			if(pivot == nextKey) {
+				StyleValues[index] = StyleFlags[index] ? 1f : 0f;
+			} else {
+				float valA = pivot.StyleFlags[index] ? 1f : 0f;
+				float valB = nextKey.StyleFlags[index] ? 1f : 0f;
+				for(int i=pivot.Index; i<=nextKey.Index; i++) {
+					float weight = (float)(i-pivot.Index) / (float)(nextKey.Index - pivot.Index);
+					Data.GetFrame(i).StyleValues[index] = (1f-weight) * valA + weight * valB;
+				}
+			}
 		}
 
 		public Frame GetAnyNextStyleKey() {
@@ -504,37 +546,37 @@ public class MotionData : ScriptableObject {
 			return false;
 		}
 
-		public Frame GetNextStyleKey(int style) {
+		public Frame GetNextStyleKey(int index) {
 			Frame frame = this;
 			while(frame.Index < Data.GetTotalFrames()) {
 				frame = Data.GetFrame(frame.Index+1);
-				if(frame.IsStyleKey(style)) {
+				if(frame.IsStyleKey(index)) {
 					return frame;
 				}
 			}
 			return null;
 		}
 
-		public Frame GetPreviousStyleKey(int style) {
+		public Frame GetPreviousStyleKey(int index) {
 			Frame frame = this;
 			while(frame.Index > 1) {
 				frame = Data.GetFrame(frame.Index-1);
-				if(frame.IsStyleKey(style)) {
+				if(frame.IsStyleKey(index)) {
 					return frame;
 				}
 			}
 			return null;
 		}
 
-		public bool IsStyleKey(int style) {
+		public bool IsStyleKey(int index) {
 			Frame previous = this;
 			if(Index > 1) {
 				previous = Data.GetFrame(Index-1);
 			}
-			if(!StyleFlags[style] && previous.StyleFlags[style]) {
+			if(!StyleFlags[index] && previous.StyleFlags[index]) {
 				return true;
 			}
-			if(StyleFlags[style] && !previous.StyleFlags[style]) {
+			if(StyleFlags[index] && !previous.StyleFlags[index]) {
 				return true;
 			}
 			return false;

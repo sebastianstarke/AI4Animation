@@ -26,7 +26,6 @@ public class MotionEditor : MonoBehaviour {
 	private bool ShowMirrored = false;
 
 	private bool InspectFrame = true;
-	private bool InspectStyleFunction = true;
 	private bool InspectSettings = true;
 
 	private bool Spinning = false;
@@ -344,6 +343,7 @@ public class MotionEditor : MonoBehaviour {
 
 					if(InspectFrame) {
 						MotionData.Frame frame = GetCurrentFrame();
+
 						Color[] colors = UltiDraw.GetRainbowColors(Data.Styles.Length);
 						for(int i=0; i<Data.Styles.Length; i++) {
 							EditorGUILayout.BeginHorizontal();
@@ -355,20 +355,6 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUI.EndDisabledGroup();
 							EditorGUILayout.EndHorizontal();
 						}
-					}
-				}
-
-				Utility.SetGUIColor(UltiDraw.Grey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					
-					Utility.SetGUIColor(UltiDraw.Mustard);
-					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Utility.ResetGUIColor();
-						InspectStyleFunction = EditorGUILayout.Toggle("Style Function", InspectStyleFunction);
-					}
-
-					if(InspectStyleFunction) {
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
 							MotionData.Frame previous = GetCurrentFrame().GetAnyPreviousStyleKey();
@@ -379,8 +365,6 @@ public class MotionEditor : MonoBehaviour {
 						Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 						EditorGUI.DrawRect(rect, UltiDraw.Black);
 						UltiDraw.Begin();
-						MotionData.Frame frame = GetCurrentFrame();
-						Color[] colors = UltiDraw.GetRainbowColors(Data.Styles.Length);
 						for(int i=0; i<Data.Styles.Length; i++) {
 							for(int j=0; j<Data.GetTotalFrames()-1; j++) {
 								float xStart = rect.x + (float)j/(float)(Data.GetTotalFrames()-1) * rect.width;
@@ -394,7 +378,6 @@ public class MotionEditor : MonoBehaviour {
 						UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
 						UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y, 0f), 8f, UltiDraw.Green);
 						UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y + rect.height, 0f), 8f, UltiDraw.Green);
-
 						UltiDraw.End();
 						EditorGUILayout.EndVertical();
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
@@ -403,7 +386,7 @@ public class MotionEditor : MonoBehaviour {
 						}
 						EditorGUILayout.EndHorizontal();
 					}
-				}
+				}				
 
 				Utility.SetGUIColor(UltiDraw.Grey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -420,6 +403,7 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Data.UnitScale));
+							Data.SetStyleTransition(EditorGUILayout.FloatField("Style Transition", Data.StyleTransition));
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);
