@@ -510,6 +510,9 @@ public class MotionEditor : MonoBehaviour {
 								case 0:
 								break;
 								case 1:
+								for(int i=0; i<Data.Corrections.Length; i++) {
+									Data.SetCorrection(i, Vector3.zero);
+								}
 								break;
 								case 2:
 								for(int i=0; i<Data.Corrections.Length; i++) {
@@ -523,6 +526,9 @@ public class MotionEditor : MonoBehaviour {
 								}
 								break;
 								case 3:
+								for(int i=0; i<Data.Corrections.Length; i++) {
+									Data.SetCorrection(i, Vector3.zero);
+								}
 								break;
 							}
 							Data.MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Axis", Data.MirrorAxis);
