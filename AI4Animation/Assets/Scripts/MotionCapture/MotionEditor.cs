@@ -430,7 +430,8 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Data.UnitScale));
-							Data.SetStyleTransition(EditorGUILayout.FloatField("Style Transition", Data.StyleTransition));
+							Data.SetStyleTransition(EditorGUILayout.Slider("Style Transition", Data.StyleTransition, 0.1f, 1f));
+							Data.SetMotionSmoothing(EditorGUILayout.Slider("Motion Smoothing", Data.MotionSmoothing, 0f, 1f));
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -504,6 +505,26 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Mirroring");
+							string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
+							switch(EditorGUILayout.Popup(0, presets)) {
+								case 0:
+								break;
+								case 1:
+								break;
+								case 2:
+								for(int i=0; i<Data.Corrections.Length; i++) {
+									if(i==4 || i==5 || i==6 || i==11) {
+										Data.SetCorrection(i, new Vector3(90f, 90f, 90f));
+									} else if(i==24) {
+										Data.SetCorrection(i, new Vector3(-45f, 0f, 0f));
+									} else {
+										Data.SetCorrection(i, new Vector3(0f, 0f, 0f));
+									}
+								}
+								break;
+								case 3:
+								break;
+							}
 							Data.MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Axis", Data.MirrorAxis);
 							string[] names = new string[Data.Source.Bones.Length];
 							for(int i=0; i<Data.Source.Bones.Length; i++) {
@@ -514,7 +535,8 @@ public class MotionEditor : MonoBehaviour {
 								EditorGUI.BeginDisabledGroup(true);
 								EditorGUILayout.TextField(names[i]);
 								EditorGUI.EndDisabledGroup();
-								Data.Symmetry[i] = EditorGUILayout.Popup(Data.Symmetry[i], names);
+								Data.SetSymmetry(i, EditorGUILayout.Popup(Data.Symmetry[i], names));
+								Data.SetCorrection(i, EditorGUILayout.Vector3Field("", Data.Corrections[i]));
 								EditorGUILayout.EndHorizontal();
 							}
 						}

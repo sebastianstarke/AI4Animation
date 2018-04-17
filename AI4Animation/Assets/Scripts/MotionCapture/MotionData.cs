@@ -7,7 +7,7 @@ using UnityEditor;
 
 public class MotionData : ScriptableObject {
 
-	public enum Axis {X, Y, Z};
+	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative,ZNegative};
 
 	public BVHData Source;
 
@@ -16,13 +16,15 @@ public class MotionData : ScriptableObject {
 	public float UnitScale = 100f;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 1f;
-	public Axis MirrorAxis = Axis.X;
-	public int[] Symmetry;
-	public LayerMask GroundMask = 0;
-	public LayerMask ObjectMask = 0;
+	public float MotionSmoothing = 0f;
+	public Axis MirrorAxis = Axis.XPositive;
+	public int[] Symmetry = new int[0];
+	public Vector3[] Corrections = new Vector3[0];
+	public LayerMask GroundMask = -1;
+	public LayerMask ObjectMask = -1;
 	public int HeightMapSensor = 0;
 	public int DepthMapSensor = 0;
-	public Axis DepthMapAxis = Axis.Z;
+	public Axis DepthMapAxis = Axis.ZPositive;
 
 	public Frame[] Frames;
 
@@ -50,14 +52,41 @@ public class MotionData : ScriptableObject {
 		return GetFrame(Mathf.Min(Mathf.RoundToInt(time * Framerate) + 1, GetTotalFrames()));
 	}
 
+	public Frame[] GetFrames(int start, int end) {
+		if(start < 1 || end > GetTotalFrames()) {
+			Debug.Log("Please specify indices between 1 and " + GetTotalFrames() + ".");
+			return null;
+		}
+		int count = end-start+1;
+		Frame[] frames = new Frame[count];
+		for(int i=start; i<=end; i++) {
+			frames[i-start] = GetFrame(i);
+		}
+		return frames;
+	}
+
+	public Frame[] GetFrames(float start, float end) {
+		if(start < 0f || end > GetTotalTime()) {
+			Debug.Log("Please specify times between 0 and " + GetTotalTime() + ".");
+			return null;
+		}
+		return GetFrames(GetFrame(start).Index, GetFrame(end).Index);
+	}
+
 	public Vector3 GetAxis(Axis axis) {
 		switch(axis) {
-			case Axis.X:
+			case Axis.XPositive:
 			return Vector3.right;
-			case Axis.Y:
+			case Axis.YPositive:
 			return Vector3.up;
-			case Axis.Z:
+			case Axis.ZPositive:
 			return Vector3.forward;
+			case Axis.XNegative:
+			return -Vector3.right;
+			case Axis.YNegative:
+			return -Vector3.up;
+			case Axis.ZNegative:
+			return -Vector3.forward;
 			default:
 			return Vector3.zero;
 		}
@@ -71,10 +100,15 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void SetStyleTransition(float value) {
-		value = Mathf.Max(value, 0.1f);
 		if(StyleTransition != value) {
 			StyleTransition = value;
 			ComputeStyles();
+		}
+	}
+
+	public void SetMotionSmoothing(float value) {
+		if(MotionSmoothing != value) {
+			MotionSmoothing = value;
 		}
 	}
 
@@ -208,6 +242,7 @@ public class MotionData : ScriptableObject {
 		DetectHips();
 		DetectHead();
 		DetectSymmetry();
+		DetectCorrections();
 
 		//Create frames
 		for(int i=0; i<GetTotalFrames(); i++) {
@@ -271,6 +306,23 @@ public class MotionData : ScriptableObject {
 			} else {
 				Symmetry[i] = i;
 			}
+		}
+	}
+
+	public void DetectCorrections() {
+		Corrections = new Vector3[Source.Bones.Length];
+	}
+
+	public void SetSymmetry(int source, int target) {
+		if(Symmetry[source] != target) {
+			Symmetry[source] = target;
+		}
+	}
+
+	public void SetCorrection(int index, Vector3 correction) {
+		if(Corrections[index] != correction) {
+			Corrections[index] = correction;
+			ComputePostures();
 		}
 	}
 
@@ -395,10 +447,10 @@ public class MotionData : ScriptableObject {
 				Local[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
 				World[i] = info.Parent == "None" ? Local[i] : World[Data.Source.FindBone(info.Parent).Index] * Local[i];
 			}
-			//for(int i=0; i<Animation.Character.Hierarchy.Length; i++) {
-			//	Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Animation.Corrections[i]), Vector3.one);
-			//	World[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Animation.Corrections[i]), Vector3.one);
-			//}
+			for(int i=0; i<Data.Source.Bones.Length; i++) {
+				Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Data.Corrections[i]), Vector3.one);
+				World[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Data.Corrections[i]), Vector3.one);
+			}
 		}
 
 		public Matrix4x4[] GetBoneTransformations(bool mirrored) {
@@ -410,7 +462,30 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
-			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+			if(Data.MotionSmoothing == 0f) {
+				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+			} else {
+				Frame[] frames = Data.GetFrames(Mathf.Max(Timestamp - Data.MotionSmoothing, 0f), Mathf.Min(Timestamp + Data.MotionSmoothing, Data.GetTotalTime()));
+				Vector3 P = Vector3.zero;
+				Vector3 Z = Vector3.zero;
+				Vector3 Y = Vector3.zero;
+				float sum = 0f;
+				for(int i=0; i<frames.Length; i++) {
+					Frame frame = frames[i];
+					float weight = 2f * (float)(i+1) / (float)(frames.Length+1);
+					if(weight > 1f) {
+						weight = 2f - weight;
+					}
+					P += weight * (mirrored ? frame.World[Data.Symmetry[index]].GetPosition().GetMirror(Data.GetAxis(Data.MirrorAxis)) : frame.World[index].GetPosition());
+					Z += weight * (mirrored ? frame.World[Data.Symmetry[index]].GetForward().GetMirror(Data.GetAxis(Data.MirrorAxis)) : frame.World[index].GetForward());
+					Y += weight * (mirrored ? frame.World[Data.Symmetry[index]].GetUp().GetMirror(Data.GetAxis(Data.MirrorAxis)) : frame.World[index].GetUp());
+					sum += weight;
+				}
+				P /= sum;
+				Z /= sum;
+				Y /= sum;
+				return Matrix4x4.TRS(P, Quaternion.LookRotation(Z, Y), Vector3.one);
+			}
 		}
 
 		public Vector3[] GetBoneVelocities(bool mirrored) {
@@ -422,16 +497,43 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
-			if(Index == 1) {
-				return mirrored ? 
-				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
-				: 
-				(Data.GetFrame(Index+1).World[index].GetPosition() - World[index].GetPosition()) * Data.Framerate;
+			if((Data.MotionSmoothing == 0f)) {
+				if(Index == 1) {
+					return mirrored ? 
+					((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
+					: 
+					(Data.GetFrame(Index+1).World[index].GetPosition() - World[index].GetPosition()) * Data.Framerate;
+				} else {
+					return mirrored ? 
+					((World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
+					: 
+					(World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate;
+				}
 			} else {
-				return mirrored ? 
-				((Data.GetFrame(Index+1).World[Data.Symmetry[index]].GetPosition() - World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
-				: 
-				(World[index].GetPosition() - Data.GetFrame(Index-1).World[index].GetPosition()) * Data.Framerate;
+				Frame[] frames = Data.GetFrames(Mathf.Max(Timestamp - Data.MotionSmoothing, 0f), Mathf.Min(Timestamp + Data.MotionSmoothing, Data.GetTotalTime()));
+				Vector3 velocity = Vector3.zero;
+				float sum = 0f;
+				for(int i=0; i<frames.Length; i++) {
+					Frame frame = frames[i];
+					float weight = 2f * (float)(i+1) / (float)(frames.Length+1);
+					if(weight > 1f) {
+						weight = 2f - weight;
+					}
+					if(frame.Index == 1) {
+						velocity += weight * (mirrored ? 
+						((Data.GetFrame(frame.Index+1).World[Data.Symmetry[index]].GetPosition() - frame.World[Data.Symmetry[index]].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
+						: 
+						(Data.GetFrame(frame.Index+1).World[index].GetPosition() - frame.World[index].GetPosition()) * Data.Framerate);
+					} else {
+						velocity += weight * (mirrored ? 
+						((frame.World[index].GetPosition() - Data.GetFrame(frame.Index-1).World[index].GetPosition()) * Data.Framerate).GetMirror(Data.GetAxis(Data.MirrorAxis))
+						: 
+						(frame.World[index].GetPosition() - Data.GetFrame(frame.Index-1).World[index].GetPosition()) * Data.Framerate);
+					}
+					sum += weight;
+				}
+				velocity /= sum;
+				return velocity;
 			}
 		}
 

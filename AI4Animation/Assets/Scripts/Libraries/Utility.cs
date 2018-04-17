@@ -156,6 +156,10 @@ public static class Utility {
 	public static float LinSin3(float a, float f, float s, float o, float m, float t) {
 		return a * f * f * f * -Mathf.Cos(f * (t - s) * 2f * Mathf.PI);
 	}
+
+	public static float Gaussian(float mean, float std, float x) {
+		return 1f/(std*Mathf.Sqrt(2f*Mathf.PI)) * Mathf.Exp(-0.5f*(x*x)/(std*std));
+	}
 	
 	public static float Interpolate(float from, float to, float amount) {
 		amount = Mathf.Clamp(amount,0f,1f);
