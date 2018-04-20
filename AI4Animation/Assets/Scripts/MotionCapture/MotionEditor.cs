@@ -605,9 +605,9 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
    		 	EditorApplication.update -= Update;
-			//if(!Application.isPlaying) {
-			//	EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-			//}
+			if(!Application.isPlaying && Target != null) {
+				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			}
 		}
 
 		void Update() {

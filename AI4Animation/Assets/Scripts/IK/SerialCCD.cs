@@ -59,7 +59,6 @@ public class SerialCCD : MonoBehaviour {
 		for(int k=0; k<Iterations; k++) {
 			for(int i=0; i<Joints.Length; i++) {
 
-				/*
 				if(SolveRotation) {
 					Joints[i].rotation = Quaternion.Slerp(
 						Joints[i].rotation,
@@ -67,7 +66,6 @@ public class SerialCCD : MonoBehaviour {
 						(float)(i+1)/(float)Joints.Length
 					);
 				}
-				*/
 
 				if(SolvePosition) {
 					Joints[i].rotation = Quaternion.Slerp(
