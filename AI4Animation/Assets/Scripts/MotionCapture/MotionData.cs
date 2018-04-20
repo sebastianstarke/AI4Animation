@@ -250,7 +250,8 @@ public class MotionData : ScriptableObject {
 		}
 
 		//Generate
-		Generate();
+		ComputePostures();
+		ComputeStyles();
 	}
 
 	public void DetectHips() {
@@ -324,11 +325,6 @@ public class MotionData : ScriptableObject {
 			Corrections[index] = correction;
 			ComputePostures();
 		}
-	}
-
-	public void Generate() {
-		ComputePostures();
-		ComputeStyles();
 	}
 
 	public void ComputePostures() {

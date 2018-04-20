@@ -143,6 +143,7 @@
      <Compile Include="Assets\Scripts\Libraries\Vector3Extensions.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionData.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionExporter.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />
