@@ -89,24 +89,10 @@ public class MotionEditor : MonoBehaviour {
 		SceneView.RepaintAll();
 	}
 
-	void Play() {
-		if(!Playing) {
-			Timestamp = Utility.GetTimestamp();
-			Playing = true;
-		}
-	}
-
-	void Stop() {
-		if(Playing) {
-			Playing = false;
-		}
-	}
-
 	public void Draw() {
 		if(State == null) {
 			return;
 		}
-
 		if(ShowMotion) {
 			for(int i=0; i<6; i++) {
 				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(State.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
@@ -118,7 +104,6 @@ public class MotionEditor : MonoBehaviour {
 
 			}
 		}
-
 		if(ShowVelocities) {
 			UltiDraw.Begin();
 			for(int i=0; i<Actor.Bones.Length; i++) {
@@ -133,13 +118,10 @@ public class MotionEditor : MonoBehaviour {
 			}
 			UltiDraw.End();
 		}
-
 		if(ShowTrajectory) {
 			State.Trajectory.Draw();
 		}
-
 		State.HeightMap.Draw();
-
 		State.DepthMap.Draw();
 	}
 
@@ -150,6 +132,19 @@ public class MotionEditor : MonoBehaviour {
 	void OnDrawGizmos() {
 		if(!Application.isPlaying) {
 			OnRenderObject();
+		}
+	}
+
+	void Play() {
+		if(!Playing) {
+			Timestamp = Utility.GetTimestamp();
+			Playing = true;
+		}
+	}
+
+	void Stop() {
+		if(Playing) {
+			Playing = false;
 		}
 	}
 
@@ -277,6 +272,9 @@ public class MotionEditor : MonoBehaviour {
 		if(Data == null || State == null) {
 			return;
 		}
+
+		MotionData.Frame frame = Data.GetFrame(State.Index);
+
 		Utility.SetGUIColor(UltiDraw.Grey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -318,17 +316,16 @@ public class MotionEditor : MonoBehaviour {
 					}
 				}
 				if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
-					PlayTime = Data.GetFrame(Mathf.Clamp(State.Index-1, 1, Data.GetTotalFrames())).Timestamp;
+					PlayTime = Data.GetFrame(Mathf.Clamp(frame.Index-1, 1, Data.GetTotalFrames())).Timestamp;
 				}
 				if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
-					PlayTime = Data.GetFrame(Mathf.Clamp(State.Index+1, 1, Data.GetTotalFrames())).Timestamp;
+					PlayTime = Data.GetFrame(Mathf.Clamp(frame.Index+1, 1, Data.GetTotalFrames())).Timestamp;
 				}
-				int current = State.Index;
-				int index = EditorGUILayout.IntSlider(current, 1, Data.GetTotalFrames(), GUILayout.Width(440f));
-				if(index != current) {
+				int index = EditorGUILayout.IntSlider(frame.Index, 1, Data.GetTotalFrames(), GUILayout.Width(440f));
+				if(index != frame.Index) {
 					PlayTime = Data.GetFrame(index).Timestamp;
 				}
-				EditorGUILayout.LabelField(State.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
+				EditorGUILayout.LabelField(frame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
 				GUILayout.FlexibleSpace();
 				EditorGUILayout.EndHorizontal();
 
@@ -358,8 +355,6 @@ public class MotionEditor : MonoBehaviour {
 					}
 
 					if(InspectFrame) {
-						MotionData.Frame frame = Data.GetFrame(State.Index);
-
 						Color[] colors = UltiDraw.GetRainbowColors(Data.Styles.Length);
 						for(int i=0; i<Data.Styles.Length; i++) {
 							EditorGUILayout.BeginHorizontal();
@@ -610,9 +605,9 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
    		 	EditorApplication.update -= Update;
-			if(!Application.isPlaying) {
-				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-			}
+			//if(!Application.isPlaying) {
+			//	EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			//}
 		}
 
 		void Update() {
