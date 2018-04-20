@@ -55,8 +55,6 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation.cs" />
-     <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutineExtensions.cs" />
-     <Compile Include="Assets\Palette\EditorCoroutines\EditorCoroutines.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\MinAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\TrackballAttribute.cs" />
@@ -134,6 +132,7 @@
      <Compile Include="Assets\Scripts\IK\IK.cs" />
      <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
      <Compile Include="Assets\Scripts\Libraries\ArrayExtensions.cs" />
+     <Compile Include="Assets\Scripts\Libraries\EditorCoroutineExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Eigen.cs" />
      <Compile Include="Assets\Scripts\Libraries\LayerMaskExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix4x4Extensions.cs" />
@@ -146,6 +145,7 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionExporter.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Tools\EditorCoroutines.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />
      <Compile Include="Assets\Scripts\Tools\FreeCamera.cs" />
      <Compile Include="Assets\Scripts\Tools\Modify.cs" />

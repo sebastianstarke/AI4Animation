@@ -2,7 +2,6 @@
 using UnityEditor;
 using System.IO;
 using System.Collections;
-using EditorCoroutines;
 
 public class BVHProcessor : EditorWindow {
 
