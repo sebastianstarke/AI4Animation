@@ -172,65 +172,68 @@ public class MotionExporter : EditorWindow {
 						} else {
 							editor.Mirror = true;
 						}
-						sequence += 1;
-						float time = editor.Data.GetTotalTime();
-						for(float t=0f; t<=time; t+=1f/Framerate) {
-							string line = string.Empty;
-							editor.LoadFrame(t);
-							MotionEditor.FrameState state = editor.GetState();
+						for(int s=0; s<editor.Data.Sequences.Length; s++) {
+							sequence += 1;
+							float start = editor.Data.GetFrame(editor.Data.Sequences[s].Start).Timestamp;
+							float end = editor.Data.GetFrame(editor.Data.Sequences[s].End).Timestamp;
+							for(float t=start; t<=end; t+=1f/Framerate) {
+								string line = string.Empty;
+								editor.LoadFrame(t);
+								MotionEditor.FrameState state = editor.GetState();
 
-							line += sequence + Separator;
-							line += state.Index + Separator;
-							line += state.Timestamp + Separator;
+								line += sequence + Separator;
+								line += state.Index + Separator;
+								line += state.Timestamp + Separator;
 
-							//Bone data
-							for(int k=0; k<state.BoneTransformations.Length; k++) {
-								//Position
-								line += FormatVector3(state.BoneTransformations[k].GetPosition().GetRelativePositionTo(state.Root));
+								//Bone data
+								for(int k=0; k<state.BoneTransformations.Length; k++) {
+									//Position
+									line += FormatVector3(state.BoneTransformations[k].GetPosition().GetRelativePositionTo(state.Root));
 
-								//Rotation
-								line += FormatVector3(state.BoneTransformations[k].GetForward().GetRelativeDirectionTo(state.Root));
-								line += FormatVector3(state.BoneTransformations[k].GetUp().GetRelativeDirectionTo(state.Root));
+									//Rotation
+									line += FormatVector3(state.BoneTransformations[k].GetForward().GetRelativeDirectionTo(state.Root));
+									line += FormatVector3(state.BoneTransformations[k].GetUp().GetRelativeDirectionTo(state.Root));
 
-								//Bone Velocity
-								line += FormatVector3(state.BoneVelocities[k].GetRelativeDirectionTo(state.Root));
+									//Bone Velocity
+									line += FormatVector3(state.BoneVelocities[k].GetRelativeDirectionTo(state.Root));
+								}
+								
+								//Trajectory data
+								for(int k=0; k<12; k++) {
+									Vector3 position = state.Trajectory.Points[k].GetPosition().GetRelativePositionTo(state.Root);
+									Vector3 direction = state.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(state.Root);
+									Vector3 velocity = state.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(state.Root);
+									line += FormatValue(position.x);
+									line += FormatValue(position.z);
+									line += FormatValue(direction.x);
+									line += FormatValue(direction.z);
+									line += FormatValue(velocity.x);
+									line += FormatValue(velocity.z);
+									line += FormatArray(state.Trajectory.Points[k].Styles);
+								}
+
+								//Height map
+								for(int k=0; k<state.HeightMap.Points.Length; k++) {
+									float height = state.HeightMap.Points[k].y - state.HeightMap.Pivot.GetPosition().y;
+									line += FormatValue(height);
+								}
+
+								//Depth map
+								for(int k=0; k<state.DepthMap.Points.Length; k++) {
+									float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
+									line += FormatValue(distance);
+								}
+
+								//Root motion
+								line += FormatVector3(state.RootMotion);
+
+								//Finish
+								line = line.Remove(line.Length-1);
+								line = line.Replace(",",".");
+								file.WriteLine(line);
+
+								yield return new WaitForSeconds(0f);
 							}
-							
-							//Trajectory data
-							for(int k=0; k<12; k++) {
-								Vector3 position = state.Trajectory.Points[k].GetPosition().GetRelativePositionTo(state.Root);
-								Vector3 direction = state.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(state.Root);
-								Vector3 velocity = state.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(state.Root);
-								line += FormatValue(position.x);
-								line += FormatValue(position.z);
-								line += FormatValue(direction.x);
-								line += FormatValue(direction.z);
-								line += FormatValue(velocity.x);
-								line += FormatValue(velocity.z);
-								line += FormatArray(state.Trajectory.Points[k].Styles);
-							}
-
-							//Height map
-							for(int k=0; k<state.HeightMap.Points.Length; k++) {
-								float height = state.HeightMap.Points[k].y - state.HeightMap.Pivot.GetPosition().y;
-								line += FormatValue(height);
-							}
-
-							//Depth map
-							for(int k=0; k<state.DepthMap.Points.Length; k++) {
-								float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
-								line += FormatValue(distance);
-							}
-
-							//Root motion
-							line += FormatVector3(state.RootMotion);
-
-							//Finish
-							line = line.Remove(line.Length-1);
-							line = line.Replace(",",".");
-							file.WriteLine(line);
-
-							yield return new WaitForSeconds(0f);
 						}
 					}
                 }

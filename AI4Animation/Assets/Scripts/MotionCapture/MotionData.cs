@@ -24,6 +24,7 @@ public class MotionData : ScriptableObject {
 	public LayerMask ObjectMask = -1;
 	public int DepthMapSensor = 0;
 	public Axis DepthMapAxis = Axis.ZPositive;
+	public Sequence[] Sequences = new Sequence[0];
 
 	public Frame[] Frames;
 
@@ -144,6 +145,18 @@ public class MotionData : ScriptableObject {
 			ArrayExtensions.Clear(ref Frames[i].StyleFlags);
 			ArrayExtensions.Clear(ref Frames[i].StyleValues);
 		}
+	}
+
+	public void AddSequence(int start, int end) {
+		ArrayExtensions.Add(ref Sequences, new Sequence(this, start, end));
+	}
+
+	public void RemoveSequence() {
+		ArrayExtensions.Shrink(ref Sequences);
+	}
+
+	public void RemoveSequence(int index) {
+		ArrayExtensions.RemoveAt(ref Sequences, index);
 	}
 
 	public void Load(string path) {
@@ -378,6 +391,28 @@ public class MotionData : ScriptableObject {
 				Values = values;
 			}
 		}
+	}
+
+	[System.Serializable]
+	public class Sequence {
+		public MotionData Data;
+		public int Start;
+		public int End;
+
+		public Sequence(MotionData data, int start, int end) {
+			Data = data;
+			Start = start;
+			End = end;
+		}
+
+		public int GetLength() {
+			return End - Start + 1;
+		}
+		
+		public float GetDuration() {
+			return (float)GetLength() / Data.Framerate;
+		}
+
 	}
 
 	[System.Serializable]

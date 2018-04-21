@@ -54,6 +54,7 @@ public class MotionEditor : MonoBehaviour {
 		ShowTrajectory = false;
 		State = null;
 		CheckActor();
+		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
 	}
 
 	public void UnloadFile() {
@@ -67,6 +68,7 @@ public class MotionEditor : MonoBehaviour {
 		ShowTrajectory = false;
 		State = null;
 		CheckActor();
+		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
 	}
 
 	public void LoadFrame(float timestamp) {
@@ -415,6 +417,18 @@ public class MotionEditor : MonoBehaviour {
 						Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 						EditorGUI.DrawRect(rect, UltiDraw.Black);
 						UltiDraw.Begin();
+						//Sequences
+						for(int i=0; i<Target.Data.Sequences.Length; i++) {
+							float start = rect.x + (float)(Target.Data.Sequences[i].Start-1)/(float)(Target.Data.GetTotalFrames()-1) * rect.width;
+							float end = rect.x + (float)(Target.Data.Sequences[i].End-1)/(float)(Target.Data.GetTotalFrames()-1) * rect.width;
+							Vector3 a = new Vector3(start, rect.y, 0f);
+							Vector3 b = new Vector3(end, rect.y, 0f);
+							Vector3 c = new Vector3(start, rect.y+rect.height, 0f);
+							Vector3 d = new Vector3(end, rect.y+rect.height, 0f);
+							UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
+							UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
+						}
+						//Styles
 						for(int i=0; i<Target.Data.Styles.Length; i++) {
 							int x = 0;
 							for(int j=1; j<Target.Data.GetTotalFrames(); j++) {
@@ -462,7 +476,36 @@ public class MotionEditor : MonoBehaviour {
 							Target.Timestamp = next == null ? Target.Data.GetTotalTime() : next.Timestamp;
 						}
 						EditorGUILayout.EndHorizontal();
-					}		
+					}
+
+					Utility.SetGUIColor(UltiDraw.Grey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Sequences");
+						}
+
+						for(int i=0; i<Target.Data.Sequences.Length; i++) {
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+							using(new EditorGUILayout.VerticalScope ("Box")) {
+								Utility.ResetGUIColor();
+								Target.Data.Sequences[i].Start = EditorGUILayout.IntSlider("Start", Target.Data.Sequences[i].Start, 1, Target.Data.GetTotalFrames());
+								Target.Data.Sequences[i].End = EditorGUILayout.IntSlider("End", Target.Data.Sequences[i].End, 1, Target.Data.GetTotalFrames());
+							}
+						}
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Target.Data.AddSequence(1, Target.Data.GetTotalFrames());
+						}
+						if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Target.Data.RemoveSequence();
+						}
+						EditorGUILayout.EndHorizontal();
+
+					}
 
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
