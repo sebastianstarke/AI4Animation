@@ -541,6 +541,13 @@ public class MotionData : ScriptableObject {
 			return Matrix4x4.TRS(position, Quaternion.LookRotation(forward, Vector3.up), Vector3.one);
 		}
 
+		public Vector3 GetRootMotion(bool mirrored) {
+			Matrix4x4 currentRoot = GetRoot(mirrored);
+			Matrix4x4 previousRoot = Data.GetFrame(Mathf.Max(Index-1, 1)).GetRoot(mirrored);
+			Matrix4x4 offset = currentRoot.GetRelativeTransformationTo(previousRoot);
+			return new Vector3(offset.GetPosition().x, Vector3.SignedAngle(Vector3.forward, offset.GetForward(), Vector3.up), offset.GetPosition().z) * Data.Framerate;
+		}
+
 		public Trajectory GetTrajectory(bool mirrored) {
 			Trajectory trajectory = new Trajectory(12, 0);
 			for(int i=0; i<6; i++) {

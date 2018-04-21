@@ -34,6 +34,10 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	public FrameState GetState() {
+		return State;
+	}
+
 	public void LoadFile() {
 		if(!File.Exists(Path)) {
 			Debug.Log("File at path " + Path + " does not exist.");
@@ -207,6 +211,7 @@ public class MotionEditor : MonoBehaviour {
 		public int Index;
 		public float Timestamp;
 		public Matrix4x4 Root;
+		public Vector3 RootMotion;
 		public Matrix4x4[] BoneTransformations;
 		public Vector3[] BoneVelocities;
 		public Trajectory Trajectory;
@@ -216,6 +221,7 @@ public class MotionEditor : MonoBehaviour {
 			Index = frame.Index;
 			Timestamp = frame.Timestamp;
 			Root = frame.GetRoot(mirrored);
+			RootMotion = frame.GetRootMotion(mirrored);
 			BoneTransformations = frame.GetBoneTransformations(mirrored);
 			BoneVelocities = frame.GetBoneVelocities(mirrored);
 			Trajectory = frame.GetTrajectory(mirrored);
