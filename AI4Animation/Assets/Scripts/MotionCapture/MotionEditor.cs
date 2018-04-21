@@ -45,11 +45,27 @@ public class MotionEditor : MonoBehaviour {
 		}
 		Data = ScriptableObject.CreateInstance<MotionData>();
 		Data.Load(Path);
+		Timestamp = 0f;
+		StopAnimation();
+		Timescale = 1f;
+		Mirror = false;
+		ShowMotion = false;
+		ShowVelocities = false;
+		ShowTrajectory = false;
+		State = null;
 		CheckActor();
 	}
 
 	public void UnloadFile() {
 		Data = null;
+		Timestamp = 0f;
+		StopAnimation();
+		Timescale = 1f;
+		Mirror = false;
+		ShowMotion = false;
+		ShowVelocities = false;
+		ShowTrajectory = false;
+		State = null;
 		CheckActor();
 	}
 
@@ -528,7 +544,6 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {
 								names[i] = Target.Data.Source.Bones[i].Name;
 							}
-							Target.Data.HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.Data.HeightMapSensor, names);
 							Target.Data.DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.Data.DepthMapSensor, names);
 							Target.Data.DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Target.Data.DepthMapAxis);
 						}

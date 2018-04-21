@@ -7,7 +7,7 @@ public class DepthMap {
 
 	public int Resolution = 20;
 	public float Size = 0.5f;
-	public float Distance = 5f;
+	public float Distance = 2.5f;
 
 	public DepthMap() {
 

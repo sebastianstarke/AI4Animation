@@ -22,7 +22,6 @@ public class MotionData : ScriptableObject {
 	public Vector3[] Corrections = new Vector3[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
-	public int HeightMapSensor = 0;
 	public int DepthMapSensor = 0;
 	public Axis DepthMapAxis = Axis.ZPositive;
 
@@ -239,7 +238,6 @@ public class MotionData : ScriptableObject {
 		}
 
 		//Detect settings
-		DetectHips();
 		DetectHead();
 		DetectSymmetry();
 		DetectCorrections();
@@ -252,15 +250,6 @@ public class MotionData : ScriptableObject {
 		//Generate
 		ComputePostures();
 		ComputeStyles();
-	}
-
-	public void DetectHips() {
-		BVHData.Bone bone = Source.FindBone("Hips");
-		if(bone == null) {
-			Debug.Log("Could not find height map sensor.");
-		} else {
-			HeightMapSensor = bone.Index;
-		}
 	}
 
 	public void DetectHead() {
@@ -570,7 +559,7 @@ public class MotionData : ScriptableObject {
 
 		public HeightMap GetHeightMap(bool mirrored) {
 			HeightMap heightMap = new HeightMap();
-			heightMap.Sense(GetBoneTransformation(Data.HeightMapSensor, mirrored), Data.GroundMask);
+			heightMap.Sense(GetRoot(mirrored), Data.GroundMask);
 			return heightMap;
 		}
 

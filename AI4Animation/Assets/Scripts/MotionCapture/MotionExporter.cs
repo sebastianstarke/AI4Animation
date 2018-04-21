@@ -210,6 +210,18 @@ public class MotionExporter : EditorWindow {
 								line += FormatArray(state.Trajectory.Points[k].Styles);
 							}
 
+							//Height map
+							for(int k=0; k<state.HeightMap.Points.Length; k++) {
+								float height = state.HeightMap.Points[k].y - state.HeightMap.Pivot.GetPosition().y;
+								line += FormatValue(height);
+							}
+
+							//Depth map
+							for(int k=0; k<state.DepthMap.Points.Length; k++) {
+								float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
+								line += FormatValue(distance);
+							}
+
 							//Root motion
 							line += FormatVector3(state.RootMotion);
 
