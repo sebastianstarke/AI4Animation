@@ -2,12 +2,12 @@
 
 public class DepthMap {
 
-	Matrix4x4 Pivot = Matrix4x4.identity;
+	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	private const int Resolution = 20;
-	private const float Size = 0.5f;
-	private const float Distance = 2f;
+	public int Resolution = 20;
+	public float Size = 0.5f;
+	public float Distance = 5f;
 
 	public DepthMap() {
 
@@ -32,7 +32,7 @@ public class DepthMap {
 		}
 	}
 
-	private int GridToArray(int x, int y) {
+	public int GridToArray(int x, int y) {
 		return x + y*Resolution;
 	}
 

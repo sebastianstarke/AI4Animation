@@ -5,10 +5,10 @@ public class HeightMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	private const float Radius = 0.5f;
-	private const int Layer1 = 20;
-	private const int Layer2 = 40;
-	private const int Layer3 = 60;
+	public float Radius = 0.5f;
+	public int Layer1 = 20;
+	public int Layer2 = 40;
+	public int Layer3 = 60;
 
 	public HeightMap() {
 		
@@ -46,7 +46,7 @@ public class HeightMap {
 		UltiDraw.Begin();
 		UltiDraw.DrawTranslateGizmo(Pivot.GetPosition(), Pivot.GetRotation(), 0.1f);
 		for(int i=0; i<Points.Length; i++) {
-			UltiDraw.DrawLine(Pivot.GetPosition(), Points[i], UltiDraw.DarkGreen.Transparent(0.1f));
+			UltiDraw.DrawLine(new Vector3(Points[i].x, Pivot.GetPosition().y, Points[i].z), Points[i], UltiDraw.DarkGreen.Transparent(0.1f));
 			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
 		}
 		UltiDraw.End();

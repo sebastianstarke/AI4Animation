@@ -547,13 +547,16 @@ public class MotionData : ScriptableObject {
 				Frame previous = Data.GetFrame(Mathf.Clamp(Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
 				trajectory.Points[i].SetTransformation(previous.GetRoot(mirrored));
 				trajectory.Points[i].SetVelocity(previous.GetBoneVelocity(0, mirrored));
+				trajectory.Points[i].Styles = (float[])previous.StyleValues.Clone();
 			}
 			trajectory.Points[6].SetTransformation(GetRoot(mirrored));
 			trajectory.Points[6].SetVelocity(GetBoneVelocity(0, mirrored));
+			trajectory.Points[6].Styles = (float[])StyleValues.Clone();
 			for(int i=1; i<=5; i++) {
 				Frame future = Data.GetFrame(Mathf.Clamp(Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				trajectory.Points[6+i].SetTransformation(future.GetRoot(mirrored));
 				trajectory.Points[6+i].SetVelocity(future.GetBoneVelocity(0, mirrored));
+				trajectory.Points[6+i].Styles = (float[])future.StyleValues.Clone();
 			}
 			return trajectory;
 		}

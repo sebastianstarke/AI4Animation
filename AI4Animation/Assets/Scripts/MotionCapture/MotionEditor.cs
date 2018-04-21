@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditorInternal;
 
+[ExecuteInEditMode]
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
@@ -29,60 +30,27 @@ public class MotionEditor : MonoBehaviour {
 	public void SetActor(Actor actor) {
 		if(Actor != actor) {
 			Actor = actor;
-			CheckSkeleton();
+			CheckActor();
 		}
 	}
 
-	public void Draw() {
-		if(State == null) {
+	public void LoadFile() {
+		if(!File.Exists(Path)) {
+			Debug.Log("File at path " + Path + " does not exist.");
 			return;
 		}
-		
-		if(ShowMotion) {
-			for(int i=0; i<6; i++) {
-				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(State.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
-				Actor.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(Mirror));
-			}
-			for(int i=1; i<=5; i++) {
-				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(State.Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
-				Actor.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
-
-			}
-		}
-		if(ShowVelocities) {
-			UltiDraw.Begin();
-			for(int i=0; i<Actor.Bones.Length; i++) {
-				UltiDraw.DrawArrow(
-					Actor.Bones[i].Transform.position,
-					Actor.Bones[i].Transform.position + State.BoneVelocities[i],
-					0.75f,
-					0.0075f,
-					0.05f,
-					UltiDraw.Purple.Transparent(0.5f)
-				);
-			}
-			UltiDraw.End();
-		}
-		if(ShowTrajectory) {
-			State.Trajectory.Draw();
-		}
-		
-		State.HeightMap.Draw();
-		State.DepthMap.Draw();
+		Data = ScriptableObject.CreateInstance<MotionData>();
+		Data.Load(Path);
+		CheckActor();
 	}
 
-	void OnRenderObject() {
-		Draw();
-	}
-
-	void OnDrawGizmos() {
-		if(!Application.isPlaying) {
-			OnRenderObject();
-		}
+	public void UnloadFile() {
+		Data = null;
+		CheckActor();
 	}
 
 	public void LoadFrame(float timestamp) {
-		CheckSkeleton();
+		CheckActor();
 		Timestamp = timestamp;
 		State = new FrameState(Data.GetFrame(Timestamp), Mirror);
 		Actor.GetRoot().position = State.Root.GetPosition();
@@ -134,22 +102,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	public void LoadFile() {
-		if(!File.Exists(Path)) {
-			Debug.Log("File at path " + Path + " does not exist.");
-			return;
-		}
-		Data = ScriptableObject.CreateInstance<MotionData>();
-		Data.Load(Path);
-		CheckSkeleton();
-	}
-
-	public void UnloadFile() {
-		Data = null;
-		CheckSkeleton();
-	}
-
-	public void CheckSkeleton() {
+	public void CheckActor() {
 		if(Data == null) {
 			if(Actor != null) {
 				if(Actor.transform.parent == transform) {
@@ -189,6 +142,67 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	public void Draw() {
+		if(State == null) {
+			return;
+		}
+		
+		if(ShowMotion) {
+			for(int i=0; i<6; i++) {
+				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(State.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
+				Actor.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(Mirror));
+			}
+			for(int i=1; i<=5; i++) {
+				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(State.Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
+				Actor.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
+
+			}
+		}
+		if(ShowVelocities) {
+			UltiDraw.Begin();
+			for(int i=0; i<Actor.Bones.Length; i++) {
+				UltiDraw.DrawArrow(
+					Actor.Bones[i].Transform.position,
+					Actor.Bones[i].Transform.position + State.BoneVelocities[i],
+					0.75f,
+					0.0075f,
+					0.05f,
+					UltiDraw.Purple.Transparent(0.5f)
+				);
+			}
+			UltiDraw.End();
+		}
+		if(ShowTrajectory) {
+			State.Trajectory.Draw();
+		}
+		
+		State.HeightMap.Draw();
+		State.DepthMap.Draw();
+		
+		/*
+		UltiDraw.Begin();
+		Vector2 position = new Vector2(0.5f, 0.5f);
+		Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
+		for(int x=0; x<State.DepthMap.Resolution; x++) {
+			for(int y=0; y<State.DepthMap.Resolution; y++) {
+				float weight = Vector3.Distance(State.DepthMap.Points[State.DepthMap.GridToArray(x,y)], State.DepthMap.Pivot.GetPosition()) / State.DepthMap.Distance;
+				UltiDraw.DrawGUIRectangle(position - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / State.DepthMap.Resolution, size/State.DepthMap.Resolution, Color.Lerp(Color.white, Color.black, weight));
+			}
+		}
+		UltiDraw.End();
+		*/
+	}
+
+	void OnRenderObject() {
+		Draw();
+	}
+
+	void OnDrawGizmos() {
+		if(!Application.isPlaying) {
+			OnRenderObject();
+		}
+	}
+
 	public class FrameState {
 		public int Index;
 		public float Timestamp;
@@ -217,25 +231,17 @@ public class MotionEditor : MonoBehaviour {
 
 		void Awake() {
 			Target = (MotionEditor)target;
-			EditorApplication.update += Update;
 		}
 
 		void OnDestroy() {
-   		 	EditorApplication.update -= Update;
 			if(!Application.isPlaying && Target != null) {
 				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 			}
 		}
 
-		void Update() {
-			Repaint();
-		}
-
 		public override void OnInspectorGUI() {
 			Undo.RecordObject(Target, Target.name);
-
 			Inspector();
-
 			if(GUI.changed) {
 				EditorUtility.SetDirty(Target);
 			}
@@ -298,7 +304,7 @@ public class MotionEditor : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
 						EditorGUILayout.LabelField("Name: " + Target.Data.Name);
-						Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true);
+						Target.SetActor((Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true));
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -487,7 +493,7 @@ public class MotionEditor : MonoBehaviour {
 								Target.Data.AddStyle("Jump");
 								Target.Data.AddStyle("Crouch");
 								Target.Data.AddStyle("Sit");
-								Target.Data.AddStyle("OpenDoor");
+								Target.Data.AddStyle("Open Door");
 								Target.Data.AddStyle("PickUp");
 								break;
 							}
