@@ -22,8 +22,12 @@ public class MotionData : ScriptableObject {
 	public Vector3[] Corrections = new Vector3[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
+	public float HeightMapRadius = 0.5f;
 	public int DepthMapSensor = 0;
 	public Axis DepthMapAxis = Axis.ZPositive;
+	public int DepthMapResolution = 20;
+	public float DepthMapSize = 10f;
+	public float DepthMapDistance = 10f;
 	public Sequence[] Sequences = new Sequence[0];
 
 	public Frame[] Frames;
@@ -593,13 +597,13 @@ public class MotionData : ScriptableObject {
 		}
 
 		public HeightMap GetHeightMap(bool mirrored) {
-			HeightMap heightMap = new HeightMap();
+			HeightMap heightMap = new HeightMap(Data.HeightMapRadius);
 			heightMap.Sense(GetRoot(mirrored), Data.GroundMask);
 			return heightMap;
 		}
 
 		public DepthMap GetDepthMap(bool mirrored) {
-			DepthMap depthMap = new DepthMap();
+			DepthMap depthMap = new DepthMap(Data.DepthMapResolution, Data.DepthMapSize, Data.DepthMapDistance);
 			Matrix4x4 pivot = GetBoneTransformation(Data.DepthMapSensor, mirrored);
 			pivot *= Matrix4x4.TRS(Vector3.zero, Quaternion.FromToRotation(Vector3.forward, Data.GetAxis(Data.DepthMapAxis)), Vector3.one);
 			depthMap.Sense(pivot, Data.ObjectMask);

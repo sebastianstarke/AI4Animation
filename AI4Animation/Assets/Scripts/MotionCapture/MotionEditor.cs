@@ -14,6 +14,7 @@ public class MotionEditor : MonoBehaviour {
 	public string Path = string.Empty;
 
 	public Actor Actor;
+	public Transform Scene;
 	
 	public MotionData Data = null;
 
@@ -29,7 +30,7 @@ public class MotionEditor : MonoBehaviour {
 
 	public bool ShowMotion = false;
 	public bool ShowVelocities = false;
-	public bool ShowTrajectory = false;
+	public bool ShowTrajectory = true;
 	public bool ShowHeightMap = false;
 	public bool ShowDepthMap = false;
 	public bool ShowDepthImage = false;
@@ -41,6 +42,10 @@ public class MotionEditor : MonoBehaviour {
 			Actor = actor;
 			CheckActor();
 		}
+	}
+
+	public void SetScene(Transform scene) {
+		Scene = scene;
 	}
 
 	public FrameState GetState() {
@@ -82,6 +87,7 @@ public class MotionEditor : MonoBehaviour {
 
 	public void LoadFrame(float timestamp) {
 		CheckActor();
+		CheckScene();
 		Timestamp = timestamp;
 		State = new FrameState(Data.GetFrame(Timestamp), Mirror);
 		Actor.GetRoot().position = State.Root.GetPosition();
@@ -173,6 +179,17 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	public void CheckScene() {
+		if(Scene == null) {
+			return;
+		}
+		if(Mirror) {
+			Scene.localScale = Vector3.one.GetMirror(Data.GetAxis(Data.MirrorAxis));
+		} else {
+			Scene.localScale = Vector3.one;
+		}
+	}
+
 	public void Draw() {
 		if(State == null) {
 			return;
@@ -217,14 +234,15 @@ public class MotionEditor : MonoBehaviour {
 		
 		if(ShowDepthImage) {
 			UltiDraw.Begin();
-			Vector2 position = new Vector2(0f, 0f);
+			Vector2 position = new Vector2(0.5f, 0.5f);
 			Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
-			for(int x=0; x<State.DepthMap.Resolution; x++) {
-				for(int y=0; y<State.DepthMap.Resolution; y++) {
+			UltiDraw.DrawGUIRectangle(position, Vector2.one, UltiDraw.Brown);
+			for(int x=0; x<State.DepthMap.GetResolution(); x++) {
+				for(int y=0; y<State.DepthMap.GetResolution(); y++) {
 					float distance = Vector3.Distance(State.DepthMap.Points[State.DepthMap.GridToArray(x,y)], State.DepthMap.Pivot.GetPosition());
-					float intensity = 1f - distance / State.DepthMap.Distance;
+					float intensity = 1f - distance / State.DepthMap.GetDistance();
 					//intensity = Utility.TanH(intensity);
-					UltiDraw.DrawGUIRectangle(position + new Vector2((float)x*size.x, (float)y*size.y) / State.DepthMap.Resolution, size/State.DepthMap.Resolution, Color.Lerp(Color.black, Color.white, intensity));
+					UltiDraw.DrawGUIRectangle(position - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / (State.DepthMap.GetResolution()-1), size / (State.DepthMap.GetResolution()-1), Color.Lerp(Color.black, Color.white, intensity));
 				}
 			}
 			UltiDraw.End();
@@ -345,6 +363,7 @@ public class MotionEditor : MonoBehaviour {
 						Utility.ResetGUIColor();
 						EditorGUILayout.LabelField("Name: " + Target.Data.Name);
 						Target.SetActor((Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true));
+						Target.SetScene((Transform)EditorGUILayout.ObjectField("Scene", Target.Scene, typeof(Transform), true));
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -612,8 +631,12 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {
 								names[i] = Target.Data.Source.Bones[i].Name;
 							}
+							Target.Data.HeightMapRadius = EditorGUILayout.FloatField("Height Map Radius", Target.Data.HeightMapRadius);
 							Target.Data.DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.Data.DepthMapSensor, names);
 							Target.Data.DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Target.Data.DepthMapAxis);
+							Target.Data.DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.Data.DepthMapResolution);
+							Target.Data.DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.Data.DepthMapSize);
+							Target.Data.DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.Data.DepthMapDistance);
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);

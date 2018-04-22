@@ -5,13 +5,17 @@ public class HeightMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	public float Radius = 0.5f;
-	public int Layer1 = 20;
-	public int Layer2 = 40;
-	public int Layer3 = 60;
+	private float Radius;
+	private const int Layer1 = 20;
+	private const int Layer2 = 40;
+	private const int Layer3 = 60;
 
-	public HeightMap() {
-		
+	public HeightMap(float radius) {
+		Radius = radius;
+	}
+
+	public float GetRadius() {
+		return Radius;
 	}
 
 	public void Sense(Matrix4x4 pivot, LayerMask mask) {

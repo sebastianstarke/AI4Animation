@@ -5,12 +5,26 @@ public class DepthMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	public int Resolution = 25;
-	public float Size = 10f;
-	public float Distance = 10f;
+	private int Resolution;
+	private float Size;
+	private float Distance;
 
-	public DepthMap() {
+	public DepthMap(int resolution, float size, float distance) {
+		Resolution = resolution;
+		Size = size;
+		Distance = distance;
+	}
 
+	public int GetResolution() {
+		return Resolution;
+	}
+
+	public float GetSize() {
+		return Size;
+	}
+
+	public float GetDistance() {
+		return Distance;
 	}
 
 	public void Sense(Matrix4x4 pivot, LayerMask mask) {
