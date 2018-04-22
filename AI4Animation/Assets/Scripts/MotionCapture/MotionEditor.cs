@@ -19,9 +19,10 @@ public class MotionEditor : MonoBehaviour {
 	public MotionData Data = null;
 
 	public bool AutoFocus = true;
+	public float FocusHeight = 1f;
 	public float FocusDistance = 2.5f;
-	public float FocusAngle = 180f;
-	public float FocusSmoothing = 0.5f;
+	public float FocusAngle = 270f;
+	public float FocusSmoothing = 0f;
 
 	public float Timestamp = 0f;
 	public bool Playing = false;
@@ -31,7 +32,7 @@ public class MotionEditor : MonoBehaviour {
 	public bool ShowMotion = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = true;
-	public bool ShowHeightMap = false;
+	public bool ShowSphereMap = false;
 	public bool ShowDepthMap = false;
 	public bool ShowDepthImage = false;
 
@@ -46,6 +47,19 @@ public class MotionEditor : MonoBehaviour {
 
 	public void SetScene(Transform scene) {
 		Scene = scene;
+	}
+
+	public void SetAutoFocus(bool value) {
+		if(Data == null) {
+			return;
+		}
+		if(AutoFocus != value) {
+			AutoFocus = value;
+			if(!AutoFocus) {
+				Quaternion rotation = Quaternion.Euler(0f, Mathf.Repeat(FocusAngle + 180f, 360f), 0f);
+				SceneView.lastActiveSceneView.LookAtDirect(State.Root.GetPosition(), rotation, FocusDistance);
+			}
+		}
 	}
 
 	public FrameState GetState() {
@@ -195,6 +209,18 @@ public class MotionEditor : MonoBehaviour {
 			return;
 		}
 		
+		if(AutoFocus) {
+			Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
+			Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+			Vector3 position = State.Root.GetPosition();
+			position.y += FocusHeight;
+			Quaternion rotation = State.Root.GetRotation();
+			rotation.x = 0f;
+			rotation.z = 0f;
+			rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+			SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
+		}
+
 		if(ShowMotion) {
 			for(int i=0; i<6; i++) {
 				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(State.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
@@ -224,8 +250,8 @@ public class MotionEditor : MonoBehaviour {
 			State.Trajectory.Draw();
 		}
 		
-		if(ShowHeightMap) {
-			State.HeightMap.Draw();
+		if(ShowSphereMap) {
+			State.SphereMap.Draw();
 		}
 
 		if(ShowDepthMap) {
@@ -267,7 +293,7 @@ public class MotionEditor : MonoBehaviour {
 		public Matrix4x4[] BoneTransformations;
 		public Vector3[] BoneVelocities;
 		public Trajectory Trajectory;
-		public HeightMap HeightMap;
+		public SphereMap SphereMap;
 		public DepthMap DepthMap;
 		public FrameState(MotionData.Frame frame, bool mirrored) {
 			Index = frame.Index;
@@ -277,7 +303,7 @@ public class MotionEditor : MonoBehaviour {
 			BoneTransformations = frame.GetBoneTransformations(mirrored);
 			BoneVelocities = frame.GetBoneVelocities(mirrored);
 			Trajectory = frame.GetTrajectory(mirrored);
-			HeightMap = frame.GetHeightMap(mirrored);
+			SphereMap = frame.GetSphereMap(mirrored);
 			DepthMap = frame.GetDepthMap(mirrored);
 		}
 	}
@@ -293,6 +319,10 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
 			if(!Application.isPlaying && Target != null) {
+				EditorUtility.SetDirty(Target);
+				if(Target.Data != null) {
+					EditorUtility.SetDirty(Target.Data);
+				}
 				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 			}
 		}
@@ -364,6 +394,11 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.LabelField("Name: " + Target.Data.Name);
 						Target.SetActor((Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true));
 						Target.SetScene((Transform)EditorGUILayout.ObjectField("Scene", Target.Scene, typeof(Transform), true));
+						Target.SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", Target.AutoFocus));
+						Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+						Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+						Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+						Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -419,8 +454,8 @@ public class MotionEditor : MonoBehaviour {
 					if(Utility.GUIButton("Velocities", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowVelocities = !Target.ShowVelocities;
 					}
-					if(Utility.GUIButton("Height Map", Target.ShowHeightMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						Target.ShowHeightMap = !Target.ShowHeightMap;
+					if(Utility.GUIButton("Sphere Map", Target.ShowSphereMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowSphereMap = !Target.ShowSphereMap;
 					}
 					if(Utility.GUIButton("Depth Map", Target.ShowDepthMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowDepthMap = !Target.ShowDepthMap;
@@ -603,7 +638,7 @@ public class MotionEditor : MonoBehaviour {
 								Target.Data.AddStyle("Crouch");
 								Target.Data.AddStyle("Sit");
 								Target.Data.AddStyle("Open Door");
-								Target.Data.AddStyle("PickUp");
+								Target.Data.AddStyle("Pick Up");
 								break;
 							}
 							for(int i=0; i<Target.Data.Styles.Length; i++) {
@@ -631,7 +666,8 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {
 								names[i] = Target.Data.Source.Bones[i].Name;
 							}
-							Target.Data.HeightMapRadius = EditorGUILayout.FloatField("Height Map Radius", Target.Data.HeightMapRadius);
+							Target.Data.SphereMapSensor = EditorGUILayout.Popup("Sphere Map Sensor", Target.Data.SphereMapSensor, names);
+							Target.Data.SphereMapRadius = EditorGUILayout.FloatField("Sphere Map Radius", Target.Data.SphereMapRadius);
 							Target.Data.DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.Data.DepthMapSensor, names);
 							Target.Data.DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Target.Data.DepthMapAxis);
 							Target.Data.DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.Data.DepthMapResolution);

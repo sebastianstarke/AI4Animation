@@ -214,9 +214,9 @@ public class MotionExporter : EditorWindow {
 								}
 
 								//Height map
-								for(int k=0; k<state.HeightMap.Points.Length; k++) {
-									float height = state.HeightMap.Points[k].y - state.HeightMap.Pivot.GetPosition().y;
-									line += FormatValue(height);
+								for(int k=0; k<state.SphereMap.Points.Length; k++) {
+									float distance = Vector3.Distance(state.SphereMap.Points[k], state.SphereMap.Pivot.GetPosition());
+									line += FormatValue(distance);
 								}
 
 								//Depth map
