@@ -104,7 +104,9 @@ public class TrajectoryController : MonoBehaviour {
 	public void SetVisualise(bool value) {
 		if(Visualise != value) {
 			Visualise = value;
+			#if UNITY_EDITOR
 			SceneView.RepaintAll();
+			#endif
 		}
 	}
 
@@ -147,6 +149,11 @@ public class TrajectoryController : MonoBehaviour {
 			return;
 		}
 
+		for(int i=0; i<ControlPoints.Length; i++) {
+			ControlPoints[i].Transform.SetSiblingIndex(i);
+			ControlPoints[i].Transform.name = "Control Point " + (i+1);
+		}
+
 		if(Loop) {
 			Trajectory = new Trajectory(ControlPoints.Length * Density, 0);
 			int index = 0;
@@ -178,7 +185,7 @@ public class TrajectoryController : MonoBehaviour {
 					Vector3 current = GetCatmullRomVector(t, p0, p1, p2, p3);
 					Vector3 previous = GetCatmullRomVector(t - 1f/(float)Density, p0, p1, p2, p3);
 					Trajectory.Points[index].SetPosition(current);
-					Trajectory.Points[index].SetDirection((current-previous).normalized);
+					Trajectory.Points[index].SetDirection(Quaternion.Euler(0f, Random.Range(-10f, 10f), 0f) * (current-previous).normalized);
 					Trajectory.Points[index].SetVelocity(60f*(current-previous));
 					if(pos == 0) {
 						Trajectory.Points[index].SetVelocity(t * Trajectory.Points[index].GetVelocity());
@@ -197,9 +204,11 @@ public class TrajectoryController : MonoBehaviour {
 
 		Trajectory.Postprocess();
 
+		#if UNITY_EDITOR
 		if(!Application.isPlaying) {
 			SceneView.RepaintAll();
 		}
+		#endif
 	}
 
 	private int GetControlPoint(int i) {

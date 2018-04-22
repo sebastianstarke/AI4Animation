@@ -14,7 +14,13 @@ public class MotionEditor : MonoBehaviour {
 	public string Path = string.Empty;
 
 	public Actor Actor;
+	
 	public MotionData Data = null;
+
+	public bool AutoFocus = true;
+	public float FocusDistance = 2.5f;
+	public float FocusAngle = 180f;
+	public float FocusSmoothing = 0.5f;
 
 	public float Timestamp = 0f;
 	public bool Playing = false;
@@ -24,6 +30,9 @@ public class MotionEditor : MonoBehaviour {
 	public bool ShowMotion = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
+	public bool ShowHeightMap = false;
+	public bool ShowDepthMap = false;
+	public bool ShowDepthImage = false;
 
 	private FrameState State;
 
@@ -198,21 +207,28 @@ public class MotionEditor : MonoBehaviour {
 			State.Trajectory.Draw();
 		}
 		
-		State.HeightMap.Draw();
-		State.DepthMap.Draw();
-		
-		/*
-		UltiDraw.Begin();
-		Vector2 position = new Vector2(0.5f, 0.5f);
-		Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
-		for(int x=0; x<State.DepthMap.Resolution; x++) {
-			for(int y=0; y<State.DepthMap.Resolution; y++) {
-				float weight = Vector3.Distance(State.DepthMap.Points[State.DepthMap.GridToArray(x,y)], State.DepthMap.Pivot.GetPosition()) / State.DepthMap.Distance;
-				UltiDraw.DrawGUIRectangle(position - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / State.DepthMap.Resolution, size/State.DepthMap.Resolution, Color.Lerp(Color.white, Color.black, weight));
-			}
+		if(ShowHeightMap) {
+			State.HeightMap.Draw();
 		}
-		UltiDraw.End();
-		*/
+
+		if(ShowDepthMap) {
+			State.DepthMap.Draw();
+		}
+		
+		if(ShowDepthImage) {
+			UltiDraw.Begin();
+			Vector2 position = new Vector2(0f, 0f);
+			Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
+			for(int x=0; x<State.DepthMap.Resolution; x++) {
+				for(int y=0; y<State.DepthMap.Resolution; y++) {
+					float distance = Vector3.Distance(State.DepthMap.Points[State.DepthMap.GridToArray(x,y)], State.DepthMap.Pivot.GetPosition());
+					float intensity = 1f - distance / State.DepthMap.Distance;
+					//intensity = Utility.TanH(intensity);
+					UltiDraw.DrawGUIRectangle(position + new Vector2((float)x*size.x, (float)y*size.y) / State.DepthMap.Resolution, size/State.DepthMap.Resolution, Color.Lerp(Color.black, Color.white, intensity));
+				}
+			}
+			UltiDraw.End();
+		}
 	}
 
 	void OnRenderObject() {
@@ -383,6 +399,15 @@ public class MotionEditor : MonoBehaviour {
 					}
 					if(Utility.GUIButton("Velocities", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowVelocities = !Target.ShowVelocities;
+					}
+					if(Utility.GUIButton("Height Map", Target.ShowHeightMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowHeightMap = !Target.ShowHeightMap;
+					}
+					if(Utility.GUIButton("Depth Map", Target.ShowDepthMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowDepthMap = !Target.ShowDepthMap;
+					}
+					if(Utility.GUIButton("Depth Image", Target.ShowDepthImage ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowDepthImage = !Target.ShowDepthImage;
 					}
 					EditorGUILayout.EndHorizontal();
 

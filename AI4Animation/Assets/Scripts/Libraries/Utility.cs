@@ -161,6 +161,16 @@ public static class Utility {
 		return 1f/(std*Mathf.Sqrt(2f*Mathf.PI)) * Mathf.Exp(-0.5f*(x*x)/(std*std));
 	}
 	
+	public static float Sigmoid(float x) {
+		return 1f / (1f + Mathf.Exp(-x));
+	}
+
+	public static float TanH(float x) {
+		float positive = Mathf.Exp(x);
+		float negative = Mathf.Exp(-x);
+		return (positive-negative) / (positive+negative);
+	}
+
 	public static float Interpolate(float from, float to, float amount) {
 		amount = Mathf.Clamp(amount,0f,1f);
 		return (1f-amount)*from + amount*to;

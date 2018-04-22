@@ -5,9 +5,9 @@ public class DepthMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	public int Resolution = 20;
-	public float Size = 0.5f;
-	public float Distance = 2.5f;
+	public int Resolution = 25;
+	public float Size = 10f;
+	public float Distance = 10f;
 
 	public DepthMap() {
 

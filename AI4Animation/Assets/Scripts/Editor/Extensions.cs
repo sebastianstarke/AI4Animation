@@ -1,12 +1,22 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using System.IO;
 
 public class Extensions {
 
-	[MenuItem("Assets/Create/Motion Capture")]
-	private static void CreateMotionCapture() {
-		string source = Application.dataPath + "/Project/MotionCapture/Setup.unity";
+	[MenuItem("Assets/Create/Motion Capture Biped")]
+	private static void CreateMotionCaptureBiped() {
+		CreateMotionCapture("Biped");
+	}
+
+	[MenuItem("Assets/Create/Motion Capture Quadruped")]
+	private static void CreateMotionCaptureQuadruped() {
+		CreateMotionCapture("Quadruped");
+	}
+
+	private static void CreateMotionCapture(string name) {
+		string source = Application.dataPath + "/Project/MotionCapture/"+name+".unity";
 		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/MotionCapture.unity";
 		int index = 0;
 		while(File.Exists(destination)) {
