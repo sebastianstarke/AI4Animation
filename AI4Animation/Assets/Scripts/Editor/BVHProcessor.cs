@@ -72,20 +72,12 @@ public class BVHProcessor : EditorWindow {
 				
                 if(Utility.GUIButton("Update Data", UltiDraw.DarkRed, UltiDraw.White)) {
                     for(int i=0; i<Animations.Length; i++) {
-						//BVHAnimation animation = Animations[i];
-						/*
-						for(int f=0; f<animation.GetTotalFrames(); f++) {
-							if(animation.StyleFunction.Styles[2].Flags[f]) {
-								animation.StyleFunction.Styles[0].Flags[f] = false;
-								animation.StyleFunction.Styles[1].Flags[f] = false;
-								animation.StyleFunction.Styles[3].Flags[f] = false;
-								animation.StyleFunction.Styles[4].Flags[f] = false;
-								animation.StyleFunction.Styles[5].Flags[f] = false;
-							}
+						BVHAnimation animation = Animations[i];
+						animation.StyleFunction.SetTransition(0.5f);
+						for(int j=0; j<animation.Sequences.Length; j++) {
+							animation.Sequences[j].Export = 1;
 						}
-						animation.StyleFunction.Recompute();
-						*/
-                       	//EditorUtility.SetDirty(Animations[i]);
+                       	EditorUtility.SetDirty(Animations[i]);
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

@@ -22,8 +22,8 @@ public class MotionData : ScriptableObject {
 	public Vector3[] Corrections = new Vector3[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
-	public int SphereMapSensor = 0;
-	public float SphereMapRadius = 1f;
+	public int HeightMapSensor = 0;
+	public float HeightMapSize = 0.25f;
 	public int DepthMapSensor = 0;
 	public Axis DepthMapAxis = Axis.ZPositive;
 	public int DepthMapResolution = 20;
@@ -269,8 +269,8 @@ public class MotionData : ScriptableObject {
 		}
 
 		//Detect settings
-		DetectSphereSensor();
-		DetectDepthSensor();
+		DetectHeightMapSensor();
+		DetectDepthMapSensor();
 		DetectSymmetry();
 		DetectCorrections();
 
@@ -288,17 +288,17 @@ public class MotionData : ScriptableObject {
 		return this;
 	}
 
-	public void DetectSphereSensor() {
+	public void DetectHeightMapSensor() {
 		BVHData.Bone bone = Source.FindBone("Hips");
 		if(bone == null) {
-			Debug.Log("Could not find sphere map sensor.");
+			Debug.Log("Could not find height map sensor.");
 		} else {
-			SphereMapSensor = bone.Index;
+			HeightMapSensor = bone.Index;
 		}
 	}
 
 
-	public void DetectDepthSensor() {
+	public void DetectDepthMapSensor() {
 		BVHData.Bone bone = Source.FindBone("Head");
 		if(bone == null) {
 			Debug.Log("Could not find depth map sensor.");
@@ -635,11 +635,11 @@ public class MotionData : ScriptableObject {
 			return trajectory;
 		}
 
-		public SphereMap GetSphereMap(bool mirrored) {
-			SphereMap sphereMap = new SphereMap(Data.SphereMapRadius);
-			Matrix4x4 pivot = GetBoneTransformation(Data.SphereMapSensor, mirrored);
-			sphereMap.Sense(pivot, Data.GroundMask);
-			return sphereMap;
+		public HeightMap GetHeightMap(bool mirrored) {
+			HeightMap heightMap = new HeightMap(Data.HeightMapSize);
+			Matrix4x4 pivot = GetBoneTransformation(Data.HeightMapSensor, mirrored);
+			heightMap.Sense(pivot, Data.GroundMask);
+			return heightMap;
 		}
 
 		public DepthMap GetDepthMap(bool mirrored) {

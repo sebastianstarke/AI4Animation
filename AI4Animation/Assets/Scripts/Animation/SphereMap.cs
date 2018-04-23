@@ -33,7 +33,7 @@ public class SphereMap {
 	}
 
 	private Vector3[] GetSpherePoints() {
-		int n = 6;
+		int n = 5;
 		float radius = 1f;
 
         int nn = n * 4;
@@ -114,7 +114,7 @@ public class SphereMap {
 		UltiDraw.DrawTranslateGizmo(Pivot.GetPosition(), Pivot.GetRotation(), 0.1f);
 		for(int i=0; i<Points.Length; i++) {
 			UltiDraw.DrawLine(Pivot.GetPosition(), Points[i], UltiDraw.DarkGreen.Transparent(0.1f));
-			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.DarkGrey.Transparent(0.5f));
+			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.Mustard.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}

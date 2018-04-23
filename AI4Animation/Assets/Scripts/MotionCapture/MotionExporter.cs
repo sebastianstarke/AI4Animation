@@ -216,8 +216,8 @@ public class MotionExporter : EditorWindow {
 								}
 
 								//Height map
-								for(int k=0; k<state.SphereMap.Points.Length; k++) {
-									float distance = Vector3.Distance(state.SphereMap.Points[k], state.SphereMap.Pivot.GetPosition());
+								for(int k=0; k<state.HeightMap.Points.Length; k++) {
+									float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
 									line += FormatValue(distance);
 								}
 

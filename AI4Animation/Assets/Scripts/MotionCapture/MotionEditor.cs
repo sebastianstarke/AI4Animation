@@ -22,17 +22,18 @@ public class MotionEditor : MonoBehaviour {
 	public float FocusSmoothing = 0f;
 
 	public float Timestamp = 0f;
-	public float Timescale = 1f;
 	public bool Mirror = false;
 
-	public bool ShowMotion = false;
-	public bool ShowVelocities = false;
-	public bool ShowTrajectory = true;
-	public bool ShowSphereMap = false;
-	public bool ShowDepthMap = false;
-	public bool ShowDepthImage = false;
+	private bool Playing = false;
+	private float Timescale = 1f;
 
-	private bool Playing;
+	private bool ShowMotion = false;
+	private bool ShowVelocities = false;
+	private bool ShowTrajectory = false;
+	private bool ShowHeightMap = false;
+	private bool ShowDepthMap = false;
+	private bool ShowDepthImage = false;
+
 	private Actor Actor = null;
 	private Transform Scene = null;
 	private FrameState State;
@@ -78,12 +79,8 @@ public class MotionEditor : MonoBehaviour {
 		}
 		Data = ScriptableObject.CreateInstance<MotionData>().Create(Path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
 		Timestamp = 0f;
-		StopAnimation();
-		Timescale = 1f;
 		Mirror = false;
-		ShowMotion = false;
-		ShowVelocities = false;
-		ShowTrajectory = false;
+		StopAnimation();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
 	}
 
@@ -92,12 +89,8 @@ public class MotionEditor : MonoBehaviour {
 		Data = null;
 		State = null;
 		Timestamp = 0f;
-		StopAnimation();
-		Timescale = 1f;
 		Mirror = false;
-		ShowMotion = false;
-		ShowVelocities = false;
-		ShowTrajectory = false;
+		StopAnimation();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
 	}
 
@@ -117,15 +110,17 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		if(AutoFocus) {
-			Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
-			Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-			Vector3 position = GetState().Root.GetPosition();
-			position.y += FocusHeight;
-			Quaternion rotation = GetState().Root.GetRotation();
-			rotation.x = 0f;
-			rotation.z = 0f;
-			rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
-			SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
+			if(SceneView.lastActiveSceneView != null) {
+				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+				Vector3 position = GetState().Root.GetPosition();
+				position.y += FocusHeight;
+				Quaternion rotation = GetState().Root.GetRotation();
+				rotation.x = 0f;
+				rotation.z = 0f;
+				rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
+			}
 		}
 	}
 
@@ -217,8 +212,8 @@ public class MotionEditor : MonoBehaviour {
 			GetState().Trajectory.Draw();
 		}
 		
-		if(ShowSphereMap) {
-			GetState().SphereMap.Draw();
+		if(ShowHeightMap) {
+			GetState().HeightMap.Draw();
 		}
 
 		if(ShowDepthMap) {
@@ -262,7 +257,7 @@ public class MotionEditor : MonoBehaviour {
 		public Matrix4x4[] BoneTransformations;
 		public Vector3[] BoneVelocities;
 		public Trajectory Trajectory;
-		public SphereMap SphereMap;
+		public HeightMap HeightMap;
 		public DepthMap DepthMap;
 		public FrameState(MotionData.Frame frame, bool mirrored) {
 			Index = frame.Index;
@@ -272,7 +267,7 @@ public class MotionEditor : MonoBehaviour {
 			BoneTransformations = frame.GetBoneTransformations(mirrored);
 			BoneVelocities = frame.GetBoneVelocities(mirrored);
 			Trajectory = frame.GetTrajectory(mirrored);
-			SphereMap = frame.GetSphereMap(mirrored);
+			HeightMap = frame.GetHeightMap(mirrored);
 			DepthMap = frame.GetDepthMap(mirrored);
 		}
 	}
@@ -453,8 +448,8 @@ public class MotionEditor : MonoBehaviour {
 					if(Utility.GUIButton("Velocities", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowVelocities = !Target.ShowVelocities;
 					}
-					if(Utility.GUIButton("Sphere Map", Target.ShowSphereMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						Target.ShowSphereMap = !Target.ShowSphereMap;
+					if(Utility.GUIButton("Height Map", Target.ShowHeightMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowHeightMap = !Target.ShowHeightMap;
 					}
 					if(Utility.GUIButton("Depth Map", Target.ShowDepthMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowDepthMap = !Target.ShowDepthMap;
@@ -476,13 +471,15 @@ public class MotionEditor : MonoBehaviour {
 
 						Color[] colors = UltiDraw.GetRainbowColors(Target.Data.Styles.Length);
 						for(int i=0; i<Target.Data.Styles.Length; i++) {
+							float height = 25f;
 							EditorGUILayout.BeginHorizontal();
-							if(Utility.GUIButton(Target.Data.Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White)) {
+							if(Utility.GUIButton(Target.Data.Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
 								frame.ToggleStyle(i);
 							}
-							EditorGUI.BeginDisabledGroup(true);
-							EditorGUILayout.Slider(frame.StyleValues[i], 0f, 1f);
-							EditorGUI.EndDisabledGroup();
+							Rect c = EditorGUILayout.GetControlRect();
+							Rect r = new Rect(c.x, c.y, frame.StyleValues[i] * c.width, height);
+							EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
+							EditorGUILayout.FloatField(frame.StyleValues[i], GUILayout.Width(50f));
 							EditorGUILayout.EndHorizontal();
 						}
 						EditorGUILayout.BeginHorizontal();
@@ -515,9 +512,9 @@ public class MotionEditor : MonoBehaviour {
 									Target.Data.Frames[x].StyleValues[i]<1f && val==1f ||
 									Target.Data.Frames[x].StyleValues[i]>0f && val==0f
 									) {
-									float xStart = rect.x + (float)(x-1)/(float)(Target.Data.GetTotalFrames()-1) * rect.width;
+									float xStart = rect.x + (float)(Mathf.Max(x-1, 0))/(float)(Target.Data.GetTotalFrames()-1) * rect.width;
 									float xEnd = rect.x + (float)j/(float)(Target.Data.GetTotalFrames()-1) * rect.width;
-									float yStart = rect.y + (1f - Target.Data.Frames[x-1].StyleValues[i]) * rect.height;
+									float yStart = rect.y + (1f - Target.Data.Frames[Mathf.Max(x-1, 0)].StyleValues[i]) * rect.height;
 									float yEnd = rect.y + (1f - Target.Data.Frames[j].StyleValues[i]) * rect.height;
 									UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
 									x = j;
@@ -690,8 +687,8 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {
 								names[i] = Target.Data.Source.Bones[i].Name;
 							}
-							Target.Data.SphereMapSensor = EditorGUILayout.Popup("Sphere Map Sensor", Target.Data.SphereMapSensor, names);
-							Target.Data.SphereMapRadius = EditorGUILayout.FloatField("Sphere Map Radius", Target.Data.SphereMapRadius);
+							Target.Data.HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.Data.HeightMapSensor, names);
+							Target.Data.HeightMapSize = EditorGUILayout.Slider("Height Map Size", Target.Data.HeightMapSize, 0f, 1f);
 							Target.Data.DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.Data.DepthMapSensor, names);
 							Target.Data.DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Target.Data.DepthMapAxis);
 							Target.Data.DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.Data.DepthMapResolution);
