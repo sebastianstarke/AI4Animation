@@ -27,6 +27,8 @@ public class MotionExporter : EditorWindow {
 	}
 	
 	void OnGUI() {
+		Scroll = EditorGUILayout.BeginScrollView(Scroll);
+
 		Utility.SetGUIColor(UltiDraw.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -50,12 +52,12 @@ public class MotionExporter : EditorWindow {
                     }
 
                     EditorGUILayout.BeginHorizontal();
-                    if(Utility.GUIButton("Enable All", UltiDraw.Grey, UltiDraw.White)) {
+                    if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
                         for(int i=0; i<Export.Length; i++) {
                             Export[i] = true;
                         }
                     }
-                    if(Utility.GUIButton("Disable All", UltiDraw.Grey, UltiDraw.White)) {
+                    if(Utility.GUIButton("Disable All", UltiDraw.DarkGrey, UltiDraw.White)) {
                         for(int i=0; i<Export.Length; i++) {
                             Export[i] = false;
                         }
@@ -70,7 +72,6 @@ public class MotionExporter : EditorWindow {
 				
 				Framerate = EditorGUILayout.IntField("Framerate", Framerate);				
 
-				Scroll = EditorGUILayout.BeginScrollView(Scroll);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(45f));
@@ -94,9 +95,10 @@ public class MotionExporter : EditorWindow {
 					}
 					
 				}
-				EditorGUILayout.EndScrollView();
 			}
 		}
+
+		EditorGUILayout.EndScrollView();
 	}
 
 	private void LoadDirectory(string directory) {

@@ -152,6 +152,10 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
+	public void AddSequence() {
+		ArrayExtensions.Add(ref Sequences, new Sequence(this));
+	}
+
 	public void AddSequence(int start, int end) {
 		ArrayExtensions.Add(ref Sequences, new Sequence(this, start, end));
 	}
@@ -164,8 +168,17 @@ public class MotionData : ScriptableObject {
 		ArrayExtensions.RemoveAt(ref Sequences, index);
 	}
 
-	public void Load(string path) {
+	public MotionData Create(string path, string currentDirectory) {
 		Name = path.Substring(path.LastIndexOf("/")+1);
+		if(AssetDatabase.LoadAssetAtPath(currentDirectory+Name+".asset", typeof(MotionData)) == null) {
+			AssetDatabase.CreateAsset(this , currentDirectory+Name+".asset");
+		} else {
+			int i = 1;
+			while(AssetDatabase.LoadAssetAtPath(currentDirectory+Name+Name+" ("+i+").asset", typeof(MotionData)) != null) {
+				i += 1;
+			}
+			AssetDatabase.CreateAsset(this,currentDirectory+Name+Name+" ("+i+").asset");
+		}
 
 		string[] lines = File.ReadAllLines(path);
 		char[] whitespace = new char[] {' '};
@@ -269,6 +282,10 @@ public class MotionData : ScriptableObject {
 		//Generate
 		ComputePostures();
 		ComputeStyles();
+		AddSequence();
+
+		//Finish
+		return this;
 	}
 
 	public void DetectSphereSensor() {
@@ -415,6 +432,11 @@ public class MotionData : ScriptableObject {
 		public int Start;
 		public int End;
 
+		public Sequence(MotionData data) {
+			Data = data;
+			Auto();
+		}
+
 		public Sequence(MotionData data, int start, int end) {
 			Data = data;
 			Start = start;
@@ -427,6 +449,11 @@ public class MotionData : ScriptableObject {
 		
 		public float GetDuration() {
 			return (float)GetLength() / Data.Framerate;
+		}
+		
+		public void Auto() {
+			Start = Data.GetFrame(Mathf.Min(1f, Data.GetTotalTime())).Index;
+			End = Data.GetFrame(Mathf.Max(Data.GetTotalTime()-1f, 0f)).Index;
 		}
 
 	}

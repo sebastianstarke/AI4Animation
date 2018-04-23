@@ -11,10 +11,7 @@ using UnityEditorInternal;
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
-	public string Path = string.Empty;
-
-	public Actor Actor;
-	public Transform Scene;
+	public static string Path = string.Empty;
 	
 	public MotionData Data = null;
 
@@ -25,7 +22,6 @@ public class MotionEditor : MonoBehaviour {
 	public float FocusSmoothing = 0f;
 
 	public float Timestamp = 0f;
-	public bool Playing = false;
 	public float Timescale = 1f;
 	public bool Mirror = false;
 
@@ -36,18 +32,10 @@ public class MotionEditor : MonoBehaviour {
 	public bool ShowDepthMap = false;
 	public bool ShowDepthImage = false;
 
+	private bool Playing;
+	private Actor Actor = null;
+	private Transform Scene = null;
 	private FrameState State;
-
-	public void SetActor(Actor actor) {
-		if(Actor != actor) {
-			Actor = actor;
-			CheckActor();
-		}
-	}
-
-	public void SetScene(Transform scene) {
-		Scene = scene;
-	}
 
 	public void SetAutoFocus(bool value) {
 		if(Data == null) {
@@ -57,12 +45,29 @@ public class MotionEditor : MonoBehaviour {
 			AutoFocus = value;
 			if(!AutoFocus) {
 				Quaternion rotation = Quaternion.Euler(0f, Mathf.Repeat(FocusAngle + 180f, 360f), 0f);
-				SceneView.lastActiveSceneView.LookAtDirect(State.Root.GetPosition(), rotation, FocusDistance);
+				SceneView.lastActiveSceneView.LookAtDirect(GetState().Root.GetPosition(), rotation, FocusDistance);
 			}
 		}
 	}
 
+	public Actor GetActor() {
+		if(Actor == null) {
+			Actor = GameObject.FindObjectOfType<Actor>();
+		}
+		return Actor;
+	}
+
+	public Transform GetScene() {
+		if(Scene == null) {
+			return GameObject.Find("Scene").transform;
+		}
+		return Scene;
+	}
+
 	public FrameState GetState() {
+		if(State == null) {
+			LoadFrame(Timestamp);
+		}
 		return State;
 	}
 
@@ -71,8 +76,7 @@ public class MotionEditor : MonoBehaviour {
 			Debug.Log("File at path " + Path + " does not exist.");
 			return;
 		}
-		Data = ScriptableObject.CreateInstance<MotionData>();
-		Data.Load(Path);
+		Data = ScriptableObject.CreateInstance<MotionData>().Create(Path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
 		Timestamp = 0f;
 		StopAnimation();
 		Timescale = 1f;
@@ -81,11 +85,11 @@ public class MotionEditor : MonoBehaviour {
 		ShowVelocities = false;
 		ShowTrajectory = false;
 		State = null;
-		CheckActor();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
 	}
 
 	public void UnloadFile() {
+		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Data));
 		Data = null;
 		Timestamp = 0f;
 		StopAnimation();
@@ -95,20 +99,34 @@ public class MotionEditor : MonoBehaviour {
 		ShowVelocities = false;
 		ShowTrajectory = false;
 		State = null;
-		CheckActor();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
 	}
 
 	public void LoadFrame(float timestamp) {
-		CheckActor();
-		CheckScene();
+		if(Mirror) {
+			GetScene().localScale = Vector3.one.GetMirror(Data.GetAxis(Data.MirrorAxis));
+		} else {
+			GetScene().localScale = Vector3.one;
+		}
 		Timestamp = timestamp;
 		State = new FrameState(Data.GetFrame(Timestamp), Mirror);
-		Actor.GetRoot().position = State.Root.GetPosition();
-		Actor.GetRoot().rotation = State.Root.GetRotation();
-		for(int i=0; i<Actor.Bones.Length; i++) {
-			Actor.Bones[i].Transform.position = State.BoneTransformations[i].GetPosition();
-			Actor.Bones[i].Transform.rotation = State.BoneTransformations[i].GetRotation();
+		GetActor().GetRoot().position = GetState().Root.GetPosition();
+		GetActor().GetRoot().rotation = GetState().Root.GetRotation();
+		for(int i=0; i<GetActor().Bones.Length; i++) {
+			GetActor().Bones[i].Transform.position = GetState().BoneTransformations[i].GetPosition();
+			GetActor().Bones[i].Transform.rotation = GetState().BoneTransformations[i].GetRotation();
+		}
+
+		if(AutoFocus) {
+			Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
+			Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+			Vector3 position = GetState().Root.GetPosition();
+			position.y += FocusHeight;
+			Quaternion rotation = GetState().Root.GetRotation();
+			rotation.x = 0f;
+			rotation.z = 0f;
+			rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+			SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
 		}
 	}
 
@@ -153,91 +171,45 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	public void CheckActor() {
-		if(Data == null) {
-			if(Actor != null) {
-				if(Actor.transform.parent == transform) {
-					Utility.Destroy(Actor.gameObject);
-					return;
-				}
-			}
+	public void CreateSkeleton() {
+		Actor = new GameObject("Skeleton").AddComponent<Actor>();
+		string[] names = new string[Data.Source.Bones.Length];
+		string[] parents = new string[Data.Source.Bones.Length];
+		for(int i=0; i<Data.Source.Bones.Length; i++) {
+			names[i] = Data.Source.Bones[i].Name;
+			parents[i] = Data.Source.Bones[i].Parent;
 		}
-		if(Actor == null) {
-			Transform actor = transform.Find("Skeleton");
-			if(actor != null) {
-				Actor = actor.GetComponent<Actor>();
-			} else {
-				Actor = new GameObject("Skeleton").AddComponent<Actor>();
-				Actor.transform.SetParent(transform);
-				string[] names = new string[Data.Source.Bones.Length];
-				string[] parents = new string[Data.Source.Bones.Length];
-				for(int i=0; i<Data.Source.Bones.Length; i++) {
-					names[i] = Data.Source.Bones[i].Name;
-					parents[i] = Data.Source.Bones[i].Parent;
-				}
-				List<Transform> instances = new List<Transform>();
-				for(int i=0; i<names.Length; i++) {
-					Transform instance = new GameObject(names[i]).transform;
-					instance.SetParent(parents[i] == "None" ? Actor.GetRoot() : Actor.FindTransform(parents[i]));
-					instances.Add(instance);
-				}
-				Actor.ExtractSkeleton(instances.ToArray());
-			}
-		} else {
-			if(Actor.transform.parent != transform) {
-				Transform actor = transform.Find("Skeleton");
-				if(actor != null) {
-					Utility.Destroy(actor.gameObject);
-				}
-			}
+		List<Transform> instances = new List<Transform>();
+		for(int i=0; i<names.Length; i++) {
+			Transform instance = new GameObject(names[i]).transform;
+			instance.SetParent(parents[i] == "None" ? GetActor().GetRoot() : GetActor().FindTransform(parents[i]));
+			instances.Add(instance);
 		}
+		GetActor().ExtractSkeleton(instances.ToArray());
 	}
 
-	public void CheckScene() {
-		if(Scene == null) {
-			return;
-		}
-		if(Mirror) {
-			Scene.localScale = Vector3.one.GetMirror(Data.GetAxis(Data.MirrorAxis));
-		} else {
-			Scene.localScale = Vector3.one;
-		}
-	}
-
-	public void Draw() {
-		if(State == null) {
-			return;
-		}
-		
-		if(AutoFocus) {
-			Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
-			Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-			Vector3 position = State.Root.GetPosition();
-			position.y += FocusHeight;
-			Quaternion rotation = State.Root.GetRotation();
-			rotation.x = 0f;
-			rotation.z = 0f;
-			rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
-			SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
-		}
+	public void Draw() {	
+		UltiDraw.Begin();
+		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
+		UltiDraw.End();
 
 		if(ShowMotion) {
 			for(int i=0; i<6; i++) {
-				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(State.Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
-				Actor.DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(Mirror));
+				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(GetState().Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
+				GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(Mirror));
 			}
 			for(int i=1; i<=5; i++) {
-				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(State.Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
-				Actor.DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
+				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(GetState().Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
+				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
 
 			}
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
-			for(int i=0; i<Actor.Bones.Length; i++) {
+			for(int i=0; i<GetActor().Bones.Length; i++) {
 				UltiDraw.DrawArrow(
-					Actor.Bones[i].Transform.position,
-					Actor.Bones[i].Transform.position + State.BoneVelocities[i],
+					GetActor().Bones[i].Transform.position,
+					GetActor().Bones[i].Transform.position + GetState().BoneVelocities[i],
 					0.75f,
 					0.0075f,
 					0.05f,
@@ -247,28 +219,26 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.End();
 		}
 		if(ShowTrajectory) {
-			State.Trajectory.Draw();
+			GetState().Trajectory.Draw();
 		}
 		
 		if(ShowSphereMap) {
-			State.SphereMap.Draw();
+			GetState().SphereMap.Draw();
 		}
 
 		if(ShowDepthMap) {
-			State.DepthMap.Draw();
+			GetState().DepthMap.Draw();
 		}
 		
 		if(ShowDepthImage) {
 			UltiDraw.Begin();
-			Vector2 position = new Vector2(0.5f, 0.5f);
 			Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
-			UltiDraw.DrawGUIRectangle(position, Vector2.one, UltiDraw.Brown);
-			for(int x=0; x<State.DepthMap.GetResolution(); x++) {
-				for(int y=0; y<State.DepthMap.GetResolution(); y++) {
-					float distance = Vector3.Distance(State.DepthMap.Points[State.DepthMap.GridToArray(x,y)], State.DepthMap.Pivot.GetPosition());
-					float intensity = 1f - distance / State.DepthMap.GetDistance();
+			for(int x=0; x<GetState().DepthMap.GetResolution(); x++) {
+				for(int y=0; y<GetState().DepthMap.GetResolution(); y++) {
+					float distance = Vector3.Distance(GetState().DepthMap.Points[GetState().DepthMap.GridToArray(x,y)], GetState().DepthMap.Pivot.GetPosition());
+					float intensity = 1f - distance / GetState().DepthMap.GetDistance();
 					//intensity = Utility.TanH(intensity);
-					UltiDraw.DrawGUIRectangle(position - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / (State.DepthMap.GetResolution()-1), size / (State.DepthMap.GetResolution()-1), Color.Lerp(Color.black, Color.white, intensity));
+					UltiDraw.DrawGUIRectangle(Vector2.one/2f - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / (GetState().DepthMap.GetResolution()-1), size / (GetState().DepthMap.GetResolution()-1), Color.Lerp(Color.black, Color.white, intensity));
 				}
 			}
 			UltiDraw.End();
@@ -308,6 +278,22 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	[MenuItem("Assets/Create/Motion Capture")]
+	public static void CreateMotionCapture() {
+		string source = Application.dataPath + "/Project/MotionCapture/Setup.unity";
+		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Scene.unity";
+		int index = 0;
+		while(File.Exists(destination)) {
+			index += 1;
+			destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Scene (" + index +").unity";
+		}
+		if(!File.Exists(source)) {
+			Debug.Log("Source file at path " + source + " does not exist.");
+		} else {
+			FileUtil.CopyFileOrDirectory(source, destination);
+		}
+	}
+
 	[CustomEditor(typeof(MotionEditor))]
 	public class MotionEditor_Editor : Editor {
 
@@ -323,6 +309,18 @@ public class MotionEditor : MonoBehaviour {
 				if(Target.Data != null) {
 					EditorUtility.SetDirty(Target.Data);
 				}
+				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			}
+		}
+
+		public void Save() {
+			if(!Application.isPlaying && Target != null) {
+				if(Target.Data != null) {
+					EditorUtility.SetDirty(Target.Data);
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+				EditorUtility.SetDirty(Target);
 				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 			}
 		}
@@ -353,10 +351,10 @@ public class MotionEditor : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						EditorGUILayout.BeginHorizontal();
 						EditorGUILayout.LabelField("Path", GUILayout.Width(50));
-						Target.Path = EditorGUILayout.TextField(Target.Path);
+						MotionEditor.Path = EditorGUILayout.TextField(MotionEditor.Path);
 						GUI.skin.button.alignment = TextAnchor.MiddleCenter;
 						if(GUILayout.Button("O", GUILayout.Width(20))) {
-							Target.Path = EditorUtility.OpenFilePanel("Motion Editor", Target.Path == string.Empty ? Application.dataPath : Target.Path.Substring(0, Target.Path.LastIndexOf("/")), "bvh");
+							MotionEditor.Path = EditorUtility.OpenFilePanel("Motion Editor", MotionEditor.Path == string.Empty ? Application.dataPath : MotionEditor.Path.Substring(0, MotionEditor.Path.LastIndexOf("/")), "bvh");
 							GUI.SetNextControlName("");
 							GUI.FocusControl("");
 						}
@@ -391,14 +389,14 @@ public class MotionEditor : MonoBehaviour {
 					Utility.SetGUIColor(UltiDraw.Mustard);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-						EditorGUILayout.LabelField("Name: " + Target.Data.Name);
-						Target.SetActor((Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true));
-						Target.SetScene((Transform)EditorGUILayout.ObjectField("Scene", Target.Scene, typeof(Transform), true));
-						Target.SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", Target.AutoFocus));
-						Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
-						Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
-						Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
-						Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+						
+						Utility.SetGUIColor(Target.GetActor() == null ? UltiDraw.DarkRed : UltiDraw.White);
+						EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(Target.GetScene() == null ? UltiDraw.DarkRed : UltiDraw.White);
+						EditorGUILayout.ObjectField("Scene", Target.GetScene(), typeof(Transform), true);
+						Utility.ResetGUIColor();
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -489,7 +487,7 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
 							MotionData.Frame previous = frame.GetAnyPreviousStyleKey();
-							Target.Timestamp = previous == null ? 0f : previous.Timestamp;
+							Target.LoadFrame(previous == null ? 0f : previous.Timestamp);
 						}
 						EditorGUILayout.BeginVertical(GUILayout.Height(50f));
 						Rect ctrl = EditorGUILayout.GetControlRect();
@@ -552,7 +550,7 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.EndVertical();
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
 							MotionData.Frame next = frame.GetAnyNextStyleKey();
-							Target.Timestamp = next == null ? Target.Data.GetTotalTime() : next.Timestamp;
+							Target.LoadFrame(next == null ? Target.Data.GetTotalTime() : next.Timestamp);
 						}
 						EditorGUILayout.EndHorizontal();
 					}
@@ -571,8 +569,17 @@ public class MotionEditor : MonoBehaviour {
 						Utility.SetGUIColor(UltiDraw.LightGrey);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								Target.Data.Sequences[i].Start = EditorGUILayout.IntSlider("Start", Target.Data.Sequences[i].Start, 1, Target.Data.GetTotalFrames());
-								Target.Data.Sequences[i].End = EditorGUILayout.IntSlider("End", Target.Data.Sequences[i].End, 1, Target.Data.GetTotalFrames());
+								EditorGUILayout.BeginHorizontal();
+								GUILayout.FlexibleSpace();
+								if(Utility.GUIButton("Auto", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.Data.Sequences[i].Auto();
+								}
+								EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
+								Target.Data.Sequences[i].Start = EditorGUILayout.IntSlider(Target.Data.Sequences[i].Start, 1, Target.Data.GetTotalFrames(), GUILayout.Width(200f));
+								EditorGUILayout.LabelField("End", GUILayout.Width(50f));
+								Target.Data.Sequences[i].End = EditorGUILayout.IntSlider(Target.Data.Sequences[i].End, 1, Target.Data.GetTotalFrames(), GUILayout.Width(200f));
+								GUILayout.FlexibleSpace();
+								EditorGUILayout.EndHorizontal();
 							}
 						}
 						EditorGUILayout.BeginHorizontal();
@@ -594,6 +601,24 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Settings");
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+								Target.CreateSkeleton();
+							}
+						}
+
+						Utility.SetGUIColor(UltiDraw.LightGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							Target.SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", Target.AutoFocus));
+							Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+							Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+							Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+							Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);
