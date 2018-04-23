@@ -1,9 +1,8 @@
-﻿using System.IO;
+﻿#if UNITY_EDITOR
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 
 public class MotionData : ScriptableObject {
 
@@ -768,3 +767,4 @@ public class MotionData : ScriptableObject {
 	}
 
 }
+#endif
