@@ -637,7 +637,7 @@ public class MotionData : ScriptableObject {
 		public HeightMap GetHeightMap(bool mirrored) {
 			HeightMap heightMap = new HeightMap(Data.HeightMapSize);
 			Matrix4x4 pivot = GetBoneTransformation(Data.HeightMapSensor, mirrored);
-			heightMap.Sense(pivot, Data.GroundMask);
+			heightMap.Sense(pivot, Data.ObjectMask);
 			return heightMap;
 		}
 

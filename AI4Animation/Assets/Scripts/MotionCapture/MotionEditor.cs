@@ -15,12 +15,6 @@ public class MotionEditor : MonoBehaviour {
 	
 	public MotionData Data = null;
 
-	public bool AutoFocus = true;
-	public float FocusHeight = 1f;
-	public float FocusDistance = 2.5f;
-	public float FocusAngle = 270f;
-	public float FocusSmoothing = 0f;
-
 	public float Timestamp = 0f;
 	public bool Mirror = false;
 
@@ -33,6 +27,12 @@ public class MotionEditor : MonoBehaviour {
 	private bool ShowHeightMap = false;
 	private bool ShowDepthMap = false;
 	private bool ShowDepthImage = false;
+
+	private bool AutoFocus = true;
+	private float FocusHeight = 1f;
+	private float FocusDistance = 2.5f;
+	private float FocusAngle = 270f;
+	private float FocusSmoothing = 0.1f;
 
 	private Actor Actor = null;
 	private Transform Scene = null;
@@ -293,8 +293,13 @@ public class MotionEditor : MonoBehaviour {
 
 		public MotionEditor Target;
 
+		private float RefreshRate = 30f;
+		private System.DateTime Timestamp;
+
 		void Awake() {
 			Target = (MotionEditor)target;
+			Timestamp = Utility.GetTimestamp();
+			EditorApplication.update += EditorUpdate;
 		}
 
 		void OnDestroy() {
@@ -305,6 +310,7 @@ public class MotionEditor : MonoBehaviour {
 				}
 				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
 			}
+			EditorApplication.update -= EditorUpdate;
 		}
 
 		public void Save() {
@@ -316,6 +322,13 @@ public class MotionEditor : MonoBehaviour {
 				}
 				EditorUtility.SetDirty(Target);
 				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+			}
+		}
+
+		public void EditorUpdate() {
+			if(Utility.GetElapsedTime(Timestamp) >= 1f/RefreshRate) {
+				Repaint();
+				Timestamp = Utility.GetTimestamp();
 			}
 		}
 
