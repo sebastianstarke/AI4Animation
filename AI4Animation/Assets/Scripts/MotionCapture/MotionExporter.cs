@@ -170,17 +170,18 @@ public class MotionExporter : EditorWindow {
                     Debug.Log("No motion editor found in scene " + (i+1) + ".");
                 } else {
 					for(int m=1; m<=2; m++) {
-						if(m==1) {
-							editor.Mirror = false;
-						} else {
-							editor.Mirror = true;
-						}
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {
 							sequence += 1;
 							float start = editor.Data.GetFrame(editor.Data.Sequences[s].Start).Timestamp;
 							float end = editor.Data.GetFrame(editor.Data.Sequences[s].End).Timestamp;
 							for(float t=start; t<=end; t+=1f/Framerate) {
 								string line = string.Empty;
+
+								if(m==1) {
+									editor.Mirror = false;
+								} else {
+									editor.Mirror = true;
+								}
 								editor.LoadFrame(t);
 								MotionEditor.FrameState state = editor.GetState();
 
@@ -216,16 +217,16 @@ public class MotionExporter : EditorWindow {
 								}
 
 								//Height map
-								for(int k=0; k<state.HeightMap.Points.Length; k++) {
-									float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
-									line += FormatValue(distance);
-								}
+								//for(int k=0; k<state.HeightMap.Points.Length; k++) {
+								//	float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
+								//	line += FormatValue(distance);
+								//}
 
 								//Depth map
-								for(int k=0; k<state.DepthMap.Points.Length; k++) {
-									float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
-									line += FormatValue(distance);
-								}
+								//for(int k=0; k<state.DepthMap.Points.Length; k++) {
+								//	float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
+								//	line += FormatValue(distance);
+								//}
 
 								//Root motion
 								line += FormatVector3(state.RootMotion);

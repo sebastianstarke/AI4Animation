@@ -104,6 +104,7 @@ public class MotionProcessor : EditorWindow {
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
             if(Process[i]) {
+				//Data[i].Sequences[0].Start = 63;
 				//Data[i].HeightMapSize = 0.25f;
 				//Data[i].GroundMask = LayerMaskExtensions.NamesToMask("Ground");
              	EditorUtility.SetDirty(Data[i]);
