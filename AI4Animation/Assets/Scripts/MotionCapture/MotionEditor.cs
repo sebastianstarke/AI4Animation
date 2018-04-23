@@ -84,13 +84,13 @@ public class MotionEditor : MonoBehaviour {
 		ShowMotion = false;
 		ShowVelocities = false;
 		ShowTrajectory = false;
-		State = null;
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
 	}
 
 	public void UnloadFile() {
 		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Data));
 		Data = null;
+		State = null;
 		Timestamp = 0f;
 		StopAnimation();
 		Timescale = 1f;
@@ -98,7 +98,6 @@ public class MotionEditor : MonoBehaviour {
 		ShowMotion = false;
 		ShowVelocities = false;
 		ShowTrajectory = false;
-		State = null;
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
 	}
 
@@ -188,11 +187,7 @@ public class MotionEditor : MonoBehaviour {
 		GetActor().ExtractSkeleton(instances.ToArray());
 	}
 
-	public void Draw() {	
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
-		UltiDraw.End();
-
+	public void Draw() {
 		if(ShowMotion) {
 			for(int i=0; i<6; i++) {
 				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(GetState().Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
@@ -230,6 +225,10 @@ public class MotionEditor : MonoBehaviour {
 			GetState().DepthMap.Draw();
 		}
 		
+		UltiDraw.Begin();
+		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
+		UltiDraw.End();
+
 		if(ShowDepthImage) {
 			UltiDraw.Begin();
 			Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
@@ -397,6 +396,8 @@ public class MotionEditor : MonoBehaviour {
 						Utility.SetGUIColor(Target.GetScene() == null ? UltiDraw.DarkRed : UltiDraw.White);
 						EditorGUILayout.ObjectField("Scene", Target.GetScene(), typeof(Transform), true);
 						Utility.ResetGUIColor();
+
+						EditorGUILayout.ObjectField("Data", Target.Data, typeof(MotionData), true);
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -662,8 +663,6 @@ public class MotionEditor : MonoBehaviour {
 								Target.Data.AddStyle("Jump");
 								Target.Data.AddStyle("Crouch");
 								Target.Data.AddStyle("Sit");
-								Target.Data.AddStyle("Open Door");
-								Target.Data.AddStyle("Pick Up");
 								break;
 							}
 							for(int i=0; i<Target.Data.Styles.Length; i++) {
