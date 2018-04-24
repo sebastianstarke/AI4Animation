@@ -178,9 +178,9 @@ public class MotionExporter : EditorWindow {
 								string line = string.Empty;
 
 								if(m==1) {
-									editor.Mirror = false;
+									editor.SetMirror(false);
 								} else {
-									editor.Mirror = true;
+									editor.SetMirror(true);
 								}
 								editor.LoadFrame(t);
 								MotionEditor.FrameState state = editor.GetState();

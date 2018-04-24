@@ -15,9 +15,8 @@ public class MotionEditor : MonoBehaviour {
 	
 	public MotionData Data = null;
 
-	public float Timestamp = 0f;
-	public bool Mirror = false;
-
+	private float Timestamp = 0f;
+	private bool Mirror = false;
 	private bool Playing = false;
 	private float Timescale = 1f;
 
@@ -45,10 +44,15 @@ public class MotionEditor : MonoBehaviour {
 		if(AutoFocus != value) {
 			AutoFocus = value;
 			if(!AutoFocus) {
-				Quaternion rotation = Quaternion.Euler(0f, Mathf.Repeat(FocusAngle + 180f, 360f), 0f);
-				SceneView.lastActiveSceneView.LookAtDirect(GetState().Root.GetPosition(), rotation, FocusDistance);
+				Vector3 position =  SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion rotation = Quaternion.Euler(0f, SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y, 0f);
+				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, 0f);
 			}
 		}
+	}
+
+	public void SetMirror(bool value) {
+		Mirror = value;
 	}
 
 	public Actor GetActor() {
@@ -78,19 +82,12 @@ public class MotionEditor : MonoBehaviour {
 			return;
 		}
 		Data = ScriptableObject.CreateInstance<MotionData>().Create(Path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
-		Timestamp = 0f;
-		Mirror = false;
-		StopAnimation();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
+		LoadFrame(0f);
 	}
 
 	public void UnloadFile() {
 		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Data));
-		Data = null;
-		State = null;
-		Timestamp = 0f;
-		Mirror = false;
-		StopAnimation();
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
 	}
 
@@ -154,7 +151,7 @@ public class MotionEditor : MonoBehaviour {
 
 	private IEnumerator Play() {
 		System.DateTime timestamp = Utility.GetTimestamp();
-		while(true) {
+		while(Data != null) {
 			Timestamp += Timescale * (float)Utility.GetElapsedTime(timestamp);
 			if(Timestamp > Data.GetTotalTime()) {
 				Timestamp = Mathf.Repeat(Timestamp, Data.GetTotalTime());
@@ -448,7 +445,7 @@ public class MotionEditor : MonoBehaviour {
 					EditorGUILayout.EndHorizontal();
 
 					if(Utility.GUIButton("Mirror", Target.Mirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						Target.Mirror = !Target.Mirror;
+						Target.SetMirror(!Target.Mirror);
 					}
 
 					EditorGUILayout.BeginHorizontal();

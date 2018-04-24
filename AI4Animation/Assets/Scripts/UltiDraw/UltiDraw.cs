@@ -22,6 +22,9 @@ public static class UltiDraw {
 	public static Color Mustard = new Color(1f, 0.75f, 0.25f, 1f);
 	public static Color Teal = new Color(0f, 0.75f, 0.75f, 1f);
 	public static Color Purple = new Color(0.5f, 0f, 0.5f, 1f);
+	public static Color DarkBlue = new Color(0f, 0f, 0.75f, 1f);
+	public static Color IndianRed = new Color(205f/255f, 92f/255f, 92f/255f, 1f);
+	public static Color Gold = new Color(212f/255f, 175f/255f, 55f/255f, 1f);
 
 	private static int Resolution = 30;
 
