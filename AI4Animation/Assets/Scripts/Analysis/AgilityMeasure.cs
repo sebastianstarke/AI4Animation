@@ -27,15 +27,16 @@ public class AgilityMeasure : MonoBehaviour {
 			PreviousRotations[i] = rotation;
 		}
 		value /= Bones.Length;
+		//value /= Time.deltaTime;
 		Values.Add(value);
 	}
 
 	void OnGUI() {
 		GUI.color = UltiDraw.Mustard;
 		GUI.backgroundColor = UltiDraw.Black;
-		if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.02f, 0.02f), "X")) {
+		if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.05f, 0.05f), "X")) {
 			Values.Clear();
 		};
-		GUI.Box(Utility.GetGUIRect(0.025f, Position, 0.175f, 0.02f), "Average Agility: " + Utility.ComputeMean(Values.ToArray()));
+		GUI.Box(Utility.GetGUIRect(0.055f, Position, 0.25f, 0.05f), "Average Agility: " + Utility.ComputeMean(Values.ToArray()));
 	}
 }

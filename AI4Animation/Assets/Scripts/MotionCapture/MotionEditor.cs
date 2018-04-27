@@ -99,6 +99,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		Timestamp = timestamp;
 		State = new FrameState(Data.GetFrame(Timestamp), Mirror);
+
 		GetActor().GetRoot().position = GetState().Root.GetPosition();
 		GetActor().GetRoot().rotation = GetState().Root.GetRotation();
 		for(int i=0; i<GetActor().Bones.Length; i++) {
@@ -160,6 +161,17 @@ public class MotionEditor : MonoBehaviour {
 			LoadFrame(Timestamp);
 			yield return new WaitForSeconds(0f);
 		}
+
+		/*
+		while(Data != null) {
+			int next = Data.GetFrame(Timestamp).Index+1;
+			if(next > Data.GetTotalFrames()) {
+				next = 1;
+			}
+			LoadFrame(next);
+			yield return new WaitForSeconds(0f);
+		}
+		*/
 	}
 
 	public void CreateSkeleton() {

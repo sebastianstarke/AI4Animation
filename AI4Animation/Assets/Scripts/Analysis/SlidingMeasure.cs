@@ -20,7 +20,8 @@ public class SlidingMeasure : MonoBehaviour {
 	}
 
 	void LateUpdate () {
-		float heightThreshold = 0.01f;
+		float sliding = 0f;
+		float heightThreshold = 0.025f;
 		for(int i=0; i<Bones.Length; i++) {
 			float height = Mathf.Max(0f, Bones[i].position.y);
 			if(height < heightThreshold) {
@@ -29,9 +30,7 @@ public class SlidingMeasure : MonoBehaviour {
 				Vector3 newPosition = Bones[i].position;
 				newPosition.y = 0f;
 				float weight = 1f - Mathf.Abs(height) / heightThreshold;
-				Slidings.Add(weight * Vector3.Distance(oldPosition, newPosition) * 60f);
-			} else {
-				Slidings.Add(0f);
+				sliding += weight * Vector3.Distance(oldPosition, newPosition);
 			}
 			PreviousPositions[i] = Bones[i].position;
 			
@@ -49,6 +48,8 @@ public class SlidingMeasure : MonoBehaviour {
 			PreviousPositions[i] = newPosition;
 			*/
 		}
+		sliding /= Bones.Length;
+		Slidings.Add(sliding);
 	}
 
 	void OnGUI() {
