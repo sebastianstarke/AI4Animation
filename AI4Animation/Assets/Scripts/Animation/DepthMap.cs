@@ -36,7 +36,7 @@ public class DepthMap {
 				Vector3 direction = new Vector3(
 					-Size/2f + (float)x/(float)(Resolution-1) * Size, 
 					-Size/2f + (float)y/(float)(Resolution-1) * Size,
-					Size).GetRelativePositionFrom(Pivot) 
+					Distance).GetRelativePositionFrom(Pivot) 
 					- 
 					Pivot.GetPosition();
 				direction.Normalize();
