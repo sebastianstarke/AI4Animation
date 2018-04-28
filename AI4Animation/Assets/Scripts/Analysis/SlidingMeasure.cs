@@ -9,14 +9,14 @@ public class SlidingMeasure : MonoBehaviour {
 	public Transform[] Bones;
 
 	private Vector3[] PreviousPositions;
-	private List<float> Slidings;
+	private List<float> Values;
 
 	void Start() {
 		PreviousPositions = new Vector3[Bones.Length];
 		for(int i=0; i<PreviousPositions.Length; i++) {
 			PreviousPositions[i] = Bones[i].position;
 		}
-		Slidings = new List<float>();
+		Values = new List<float>();
 	}
 
 	void LateUpdate () {
@@ -49,15 +49,15 @@ public class SlidingMeasure : MonoBehaviour {
 			*/
 		}
 		sliding /= Bones.Length;
-		Slidings.Add(sliding);
+		Values.Add(sliding);
 	}
 
 	void OnGUI() {
 		GUI.color = UltiDraw.Mustard;
 		GUI.backgroundColor = UltiDraw.Black;
-		if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.02f, 0.02f), "X")) {
-			Slidings.Clear();
+		if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.05f, 0.05f), "X")) {
+			Values.Clear();
 		};
-		GUI.Box(Utility.GetGUIRect(0.025f, Position, 0.175f, 0.02f), "Average Sliding: " + Utility.ComputeMean(Slidings.ToArray()));
+		GUI.Box(Utility.GetGUIRect(0.055f, Position, 0.25f, 0.05f), "Average Sliding: " + Utility.ComputeMean(Values.ToArray()));
 	}
 }

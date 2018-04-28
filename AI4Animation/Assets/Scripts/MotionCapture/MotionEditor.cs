@@ -27,11 +27,11 @@ public class MotionEditor : MonoBehaviour {
 	private bool ShowDepthMap = false;
 	private bool ShowDepthImage = false;
 
-	private bool AutoFocus = true;
-	private float FocusHeight = 1f;
-	private float FocusDistance = 2.5f;
-	private float FocusAngle = 270f;
-	private float FocusSmoothing = 0.1f;
+	public bool AutoFocus = true;
+	public float FocusHeight = 1f;
+	public float FocusDistance = 2.5f;
+	public float FocusAngle = 180f;
+	public float FocusSmoothing = 0.1f;
 
 	private Actor Actor = null;
 	private Transform Scene = null;
@@ -205,6 +205,10 @@ public class MotionEditor : MonoBehaviour {
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
+
+			Vector3 motion = Quaternion.Euler(0f, GetState().RootMotion.y / Data.Framerate, 0f) * new Vector3(GetState().RootMotion.x, 0f, GetState().RootMotion.z);
+			UltiDraw.DrawArrow(GetState().Root.GetPosition(), GetState().Root.GetPosition() + motion, 0.75f, 0.05f, 0.1f, UltiDraw.IndianRed.Transparent(0.75f));
+			
 			for(int i=0; i<GetActor().Bones.Length; i++) {
 				UltiDraw.DrawArrow(
 					GetActor().Bones[i].Transform.position,
@@ -623,6 +627,82 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField("Settings");
 						}
 
+						string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
+						switch(EditorGUILayout.Popup(0, presets)) {
+							case 0:
+							break;
+							case 1:
+							Target.FocusHeight = 1f;
+							Target.FocusDistance = 2.5f;
+							Target.FocusAngle = 270f;
+							Target.FocusSmoothing = 0.1f;
+							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
+							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
+							Target.Data.SetUnitScale(10f);
+							Target.Data.MirrorAxis = MotionData.Axis.XPositive;
+							for(int i=0; i<Target.Data.Corrections.Length; i++) {
+								Target.Data.SetCorrection(i, Vector3.zero);
+							}
+							Target.Data.ClearStyles();
+							Target.Data.AddStyle("Idle");
+							Target.Data.AddStyle("Walk");
+							Target.Data.AddStyle("Run");
+							Target.Data.AddStyle("Jump");
+							Target.Data.AddStyle("Crouch");
+							break;
+
+							case 2:
+							Target.FocusHeight = 0.5f;
+							Target.FocusDistance = 1f;
+							Target.FocusAngle = 180f;
+							Target.FocusSmoothing = 0f;
+							Target.Data.ForwardAxis = MotionData.Axis.XNegative;
+							Target.Data.DepthMapAxis = MotionData.Axis.XPositive;
+							Target.Data.SetUnitScale(100f);
+							Target.Data.MirrorAxis = MotionData.Axis.ZPositive;
+							for(int i=0; i<Target.Data.Corrections.Length; i++) {
+								if(i==4 || i==5 || i==6 || i==11) {
+									Target.Data.SetCorrection(i, new Vector3(90f, 90f, 90f));
+								} else if(i==24) {
+									Target.Data.SetCorrection(i, new Vector3(-45f, 0f, 0f));
+								} else {
+									Target.Data.SetCorrection(i, new Vector3(0f, 0f, 0f));
+								}
+							}
+							Target.Data.ClearStyles();
+							Target.Data.AddStyle("Idle");
+							Target.Data.AddStyle("Walk");
+							Target.Data.AddStyle("Pace");
+							Target.Data.AddStyle("Trot");
+							Target.Data.AddStyle("Canter");
+							Target.Data.AddStyle("Jump");
+							Target.Data.AddStyle("Sit");
+							Target.Data.AddStyle("Stand");
+							Target.Data.AddStyle("Lie");
+							break;
+
+							case 3:
+							Target.FocusHeight = 1f;
+							Target.FocusDistance = 2.5f;
+							Target.FocusAngle = 270f;
+							Target.FocusSmoothing = 0.1f;
+							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
+							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
+							Target.Data.SetUnitScale(100f);
+							Target.Data.MirrorAxis = MotionData.Axis.XPositive;							
+							for(int i=0; i<Target.Data.Corrections.Length; i++) {
+								Target.Data.SetCorrection(i, Vector3.zero);
+							}
+							Target.Data.ClearStyles();
+							Target.Data.AddStyle("Idle");
+							Target.Data.AddStyle("Walk");
+							Target.Data.AddStyle("Run");
+							Target.Data.AddStyle("Jump");
+							Target.Data.AddStyle("Crouch");
+							Target.Data.AddStyle("Sit");
+							break;
+						}
+
 						Utility.SetGUIColor(UltiDraw.LightGrey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
@@ -645,7 +725,7 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
-							Target.Data.SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.Data.StyleTransition, 0.1f, 1f));
+							Target.Data.ForwardAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Forward Axis", Target.Data.ForwardAxis);
 							Target.Data.SetMotionSmoothing(EditorGUILayout.Slider("Motion Smoothing", Target.Data.MotionSmoothing, 0f, 1f));
 						}
 
@@ -653,37 +733,7 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Styles");
-							string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
-							switch(EditorGUILayout.Popup(0, presets)) {
-								case 0:
-								break;
-								case 1:
-								Target.Data.ClearStyles();
-								Target.Data.AddStyle("Idle");
-								Target.Data.AddStyle("Walk");
-								Target.Data.AddStyle("Run");
-								Target.Data.AddStyle("Jump");
-								Target.Data.AddStyle("Crouch");
-								break;
-								case 2:
-								Target.Data.ClearStyles();
-								Target.Data.AddStyle("Idle");
-								Target.Data.AddStyle("Move");
-								Target.Data.AddStyle("Jump");
-								Target.Data.AddStyle("Sit");
-								Target.Data.AddStyle("Stand");
-								Target.Data.AddStyle("Lie");
-								break;
-								case 3:
-								Target.Data.ClearStyles();
-								Target.Data.AddStyle("Idle");
-								Target.Data.AddStyle("Walk");
-								Target.Data.AddStyle("Run");
-								Target.Data.AddStyle("Jump");
-								Target.Data.AddStyle("Crouch");
-								Target.Data.AddStyle("Sit");
-								break;
-							}
+							Target.Data.SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.Data.StyleTransition, 0.1f, 1f));
 							for(int i=0; i<Target.Data.Styles.Length; i++) {
 								EditorGUILayout.BeginHorizontal();
 								Target.Data.Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.Data.Styles[i]);
@@ -722,32 +772,6 @@ public class MotionEditor : MonoBehaviour {
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Mirroring");
-							string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
-							switch(EditorGUILayout.Popup(0, presets)) {
-								case 0:
-								break;
-								case 1:
-								for(int i=0; i<Target.Data.Corrections.Length; i++) {
-									Target.Data.SetCorrection(i, Vector3.zero);
-								}
-								break;
-								case 2:
-								for(int i=0; i<Target.Data.Corrections.Length; i++) {
-									if(i==4 || i==5 || i==6 || i==11) {
-										Target.Data.SetCorrection(i, new Vector3(90f, 90f, 90f));
-									} else if(i==24) {
-										Target.Data.SetCorrection(i, new Vector3(-45f, 0f, 0f));
-									} else {
-										Target.Data.SetCorrection(i, new Vector3(0f, 0f, 0f));
-									}
-								}
-								break;
-								case 3:
-								for(int i=0; i<Target.Data.Corrections.Length; i++) {
-									Target.Data.SetCorrection(i, Vector3.zero);
-								}
-								break;
-							}
 							Target.Data.MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Axis", Target.Data.MirrorAxis);
 							string[] names = new string[Target.Data.Source.Bones.Length];
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {

@@ -79,11 +79,17 @@ public class MotionExporter : EditorWindow {
 					EditorGUILayout.EndHorizontal();
 
 					for(int i=0; i<Animations.Length; i++) {
-						if(Export[i]) {
-							Utility.SetGUIColor(UltiDraw.DarkGreen);
+
+						if(Exporting && Animations[i].name == EditorSceneManager.GetActiveScene().name) {
+							Utility.SetGUIColor(UltiDraw.Mustard);
 						} else {
-							Utility.SetGUIColor(UltiDraw.DarkRed);
+							if(Export[i]) {
+								Utility.SetGUIColor(UltiDraw.DarkGreen);
+							} else {
+								Utility.SetGUIColor(UltiDraw.DarkRed);
+							}
 						}
+
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
 							EditorGUILayout.BeginHorizontal();
@@ -136,6 +142,45 @@ public class MotionExporter : EditorWindow {
 		}
 		StreamWriter file = File.CreateText(filename+".txt");
 
+		EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[0]));
+		MotionEditor editor = FindObjectOfType<MotionEditor>();
+		if(editor == null) {
+			Debug.Log("No motion editor found in scene " + Animations[0].name + ".");
+		} else {
+			int index = 0;
+			file.WriteLine(index + " " + "Sequence"); index += 1;
+			file.WriteLine(index + " " + "Frame"); index += 1;
+			file.WriteLine(index + " " + "Timestamp"); index += 1;
+			for(int i=0; i<editor.GetActor().Bones.Length; i++) {
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"+(i+1)); index += 1;
+			}
+			for(int i=1; i<=12; i++) {
+				file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+				for(int j=1; j<=editor.Data.Styles.Length; j++) {
+					file.WriteLine(index + " " + editor.Data.Styles[j-1] + i); index += 1;
+				}
+			}
+			file.WriteLine(index + " " + "RootMotionX"); index += 1;
+			file.WriteLine(index + " " + "RootMotionY"); index += 1;
+			file.WriteLine(index + " " + "RootMotionZ"); index += 1;
+		}
+
         yield return new WaitForSeconds(0f);
 
 		file.Close();
@@ -167,7 +212,7 @@ public class MotionExporter : EditorWindow {
                 EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[i]));
                 MotionEditor editor = FindObjectOfType<MotionEditor>();
                 if(editor == null) {
-                    Debug.Log("No motion editor found in scene " + (i+1) + ".");
+                    Debug.Log("No motion editor found in scene " + Animations[i].name + ".");
                 } else {
 					for(int m=1; m<=2; m++) {
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {

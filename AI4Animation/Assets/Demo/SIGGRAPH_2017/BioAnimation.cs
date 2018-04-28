@@ -205,6 +205,8 @@ namespace SIGGRAPH_2017 {
 				}
 
 				//Predict
+				float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+				((PFNN)NN.Model).SetDamping(1f - (rest * 0.9f + 0.1f));
 				NN.Model.Predict();
 
 				//Update Past Trajectory
@@ -220,7 +222,6 @@ namespace SIGGRAPH_2017 {
 				}
 
 				//Update Current Trajectory
-				float rest = Mathf.Pow(1.0f-Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
 				Trajectory.Points[RootPointIndex].SetPosition((rest * new Vector3(NN.Model.GetOutput(0) / UnitScale, 0f, NN.Model.GetOutput(1) / UnitScale)).GetRelativePositionFrom(currentRoot));
 				Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rest * Mathf.Rad2Deg * (-NN.Model.GetOutput(2)), Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 				Trajectory.Points[RootPointIndex].Postprocess();
@@ -299,9 +300,6 @@ namespace SIGGRAPH_2017 {
 
 				//Map to Character
 				Character.FetchTransformations(Root);
-
-				//Update Phase
-				((PFNN)NN.Model).SetPhase(Mathf.Repeat(((PFNN)NN.Model).GetPhase() + (rest * 0.9f + 0.1f) * NN.Model.GetOutput(3) * 2f*Mathf.PI, 2f*Mathf.PI));
 			}
 		}
 

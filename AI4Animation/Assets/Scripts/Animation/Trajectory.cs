@@ -185,18 +185,20 @@ public class Trajectory {
 
 		//Directions
 		for(int i=0; i<Points.Length; i+=step) {
-			Vector3 start = Points[i].GetPosition();
-			Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
-			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.Orange.Transparent(0.75f));
+			//Vector3 start = Points[i].GetPosition();
+			//Vector3 end = Points[i].GetPosition() + 0.25f * Points[i].GetDirection();
+			//end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
+			//UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.Orange.Transparent(0.75f));
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f*Points[i].GetDirection(), 0.025f, 0f, UltiDraw.Orange.Transparent(0.75f));
 		}
 
 		//Velocities
 		for(int i=0; i<Points.Length; i+=step) {
-			Vector3 start = Points[i].GetPosition();
-			Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity();
-			end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
-			UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
+			//Vector3 start = Points[i].GetPosition();
+			//Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity();
+			//end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
+			//UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
 		}
 
 		//Slopes

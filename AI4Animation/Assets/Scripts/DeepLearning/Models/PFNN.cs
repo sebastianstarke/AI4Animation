@@ -11,11 +11,14 @@ namespace DeepLearning {
 		public int HDim = 0;
 		public int YDim = 0;
 
+		public int PhaseIndex = 0;
+
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor[] W0, W1, W2, b0, b1, b2;
 		private Tensor X, Y;
 
 		private float Phase;
+		private float Damping;
 
 		private const float M_PI = 3.14159265358979323846f;
 
@@ -69,6 +72,7 @@ namespace DeepLearning {
 			Y = CreateTensor(YDim, 1, "Y");
 
 			Phase = 0f;
+			Damping = 0f;
 		}
 
 		public override void SetInput(int index, float value) {
@@ -91,6 +95,9 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
+
+			//Update Phase
+			Phase = Mathf.Repeat(Phase + (1f-Damping)*GetOutput(PhaseIndex)*2f*Mathf.PI, 2f*Mathf.PI);
 		}
 
 		/*
@@ -107,8 +114,8 @@ namespace DeepLearning {
 		}
 		*/
 
-		public void SetPhase(float value) {
-			Phase = value;
+		public void SetDamping(float value) {
+			Damping = value;
 		}
 
 		public float GetPhase() {
@@ -129,6 +136,7 @@ namespace DeepLearning {
 				XDim = EditorGUILayout.IntField("XDim", XDim);
 				HDim = EditorGUILayout.IntField("HDim", HDim);
 				YDim = EditorGUILayout.IntField("YDim", YDim);
+				PhaseIndex = EditorGUILayout.IntField("Phase Index", PhaseIndex);
 
 				EditorGUILayout.Slider("Phase", Phase, 0f, 2f*Mathf.PI);
 			}
