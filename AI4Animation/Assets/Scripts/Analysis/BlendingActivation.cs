@@ -55,6 +55,10 @@ public class BlendingActivation : MonoBehaviour {
 		for(int i=0; i<colors.Length; i++) {
 			DrawControlPoint(center.x - width/2f, center.y + height/2f, width, height, Values[i], colors[i]);
 		}
+		//for(int i=0; i<colors.Length; i++) {
+		//	Vector2 start = center - new Vector2(width/2f, -height/2f);
+		//	UltiDraw.DrawGUIRectangle(start + (float)i/(float)(colors.Length-1)*new Vector2(width, 0f), new Vector2(0.025f, 0.025f), colors[i]);
+		//}
 		UltiDraw.End();
 	}
 
