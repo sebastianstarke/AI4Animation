@@ -3,7 +3,7 @@ AI4Animation
 
 Copyright Information
 ------------
-This code implementation is only for research or education purposes, and (especially the learned data) not available for commercial use, redistribution, sublicensing etc. The intellectual property and code implementation belongs to the University of Edinburgh. For scientific use, please reference this repository together with the PFNN paper below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
+This code implementation is only for research or education purposes, and (especially the learned data) not available for commercial use, redistribution, sublicensing etc. The intellectual property and code implementation belongs to the University of Edinburgh. For scientific use, please reference this repository together with the relevant publications below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
 
 Description
 ------------
