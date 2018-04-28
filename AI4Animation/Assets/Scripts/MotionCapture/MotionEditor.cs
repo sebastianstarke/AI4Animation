@@ -207,7 +207,7 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.Begin();
 
 			Vector3 motion = Quaternion.Euler(0f, GetState().RootMotion.y / Data.Framerate, 0f) * new Vector3(GetState().RootMotion.x, 0f, GetState().RootMotion.z);
-			UltiDraw.DrawArrow(GetState().Root.GetPosition(), GetState().Root.GetPosition() + motion, 0.75f, 0.05f, 0.1f, UltiDraw.IndianRed.Transparent(0.75f));
+			UltiDraw.DrawArrow(GetState().Root.GetPosition(), motion.GetRelativePositionFrom(GetState().Root), 0.75f, 0.05f, 0.1f, UltiDraw.IndianRed.Transparent(0.75f));
 			
 			for(int i=0; i<GetActor().Bones.Length; i++) {
 				UltiDraw.DrawArrow(
