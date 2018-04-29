@@ -495,6 +495,8 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField("Frame");
 						}
 
+						EditorGUILayout.FloatField("Velocity", new Vector3(Target.GetState().RootMotion.x, 0f, Target.GetState().RootMotion.z).magnitude);
+
 						Color[] colors = UltiDraw.GetRainbowColors(Target.Data.Styles.Length);
 						for(int i=0; i<Target.Data.Styles.Length; i++) {
 							float height = 25f;
@@ -654,7 +656,7 @@ public class MotionEditor : MonoBehaviour {
 							case 2:
 							Target.FocusHeight = 0.5f;
 							Target.FocusDistance = 1f;
-							Target.FocusAngle = 180f;
+							Target.FocusAngle = 270f;
 							Target.FocusSmoothing = 0f;
 							Target.Data.ForwardAxis = MotionData.Axis.XNegative;
 							Target.Data.DepthMapAxis = MotionData.Axis.XPositive;
