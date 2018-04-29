@@ -578,6 +578,18 @@ public static class Utility {
 		return System.Math.Sqrt(variance);
 	}
 
+	public static void SoftMax(ref float[] values) {
+        float frac = 0.0f;
+        for(int i=0; i<values.Length; i++) {
+            frac += values[i];
+        }
+		if(frac != 0f) {
+        	for(int i=0; i<values.Length; i++) {
+            	values[i] /= frac;
+        	}
+		}
+	}
+
 	public static Quaternion AverageQuaternions(Quaternion[] quaternions) {
 		Vector3 forward = Vector3.zero;
 		Vector3 upwards = Vector3.zero;
