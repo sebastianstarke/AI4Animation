@@ -12,6 +12,7 @@ public class MotionExporter : EditorWindow {
 
 	public string Directory = string.Empty;
 	public int Framerate = 60;
+	public int BatchSize = 10;
 	public bool[] Export = new bool[0];
 	public SceneAsset[] Animations = new SceneAsset[0];
 
@@ -70,7 +71,8 @@ public class MotionExporter : EditorWindow {
                     }
                 }
 				
-				Framerate = EditorGUILayout.IntField("Framerate", Framerate);				
+				Framerate = EditorGUILayout.IntField("Framerate", Framerate);
+				BatchSize = Mathf.Max(1, EditorGUILayout.IntField("Batch Size", BatchSize));	
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.BeginHorizontal();
@@ -206,6 +208,7 @@ public class MotionExporter : EditorWindow {
 		StreamWriter file = File.CreateText(filename+".txt");
 
 		int sequence = 0;
+		int items = 0;
 
         for(int i=0; i<Animations.Length; i++) {
             if(Export[i]) {
@@ -281,7 +284,11 @@ public class MotionExporter : EditorWindow {
 								line = line.Replace(",",".");
 								file.WriteLine(line);
 
-								yield return new WaitForSeconds(0f);
+								items += 1;
+								if(items == BatchSize) {
+									items = 0;
+									yield return new WaitForSeconds(0f);
+								}
 							}
 						}
 					}

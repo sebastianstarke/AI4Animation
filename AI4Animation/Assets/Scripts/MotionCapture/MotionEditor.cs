@@ -15,6 +15,12 @@ public class MotionEditor : MonoBehaviour {
 	
 	public MotionData Data = null;
 
+	public bool AutoFocus = true;
+	public float FocusHeight = 1f;
+	public float FocusDistance = 2.5f;
+	public float FocusAngle = 180f;
+	public float FocusSmoothing = 0.1f;
+
 	private float Timestamp = 0f;
 	private bool Mirror = false;
 	private bool Playing = false;
@@ -26,12 +32,6 @@ public class MotionEditor : MonoBehaviour {
 	private bool ShowHeightMap = false;
 	private bool ShowDepthMap = false;
 	private bool ShowDepthImage = false;
-
-	public bool AutoFocus = true;
-	public float FocusHeight = 1f;
-	public float FocusDistance = 2.5f;
-	public float FocusAngle = 180f;
-	public float FocusSmoothing = 0.1f;
 
 	private Actor Actor = null;
 	private Transform Scene = null;
