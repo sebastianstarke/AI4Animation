@@ -1,33 +1,9 @@
 {
 	"editor.codeLens": false,
-	"csharp.suppressDotnetInstallWarning": true,
 	"files.associations":
 	{
-		"*.bjs": "javascript",
-		"*.javascript": "javascript",
-		"iostream": "cpp",
-		"system_error": "cpp",
-		"type_traits": "cpp",
-		"limits": "cpp",
-		"*.tcc": "cpp",
-		"cctype": "cpp",
-		"clocale": "cpp",
-		"cstdint": "cpp",
-		"cstdio": "cpp",
-		"cstdlib": "cpp",
-		"cwchar": "cpp",
-		"cwctype": "cpp",
-		"exception": "cpp",
-		"fstream": "cpp",
-		"initializer_list": "cpp",
-		"iosfwd": "cpp",
-		"istream": "cpp",
-		"new": "cpp",
-		"ostream": "cpp",
-		"sstream": "cpp",
-		"stdexcept": "cpp",
-		"streambuf": "cpp",
-		"typeinfo": "cpp"
+		"*.bjs":"javascript",
+		"*.javascript":"javascript"
 	},
 	"files.exclude":
 	{

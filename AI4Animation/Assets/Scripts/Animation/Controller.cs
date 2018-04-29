@@ -73,6 +73,7 @@ public class Controller {
 	public class Style {
 		public string Name;
 		public float Bias = 1f;
+		public float Transition = 0.1f;
 		public KeyCode[] Keys = new KeyCode[0];
 		public bool[] Negations = new bool[0];
 		public Multiplier[] Multipliers = new Multiplier[0];
@@ -163,6 +164,7 @@ public class Controller {
 							Utility.ResetGUIColor();
 							Styles[i].Name = EditorGUILayout.TextField("Name", Styles[i].Name);
 							Styles[i].Bias = EditorGUILayout.FloatField("Bias", Styles[i].Bias);
+							Styles[i].Transition = EditorGUILayout.Slider("Transition", Styles[i].Transition, 0f, 1f);
 							Styles[i].SetKeyCount(EditorGUILayout.IntField("Keys", Styles[i].Keys.Length));
 
 							for(int j=0; j<Styles[i].Keys.Length; j++) {
