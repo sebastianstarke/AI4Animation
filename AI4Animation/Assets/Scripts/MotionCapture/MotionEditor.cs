@@ -88,7 +88,7 @@ public class MotionEditor : MonoBehaviour {
 
 	public void UnloadFile() {
 		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Data));
-		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "None");
+		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, "Empty");
 	}
 
 	public void LoadFrame(float timestamp) {
@@ -288,11 +288,11 @@ public class MotionEditor : MonoBehaviour {
 	[MenuItem("Assets/Create/Motion Capture")]
 	public static void CreateMotionCapture() {
 		string source = Application.dataPath + "/Project/MotionCapture/Setup.unity";
-		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Scene.unity";
+		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Empty.unity";
 		int index = 0;
 		while(File.Exists(destination)) {
 			index += 1;
-			destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Scene (" + index +").unity";
+			destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Empty (" + index +").unity";
 		}
 		if(!File.Exists(source)) {
 			Debug.Log("Source file at path " + source + " does not exist.");

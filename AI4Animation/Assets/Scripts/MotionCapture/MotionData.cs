@@ -616,7 +616,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {
-			Trajectory trajectory = new Trajectory(12, 0);
+			Trajectory trajectory = new Trajectory(12, Data.Styles.Length);
 			for(int i=0; i<6; i++) {
 				Frame previous = Data.GetFrame(Mathf.Clamp(Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
 				trajectory.Points[i].SetTransformation(previous.GetRoot(mirrored));

@@ -8,7 +8,7 @@ public class Trajectory {
 	public Point[] Points = new Point[0];
 
 	private Color[] Colors;
-
+	
 	private static float Width = 0.5f;
 
 	public Trajectory(int size, int styles) {
@@ -182,9 +182,15 @@ public class Trajectory {
 
 		//Styles
 		for(int i=0; i<Points.Length; i+=step) {
+			float r = 0f;
+			float g = 0f;
+			float b = 0f;
 			for(int j=0; j<Points[i].Styles.Length; j++) {
-				UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f*Points[i].Styles[j], Colors[j]);
+				r += Points[i].Styles[j] * Colors[j].r;
+				g += Points[i].Styles[j] * Colors[j].g;
+				b += Points[i].Styles[j] * Colors[j].b;
 			}
+			UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.075f, new Color(r, g, b, 1f));
 		}
 
 		//Projections

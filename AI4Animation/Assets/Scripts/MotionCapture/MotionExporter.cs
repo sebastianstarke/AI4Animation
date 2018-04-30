@@ -213,6 +213,7 @@ public class MotionExporter : EditorWindow {
         for(int i=0; i<Animations.Length; i++) {
             if(Export[i]) {
                 EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[i]));
+				yield return new WaitForSeconds(0f);
                 MotionEditor editor = FindObjectOfType<MotionEditor>();
                 if(editor == null) {
                     Debug.Log("No motion editor found in scene " + Animations[i].name + ".");
