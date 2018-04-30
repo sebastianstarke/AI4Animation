@@ -276,7 +276,7 @@ public class MotionEditor : MonoBehaviour {
 		public FrameState(MotionData.Frame frame, bool mirrored) {
 			Index = frame.Index;
 			Timestamp = frame.Timestamp;
-			Root = frame.GetRoot(mirrored);
+			Root = frame.GetRootTransformation(mirrored);
 			RootMotion = frame.GetRootMotion(mirrored);
 			BoneTransformations = frame.GetBoneTransformations(mirrored);
 			BoneVelocities = frame.GetBoneVelocities(mirrored);
@@ -719,6 +719,7 @@ public class MotionEditor : MonoBehaviour {
 						Utility.SetGUIColor(UltiDraw.LightGrey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Camera");
 							Target.SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", Target.AutoFocus));
 							Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
 							Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
@@ -729,37 +730,14 @@ public class MotionEditor : MonoBehaviour {
 						Utility.SetGUIColor(UltiDraw.LightGrey);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("General");
+
 							Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
 							Target.Data.ForwardAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Forward Axis", Target.Data.ForwardAxis);
-							Target.Data.SetMotionSmoothing(EditorGUILayout.Slider("Motion Smoothing", Target.Data.MotionSmoothing, 0f, 1f));
-						}
 
-						Utility.SetGUIColor(UltiDraw.LightGrey);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							EditorGUILayout.LabelField("Styles");
-							Target.Data.SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.Data.StyleTransition, 0.1f, 1f));
-							for(int i=0; i<Target.Data.Styles.Length; i++) {
-								EditorGUILayout.BeginHorizontal();
-								Target.Data.Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.Data.Styles[i]);
-								EditorGUILayout.EndHorizontal();
-							}
-							EditorGUILayout.BeginHorizontal();
-							if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
-								Target.Data.AddStyle("Style");
-							}
-							if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
-								Target.Data.RemoveStyle();
-							}
-							EditorGUILayout.EndHorizontal();
-						}
-
-						Utility.SetGUIColor(UltiDraw.LightGrey);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							EditorGUILayout.LabelField("Sensors");
 							Target.Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.GroundMask), InternalEditorUtility.layers));
 							Target.Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.ObjectMask), InternalEditorUtility.layers));
+							
 							string[] names = new string[Target.Data.Source.Bones.Length];
 							for(int i=0; i<Target.Data.Source.Bones.Length; i++) {
 								names[i] = Target.Data.Source.Bones[i].Name;
@@ -771,6 +749,21 @@ public class MotionEditor : MonoBehaviour {
 							Target.Data.DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.Data.DepthMapResolution);
 							Target.Data.DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.Data.DepthMapSize);
 							Target.Data.DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.Data.DepthMapDistance);
+							
+							Target.Data.SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.Data.StyleTransition, 0.1f, 1f));
+							for(int i=0; i<Target.Data.Styles.Length; i++) {
+								EditorGUILayout.BeginHorizontal();
+								Target.Data.Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.Data.Styles[i]);
+								EditorGUILayout.EndHorizontal();
+							}
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+								Target.Data.AddStyle("Style");
+							}
+							if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+								Target.Data.RemoveStyle();
+							}
+							EditorGUILayout.EndHorizontal();
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);
