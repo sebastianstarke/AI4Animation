@@ -144,7 +144,7 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionData.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionExporter.cs" />
-     <Compile Include="Assets\Scripts\MotionCapture\MotionProcessor.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionTools.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\EditorCoroutines.cs" />

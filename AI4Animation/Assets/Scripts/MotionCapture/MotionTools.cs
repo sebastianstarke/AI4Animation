@@ -5,7 +5,7 @@ using System.IO;
 using System.Collections;
 using UnityEditor.SceneManagement;
 
-public class MotionProcessor : EditorWindow {
+public class MotionTools : EditorWindow {
 
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
@@ -14,9 +14,9 @@ public class MotionProcessor : EditorWindow {
 	public bool[] Active = new bool[0];
 	public MotionData[] Data = new MotionData[0];
 
-	[MenuItem ("Addons/Motion Processor")]
+	[MenuItem ("Addons/Motion Tools")]
 	static void Init() {
-		Window = EditorWindow.GetWindow(typeof(MotionProcessor));
+		Window = EditorWindow.GetWindow(typeof(MotionTools));
 		Scroll = Vector3.zero;
 	}
 	
@@ -34,7 +34,7 @@ public class MotionProcessor : EditorWindow {
 				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField("Processor");
+					EditorGUILayout.LabelField("Tools");
 				}
 
 				if(Utility.GUIButton("Verify Data", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -129,27 +129,42 @@ public class MotionProcessor : EditorWindow {
 	}
 
 	private void ExamineData() {
-		float sum = 0f;
-		float[] style = new float[Data[0].Styles.Length];
+		float stylesSum = 0f;
+		int sequences = 0;
+		int frames = 0;
+		float[] styles = new float[Data[0].Styles.Length];
 		for(int i=0; i<Data.Length; i++) {
 			if(Active[i]) {
-				for(int f=0; f<Data[i].GetTotalFrames(); f++) {
-					for(int s=0; s<Data[i].Frames[f].StyleValues.Length; s++) {
-						float value = Data[i].Frames[f].StyleValues[s];
-						style[s] += value;
-						sum += value;
+				for(int m=1; m<=2; m++) {
+					for(int s=0; s<Data[i].Sequences.Length; s++) {
+						for(int e=0; e<Data[i].Sequences[s].Export; e++) {
+							sequences += 1;
+							int start = Data[i].Sequences[s].Start;
+							int end = Data[i].Sequences[s].End;
+							for(int f=start; f<=end; f++) {
+								frames += 1;
+								for(int index=0; index<Data[i].Frames[f].StyleValues.Length; index++) {
+									float value = Data[i].Frames[f].StyleValues[index];
+									styles[index] += value;
+									stylesSum += value;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-		for(int i=0; i<style.Length; i++) {
-			Debug.Log(Data[0].Styles[i] + " -> " + style[i] / sum + "%");
+
+		Debug.Log("Sequences: " + sequences);
+		Debug.Log("Frames: " + frames);
+		for(int i=0; i<styles.Length; i++) {
+			Debug.Log(Data[0].Styles[i] + " -> " + styles[i] / stylesSum + "%");
 		}
 	}
 
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
-            if(Active[i]) {
+        	if(Active[i]) {
 				//Data[i].HeightMapSize = 0.25f;
 				//Data[i].DepthMapResolution = 20;
 				//Data[i].DepthMapSize = 10f;

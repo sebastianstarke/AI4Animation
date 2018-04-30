@@ -425,6 +425,30 @@ public static class Utility {
 		}
 	}
 
+	public static int ComputeSum(int[] values) {
+		int sum = 0;
+		for(int i=0; i<values.Length; i++) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
+	public static float ComputeSum(float[] values) {
+		float sum = 0f;
+		for(int i=0; i<values.Length; i++) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
+	public static double ComputeSum(double[] values) {
+		double sum = 0.0;
+		for(int i=0; i<values.Length; i++) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
 	public static int ComputeMin(int[] values) {
 		if(values.Length == 0) {
 			return 0;

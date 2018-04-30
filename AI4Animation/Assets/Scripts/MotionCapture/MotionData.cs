@@ -8,6 +8,8 @@ public class MotionData : ScriptableObject {
 
 	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative,ZNegative};
 
+	public SceneAsset Scene;
+
 	public BVHData Source;
 
 	public string Name = string.Empty;
@@ -431,16 +433,19 @@ public class MotionData : ScriptableObject {
 		public MotionData Data;
 		public int Start;
 		public int End;
+		public int Export;
 
 		public Sequence(MotionData data) {
 			Data = data;
 			Auto();
+			Export = 1;
 		}
 
 		public Sequence(MotionData data, int start, int end) {
 			Data = data;
 			Start = start;
 			End = end;
+			Export = 1;
 		}
 
 		public int GetLength() {

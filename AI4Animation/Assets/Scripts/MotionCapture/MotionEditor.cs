@@ -82,6 +82,7 @@ public class MotionEditor : MonoBehaviour {
 			return;
 		}
 		Data = ScriptableObject.CreateInstance<MotionData>().Create(Path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
+		Data.Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
 		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
 		LoadFrame(0f);
 	}
@@ -597,13 +598,15 @@ public class MotionEditor : MonoBehaviour {
 								Utility.ResetGUIColor();
 								EditorGUILayout.BeginHorizontal();
 								GUILayout.FlexibleSpace();
-								if(Utility.GUIButton("Auto", UltiDraw.DarkGrey, UltiDraw.White)) {
+								if(Utility.GUIButton("Auto", UltiDraw.DarkGrey, UltiDraw.White, 80f, 16f)) {
 									Target.Data.Sequences[i].Auto();
 								}
 								EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
-								Target.Data.Sequences[i].Start = EditorGUILayout.IntSlider(Target.Data.Sequences[i].Start, 1, Target.Data.GetTotalFrames(), GUILayout.Width(200f));
+								Target.Data.Sequences[i].Start = EditorGUILayout.IntField(Target.Data.Sequences[i].Start, GUILayout.Width(100f));
 								EditorGUILayout.LabelField("End", GUILayout.Width(50f));
-								Target.Data.Sequences[i].End = EditorGUILayout.IntSlider(Target.Data.Sequences[i].End, 1, Target.Data.GetTotalFrames(), GUILayout.Width(200f));
+								Target.Data.Sequences[i].End = EditorGUILayout.IntField(Target.Data.Sequences[i].End, GUILayout.Width(100f));
+								EditorGUILayout.LabelField("Export", GUILayout.Width(50f));
+								Target.Data.Sequences[i].Export = EditorGUILayout.IntField(Target.Data.Sequences[i].Export, GUILayout.Width(100f));
 								GUILayout.FlexibleSpace();
 								EditorGUILayout.EndHorizontal();
 							}

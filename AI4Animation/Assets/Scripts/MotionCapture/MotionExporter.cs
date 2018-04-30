@@ -14,12 +14,24 @@ public class MotionExporter : EditorWindow {
 	public int Framerate = 60;
 	public int BatchSize = 10;
 	public bool[] Export = new bool[0];
-	public SceneAsset[] Animations = new SceneAsset[0];
+	public MotionData[] Animations = new MotionData[0];
+	public StyleFilter[] StyleFilters = new StyleFilter[0];
 
     private bool Exporting = false;
 
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
+
+	[System.Serializable]
+	public class StyleFilter {
+		public string Name;
+		public int[] Indices;
+
+		public StyleFilter(string name, int[] indices) {
+			Name = name;
+			Indices = indices;
+		}
+	}
 
 	[MenuItem ("Addons/Motion Exporter")]
 	static void Init() {
@@ -80,6 +92,28 @@ public class MotionExporter : EditorWindow {
 					LoadDirectory(EditorGUILayout.TextField(Directory));
 					EditorGUILayout.EndHorizontal();
 
+					for(int i=0; i<StyleFilters.Length; i++) {
+						Utility.SetGUIColor(UltiDraw.Cyan);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();					
+							StyleFilters[i].Name = EditorGUILayout.TextField("Name", StyleFilters[i].Name);
+							for(int j=0; j<StyleFilters[i].Indices.Length; j++) {
+								StyleFilters[i].Indices[j] = EditorGUILayout.IntField("ID", StyleFilters[i].Indices[j]);
+							}
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("+", UltiDraw.DarkGrey, UltiDraw.White)) {
+								ArrayExtensions.Expand(ref StyleFilters[i].Indices);
+							}
+							if(Utility.GUIButton("-", UltiDraw.DarkGrey, UltiDraw.White)) {
+								ArrayExtensions.Shrink(ref StyleFilters[i].Indices);
+							}
+							EditorGUILayout.EndHorizontal();
+							if(Utility.GUIButton("X", UltiDraw.DarkRed, UltiDraw.White)) {
+								ArrayExtensions.RemoveAt(ref StyleFilters, i);
+							}
+						}
+					}
+
 					for(int i=0; i<Animations.Length; i++) {
 
 						if(Exporting && Animations[i].name == EditorSceneManager.GetActiveScene().name) {
@@ -97,7 +131,7 @@ public class MotionExporter : EditorWindow {
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
 							Export[i] = EditorGUILayout.Toggle(Export[i], GUILayout.Width(20f));
-							Animations[i] = (SceneAsset)EditorGUILayout.ObjectField(Animations[i], typeof(SceneAsset), true);
+							Animations[i] = (MotionData)EditorGUILayout.ObjectField(Animations[i], typeof(MotionData), true);
 							EditorGUILayout.EndHorizontal();
 						}
 					}
@@ -112,16 +146,22 @@ public class MotionExporter : EditorWindow {
 	private void LoadDirectory(string directory) {
 		if(Directory != directory) {
 			Directory = directory;
-			Animations = new SceneAsset[0];
 			Export = new bool[0];
+			Animations = new MotionData[0];
+			StyleFilters = new StyleFilter[0];
 			string path = "Assets/"+Directory;
 			if(AssetDatabase.IsValidFolder(path)) {
-				string[] files = AssetDatabase.FindAssets("t:SceneAsset", new string[1]{path});
-				Animations = new SceneAsset[files.Length];
+				string[] files = AssetDatabase.FindAssets("t:MotionData", new string[1]{path});
 				Export = new bool[files.Length];
+				Animations = new MotionData[files.Length];
 				for(int i=0; i<files.Length; i++) {
-					Animations[i] = (SceneAsset)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(SceneAsset));
 					Export[i] = true;
+					Animations[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(MotionData));
+				}
+				
+				StyleFilters = new StyleFilter[Animations[0].Styles.Length];
+				for(int i=0; i<StyleFilters.Length; i++) {
+					StyleFilters[i] = new StyleFilter(Animations[0].Styles[i], new int[1]{i});
 				}
 			}
 		}
@@ -144,44 +184,39 @@ public class MotionExporter : EditorWindow {
 		}
 		StreamWriter file = File.CreateText(filename+".txt");
 
-		EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[0]));
-		MotionEditor editor = FindObjectOfType<MotionEditor>();
-		if(editor == null) {
-			Debug.Log("No motion editor found in scene " + Animations[0].name + ".");
-		} else {
-			int index = 0;
-			file.WriteLine(index + " " + "Sequence"); index += 1;
-			file.WriteLine(index + " " + "Frame"); index += 1;
-			file.WriteLine(index + " " + "Timestamp"); index += 1;
-			for(int i=0; i<editor.GetActor().Bones.Length; i++) {
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"+(i+1)); index += 1;
-			}
-			for(int i=1; i<=12; i++) {
-				file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
-				for(int j=1; j<=editor.Data.Styles.Length; j++) {
-					file.WriteLine(index + " " + editor.Data.Styles[j-1] + i); index += 1;
-				}
-			}
-			file.WriteLine(index + " " + "RootMotionX"); index += 1;
-			file.WriteLine(index + " " + "RootMotionY"); index += 1;
-			file.WriteLine(index + " " + "RootMotionZ"); index += 1;
+
+		int index = 0;
+		file.WriteLine(index + " " + "Sequence"); index += 1;
+		file.WriteLine(index + " " + "Frame"); index += 1;
+		file.WriteLine(index + " " + "Timestamp"); index += 1;
+		for(int i=0; i<Animations[0].Source.Bones.Length; i++) {
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "PositionX"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "PositionY"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "PositionZ"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "ForwardX"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "ForwardY"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "ForwardZ"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "UpX"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "UpY"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "UpZ"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "VelocityX"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "VelocityY"+(i+1)); index += 1;
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "VelocityZ"+(i+1)); index += 1;
 		}
+		for(int i=1; i<=12; i++) {
+			file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+			for(int j=1; j<=StyleFilters.Length; j++) {
+				file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
+			}
+		}
+		file.WriteLine(index + " " + "RootMotionX"); index += 1;
+		file.WriteLine(index + " " + "RootMotionY"); index += 1;
+		file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
         yield return new WaitForSeconds(0f);
 
@@ -212,7 +247,7 @@ public class MotionExporter : EditorWindow {
 
         for(int i=0; i<Animations.Length; i++) {
             if(Export[i]) {
-                EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[i]));
+                EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(Animations[i].Scene));
 				yield return new WaitForSeconds(0f);
                 MotionEditor editor = FindObjectOfType<MotionEditor>();
                 if(editor == null) {
@@ -220,75 +255,77 @@ public class MotionExporter : EditorWindow {
                 } else {
 					for(int m=1; m<=2; m++) {
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {
-							sequence += 1;
-							float start = editor.Data.GetFrame(editor.Data.Sequences[s].Start).Timestamp;
-							float end = editor.Data.GetFrame(editor.Data.Sequences[s].End).Timestamp;
-							for(float t=start; t<=end; t+=1f/Framerate) {
-								string line = string.Empty;
+							for(int e=0; e<editor.Data.Sequences[s].Export; e++) {
+								sequence += 1;
+								float start = editor.Data.GetFrame(editor.Data.Sequences[s].Start).Timestamp;
+								float end = editor.Data.GetFrame(editor.Data.Sequences[s].End).Timestamp;
+								for(float t=start; t<=end; t+=1f/Framerate) {
+									string line = string.Empty;
 
-								if(m==1) {
-									editor.SetMirror(false);
-								} else {
-									editor.SetMirror(true);
-								}
-								editor.LoadFrame(t);
-								MotionEditor.FrameState state = editor.GetState();
+									if(m==1) {
+										editor.SetMirror(false);
+									} else {
+										editor.SetMirror(true);
+									}
+									editor.LoadFrame(t);
+									MotionEditor.FrameState state = editor.GetState();
 
-								line += sequence + Separator;
-								line += state.Index + Separator;
-								line += state.Timestamp + Separator;
+									line += sequence + Separator;
+									line += state.Index + Separator;
+									line += state.Timestamp + Separator;
 
-								//Bone data
-								for(int k=0; k<state.BoneTransformations.Length; k++) {
-									//Position
-									line += FormatVector3(state.BoneTransformations[k].GetPosition().GetRelativePositionTo(state.Root));
+									//Bone data
+									for(int k=0; k<state.BoneTransformations.Length; k++) {
+										//Position
+										line += FormatVector3(state.BoneTransformations[k].GetPosition().GetRelativePositionTo(state.Root));
 
-									//Rotation
-									line += FormatVector3(state.BoneTransformations[k].GetForward().GetRelativeDirectionTo(state.Root));
-									line += FormatVector3(state.BoneTransformations[k].GetUp().GetRelativeDirectionTo(state.Root));
+										//Rotation
+										line += FormatVector3(state.BoneTransformations[k].GetForward().GetRelativeDirectionTo(state.Root));
+										line += FormatVector3(state.BoneTransformations[k].GetUp().GetRelativeDirectionTo(state.Root));
 
-									//Bone Velocity
-									line += FormatVector3(state.BoneVelocities[k].GetRelativeDirectionTo(state.Root));
-								}
-								
-								//Trajectory data
-								for(int k=0; k<12; k++) {
-									Vector3 position = state.Trajectory.Points[k].GetPosition().GetRelativePositionTo(state.Root);
-									Vector3 direction = state.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(state.Root);
-									Vector3 velocity = state.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(state.Root);
-									line += FormatValue(position.x);
-									line += FormatValue(position.z);
-									line += FormatValue(direction.x);
-									line += FormatValue(direction.z);
-									line += FormatValue(velocity.x);
-									line += FormatValue(velocity.z);
-									line += FormatArray(state.Trajectory.Points[k].Styles);
-								}
+										//Bone Velocity
+										line += FormatVector3(state.BoneVelocities[k].GetRelativeDirectionTo(state.Root));
+									}
+									
+									//Trajectory data
+									for(int k=0; k<12; k++) {
+										Vector3 position = state.Trajectory.Points[k].GetPosition().GetRelativePositionTo(state.Root);
+										Vector3 direction = state.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(state.Root);
+										Vector3 velocity = state.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(state.Root);
+										line += FormatValue(position.x);
+										line += FormatValue(position.z);
+										line += FormatValue(direction.x);
+										line += FormatValue(direction.z);
+										line += FormatValue(velocity.x);
+										line += FormatValue(velocity.z);
+										line += FormatArray(FilterStyle(state.Trajectory.Points[k].Styles));
+									}
 
-								//Height map
-								//for(int k=0; k<state.HeightMap.Points.Length; k++) {
-								//	float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
-								//	line += FormatValue(distance);
-								//}
+									//Height map
+									//for(int k=0; k<state.HeightMap.Points.Length; k++) {
+									//	float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
+									//	line += FormatValue(distance);
+									//}
 
-								//Depth map
-								//for(int k=0; k<state.DepthMap.Points.Length; k++) {
-								//	float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
-								//	line += FormatValue(distance);
-								//}
+									//Depth map
+									//for(int k=0; k<state.DepthMap.Points.Length; k++) {
+									//	float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
+									//	line += FormatValue(distance);
+									//}
 
-								//Root motion
-								line += FormatVector3(state.RootMotion);
+									//Root motion
+									line += FormatVector3(state.RootMotion);
 
-								//Finish
-								line = line.Remove(line.Length-1);
-								line = line.Replace(",",".");
-								file.WriteLine(line);
+									//Finish
+									line = line.Remove(line.Length-1);
+									line = line.Replace(",",".");
+									file.WriteLine(line);
 
-								items += 1;
-								if(items == BatchSize) {
-									items = 0;
-									yield return new WaitForSeconds(0f);
+									items += 1;
+									if(items == BatchSize) {
+										items = 0;
+										yield return new WaitForSeconds(0f);
+									}
 								}
 							}
 						}
@@ -302,6 +339,17 @@ public class MotionExporter : EditorWindow {
 		file.Close();
 
         Exporting = false;
+	}
+
+	private float[] FilterStyle(float[] style) {
+		float[] filter = new float[StyleFilters.Length];
+		for(int i=0; i<StyleFilters.Length; i++) {
+			filter[i] = 0f;
+			for(int j=0; j<StyleFilters[i].Indices.Length; j++) {
+				filter[i] += style[StyleFilters[i].Indices[j]];
+			}
+		}
+		return filter;
 	}
 
 	private string FormatString(string value) {
