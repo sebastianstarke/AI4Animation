@@ -15,16 +15,15 @@ public class MotionEditor : MonoBehaviour {
 	
 	public MotionData Data = null;
 
-	public bool AutoFocus = true;
-	public float FocusHeight = 1f;
-	public float FocusDistance = 2.5f;
-	public float FocusAngle = 180f;
-	public float FocusSmoothing = 0.1f;
-
-	private float Timestamp = 0f;
+	private bool AutoFocus = true;
+	private float FocusHeight = 1f;
+	private float FocusDistance = 2.5f;
+	private float FocusAngle = 270f;
+	private float FocusSmoothing = 0.05f;
 	private bool Mirror = false;
 	private bool Playing = false;
 	private float Timescale = 1f;
+	private float Timestamp = 0f;
 
 	private bool ShowMotion = false;
 	private bool ShowVelocities = false;
@@ -36,6 +35,25 @@ public class MotionEditor : MonoBehaviour {
 	private Actor Actor = null;
 	private Transform Scene = null;
 	private FrameState State;
+
+	public void VisualiseMotion(bool value) {
+		ShowMotion = value;
+	}
+	public void VisualiseVelocities(bool value) {
+		ShowVelocities = value;
+	}
+	public void VisualiseTrajectory(bool value) {
+		ShowTrajectory = value;
+	}
+	public void VisualiseHeightMap(bool value) {
+		ShowHeightMap = value;
+	}
+	public void VisualiseDepthMap(bool value) {
+		ShowDepthMap = value;
+	}
+	public void VisualiseDepthImage(bool value) {
+		ShowDepthImage = value;
+	}
 
 	public void SetAutoFocus(bool value) {
 		if(Data == null) {
@@ -206,10 +224,6 @@ public class MotionEditor : MonoBehaviour {
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
-
-			Vector3 motion = Quaternion.Euler(0f, GetState().RootMotion.y / Data.Framerate, 0f) * new Vector3(GetState().RootMotion.x, 0f, GetState().RootMotion.z);
-			UltiDraw.DrawArrow(GetState().Root.GetPosition(), motion.GetRelativePositionFrom(GetState().Root), 0.75f, 0.05f, 0.1f, UltiDraw.IndianRed.Transparent(0.75f));
-			
 			for(int i=0; i<GetActor().Bones.Length; i++) {
 				UltiDraw.DrawArrow(
 					GetActor().Bones[i].Transform.position,
@@ -422,6 +436,25 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.ObjectField("Data", Target.Data, typeof(MotionData), true);
 					}
 
+					Utility.SetGUIColor(UltiDraw.Grey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.LabelField("Camera");
+						}
+
+						if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+							Target.SetAutoFocus(!Target.AutoFocus);
+						}
+						Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+						Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+						Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+						Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+					}
+
 					Utility.SetGUIColor(UltiDraw.LightGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
@@ -495,9 +528,7 @@ public class MotionEditor : MonoBehaviour {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Frame");
 						}
-
-						EditorGUILayout.FloatField("Velocity", new Vector3(Target.GetState().RootMotion.x, 0f, Target.GetState().RootMotion.z).magnitude);
-
+						
 						Color[] colors = UltiDraw.GetRainbowColors(Target.Data.Styles.Length);
 						for(int i=0; i<Target.Data.Styles.Length; i++) {
 							float height = 25f;
@@ -714,17 +745,6 @@ public class MotionEditor : MonoBehaviour {
 							if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
 								Target.CreateSkeleton();
 							}
-						}
-
-						Utility.SetGUIColor(UltiDraw.LightGrey);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							EditorGUILayout.LabelField("Camera");
-							Target.SetAutoFocus(EditorGUILayout.Toggle("Auto Focus", Target.AutoFocus));
-							Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
-							Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
-							Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
-							Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
 						}
 
 						Utility.SetGUIColor(UltiDraw.LightGrey);

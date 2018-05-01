@@ -57,6 +57,14 @@ public class Trajectory {
 		return length;
 	}
 
+	public float GetLength(int start, int end) {
+		float length = 0f;
+		for(int i=start+1; i<end; i++) {
+			length += Vector3.Distance(Points[i-1].GetPosition(), Points[i].GetPosition());
+		}
+		return length;
+	}
+
 	public void Postprocess() {
 		for(int i=0; i<Points.Length; i++) {
 			Points[i].Postprocess();
@@ -216,6 +224,17 @@ public class Trajectory {
 			//Vector3 end = Points[i].GetPosition() + Points[i].GetVelocity();
 			//end = Utility.ProjectGround(end, LayerMask.GetMask("Ground"));
 			//UltiDraw.DrawLine(start, end, 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
+			/*
+			float r = 0f;
+			float g = 0f;
+			float b = 0f;
+			for(int j=0; j<Points[i].Styles.Length; j++) {
+				r += Points[i].Styles[j] * Colors[j].r;
+				g += Points[i].Styles[j] * Colors[j].g;
+				b += Points[i].Styles[j] * Colors[j].b;
+			}
+			*/
+			//UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, new Color(r, g, b, 0.5f));
 			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
 		}
 

@@ -208,8 +208,9 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
+			//file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+			//file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
 			for(int j=1; j<=StyleFilters.Length; j++) {
 				file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			}
@@ -253,6 +254,8 @@ public class MotionExporter : EditorWindow {
                 if(editor == null) {
                     Debug.Log("No motion editor found in scene " + Animations[i].name + ".");
                 } else {
+					editor.VisualiseTrajectory(true);
+					editor.VisualiseVelocities(true);
 					for(int m=1; m<=2; m++) {
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {
 							for(int e=0; e<editor.Data.Sequences[s].Export; e++) {
@@ -296,8 +299,12 @@ public class MotionExporter : EditorWindow {
 										line += FormatValue(position.z);
 										line += FormatValue(direction.x);
 										line += FormatValue(direction.z);
-										line += FormatValue(velocity.x);
-										line += FormatValue(velocity.z);
+										line += FormatValue(velocity.magnitude);
+										//line += FormatValue(velocity.x);
+										//line += FormatValue(velocity.z);
+										if(velocity.y > 0.001f || velocity.y < -0.001f) {
+											Debug.Log("Velocity error with " + velocity.y + "!");
+										}
 										line += FormatArray(FilterStyle(state.Trajectory.Points[k].Styles));
 									}
 
