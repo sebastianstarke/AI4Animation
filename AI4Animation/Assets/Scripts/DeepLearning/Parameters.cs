@@ -23,6 +23,7 @@ namespace DeepLearning {
                         matrix.Values[x].Values[y] = reader.ReadSingle();
                     }
                 }
+                reader.Close();
             } catch (System.Exception e) {
                 Debug.Log(e.Message);
                 return null;

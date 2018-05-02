@@ -543,8 +543,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
-			Vector3 velocity = (0.5f*(GetNextFrame().World[index].GetPosition() - World[index].GetPosition()) + 0.5f*(World[index].GetPosition() - GetPreviousFrame().World[index].GetPosition())) * Data.Framerate;
-			return mirrored ? velocity.GetMirror(Data.GetAxis(Data.MirrorAxis)) : velocity;
+			return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 		}
 
 		public Matrix4x4 GetRootTransformation(bool mirrored) {
@@ -561,6 +560,10 @@ public class MotionData : ScriptableObject {
 			return Quaternion.LookRotation(forward, Vector3.up);
 		}
 
+		public Vector3 GetRootVelocity(bool mirrored) {
+			return (GetRootPosition(mirrored) - GetPreviousFrame().GetRootPosition(mirrored)) * Data.Framerate;
+		}
+
 		public Vector3 GetRootMotion(bool mirrored) {
 			Matrix4x4 currentRoot = GetRootTransformation(mirrored);
 			Matrix4x4 previousRoot = GetPreviousFrame().GetRootTransformation(mirrored);
@@ -568,14 +571,7 @@ public class MotionData : ScriptableObject {
 			return new Vector3(delta.GetPosition().x, Vector3.SignedAngle(Vector3.forward, delta.GetForward(), Vector3.up), delta.GetPosition().z) * Data.Framerate;
 		}
 
-		public Vector3 GetRootVelocity(bool mirrored) {
-			Vector3 velocity = (0.5f*(GetNextFrame().GetRootPosition(mirrored) - GetRootPosition(mirrored)) + 0.5f*(GetRootPosition(mirrored) - GetPreviousFrame().GetRootPosition(mirrored))) * Data.Framerate;
-			velocity.y = 0f;
-			return velocity;
-		}
-
-		public Vector3 GetTargetVelocity(bool mirrored) {
-			Vector3 direction = Vector3.zero;
+		public float GetSpeed(bool mirrored) {
 			float length = 0f;
 			Vector3[] positions = new Vector3[6];
 			positions[0] = GetRootPosition(mirrored);
@@ -587,9 +583,8 @@ public class MotionData : ScriptableObject {
 			}
 			for(int i=1; i<=5; i++) {
 				length += Vector3.Distance(positions[i-1], positions[i]);
-				direction += positions[i] - positions[i-1];
 			}
-			return length * direction.normalized;
+			return length;
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {
@@ -597,16 +592,19 @@ public class MotionData : ScriptableObject {
 			for(int i=0; i<6; i++) {
 				Frame previous = Data.GetFrame(Mathf.Clamp(Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
 				trajectory.Points[i].SetTransformation(previous.GetRootTransformation(mirrored));
-				trajectory.Points[i].SetVelocity(previous.GetTargetVelocity(mirrored));
+				trajectory.Points[i].SetVelocity(previous.GetRootVelocity(mirrored));
+				trajectory.Points[i].SetSpeed(previous.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = (float[])previous.StyleValues.Clone();
 			}
 			trajectory.Points[6].SetTransformation(GetRootTransformation(mirrored));
-			trajectory.Points[6].SetVelocity(GetTargetVelocity(mirrored));
+			trajectory.Points[6].SetVelocity(GetRootVelocity(mirrored));
+			trajectory.Points[6].SetSpeed(GetSpeed(mirrored));
 			trajectory.Points[6].Styles = (float[])StyleValues.Clone();
 			for(int i=1; i<=5; i++) {
 				Frame future = Data.GetFrame(Mathf.Clamp(Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				trajectory.Points[6+i].SetTransformation(future.GetRootTransformation(mirrored));
-				trajectory.Points[6+i].SetVelocity(future.GetTargetVelocity(mirrored));
+				trajectory.Points[6+i].SetVelocity(future.GetRootVelocity(mirrored));
+				trajectory.Points[6+1].SetSpeed(future.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = (float[])future.StyleValues.Clone();
 			}
 			return trajectory;

@@ -76,6 +76,7 @@ public class Trajectory {
 		[SerializeField] private int Index;
 		[SerializeField] private Matrix4x4 Transformation;
 		[SerializeField] private Vector3 Velocity;
+		[SerializeField] private float Speed;
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
 		[SerializeField] private float Slope;
@@ -139,6 +140,14 @@ public class Trajectory {
 			return Velocity;
 		}
 
+		public void SetSpeed(float speed) {
+			Speed = speed;
+		}
+
+		public float GetSpeed() {
+			return Speed;
+		}
+
 		public void SetLeftsample(Vector3 position) {
 			LeftSample = position;
 		}
@@ -188,7 +197,7 @@ public class Trajectory {
 			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, UltiDraw.Black);
 		}
 
-		//Styles
+		//Styles and Speed
 		for(int i=0; i<Points.Length; i+=step) {
 			float r = 0f;
 			float g = 0f;
@@ -198,7 +207,8 @@ public class Trajectory {
 				g += Points[i].Styles[j] * Colors[j].g;
 				b += Points[i].Styles[j] * Colors[j].b;
 			}
-			UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.075f, new Color(r, g, b, 1f));
+			UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f, new Color(r, g, b, 1f));
+			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetSpeed() * Points[i].GetTransformation().GetForward(), 0.8f, 0.02f, 0.04f, new Color(r, g, b, 0.5f));
 		}
 
 		//Projections

@@ -208,9 +208,9 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocity"+i); index += 1;
-			//file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
-			//file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+			file.WriteLine(index + " " + "TrajectorySpeed"+i); index += 1;
 			for(int j=1; j<=StyleFilters.Length; j++) {
 				file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			}
@@ -295,16 +295,14 @@ public class MotionExporter : EditorWindow {
 										Vector3 position = state.Trajectory.Points[k].GetPosition().GetRelativePositionTo(state.Root);
 										Vector3 direction = state.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(state.Root);
 										Vector3 velocity = state.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(state.Root);
+										float speed = state.Trajectory.Points[k].GetSpeed();
 										line += FormatValue(position.x);
 										line += FormatValue(position.z);
 										line += FormatValue(direction.x);
 										line += FormatValue(direction.z);
-										line += FormatValue(velocity.magnitude);
-										//line += FormatValue(velocity.x);
-										//line += FormatValue(velocity.z);
-										if(velocity.y > 0.001f || velocity.y < -0.001f) {
-											Debug.Log("Velocity error with " + velocity.y + "!");
-										}
+										line += FormatValue(velocity.x);
+										line += FormatValue(velocity.z);
+										line += FormatValue(speed);
 										line += FormatArray(FilterStyle(state.Trajectory.Points[k].Styles));
 									}
 
