@@ -17,6 +17,7 @@ public class MotionEditor : MonoBehaviour {
 
 	private bool AutoFocus = true;
 	private float FocusHeight = 1f;
+	private float FocusOffset = 0f;
 	private float FocusDistance = 2.5f;
 	private float FocusAngle = 270f;
 	private float FocusSmoothing = 0.05f;
@@ -26,6 +27,7 @@ public class MotionEditor : MonoBehaviour {
 	private float Timestamp = 0f;
 
 	private bool ShowMotion = false;
+	private bool ShowTrail = false;
 	private bool ShowVelocities = false;
 	private bool ShowTrajectory = false;
 	private bool ShowHeightMap = false;
@@ -38,6 +40,9 @@ public class MotionEditor : MonoBehaviour {
 
 	public void VisualiseMotion(bool value) {
 		ShowMotion = value;
+	}
+	public void VisualiseTrail(bool value) {
+		ShowTrail = value;
 	}
 	public void VisualiseVelocities(bool value) {
 		ShowVelocities = value;
@@ -136,6 +141,7 @@ public class MotionEditor : MonoBehaviour {
 				rotation.x = 0f;
 				rotation.z = 0f;
 				rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+				position += FocusOffset * (rotation * Vector3.right);
 				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
 			}
 		}
@@ -221,6 +227,23 @@ public class MotionEditor : MonoBehaviour {
 				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
 
 			}
+		}
+		if(ShowTrail) {
+			UltiDraw.Begin();
+			MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp - 3f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp + 3f, 0f, Data.GetTotalTime()));
+			int[] indices = new int[4];
+			indices[0] = Data.Source.FindBone("LeftHandSite").Index;
+			indices[1] = Data.Source.FindBone("RightHandSite").Index;
+			indices[2] = Data.Source.FindBone("LeftFootSite").Index;
+			indices[3] = Data.Source.FindBone("RightFootSite").Index;
+			Color[] colors = UltiDraw.GetRainbowColors(indices.Length);
+			for(int i=0; i<indices.Length; i++) {
+				for(int f=1; f<frames.Length; f++) {
+					UltiDraw.DrawLine(frames[f-1].GetBoneTransformation(indices[i], Mirror).GetPosition(), frames[f].GetBoneTransformation(indices[i], Mirror).GetPosition(), 0.0075f, colors[i]);
+				}
+				UltiDraw.DrawSphere(GetState().BoneTransformations[indices[i]].GetPosition(), GetState().BoneTransformations[indices[i]].GetRotation(), 0.05f, colors[i]);
+			}
+			UltiDraw.End();
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
@@ -450,6 +473,7 @@ public class MotionEditor : MonoBehaviour {
 							Target.SetAutoFocus(!Target.AutoFocus);
 						}
 						Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+						Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
 						Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
 						Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
 						Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
@@ -501,6 +525,9 @@ public class MotionEditor : MonoBehaviour {
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Motion", Target.ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowMotion = !Target.ShowMotion;
+					}
+					if(Utility.GUIButton("Trail", Target.ShowTrail ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.ShowTrail = !Target.ShowTrail;
 					}
 					if(Utility.GUIButton("Trajectory", Target.ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowTrajectory = !Target.ShowTrajectory;
@@ -668,10 +695,6 @@ public class MotionEditor : MonoBehaviour {
 							case 0:
 							break;
 							case 1:
-							Target.FocusHeight = 1f;
-							Target.FocusDistance = 2.5f;
-							Target.FocusAngle = 270f;
-							Target.FocusSmoothing = 0.1f;
 							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
 							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
 							Target.Data.SetUnitScale(10f);
@@ -688,10 +711,6 @@ public class MotionEditor : MonoBehaviour {
 							break;
 
 							case 2:
-							Target.FocusHeight = 0.5f;
-							Target.FocusDistance = 1f;
-							Target.FocusAngle = 270f;
-							Target.FocusSmoothing = 0f;
 							Target.Data.ForwardAxis = MotionData.Axis.XNegative;
 							Target.Data.DepthMapAxis = MotionData.Axis.XPositive;
 							Target.Data.SetUnitScale(100f);
@@ -718,10 +737,6 @@ public class MotionEditor : MonoBehaviour {
 							break;
 
 							case 3:
-							Target.FocusHeight = 1f;
-							Target.FocusDistance = 2.5f;
-							Target.FocusAngle = 270f;
-							Target.FocusSmoothing = 0.1f;
 							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
 							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
 							Target.Data.SetUnitScale(100f);

@@ -11,6 +11,25 @@ public class AgilityMeasure : MonoBehaviour {
 	private Quaternion[] PreviousRotations;
 	private List<float> Values;
 
+	[ContextMenu("Setup")]
+	public void Setup() {
+		Bones = new Transform[0];
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftUpLeg"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftLeg"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftFoot"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightUpLeg"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightLeg"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightFoot"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftShoulder"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftArm"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftForeArm"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("LeftHand"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightShoulder"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightArm"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightForeArm"));
+		ArrayExtensions.Add(ref Bones, GetComponent<Actor>().FindTransform("RightHand"));
+	}
+
 	void Start() {
 		PreviousRotations = new Quaternion[Bones.Length];
 		for(int i=0; i<PreviousRotations.Length; i++) {

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 
 public class MotionTools : EditorWindow {
@@ -13,6 +14,9 @@ public class MotionTools : EditorWindow {
 	public string Directory = string.Empty;
 	public bool[] Active = new bool[0];
 	public MotionData[] Data = new MotionData[0];
+
+	private static string Separator = " ";
+	private static string Accuracy = "F5";
 
 	[MenuItem ("Addons/Motion Tools")]
 	static void Init() {
@@ -47,6 +51,10 @@ public class MotionTools : EditorWindow {
 
 				if(Utility.GUIButton("Process Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ProcessData();
+				}
+
+				if(Utility.GUIButton("Print Velocity Profiles", UltiDraw.DarkGrey, UltiDraw.White)) {
+					PrintVelocityProfiles();
 				}
 
 				EditorGUILayout.BeginHorizontal();
@@ -174,6 +182,66 @@ public class MotionTools : EditorWindow {
 		}
 		AssetDatabase.SaveAssets();
 		AssetDatabase.Refresh();
+	}
+
+	private void PrintVelocityProfiles() {
+		if(Data.Length == 0) {
+			return;
+		}
+		List<float>[] profiles = new List<float>[Data[0].Styles.Length];
+		for(int i=0; i<profiles.Length; i++) {
+			profiles[i] = new List<float>();
+		}
+		for(int i=0; i<Data.Length; i++) {
+			if(Active[i]) {
+				for(int m=1; m<=2; m++) {
+					for(int s=0; s<Data[i].Sequences.Length; s++) {
+						for(int e=0; e<Data[i].Sequences[s].Export; e++) {
+							int start = Data[i].Sequences[s].Start;
+							int end = Data[i].Sequences[s].End;
+							for(int f=start; f<=end; f++) {
+								MotionData.Frame frame = Data[i].GetFrame(f);
+								for(int v=0; v<frame.StyleValues.Length; v++) {
+									if(frame.StyleValues[v] > 0.5f) {
+										profiles[v].Add(frame.GetSpeed(m==2));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		for(int i=0; i<profiles.Length; i++) {
+			ExportFile(Data[0].Styles[i], FormatArray(profiles[i].ToArray()));
+			Debug.Log(Data[0].Styles[i] + " - " + Utility.ComputeMean(profiles[i].ToArray()));
+		}
+	}
+
+	private void ExportFile(string name, string text) {
+		string filename = string.Empty;
+		string folder = Application.dataPath + "/../../../Export/";
+		if(!File.Exists(folder+name+".txt")) {
+			filename = folder+name;
+		} else {
+			int i = 1;
+			while(File.Exists(folder+name+" ("+i+").txt")) {
+				i += 1;
+			}
+			filename = folder+name+" ("+i+")";
+		}
+		StreamWriter data = File.CreateText(filename+".txt");
+		data.Write(text);
+		data.Close();
+	}
+
+	private string FormatArray(float[] array) {
+		string format = string.Empty;
+		for(int i=0; i<array.Length; i++) {
+			format += array[i].ToString(Accuracy) + Separator;
+		}
+		return format;
 	}
 
 }
