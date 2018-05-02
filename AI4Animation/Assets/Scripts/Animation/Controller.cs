@@ -21,6 +21,14 @@ public class Controller {
 
 	}
 	
+	public float[] GetStyle() {
+		float[] style = new float[Styles.Length];
+		for(int i=0; i<Styles.Length; i++) {
+			style[i] = Styles[i].Query() ? 1f : 0f;
+		}
+		return style;
+	}
+
 	public Vector3 QueryMove() {
 		Vector3 move = Vector3.zero;
 		if(Input.GetKey(MoveForward)) {
