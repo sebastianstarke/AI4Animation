@@ -137,10 +137,9 @@ public class MotionTools : EditorWindow {
 	}
 
 	private void ExamineData() {
-		float stylesSum = 0f;
 		int sequences = 0;
 		int frames = 0;
-		float[] styles = new float[Data[0].Styles.Length];
+		int[] styles = new int[Data[0].Styles.Length];
 		for(int i=0; i<Data.Length; i++) {
 			if(Active[i]) {
 				for(int m=1; m<=2; m++) {
@@ -152,9 +151,9 @@ public class MotionTools : EditorWindow {
 							for(int f=start; f<=end; f++) {
 								frames += 1;
 								for(int index=0; index<Data[i].Frames[f].StyleValues.Length; index++) {
-									float value = Data[i].Frames[f].StyleValues[index];
-									styles[index] += value;
-									stylesSum += value;
+									if(Data[i].Frames[f].StyleFlags[index]) {
+										styles[index] += 1;
+									}
 								}
 							}
 						}
@@ -165,8 +164,9 @@ public class MotionTools : EditorWindow {
 
 		Debug.Log("Sequences: " + sequences);
 		Debug.Log("Frames: " + frames);
+		Debug.Log("Time: " + (float)frames/(float)Data[0].Framerate+"s");
 		for(int i=0; i<styles.Length; i++) {
-			Debug.Log(Data[0].Styles[i] + " -> " + styles[i] / stylesSum + "%");
+			Debug.Log(Data[0].Styles[i] + " -> " + (float)styles[i] / (float)frames + "%" + " (" + styles[i] + " frames; " + (float)styles[i]/(float)Data[0].Framerate + "s)");
 		}
 	}
 

@@ -40,11 +40,13 @@ public class TrajectoryController : MonoBehaviour {
 		Trajectory.Point pivot = GetClosestTrajectoryPoint(Target.transform.position);
 		Trajectory.Point[] future = GetFutureTrajectory(pivot);
 		
+		Trajectory.Points[60].SetSpeed(pivot.GetSpeed());
 		for(int i=0; i<future.Length; i++) {
 			Trajectory.Point point = Target.GetTrajectory().Points[60+i+1];
 			point.SetPosition(future[i].GetPosition());
 			point.SetDirection(future[i].GetDirection());
 			point.SetVelocity(future[i].GetVelocity());
+			point.SetSpeed(future[i].GetSpeed());
 			//float weight = (float)(i+1) / (float)future.Length;
 			//point.SetPosition(future[i].GetPosition());
 			//point.SetDirection(future[i].GetDirection());
@@ -169,6 +171,7 @@ public class TrajectoryController : MonoBehaviour {
 					Trajectory.Points[index].SetPosition(current);
 					Trajectory.Points[index].SetDirection((current-previous).normalized);
 					Trajectory.Points[index].SetVelocity(60f*(current-previous));
+					Trajectory.Points[index].SetSpeed(GetSpeed(index));
 					index += 1;
 				}
 			}
@@ -187,6 +190,7 @@ public class TrajectoryController : MonoBehaviour {
 					Trajectory.Points[index].SetPosition(current);
 					Trajectory.Points[index].SetDirection(Quaternion.Euler(0f, Random.Range(-10f, 10f), 0f) * (current-previous).normalized);
 					Trajectory.Points[index].SetVelocity(60f*(current-previous));
+					Trajectory.Points[index].SetSpeed(GetSpeed(index));
 					if(pos == 0) {
 						Trajectory.Points[index].SetVelocity(t * Trajectory.Points[index].GetVelocity());
 					}
@@ -200,6 +204,7 @@ public class TrajectoryController : MonoBehaviour {
 			Trajectory.Points[last].SetPosition(ControlPoints[ControlPoints.Length-1].Transform.position);
 			Trajectory.Points[last].SetDirection((Trajectory.Points[last].GetPosition() - Trajectory.Points[last-1].GetPosition()).normalized);
 			Trajectory.Points[last].SetVelocity(Vector3.zero);
+			Trajectory.Points[last].SetSpeed(GetSpeed(last));
 		}
 
 		Trajectory.Postprocess();
@@ -209,6 +214,22 @@ public class TrajectoryController : MonoBehaviour {
 			SceneView.RepaintAll();
 		}
 		#endif
+	}
+
+	private float GetSpeed(int index) {
+		float speed = 0f;
+		for(int i=index; i<index+50; i++) {
+			speed += Vector3.Distance(GetTrajectoryPoint(i-1).GetPosition(), GetTrajectoryPoint(i).GetPosition());
+		}
+		return speed;
+	}
+
+	private Trajectory.Point GetTrajectoryPoint(int i) {
+		if(Loop) {
+			return Trajectory.Points[(int)Mathf.Repeat((float)i, (float)Trajectory.Points.Length)];
+		} else {
+			return Trajectory.Points[Mathf.Clamp(i, 0, Trajectory.Points.Length-1)];
+		}
 	}
 
 	private int GetControlPoint(int i) {
