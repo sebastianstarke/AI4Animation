@@ -177,6 +177,9 @@ public class MotionTools : EditorWindow {
 				//Data[i].DepthMapResolution = 20;
 				//Data[i].DepthMapSize = 10f;
 				//Data[i].DepthMapDistance = 10f;
+				for(int e=0; e<Data[i].Sequences.Length; e++) {
+					Data[i].Sequences[e].Export = 1;
+				}
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

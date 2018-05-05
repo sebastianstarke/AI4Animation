@@ -5,144 +5,28 @@ using UnityEngine.UI;
 
 public class BioVisualisation : MonoBehaviour {
 
-	public bool Show = true;
-
-	public CameraController CameraController;
-
-	public GameObject Canvas;
-
-	public Button CanvasToggle;
-
 	public Button StraightForward, StraightBack, StraightLeft, StraightRight, TurnLeft, TurnRight, Idle, Move, Jump, Sit, Lie, Stand;
 	public Color Active = UltiDraw.Orange;
 	public Color Inactive = UltiDraw.DarkGrey;
 
-	public Button Skeleton, Transforms, Velocities, Trajectory, CyclicWeights, InverseKinematics, MotionTrails;
-	public Color VisualisationEnabled = UltiDraw.Cyan;
-	public Color VisualisationDisabled = UltiDraw.Grey;
+	private SIGGRAPH_2018.BioAnimation Animation;
 
-	public Button Follow, LookAt, Free;
-	public Color CameraEnabled = UltiDraw.Mustard;
-	public Color CameraDisabled = UltiDraw.LightGrey;
-
-	public Slider Yaw, Pitch, FOV;
-
-	public bool DrawTrails = false;
-	public Trail[] Trails = new Trail[0];
-
-	private int Frames = 150;
-
-	private BioAnimation Animation;
+	private Actor Actor;
 
 	void Awake() {
-		/*
-		Animation = GetComponent<BioAnimation>();
-		*/
-		/*
-		for(int i=0; i<CW.Length; i++) {
-			CW[i] = new Queue<float>();
-			for(int j=0; j<Frames; j++) {
-				CW[i].Enqueue(0f);
-			}
-		}
-		Skeleton.onClick.AddListener(ToggleSkeleton); UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
-		Transforms.onClick.AddListener(ToggleTransforms); UpdateColor(Transforms, Animation.Character.DrawTransforms ? VisualisationEnabled : VisualisationDisabled);
-		Velocities.onClick.AddListener(ToggleVelocities); UpdateColor(Velocities, Animation.ShowVelocities ? VisualisationEnabled : VisualisationDisabled);
-		Trajectory.onClick.AddListener(ToggleTrajectory); UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
-		CyclicWeights.onClick.AddListener(ToggleCyclicWeights); UpdateColor(CyclicWeights, DrawCW ? VisualisationEnabled : VisualisationDisabled);
-		InverseKinematics.onClick.AddListener(ToggleInverseKinematics); UpdateColor(InverseKinematics, Animation.SolveIK ? VisualisationEnabled : VisualisationDisabled);
-		MotionTrails.onClick.AddListener(ToggleMotionTrails); UpdateColor(MotionTrails, DrawTrails ? VisualisationEnabled : VisualisationDisabled);
-
-		SmoothFollow.onClick.AddListener(SetSmoothFollow); UpdateColor(SmoothFollow, CameraController.Mode == CameraController.MODE.SmoothFollow ? CameraEnabled : CameraDisabled);
-		ConstantView.onClick.AddListener(SetConstantView); UpdateColor(ConstantView, CameraController.Mode == CameraController.MODE.ConstantView ? CameraEnabled : CameraDisabled);
-		Static.onClick.AddListener(SetStatic); UpdateColor(Static, CameraController.Mode == CameraController.MODE.FreeView ? CameraEnabled : CameraDisabled);
-
-		Yaw.onValueChanged.AddListener(SetYaw);
-		Pitch.onValueChanged.AddListener(SetPitch);
-		FOV.onValueChanged.AddListener(SetFOV);
-
-		CanvasToggle.onClick.AddListener(ToggleShow);
-		*/
+		Animation = GetComponent<SIGGRAPH_2018.BioAnimation>();
+		Actor = GetComponent<Actor>();
 	}
 
 	void Start() {
-		SetYaw(0f);
-		SetPitch(0f);
-		SetFOV(1f);
+
 	}
 
-	public void ToggleSkeleton() {
-		Animation.Character.DrawSkeleton = !Animation.Character.DrawSkeleton;
-		UpdateColor(Skeleton, Animation.Character.DrawSkeleton ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleTransforms() {
-		Animation.Character.DrawTransforms = !Animation.Character.DrawTransforms;
-		UpdateColor(Transforms, Animation.Character.DrawTransforms ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleVelocities() {
-		Animation.ShowVelocities = !Animation.ShowVelocities;
-		UpdateColor(Velocities, Animation.ShowVelocities ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleTrajectory() {
-		Animation.ShowTrajectory = !Animation.ShowTrajectory;
-		UpdateColor(Trajectory, Animation.ShowTrajectory ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleInverseKinematics() {
-		Animation.EditMotion(!Animation.MotionEditing);
-		UpdateColor(InverseKinematics, Animation.MotionEditing ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void ToggleMotionTrails() {
-		DrawTrails = !DrawTrails;
-		UpdateColor(MotionTrails, DrawTrails ? VisualisationEnabled : VisualisationDisabled);
-	}
-
-	public void SetFollow() {
-		CameraController.SetMode(CameraController.MODE.Follow);
-		UpdateColor(Follow, CameraEnabled); UpdateColor(LookAt, CameraDisabled); UpdateColor(Free, CameraDisabled);
-	}
-
-	public void SetConstantView() {
-		CameraController.SetMode(CameraController.MODE.LookAt);
-		UpdateColor(Follow, CameraDisabled); UpdateColor(LookAt, CameraEnabled); UpdateColor(Free, CameraDisabled);
-	}
-
-	public void SetStatic() {
-		CameraController.SetMode(CameraController.MODE.FreeView);
-		UpdateColor(Follow, CameraDisabled); UpdateColor(LookAt, CameraDisabled); UpdateColor(Free, CameraEnabled);
-	}
-
-	public void SetYaw(float value) {
-		CameraController.Yaw = value;
-		Yaw.transform.Find("Text").GetComponent<Text>().text = "YAW: " + Mathf.RoundToInt(value);
-	}
-
-	public void SetPitch(float value) {
-		CameraController.Pitch = value;
-		Pitch.transform.Find("Text").GetComponent<Text>().text = "PITCH: " + Mathf.RoundToInt(value);
-	}
-
-	public void SetFOV(float value) {
-		CameraController.FOV = Mathf.RoundToInt(value*10f) / 10f;
-		FOV.transform.Find("Text").GetComponent<Text>().text = "FOV: " + value.ToString("F1");
-	}
-	
-	public void ToggleShow() {
-		Show = !Show;
-	}
 
 	void OnGUI() {
 		//GameObject.Find("Trajectory_Circle").GetComponent<CatmullRomSpline>().DrawGUI = Show;
 		//GameObject.Find("Trajectory_Square").GetComponent<CatmullRomSpline>().DrawGUI = Show;
 		//GameObject.Find("Trajectory_Slalom").GetComponent<CatmullRomSpline>().DrawGUI = Show;
-		Canvas.SetActive(Show);
-		if(!Show) {
-			return;
-		}
 
 		UpdateControl(StraightForward, Input.GetKey(Animation.Controller.MoveForward));
 		UpdateControl(StraightBack, Input.GetKey(Animation.Controller.MoveBackward));
@@ -187,19 +71,6 @@ public class BioVisualisation : MonoBehaviour {
 		//}
 		button.GetComponent<Image>().color = Color.Lerp(Inactive, Active, activation);
 		button.GetComponentInChildren<Text>().text = (100f*activation).ToString("F0")  + "%";
-	}
-
-	void OnRenderObject() {
-		if(!Show) {
-			return;
-		}
-
-		for(int i=0; i<Trails.Length; i++) {
-			Trails[i].Update(Frames);
-			if(DrawTrails) {
-				Trails[i].Draw(0.01f, new Color(0f, 1f, 2f/3f, 1f));
-			}
-		}
 	}
 
 	[System.Serializable]

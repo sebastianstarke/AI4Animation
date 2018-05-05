@@ -198,6 +198,7 @@ public class Trajectory {
 		}
 
 		//Styles and Speed
+		/*
 		for(int i=0; i<Points.Length; i+=step) {
 			float r = 0f;
 			float g = 0f;
@@ -210,6 +211,7 @@ public class Trajectory {
 			UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f, new Color(r, g, b, 1f));
 			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetSpeed() * Points[i].GetTransformation().GetForward(), 0.8f, 0.02f, 0.04f, new Color(r, g, b, 0.5f));
 		}
+		*/
 
 		//Projections
 		//for(int i=0; i<Points.Length; i+=step) {

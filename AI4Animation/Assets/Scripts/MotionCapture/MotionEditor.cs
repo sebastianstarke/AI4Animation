@@ -27,7 +27,6 @@ public class MotionEditor : MonoBehaviour {
 	private float Timestamp = 0f;
 
 	private bool ShowMotion = false;
-	private bool ShowTrail = false;
 	private bool ShowVelocities = false;
 	private bool ShowTrajectory = false;
 	private bool ShowHeightMap = false;
@@ -40,9 +39,6 @@ public class MotionEditor : MonoBehaviour {
 
 	public void VisualiseMotion(bool value) {
 		ShowMotion = value;
-	}
-	public void VisualiseTrail(bool value) {
-		ShowTrail = value;
 	}
 	public void VisualiseVelocities(bool value) {
 		ShowVelocities = value;
@@ -76,6 +72,10 @@ public class MotionEditor : MonoBehaviour {
 
 	public void SetMirror(bool value) {
 		Mirror = value;
+	}
+
+	public bool IsMirror() {
+		return Mirror;
 	}
 
 	public Actor GetActor() {
@@ -227,23 +227,6 @@ public class MotionEditor : MonoBehaviour {
 				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
 
 			}
-		}
-		if(ShowTrail) {
-			UltiDraw.Begin();
-			MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp - 3f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp + 3f, 0f, Data.GetTotalTime()));
-			int[] indices = new int[4];
-			indices[0] = Data.Source.FindBone("LeftHandSite").Index;
-			indices[1] = Data.Source.FindBone("RightHandSite").Index;
-			indices[2] = Data.Source.FindBone("LeftFootSite").Index;
-			indices[3] = Data.Source.FindBone("RightFootSite").Index;
-			Color[] colors = UltiDraw.GetRainbowColors(indices.Length);
-			for(int i=0; i<indices.Length; i++) {
-				for(int f=1; f<frames.Length; f++) {
-					UltiDraw.DrawLine(frames[f-1].GetBoneTransformation(indices[i], Mirror).GetPosition(), frames[f].GetBoneTransformation(indices[i], Mirror).GetPosition(), 0.0075f, colors[i]);
-				}
-				UltiDraw.DrawSphere(GetState().BoneTransformations[indices[i]].GetPosition(), GetState().BoneTransformations[indices[i]].GetRotation(), 0.05f, colors[i]);
-			}
-			UltiDraw.End();
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
@@ -525,9 +508,6 @@ public class MotionEditor : MonoBehaviour {
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Motion", Target.ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowMotion = !Target.ShowMotion;
-					}
-					if(Utility.GUIButton("Trail", Target.ShowTrail ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						Target.ShowTrail = !Target.ShowTrail;
 					}
 					if(Utility.GUIButton("Trajectory", Target.ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.ShowTrajectory = !Target.ShowTrajectory;
