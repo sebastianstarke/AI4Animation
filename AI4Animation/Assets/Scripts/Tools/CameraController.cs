@@ -230,14 +230,15 @@ public class CameraController : MonoBehaviour {
 		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.2f, 0.1f, 0.04f), "Free View")) {
 			SetMode(MODE.FreeView);
 		}
-		Yaw = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.25f, 0.1f, 0.02f), Yaw, -180f, 180f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.25f, 0.04f, 0.02f), "Yaw");
-		Pitch = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.275f, 0.1f, 0.02f), Pitch, -45f, 45f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.275f, 0.04f, 0.02f), "Pitch");
-		FOV = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.3f, 0.1f, 0.02f), FOV, 0f, 10f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.3f, 0.04f, 0.02f), "FOV");
-		Damping = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.325f, 0.1f, 0.02f), Damping, 0f, 1f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.325f, 0.04f, 0.02f), "Damping");
+		GUI.color = Color.black;
+		Yaw = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.25f, 0.1f, 0.025f), Yaw, -180f, 180f));
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.25f, 0.04f, 0.025f), "Yaw" + "(" + Yaw + ")");
+		Pitch = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.275f, 0.1f, 0.025f), Pitch, -45f, 45f));
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.275f, 0.04f, 0.025f), "Pitch" + "(" + Pitch + ")");
+		FOV = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.3f, 0.1f, 0.025f), FOV, 0f, 10f);
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.3f, 0.04f, 0.025f), "FOV" + "(" + FOV + ")");
+		Damping = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.325f, 0.1f, 0.025f), Damping, 0f, 1f);
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.325f, 0.04f, 0.025f), "Damping" + "(" + Damping + ")");
 	}
 
 	/*
