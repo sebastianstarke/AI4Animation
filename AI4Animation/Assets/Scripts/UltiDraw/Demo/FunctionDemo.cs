@@ -31,7 +31,7 @@ public class FunctionDemo : MonoBehaviour {
 		for(int i=0; i<values.Length; i++) {
 			values[i] = Random.Range(NoiseMin, NoiseMax);
 		}
-		UltiDraw.DrawFunction(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), values, YMin, YMax, UltiDraw.DarkGrey, UltiDraw.Cyan);
+		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), values, YMin, YMax, UltiDraw.DarkGrey, UltiDraw.Cyan);
 
 		UltiDraw.End();
 	}

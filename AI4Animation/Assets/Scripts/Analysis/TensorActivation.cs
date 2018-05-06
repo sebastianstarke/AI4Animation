@@ -63,7 +63,7 @@ public class TensorActivation : MonoBehaviour {
             UltiDraw.Black.Transparent(0.5f)
         );
         if(Plotting == PLOTTING.Curve) {
-            UltiDraw.DrawFunction(
+            UltiDraw.DrawGUIFunction(
                 new Vector2(Rect.X, Rect.Y),
                 new Vector2(Rect.W, Rect.H),
                 Values,
@@ -74,7 +74,7 @@ public class TensorActivation : MonoBehaviour {
             );
         }
         if(Plotting == PLOTTING.Bars) {
-            UltiDraw.DrawBars(
+            UltiDraw.DrawGUIBars(
                 new Vector2(Rect.X, Rect.Y),
                 new Vector2(Rect.W, Rect.H),
                 Values,

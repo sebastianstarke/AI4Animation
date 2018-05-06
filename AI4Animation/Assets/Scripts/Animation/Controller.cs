@@ -8,10 +8,10 @@ public class Controller {
 
 	public bool Inspect = false;
 
-	public KeyCode MoveForward = KeyCode.W;
-	public KeyCode MoveBackward = KeyCode.S;
-	public KeyCode MoveLeft = KeyCode.A;
-	public KeyCode MoveRight = KeyCode.D;
+	public KeyCode Forward = KeyCode.W;
+	public KeyCode Back = KeyCode.S;
+	public KeyCode Left = KeyCode.A;
+	public KeyCode Right = KeyCode.D;
 	public KeyCode TurnLeft = KeyCode.Q;
 	public KeyCode TurnRight = KeyCode.E;
 
@@ -31,16 +31,16 @@ public class Controller {
 
 	public Vector3 QueryMove() {
 		Vector3 move = Vector3.zero;
-		if(Input.GetKey(MoveForward)) {
+		if(Input.GetKey(Forward)) {
 			move.z += 1f;
 		}
-		if(Input.GetKey(MoveBackward)) {
+		if(Input.GetKey(Back)) {
 			move.z -= 1f;
 		}
-		if(Input.GetKey(MoveLeft)) {
+		if(Input.GetKey(Left)) {
 			move.x -= 1f;
 		}
-		if(Input.GetKey(MoveRight)) {
+		if(Input.GetKey(Right)) {
 			move.x += 1f;
 		}
 		return move;
@@ -158,10 +158,10 @@ public class Controller {
 
 			if(Inspect) {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					MoveForward = (KeyCode)EditorGUILayout.EnumPopup("Move Forward", MoveForward);
-					MoveBackward = (KeyCode)EditorGUILayout.EnumPopup("Move Backward", MoveBackward);
-					MoveLeft = (KeyCode)EditorGUILayout.EnumPopup("Move Left", MoveLeft);
-					MoveRight = (KeyCode)EditorGUILayout.EnumPopup("Move Right", MoveRight);
+					Forward = (KeyCode)EditorGUILayout.EnumPopup("Forward", Forward);
+					Back = (KeyCode)EditorGUILayout.EnumPopup("Backward", Back);
+					Left = (KeyCode)EditorGUILayout.EnumPopup("Left", Left);
+					Right = (KeyCode)EditorGUILayout.EnumPopup("Right", Right);
 					TurnLeft = (KeyCode)EditorGUILayout.EnumPopup("Turn Left", TurnLeft);
 					TurnRight = (KeyCode)EditorGUILayout.EnumPopup("Turn Right", TurnRight);
 					SetStyleCount(EditorGUILayout.IntField("Styles", Styles.Length));
