@@ -19,9 +19,14 @@ public class TensorActivation : MonoBehaviour {
     private Tensor T;
     private float[] Values;
 
+    private float Minimum;
+    private float Maximum;
+
 	void Awake() {
 		Model = GetComponent<SIGGRAPH_2018.BioAnimation>().NN.Model;
-	}
+        Minimum = float.MaxValue;
+        Maximum = float.MinValue;
+    }
 
     void Start() {
         T = new Tensor(1, 1);
@@ -34,24 +39,24 @@ public class TensorActivation : MonoBehaviour {
         }
 
         T = Tensor.PointwiseAbsolute(t, T);
-        float minimum = float.MaxValue;
-        float maximum = float.MinValue;
+        //float minimum = float.MaxValue;
+        //float maximum = float.MinValue;
         
         if(Operator == OPERATOR.AbsSum) {
             if(Axis == AXIS.X) {
                 Values = new float[T.GetRows()];
                 for(int i=0; i<T.GetRows(); i++) {
                     Values[i] = T.RowSum(i);
-                    minimum = Mathf.Min(minimum, Values[i]);
-                    maximum = Mathf.Max(maximum, Values[i]);
+                    Minimum = Mathf.Min(Minimum, Values[i]);
+                    Maximum = Mathf.Max(Maximum, Values[i]);
                 }
             }
             if(Axis == AXIS.Y) {
                 Values = new float[T.GetCols()];
                 for(int i=0; i<T.GetCols(); i++) {
                     Values[i] = T.ColSum(i);
-                    minimum = Mathf.Min(minimum, Values[i]);
-                    maximum = Mathf.Max(maximum, Values[i]);
+                    Minimum = Mathf.Min(Minimum, Values[i]);
+                    Maximum = Mathf.Max(Maximum, Values[i]);
                 }
             }
         }
@@ -67,8 +72,8 @@ public class TensorActivation : MonoBehaviour {
                 new Vector2(Rect.X, Rect.Y),
                 new Vector2(Rect.W, Rect.H),
                 Values,
-                minimum,
-                maximum,
+                Minimum,
+                Maximum,
                 UltiDraw.White.Transparent(0.5f),
                 UltiDraw.Black
             );
@@ -78,8 +83,8 @@ public class TensorActivation : MonoBehaviour {
                 new Vector2(Rect.X, Rect.Y),
                 new Vector2(Rect.W, Rect.H),
                 Values,
-                minimum,
-                maximum,
+                Minimum,
+                Maximum,
                 0.75f * Rect.W / Values.Length,
                 UltiDraw.White.Transparent(0.5f),
                 UltiDraw.Black

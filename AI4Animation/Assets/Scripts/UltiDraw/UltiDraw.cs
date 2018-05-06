@@ -632,6 +632,14 @@ public static class UltiDraw {
 		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
 	}
 
+	public static Color Lighten(this Color color, float amount) {
+		return Color.Lerp(color, Color.white, amount);
+	}
+
+	public static Color Darken(this Color color, float amount) {
+		return Color.Lerp(color, Color.black, amount);
+	}
+
 	public static Color[] GetRainbowColors(int number) {
 		Color[] colors = new Color[number];
 		for(int i=0; i<number; i++) {

@@ -41,6 +41,10 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void Update() {
+		if(Input.GetKeyDown(KeyCode.F1)) {
+			ShowGUI = !ShowGUI;
+		}
+
 		if(Target == null) {
 			return;
 		}
