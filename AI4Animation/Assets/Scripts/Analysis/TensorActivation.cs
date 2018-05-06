@@ -20,7 +20,7 @@ public class TensorActivation : MonoBehaviour {
     private float[] Values;
 
 	void Awake() {
-		Model = GetComponent<BioAnimation>().NN.Model;
+		Model = GetComponent<SIGGRAPH_2018.BioAnimation>().NN.Model;
 	}
 
     void Start() {

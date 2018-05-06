@@ -59,7 +59,7 @@ public class GaitProfile : MonoBehaviour {
 				float yBot = pivot - Height/2f;
 				float h = Positions[i-1][j].y;
 				if(h < Threshold) {
-					float weight = 1f - h / Threshold;
+					float weight = 1f; //Utility.Exponential01(1f - h / Threshold);
 					UltiDraw.DrawGUILine(new Vector2(x, Center.y + yTop/Screen.height), new Vector2(x, Center.y + yBot/Screen.height), Thickness/Screen.width, colors[i-1].Transparent(weight));
 				}
 			}
