@@ -4,6 +4,22 @@ using System.Collections.Generic;
 
 public static class UltiDraw {
 
+	[System.Serializable]
+	public class GUIRect {
+		[Range(0f, 1f)] public float X = 0.5f;
+		[Range(0f, 1f)] public float Y = 0.5f;
+		[Range(0f, 1f)] public float W = 0.5f;
+		[Range(0f, 1f)] public float H = 0.5f;
+
+		public Vector2 GetPosition() {
+			return new Vector2(X, Y);
+		}
+
+		public Vector2 GetSize() {
+			return new Vector2(W, H);
+		}
+	}
+
 	public static Color White = Color.white;
 	public static Color Black = Color.black;
 	public static Color Red = Color.red;
@@ -612,6 +628,42 @@ public static class UltiDraw {
 	//------------------------------------------------------------------------------------------
 	//UTILITY FUNCTIONS
 	//------------------------------------------------------------------------------------------
+	public static Color Transparent(this Color color, float opacity) {
+		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
+	}
+
+	public static Color[] GetRainbowColors(int number) {
+		Color[] colors = new Color[number];
+		for(int i=0; i<number; i++) {
+			float frequency = 5f/number;
+			colors[i].r = Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].g = Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].b = Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
+			colors[i].a = 1f;
+		}
+		return colors;
+	}
+
+	public static Color GetRandomColor() {
+		return new Color(Random.value, Random.value, Random.value, 1f);
+	}
+
+	public static Rect GetGUIRect(float x, float y, float w, float h) {
+		return new Rect(x*Screen.width, y*Screen.height, w*Screen.width, h*Screen.height);
+	}
+
+	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
+		if(valueMax-valueMin != 0f) {
+			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;
+		} else {
+			//Not possible to normalise input value.
+			return value;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------
+	//INTERNAL FUNCTIONS
+	//------------------------------------------------------------------------------------------
 	private static bool Return() {
 		if(!Active) {
 			Debug.Log("Drawing is not active. Call 'Begin()' first.");
@@ -1035,35 +1087,6 @@ public static class UltiDraw {
 		points.Add(new Vector3(-size, size, 0.200f));
 		points.Add(new Vector3(-size, -size, 0.200f));
 		return points.ToArray();
-	}
-
-	public static Color Transparent(this Color color, float opacity) {
-		return new Color(color.r, color.g, color.b, Mathf.Clamp(opacity, 0f, 1f));
-	}
-
-	public static Color[] GetRainbowColors(int number) {
-		Color[] colors = new Color[number];
-		for(int i=0; i<number; i++) {
-			float frequency = 5f/number;
-			colors[i].r = Normalise(Mathf.Sin(frequency*i + 0f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].g = Normalise(Mathf.Sin(frequency*i + 2f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].b = Normalise(Mathf.Sin(frequency*i + 4f) * (127f) + 128f, 0f, 255f, 0f, 1f);
-			colors[i].a = 1f;
-		}
-		return colors;
-	}
-
-	public static Color GetRandomColor() {
-		return new Color(Random.value, Random.value, Random.value, 1f);
-	}
-
-	public static float Normalise(float value, float valueMin, float valueMax, float resultMin, float resultMax) {
-		if(valueMax-valueMin != 0f) {
-			return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin;
-		} else {
-			//Not possible to normalise input value.
-			return value;
-		}
 	}
 
 }

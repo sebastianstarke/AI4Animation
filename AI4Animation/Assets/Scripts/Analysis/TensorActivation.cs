@@ -9,7 +9,7 @@ public class TensorActivation : MonoBehaviour {
     public enum OPERATOR {AbsSum, AbsDiff};
     public enum PLOTTING {Curve, Bars};
 
-    public GUIRect Rect;
+    public UltiDraw.GUIRect Rect;
     public string ID;
     public AXIS Axis;
     public OPERATOR Operator;
