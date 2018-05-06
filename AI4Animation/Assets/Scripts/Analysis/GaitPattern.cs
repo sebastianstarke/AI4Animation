@@ -47,7 +47,7 @@ public class GaitPattern : MonoBehaviour {
 		float width = Rect.W;
 		float height = Feet.Length * Rect.H + (Feet.Length-1) * border/2f; 
 
-		UltiDraw.DrawGUIRectangle(Rect.GetPosition(), new Vector2(width, height), UltiDraw.DarkGrey.Transparent(0.5f), 0.5f*border, UltiDraw.BlackGrey);
+		UltiDraw.DrawGUIRectangle(Rect.GetPosition(), new Vector2(width, height), UltiDraw.DarkGrey.Transparent(0.75f), 0.5f*border, UltiDraw.BlackGrey);
 		float pivot = 0.5f * height;
 		for(int i=1; i<=Feet.Length; i++) {
 			pivot -= Rect.H/2f;

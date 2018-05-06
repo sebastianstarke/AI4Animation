@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class AgilityMeasure : MonoBehaviour {
 
-	[Range(0f, 1f)] public float Position = 0.9f;
-
+	public int Frames = 100;
 	public Transform[] Bones;
+	public UltiDraw.GUIRect Rect;
 
 	private Quaternion[] PreviousRotations;
 	private List<float> Values;
@@ -46,16 +46,24 @@ public class AgilityMeasure : MonoBehaviour {
 			PreviousRotations[i] = rotation;
 		}
 		value /= Bones.Length;
-		//value /= Time.deltaTime;
 		Values.Add(value);
+		while(Values.Count > Frames) {
+			Values.RemoveAt(0);
+		}
 	}
 
 	void OnGUI() {
-		GUI.color = UltiDraw.Mustard;
-		GUI.backgroundColor = UltiDraw.Black;
-		if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.05f, 0.05f), "X")) {
-			Values.Clear();
-		};
-		GUI.Box(Utility.GetGUIRect(0.055f, Position, 0.25f, 0.05f), "Average Agility: " + Utility.ComputeMean(Values.ToArray()));
+		//GUI.color = UltiDraw.Mustard;
+		//GUI.backgroundColor = UltiDraw.Black;
+		//if(GUI.Button(Utility.GetGUIRect(0.005f, Position, 0.05f, 0.05f), "X")) {
+		//	Values.Clear();
+		//};
+		//GUI.Box(Utility.GetGUIRect(0.055f, Position, 0.25f, 0.05f), "Average Agility: " + Utility.ComputeMean(Values.ToArray()));
+	}
+
+	void OnRenderObject() {
+		UltiDraw.Begin();
+		UltiDraw.DrawGUIFunction(Rect.GetPosition(), Rect.GetSize(), Values.ToArray(), 0f, 6f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.IndianRed);
+		UltiDraw.End();
 	}
 }
