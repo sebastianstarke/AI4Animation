@@ -555,8 +555,20 @@ public class MotionData : ScriptableObject {
 		}
 
 		private Quaternion GetRootRotation(bool mirrored) {
-			Vector3 forward = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//Vector3 forward = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//Vector3 hips = GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetForward();
+			//Vector3 neck = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetForward();
+			//Vector3 forward = 0.5f * (hips + neck);
+			//forward.y = 0f;
+
+			Vector3 v1 = GetBoneTransformation(Data.Source.FindBone("RightUpLeg").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftUpLeg").Index, mirrored).GetPosition();
+			Vector3 v2 = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition();
+			v1.y = 0f;
+			v2.y = 0f;
+			Vector3 v = (v1+v2).normalized;
+			Vector3 forward = -Vector3.Cross(v, Vector3.up);
 			forward.y = 0f;
+			
 			return Quaternion.LookRotation(forward, Vector3.up);
 		}
 
@@ -604,7 +616,7 @@ public class MotionData : ScriptableObject {
 				Frame future = Data.GetFrame(Mathf.Clamp(Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				trajectory.Points[6+i].SetTransformation(future.GetRootTransformation(mirrored));
 				trajectory.Points[6+i].SetVelocity(future.GetRootVelocity(mirrored));
-				trajectory.Points[6+1].SetSpeed(future.GetSpeed(mirrored));
+				trajectory.Points[6+i].SetSpeed(future.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = (float[])future.StyleValues.Clone();
 			}
 			return trajectory;

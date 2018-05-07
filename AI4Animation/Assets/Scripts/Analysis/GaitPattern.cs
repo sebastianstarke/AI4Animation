@@ -5,9 +5,9 @@ using UnityEngine;
 public class GaitPattern : MonoBehaviour {
 
 	public int Frames = 100;
-	public float Threshold = 0.025f;
 	public float Thickness = 0.01f;
-	public Transform[] Feet;
+	public Transform[] Feet = new Transform[0];
+	public float[] Thresholds = new float[0];
 	public UltiDraw.GUIRect Rect;
 
 	private List<Vector3>[] Positions;
@@ -59,7 +59,7 @@ public class GaitPattern : MonoBehaviour {
 				float yTop = pivot + Rect.H/2f;
 				float yBot = pivot - Rect.H/2f;
 				float h = Positions[i-1][j].y;
-				if(h < Threshold) {
+				if(h < Thresholds[i-1]) {
 					UltiDraw.DrawGUILine(new Vector2(x, Rect.Y + yTop), new Vector2(x, Rect.Y + yBot), Thickness, colors[i-1]);
 				}
 			}

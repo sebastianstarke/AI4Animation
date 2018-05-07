@@ -535,6 +535,9 @@ public class MotionEditor : MonoBehaviour {
 							Utility.ResetGUIColor();
 							EditorGUILayout.LabelField("Frame");
 						}
+
+						EditorGUILayout.IntField("Index", frame.Index);
+						EditorGUILayout.FloatField("Timestamp", frame.Timestamp);
 						
 						Color[] colors = UltiDraw.GetRainbowColors(Target.Data.Styles.Length);
 						for(int i=0; i<Target.Data.Styles.Length; i++) {
