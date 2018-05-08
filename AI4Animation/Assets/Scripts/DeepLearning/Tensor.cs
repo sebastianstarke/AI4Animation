@@ -39,7 +39,7 @@ namespace DeepLearning {
 
         public void SetValue(int row, int col, float value) {
             if(row >= GetRows() || col >= GetCols()) {
-                Debug.Log("Accessing out of bounds.");
+                Debug.Log("Setting out of bounds at [" + row + ", " + col + "].");
                 return;
             }
             Eigen.SetValue(Ptr, row, col, value);
@@ -47,7 +47,7 @@ namespace DeepLearning {
 
         public float GetValue(int row, int col) {
             if(row >= GetRows() || col >= GetCols()) {
-                Debug.Log("Accessing out of bounds.");
+                Debug.Log("Getting out of bounds at [" + row + ", " + col + "].");
                 return 0f;
             }
             return Eigen.GetValue(Ptr, row, col);
