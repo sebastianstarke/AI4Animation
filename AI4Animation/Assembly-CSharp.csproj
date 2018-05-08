@@ -109,12 +109,13 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation.cs" />
-     <Compile Include="Assets\Scripts\Analysis\AgilityMeasure.cs" />
-     <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
-     <Compile Include="Assets\Scripts\Analysis\ContactProfile.cs" />
-     <Compile Include="Assets\Scripts\Analysis\GaitPattern.cs" />
-     <Compile Include="Assets\Scripts\Analysis\SlidingMeasure.cs" />
-     <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\AgilityMeasure.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\ContactProfile.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\GaitPattern.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\SlidingMeasure.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TensorActivation.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TrajectoryController.cs" />
      <Compile Include="Assets\Scripts\Animation\Actor.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
      <Compile Include="Assets\Scripts\Animation\Character.cs" />
@@ -160,7 +161,6 @@
      <Compile Include="Assets\Scripts\Tools\ReloadScene.cs" />
      <Compile Include="Assets\Scripts\Tools\Skinning.cs" />
      <Compile Include="Assets\Scripts\Tools\Stick.cs" />
-     <Compile Include="Assets\Scripts\Tools\TrajectoryController.cs" />
      <Compile Include="Assets\Scripts\Tools\Transparency.cs" />
      <Compile Include="Assets\Scripts\Tools\WorldPlacer.cs" />
      <Compile Include="Assets\Scripts\Tools\WorldScaler.cs" />

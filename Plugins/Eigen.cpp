@@ -4,121 +4,122 @@
 #   define EXPORT_API  __attribute__ ((visibility("default")))
 # endif
 
+//#include "stdafx.h" //Use when compiling from Visual Studio
 #include <Eigen/Dense>
 
 using namespace Eigen;
-
 extern "C" {
-    MatrixXf* Create(int rows, int cols) {
-        return new MatrixXf(MatrixXf::Zero(rows, cols));
-    }
+	EXPORT_API MatrixXf* Create(int rows, int cols) {
+		return new MatrixXf(MatrixXf::Zero(rows, cols));
+	}
 
-    void Delete(MatrixXf* T) {
-        delete T;
-    }
+	EXPORT_API void Delete(MatrixXf* T) {
+		delete T;
+	}
 
-    int GetRows(MatrixXf* T) {
-        return (*T).rows();
-    }
+	EXPORT_API int GetRows(MatrixXf* T) {
+		return (*T).rows();
+	}
 
-    int GetCols(MatrixXf* T) {
-        return (*T).cols();
-    }
+	EXPORT_API int GetCols(MatrixXf* T) {
+		return (*T).cols();
+	}
 
-    void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
-        *OUT = *lhs + *rhs;
-    }
+	EXPORT_API void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
+		*out = *lhs + *rhs;
+	}
 
-    void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
-        *OUT = *lhs - *rhs;
-    }
 
-    void Product(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
-        *OUT = *lhs * *rhs;
-    }
+	EXPORT_API void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
+		*out = *lhs - *rhs;
+	}
 
-    void Scale(MatrixXf* lhs, float value, MatrixXf* OUT) {
-        *OUT = *lhs * value;
-    }
+	EXPORT_API void Product(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
+		*out = *lhs * *rhs;
+	}
 
-    void SetValue(MatrixXf* T, int row, int col, float value) {
-        (*T)(row, col) = value;
-    }
+	EXPORT_API void Scale(MatrixXf* lhs, float value, MatrixXf* out) {
+		*out = *lhs * value;
+	}
 
-    float GetValue(MatrixXf* T, int row, int col) {
-        return (*T)(row, col);
-    }
+	EXPORT_API void SetValue(MatrixXf* T, int row, int col, float value) {
+		(*T)(row, col) = value;
+	}
 
-    void PointwiseProduct(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
-        *OUT = (*lhs).cwiseProduct(*rhs);
-    }
+	EXPORT_API float GetValue(MatrixXf* T, int row, int col) {
+		return (*T)(row, col);
+	}
 
-    void PointwiseQuotient(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* OUT) {
-        *OUT = (*lhs).cwiseQuotient(*rhs);
-    }
+	EXPORT_API void PointwiseProduct(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
+		*out = (*lhs).cwiseProduct(*rhs);
+	}
 
-    void PointwiseAbsolute(MatrixXf* IN, MatrixXf* OUT) {
-        *OUT = (*IN).cwiseAbs();
-    }
+	EXPORT_API void PointwiseQuotient(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
+		*out = (*lhs).cwiseQuotient(*rhs);
+	}
 
-    float RowSum(MatrixXf* T, int row) {
-        return (*T).row(row).sum();
-    }
+	EXPORT_API void PointwiseAbsolute(MatrixXf* in, MatrixXf* out) {
+		*out = (*in).cwiseAbs();
+	}
 
-    float ColSum(MatrixXf* T, int col) {
-        return (*T).col(col).sum();
-    }
+	EXPORT_API float RowSum(MatrixXf* T, int row) {
+		return (*T).row(row).sum();
+	}
 
-    void Normalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* OUT) {
-        *OUT = (*T - *mean).cwiseQuotient(*std);
-    }
+	EXPORT_API float ColSum(MatrixXf* T, int col) {
+		return (*T).col(col).sum();
+	}
 
-    void Renormalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* OUT) {
-        *OUT = (*T).cwiseProduct(*std) + *mean;
-    }
+	EXPORT_API void Normalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* out) {
+		*out = (*T - *mean).cwiseQuotient(*std);
+	}
 
-    void Layer(MatrixXf* IN, MatrixXf* W, MatrixXf* b, MatrixXf* OUT) {
-        *OUT = *W * *IN + *b;
-    }
+	EXPORT_API void Renormalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* out) {
+		*out = (*T).cwiseProduct(*std) + *mean;
+	}
 
-    void Blend(MatrixXf* IN, MatrixXf* W, float w) {
-        *IN += *W * w;
-    }
+	EXPORT_API void Layer(MatrixXf* in, MatrixXf* W, MatrixXf* b, MatrixXf* out) {
+		*out = *W * *in + *b;
+	}
 
-    void ELU(MatrixXf* T) {
-        int rows = (*T).rows();
-        for(int i=0; i<rows; i++) {
-            (*T)(i, 0) = std::max((*T)(i, 0), 0.0f) + std::exp(std::min((*T)(i, 0), 0.0f)) - 1.0f;
-        }
-    }
+	EXPORT_API void Blend(MatrixXf* in, MatrixXf* W, float w) {
+		*in += *W * w;
+	}
 
-    void Sigmoid(MatrixXf* T) {
-        int rows = (*T).rows();
-        for(int i=0; i<rows; i++) {
-            (*T)(i, 0) = 1.0f / (1.0f + std::exp(-(*T)(i,0)));
-        }
-    }
+	EXPORT_API void ELU(MatrixXf* T) {
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = (std::max)((*T)(i, 0), 0.0f) + std::exp((std::min)((*T)(i, 0), 0.0f)) - 1.0f;
+		}
+	}
 
-    void TanH(MatrixXf* T) {
-        int rows = (*T).rows();
-        for(int i=0; i<rows; i++) {
-            (*T)(i, 0) = std::tanh((*T)(i, 0));
-        }
-    }
+	EXPORT_API void Sigmoid(MatrixXf* T) {
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = 1.0f / (1.0f + std::exp(-(*T)(i, 0)));
+		}
+	}
 
-    void SoftMax(MatrixXf* T) {
-        float frac = 0.0f;
-        int rows = (*T).rows();
-        for(int i=0; i<rows; i++) {
-            (*T)(i, 0) = std::exp((*T)(i, 0));
-            frac += (*T)(i, 0);
-        }
-        for(int i=0; i<rows; i++) {
-            (*T)(i, 0) /= frac;
-        }
-    }
+	EXPORT_API void TanH(MatrixXf* T) {
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = std::tanh((*T)(i, 0));
+		}
+	}
 
-    void SetZero(MatrixXf* T) {
-        *T = (*T).Zero((*T).rows(), (*T).cols());
-    }
+	EXPORT_API void SoftMax(MatrixXf* T) {
+		float frac = 0.0f;
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = std::exp((*T)(i, 0));
+			frac += (*T)(i, 0);
+		}
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) /= frac;
+		}
+	}
+
+	EXPORT_API void SetZero(MatrixXf* T) {
+		*T = (*T).Zero((*T).rows(), (*T).cols());
+	}
 }
