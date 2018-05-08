@@ -187,6 +187,7 @@ public class Trajectory {
 
 	public void Draw(int step=1) {
 		UltiDraw.Begin();
+
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
 			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i+step].GetPosition(), 0.01f, UltiDraw.Black);
@@ -254,6 +255,7 @@ public class Trajectory {
 		for(int i=0; i<Points.Length; i+=step) {
 			UltiDraw.DrawCircle(Points[i].GetPosition(), 0.025f, UltiDraw.Black);
 		}
+		
 		UltiDraw.End();
 	}
 
