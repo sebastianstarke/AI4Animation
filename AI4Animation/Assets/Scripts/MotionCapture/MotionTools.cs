@@ -53,9 +53,9 @@ public class MotionTools : EditorWindow {
 					ProcessData();
 				}
 
-				if(Utility.GUIButton("Print Velocity Profiles", UltiDraw.DarkGrey, UltiDraw.White)) {
-					PrintVelocityProfiles();
-				}
+				//if(Utility.GUIButton("Print Velocity Profiles", UltiDraw.DarkGrey, UltiDraw.White)) {
+				//	PrintVelocityProfiles();
+				//}
 
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -144,11 +144,11 @@ public class MotionTools : EditorWindow {
 			if(Active[i]) {
 				for(int m=1; m<=2; m++) {
 					for(int s=0; s<Data[i].Sequences.Length; s++) {
-						for(int e=0; e<Data[i].Sequences[s].Export; e++) {
+
+						MotionData.Sequence.Interval[] intervals = Data[i].Sequences[s].GetIntervals();
+						for(int interval=0; interval<intervals.Length; interval++) {
 							sequences += 1;
-							int start = Data[i].Sequences[s].Start;
-							int end = Data[i].Sequences[s].End;
-							for(int f=start; f<=end; f++) {
+							for(int f=intervals[interval].Start; f<=intervals[interval].End; f++) {
 								frames += 1;
 								for(int index=0; index<Data[i].Frames[f].StyleValues.Length; index++) {
 									if(Data[i].Frames[f].StyleFlags[index]) {
@@ -157,6 +157,7 @@ public class MotionTools : EditorWindow {
 								}
 							}
 						}
+						
 					}
 				}
 			}
@@ -177,10 +178,30 @@ public class MotionTools : EditorWindow {
 				//Data[i].DepthMapResolution = 20;
 				//Data[i].DepthMapSize = 10f;
 				//Data[i].DepthMapDistance = 10f;
-				for(int e=0; e<Data[i].Sequences.Length; e++) {
-					if(Data[i].Sequences[e].Export == 3) {
-						Data[i].Sequences[e].Export = 2;
-					}
+				for(int s=0; s<Data[i].Sequences.Length; s++) {
+					//Trot
+					Data[i].Sequences[s].SetStyleCopies(3, 10);
+					Data[i].Sequences[s].SetTransitionCopies(3, 10);
+
+					//Canter
+					Data[i].Sequences[s].SetStyleCopies(4, 2);
+					Data[i].Sequences[s].SetTransitionCopies(4, 2);
+
+					//Jump
+					Data[i].Sequences[s].SetStyleCopies(5, 10);
+					Data[i].Sequences[s].SetTransitionCopies(5, 10);
+
+					//Sit
+					Data[i].Sequences[s].SetStyleCopies(6, 0);
+					Data[i].Sequences[s].SetTransitionCopies(6, 5);
+
+					//Stand
+					Data[i].Sequences[s].SetStyleCopies(7, 0);
+					Data[i].Sequences[s].SetTransitionCopies(7, 10);
+
+					//Lie
+					Data[i].Sequences[s].SetStyleCopies(8, 0);
+					Data[i].Sequences[s].SetTransitionCopies(8, 10);
 				}
              	EditorUtility.SetDirty(Data[i]);
             }
@@ -189,6 +210,7 @@ public class MotionTools : EditorWindow {
 		AssetDatabase.Refresh();
 	}
 
+	/*
 	private void PrintVelocityProfiles() {
 		if(Data.Length == 0) {
 			return;
@@ -201,7 +223,7 @@ public class MotionTools : EditorWindow {
 			if(Active[i]) {
 				for(int m=1; m<=2; m++) {
 					for(int s=0; s<Data[i].Sequences.Length; s++) {
-						for(int e=0; e<Data[i].Sequences[s].Export; e++) {
+						//for(int e=0; e<Data[i].Sequences[s].Export; e++) {
 							int start = Data[i].Sequences[s].Start;
 							int end = Data[i].Sequences[s].End;
 							for(int f=start; f<=end; f++) {
@@ -212,7 +234,7 @@ public class MotionTools : EditorWindow {
 									}
 								}
 							}
-						}
+						//}
 					}
 				}
 			}
@@ -223,6 +245,7 @@ public class MotionTools : EditorWindow {
 			Debug.Log(Data[0].Styles[i] + " - " + Utility.ComputeMean(profiles[i].ToArray()));
 		}
 	}
+	*/
 
 	private void ExportFile(string name, string text) {
 		string filename = string.Empty;

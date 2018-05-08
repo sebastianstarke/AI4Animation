@@ -630,26 +630,42 @@ public class MotionEditor : MonoBehaviour {
 						Utility.SetGUIColor(UltiDraw.Mustard);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
-							EditorGUILayout.LabelField("Sequences");
+							EditorGUILayout.LabelField("Export");
 						}
 
 						for(int i=0; i<Target.Data.Sequences.Length; i++) {
 						Utility.SetGUIColor(UltiDraw.LightGrey);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
+								
 								EditorGUILayout.BeginHorizontal();
 								GUILayout.FlexibleSpace();
 								if(Utility.GUIButton("Auto", UltiDraw.DarkGrey, UltiDraw.White, 80f, 16f)) {
-									Target.Data.Sequences[i].Auto();
+									Target.Data.Sequences[i].AutoInterval();
 								}
 								EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
-								Target.Data.Sequences[i].Start = EditorGUILayout.IntField(Target.Data.Sequences[i].Start, GUILayout.Width(100f));
+								Target.Data.Sequences[i].SetStart(EditorGUILayout.IntField(Target.Data.Sequences[i].Start, GUILayout.Width(100f)));
 								EditorGUILayout.LabelField("End", GUILayout.Width(50f));
-								Target.Data.Sequences[i].End = EditorGUILayout.IntField(Target.Data.Sequences[i].End, GUILayout.Width(100f));
-								EditorGUILayout.LabelField("Export", GUILayout.Width(50f));
-								Target.Data.Sequences[i].Export = EditorGUILayout.IntField(Target.Data.Sequences[i].Export, GUILayout.Width(100f));
+								Target.Data.Sequences[i].SetEnd(EditorGUILayout.IntField(Target.Data.Sequences[i].End, GUILayout.Width(100f)));
+								//EditorGUILayout.LabelField("Export", GUILayout.Width(50f));
+								//Target.Data.Sequences[i].Export = EditorGUILayout.IntField(Target.Data.Sequences[i].Export, GUILayout.Width(100f));
 								GUILayout.FlexibleSpace();
 								EditorGUILayout.EndHorizontal();
+
+								for(int s=0; s<Target.Data.Styles.Length; s++) {
+									EditorGUILayout.BeginHorizontal();
+									GUILayout.FlexibleSpace();
+									EditorGUILayout.LabelField(Target.Data.Styles[s], GUILayout.Width(50f));
+									EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
+									Target.Data.Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.Data.Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
+									EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
+									Target.Data.Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.Data.Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
+									GUILayout.FlexibleSpace();
+									EditorGUILayout.EndHorizontal();
+								}
+								for(int c=0; c<Target.Data.Sequences[i].Copies.Length; c++) {
+									EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.Data.Sequences[i].Copies[c].Start + " End: " + Target.Data.Sequences[i].Copies[c].End);
+								}
 							}
 						}
 						EditorGUILayout.BeginHorizontal();

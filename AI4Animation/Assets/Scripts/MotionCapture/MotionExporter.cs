@@ -258,10 +258,12 @@ public class MotionExporter : EditorWindow {
 					editor.VisualiseVelocities(true);
 					for(int m=1; m<=2; m++) {
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {
-							for(int e=0; e<editor.Data.Sequences[s].Export; e++) {
+
+							MotionData.Sequence.Interval[] intervals = editor.Data.Sequences[s].GetIntervals();
+							for(int interval=0; interval<intervals.Length; interval++) {
 								sequence += 1;
-								float start = editor.Data.GetFrame(editor.Data.Sequences[s].Start).Timestamp;
-								float end = editor.Data.GetFrame(editor.Data.Sequences[s].End).Timestamp;
+								float start = editor.Data.GetFrame(intervals[interval].Start).Timestamp;
+								float end = editor.Data.GetFrame(intervals[interval].End).Timestamp;
 								for(float t=start; t<=end; t+=1f/Framerate) {
 									string line = string.Empty;
 
@@ -333,6 +335,7 @@ public class MotionExporter : EditorWindow {
 									}
 								}
 							}
+
 						}
 					}
                 }
