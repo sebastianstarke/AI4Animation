@@ -10,7 +10,7 @@ namespace DeepLearning {
 
     public abstract class Model : ScriptableObject {
 
-		public string Folder = "Assets/Project/Parameters/";
+		public string Folder = "Assets/Project/";
         public Parameters Parameters;
 
         private List<Tensor> Tensors = new List<Tensor>();

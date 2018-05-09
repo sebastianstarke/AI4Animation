@@ -22,7 +22,6 @@ public class MotionData : ScriptableObject {
 	public Vector3[] Corrections = new Vector3[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
-	public Axis ForwardAxis = Axis.ZPositive;
 	public int HeightMapSensor = 0;
 	public float HeightMapSize = 0.25f;
 	public int DepthMapSensor = 0;
@@ -690,12 +689,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		private Quaternion GetRootRotation(bool mirrored) {
-			//Vector3 forward = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
-			//Vector3 hips = GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetForward();
-			//Vector3 neck = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetForward();
-			//Vector3 forward = 0.5f * (hips + neck);
-			//forward.y = 0f;
-
+			
 			Vector3 v1 = GetBoneTransformation(Data.Source.FindBone("RightHip").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftHip").Index, mirrored).GetPosition();
 			Vector3 v2 = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition();
 			v1.y = 0f;
@@ -704,6 +698,14 @@ public class MotionData : ScriptableObject {
 			Vector3 forward = -Vector3.Cross(v, Vector3.up);
 			forward.y = 0f;
 			
+			//Vector3 dir = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//Vector3 s = GetBoneTransformation(Data.Source.FindBone("Spine1").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//Vector3 l = GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//Vector3 r = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			//dir.y = 0f; s.y = 0f; l.y = 0f; r.y = 0f;
+			//Vector3 forward = (dir + s + l + r).normalized;
+			//forward.y = 0f;
+
 			return Quaternion.LookRotation(forward, Vector3.up);
 		}
 

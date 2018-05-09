@@ -119,6 +119,14 @@ public class MotionTools : EditorWindow {
 
 	private void VerifyData() {
 		int errors = 0;
+
+		//Default Values
+		float unitScale = Data[0].UnitScale;
+		MotionData.Axis mirrorAxis = Data[0].MirrorAxis;
+		LayerMask groundMask = Data[0].GroundMask;
+		LayerMask objectMask = Data[0].ObjectMask;
+		//
+
 		for(int i=0; i<Data.Length; i++) {
 			if(Active[i]) {
 				for(int f=0; f<Data[i].GetTotalFrames(); f++) {
@@ -130,6 +138,19 @@ public class MotionTools : EditorWindow {
 						Debug.Log("One-hot failed in file " + Data[i].name + " at frame " + (f+1) + "!");
 						errors += 1;
 					}
+				}
+
+				if(Data[i].UnitScale != unitScale) {
+					errors += 1;
+				}
+				if(Data[i].MirrorAxis != mirrorAxis) {
+					errors += 1;
+				}
+				if(Data[i].GroundMask != groundMask) {
+					errors += 1;
+				}
+				if(Data[i].ObjectMask != objectMask) {
+					errors += 1;
 				}
 			}
 		}

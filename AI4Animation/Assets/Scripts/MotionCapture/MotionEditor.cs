@@ -694,7 +694,6 @@ public class MotionEditor : MonoBehaviour {
 							case 0:
 							break;
 							case 1:
-							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
 							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
 							Target.Data.SetUnitScale(10f);
 							Target.Data.MirrorAxis = MotionData.Axis.XPositive;
@@ -710,7 +709,6 @@ public class MotionEditor : MonoBehaviour {
 							break;
 
 							case 2:
-							Target.Data.ForwardAxis = MotionData.Axis.XNegative;
 							Target.Data.DepthMapAxis = MotionData.Axis.XPositive;
 							Target.Data.SetUnitScale(100f);
 							Target.Data.MirrorAxis = MotionData.Axis.ZPositive;
@@ -736,7 +734,6 @@ public class MotionEditor : MonoBehaviour {
 							break;
 
 							case 3:
-							Target.Data.ForwardAxis = MotionData.Axis.ZPositive;
 							Target.Data.DepthMapAxis = MotionData.Axis.ZPositive;
 							Target.Data.SetUnitScale(100f);
 							Target.Data.MirrorAxis = MotionData.Axis.XPositive;							
@@ -767,7 +764,6 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField("General");
 
 							Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
-							Target.Data.ForwardAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Forward Axis", Target.Data.ForwardAxis);
 
 							Target.Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.GroundMask), InternalEditorUtility.layers));
 							Target.Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.ObjectMask), InternalEditorUtility.layers));

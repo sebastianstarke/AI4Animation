@@ -219,6 +219,9 @@ public class MotionExporter : EditorWindow {
 		file.WriteLine(index + " " + "RootMotionY"); index += 1;
 		file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
+		file.WriteLine(index + " " + "Phase"); index += 1;
+		file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+
         yield return new WaitForSeconds(0f);
 
 		file.Close();
@@ -323,6 +326,20 @@ public class MotionExporter : EditorWindow {
 									//Root motion
 									line += FormatVector3(state.RootMotion);
 
+									//Phase
+									PhaseEditor phase = FindObjectOfType<PhaseEditor>();
+									float previous = 0f;
+									float current = 0f;
+									if(m==1) {
+										previous = phase.RegularPhase[Mathf.Max(0, editor.GetState().Index-2)];
+										current = phase.RegularPhase[Mathf.Max(0, editor.GetState().Index-1)];
+									} else {
+										previous = phase.InversePhase[Mathf.Max(0, editor.GetState().Index-2)];
+										current = phase.InversePhase[Mathf.Max(0, editor.GetState().Index-1)];
+									}
+									line += FormatValue(current);
+									line += FormatValue(GetPhaseUpdate(previous, current));
+
 									//Finish
 									line = line.Remove(line.Length-1);
 									line = line.Replace(",",".");
@@ -347,6 +364,10 @@ public class MotionExporter : EditorWindow {
 		file.Close();
 
         Exporting = false;
+	}
+
+	private float GetPhaseUpdate(float previous, float next) {
+		return Mathf.Repeat(((next-previous) + 1f), 1f);
 	}
 
 	private float[] FilterStyle(float[] style) {

@@ -294,6 +294,17 @@ public class Actor : MonoBehaviour {
 				EditorGUILayout.LabelField("-", GUILayout.Width(20f));
 				EditorGUILayout.LabelField(transform.name, GUILayout.Width(100f), GUILayout.Height(20f));
 				GUILayout.FlexibleSpace();
+
+				/*
+				if(bone != null) {
+					Utility.SetGUIColor(UltiDraw.LightGrey);
+					using(new EditorGUILayout.HorizontalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.LabelField("Length: " + bone.Length, GUILayout.Width(100f));
+					}
+				}
+				*/
+
 				if(Utility.GUIButton("Bone", bone == null ? UltiDraw.White : UltiDraw.DarkGrey, bone == null ? UltiDraw.DarkGrey : UltiDraw.White)) {
 					Transform[] bones = new Transform[Target.Bones.Length];
 					for(int i=0; i<bones.Length; i++) {
