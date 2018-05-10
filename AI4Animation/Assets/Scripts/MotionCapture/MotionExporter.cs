@@ -219,8 +219,16 @@ public class MotionExporter : EditorWindow {
 		file.WriteLine(index + " " + "RootMotionY"); index += 1;
 		file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
-		file.WriteLine(index + " " + "Phase"); index += 1;
-		file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+		for(int i=0; i<Animations[0].Source.Bones.Length; i++) {
+			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "Agility"+(i+1)); index += 1;
+		}
+
+		//file.WriteLine(index + " " + "Phase"); index += 1;
+		//file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+
+		//for(int i=1; i<=120; i++) {
+		//	file.WriteLine(index + " " + "HeightMap"+i); index += 1;
+		//}
 
         yield return new WaitForSeconds(0f);
 
@@ -259,6 +267,7 @@ public class MotionExporter : EditorWindow {
                 } else {
 					editor.VisualiseTrajectory(true);
 					editor.VisualiseVelocities(true);
+					//editor.VisualiseHeightMap(true);
 					for(int m=1; m<=2; m++) {
 						for(int s=0; s<editor.Data.Sequences.Length; s++) {
 
@@ -312,21 +321,29 @@ public class MotionExporter : EditorWindow {
 									}
 
 									//Height map
-									//for(int k=0; k<state.HeightMap.Points.Length; k++) {
-									//	float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
-									//	line += FormatValue(distance);
-									//}
+									/*
+									for(int k=0; k<state.HeightMap.Points.Length; k++) {
+										float distance = Vector3.Distance(state.HeightMap.Points[k], state.HeightMap.Pivot.GetPosition());
+										line += FormatValue(distance);
+									}
+									*/
 
 									//Depth map
-									//for(int k=0; k<state.DepthMap.Points.Length; k++) {
-									//	float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
-									//	line += FormatValue(distance);
-									//}
+									/*
+									for(int k=0; k<state.DepthMap.Points.Length; k++) {
+										float distance = Vector3.Distance(state.DepthMap.Points[k], state.DepthMap.Pivot.GetPosition());
+										line += FormatValue(distance);
+									}
+									*/
 
 									//Root motion
 									line += FormatVector3(state.RootMotion);
 
+									//Agilities
+									line += FormatArray(state.Agilities);
+
 									//Phase
+									/*
 									PhaseEditor phase = FindObjectOfType<PhaseEditor>();
 									float previous = 0f;
 									float current = 0f;
@@ -339,6 +356,7 @@ public class MotionExporter : EditorWindow {
 									}
 									line += FormatValue(current);
 									line += FormatValue(GetPhaseUpdate(previous, current));
+									*/
 
 									//Finish
 									line = line.Remove(line.Length-1);

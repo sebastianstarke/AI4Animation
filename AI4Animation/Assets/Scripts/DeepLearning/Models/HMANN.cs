@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-	public class MANN : Model {
+	public class HMANN : Model {
 
 		public int XDim = 0;
 		public int HDim = 0;
@@ -20,7 +20,9 @@ namespace DeepLearning {
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor X, Y;
 		private Tensor BX, BY;
-		private Tensor BW0, BW1, BW2, Bb0, Bb1, Bb2;
+		private Tensor BW0_1, BW1_1, BW2_1, Bb0_1, Bb1_1, Bb2_1;
+		private Tensor BW0_2, BW1_2, BW2_2, Bb0_2, Bb1_2, Bb2_2;
+		private Tensor BW0_3, BW1_3, BW2_3, Bb0_3, Bb1_3, Bb2_3;
 		private Tensor[] CW;
 		private Tensor W0, W1, W2, b0, b1, b2;
 
@@ -32,12 +34,26 @@ namespace DeepLearning {
 			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
 			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
 
-			Parameters.Store(Folder+"/wc0_w.bin", HDimBlend, XDimBlend);
-			Parameters.Store(Folder+"/wc0_b.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc1_w.bin", HDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc1_b.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc2_w.bin", YDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc2_b.bin", YDimBlend, 1);
+			Parameters.Store(Folder+"/wc0_w_1.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b_1.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w_1.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b_1.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w_1.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b_1.bin", YDimBlend, 1);
+
+			Parameters.Store(Folder+"/wc0_w_2.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b_2.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w_2.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b_2.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w_2.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b_2.bin", YDimBlend, 1);
+
+			Parameters.Store(Folder+"/wc0_w_3.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b_3.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w_3.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b_3.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w_3.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b_3.bin", YDimBlend, 1);
 
 			for(int i=0; i<YDimBlend; i++) {
 				Parameters.Store(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
@@ -51,7 +67,7 @@ namespace DeepLearning {
 
 		public override void LoadParameters() {
 			if(Parameters == null) {
-				Debug.Log("Building MANN failed because no parameters are available.");
+				Debug.Log("Building HMANN failed because no parameters are available.");
 				return;
 			}
 			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
@@ -59,16 +75,30 @@ namespace DeepLearning {
 			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
 			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
 
-			BW0 = CreateTensor(Parameters.Load(4), "BW0");
-			Bb0 = CreateTensor(Parameters.Load(5), "Bb0");
-			BW1 = CreateTensor(Parameters.Load(6), "BW1");
-			Bb1 = CreateTensor(Parameters.Load(7), "Bb1");
-			BW2 = CreateTensor(Parameters.Load(8), "BW2");
-			Bb2 = CreateTensor(Parameters.Load(9), "Bb2");
+			BW0_1 = CreateTensor(Parameters.Load(4), "BW0_1");
+			Bb0_1 = CreateTensor(Parameters.Load(5), "Bb0_1");
+			BW1_1 = CreateTensor(Parameters.Load(6), "BW1_1");
+			Bb1_1 = CreateTensor(Parameters.Load(7), "Bb1_1");
+			BW2_1 = CreateTensor(Parameters.Load(8), "BW2_1");
+			Bb2_1 = CreateTensor(Parameters.Load(9), "Bb2_1");
+
+			BW0_2 = CreateTensor(Parameters.Load(10), "BW0_2");
+			Bb0_2 = CreateTensor(Parameters.Load(11), "Bb0_2");
+			BW1_2 = CreateTensor(Parameters.Load(12), "BW1_2");
+			Bb1_2 = CreateTensor(Parameters.Load(13), "Bb1_2");
+			BW2_2 = CreateTensor(Parameters.Load(14), "BW2_2");
+			Bb2_2 = CreateTensor(Parameters.Load(15), "Bb2_2");
+
+			BW0_3 = CreateTensor(Parameters.Load(16), "BW0_3");
+			Bb0_3 = CreateTensor(Parameters.Load(17), "Bb0_3");
+			BW1_3 = CreateTensor(Parameters.Load(18), "BW1_3");
+			Bb1_3 = CreateTensor(Parameters.Load(19), "Bb1_3");
+			BW2_3 = CreateTensor(Parameters.Load(20), "BW2_3");
+			Bb2_3 = CreateTensor(Parameters.Load(21), "Bb2_3");
 
 			CW = new Tensor[YDimBlend*6];
 			for(int i=0; i<YDimBlend*6; i++) {
-				CW[i] = CreateTensor(Parameters.Load(10+i), "CW"+i);
+				CW[i] = CreateTensor(Parameters.Load(22+i), "CW"+i);
 			}
 			
 			X = CreateTensor(XDim, 1, "X");
@@ -88,29 +118,44 @@ namespace DeepLearning {
 			//Normalise Input
 			Normalise(X, Xmean, Xstd, Y);
 
-			//Process Gating Network
+			//Process Gating Network 1
 			for(int i=0; i<ControlNeurons.Length; i++) {
 				BX.SetValue(i, 0, Y.GetValue(ControlNeurons[i], 0));
 			}
-			ELU(Layer(BX, BW0, Bb0, BY));
-			ELU(Layer(BY, BW1, Bb1, BY));
-			SoftMax(Layer(BY, BW2, Bb2, BY));
-
-			//Generate Network Weights
+			ELU(Layer(BX, BW0_1, Bb0_1, BY));
+			ELU(Layer(BY, BW1_1, Bb1_1, BY));
+			SoftMax(Layer(BY, BW2_1, Bb2_1, BY));
 			W0.SetZero(); b0.SetZero();
+			for(int i=0; i<YDimBlend; i++) {
+				float weight = BY.GetValue(i, 0);
+				Blend(W0, CW[6*i + 0], weight);
+				Blend(b0, CW[6*i + 1], weight);
+			}
+
+			//Process Gating Network 2
+			for(int i=0; i<ControlNeurons.Length; i++) {
+				BX.SetValue(i, 0, Y.GetValue(ControlNeurons[i], 0));
+			}
+			ELU(Layer(BX, BW0_2, Bb0_2, BY));
+			ELU(Layer(BY, BW1_2, Bb1_2, BY));
+			SoftMax(Layer(BY, BW2_2, Bb2_2, BY));
 			W1.SetZero(); b1.SetZero();
+			for(int i=0; i<YDimBlend; i++) {
+				float weight = BY.GetValue(i, 0);
+				Blend(W1, CW[6*i + 2], weight);
+				Blend(b1, CW[6*i + 3], weight);
+			}
+
+			//Process Gating Network 3
+			for(int i=0; i<ControlNeurons.Length; i++) {
+				BX.SetValue(i, 0, Y.GetValue(ControlNeurons[i], 0));
+			}
+			ELU(Layer(BX, BW0_3, Bb0_3, BY));
+			ELU(Layer(BY, BW1_3, Bb1_3, BY));
+			SoftMax(Layer(BY, BW2_3, Bb2_3, BY));
 			W2.SetZero(); b2.SetZero();
 			for(int i=0; i<YDimBlend; i++) {
 				float weight = BY.GetValue(i, 0);
-
-				//if(i==0) {
-				//	weight = 0f;
-				//}
-
-				Blend(W0, CW[6*i + 0], weight);
-				Blend(b0, CW[6*i + 1], weight);
-				Blend(W1, CW[6*i + 2], weight);
-				Blend(b1, CW[6*i + 3], weight);
 				Blend(W2, CW[6*i + 4], weight);
 				Blend(b2, CW[6*i + 5], weight);
 			}

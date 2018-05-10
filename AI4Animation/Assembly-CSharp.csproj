@@ -125,6 +125,7 @@
      <Compile Include="Assets\Scripts\Animation\SphereMap.cs" />
      <Compile Include="Assets\Scripts\Animation\Trajectory.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Model.cs" />
+     <Compile Include="Assets\Scripts\DeepLearning\Models\HMANN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\LSTM.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\MANN.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Models\PFNN.cs" />

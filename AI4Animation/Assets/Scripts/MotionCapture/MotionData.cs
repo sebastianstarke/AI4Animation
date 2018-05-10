@@ -664,8 +664,20 @@ public class MotionData : ScriptableObject {
 			return transformations;
 		}
 
+		public Matrix4x4[] GetLocalBoneTransformations(bool mirrored) {
+			Matrix4x4[] transformations = new Matrix4x4[Local.Length];
+			for(int i=0; i<Local.Length; i++) {
+				transformations[i] = GetLocalBoneTransformation(i, mirrored);
+			}
+			return transformations;
+		}
+
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
 			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+		}
+
+		public Matrix4x4 GetLocalBoneTransformation(int index, bool mirrored) {
+			return mirrored ? Local[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : Local[index];
 		}
 
 		public Vector3[] GetBoneVelocities(bool mirrored) {
@@ -676,8 +688,20 @@ public class MotionData : ScriptableObject {
 			return velocities;
 		}
 
+		public Vector3[] GetLocalBoneVelocities(bool mirrored) {
+			Vector3[] velocities = new Vector3[World.Length];
+			for(int i=0; i<World.Length; i++) {
+				velocities[i] = GetLocalBoneVelocity(i, mirrored);
+			}
+			return velocities;
+		}
+
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
 			return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
+		}
+
+		public Vector3 GetLocalBoneVelocity(int index, bool mirrored) {
+			return (GetLocalBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 		}
 
 		public Matrix4x4 GetRootTransformation(bool mirrored) {
@@ -734,6 +758,18 @@ public class MotionData : ScriptableObject {
 				length += Vector3.Distance(positions[i-1], positions[i]);
 			}
 			return length;
+		}
+
+		public float[] GetAgilities(bool mirrored) {
+			float[] agilities = new float[Data.Source.Bones.Length];
+			for(int i=0; i<agilities.Length; i++) {
+				agilities[i] = GetAgility(i, mirrored);
+			}
+			return agilities;
+		}
+
+		public float GetAgility(int index, bool mirrored) {
+			return Quaternion.Angle(GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetLocalBoneTransformation(index, mirrored).GetRotation()) / 10f;
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {

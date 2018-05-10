@@ -321,6 +321,9 @@ public class PhaseEditor : MonoBehaviour {
 					if(Utility.GUIButton("Restart", UltiDraw.Brown, UltiDraw.White)) {
 						Optimiser.Initialise();
 					}
+					if(Utility.GUIButton("Clear", UltiDraw.Brown, UltiDraw.White)) {
+						Optimiser.Clear();
+					}
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Fitness: " + Optimiser.GetFitness(), GUILayout.Width(150f));
 					float[] configuration = Optimiser.GetPeakConfiguration();
@@ -601,6 +604,13 @@ public class PhaseEditor : MonoBehaviour {
 				Populations[i].Evolve(GetPreviousPopulation(i), GetNextPopulation(i), GetPreviousPivotPopulation(i), GetNextPivotPopulation(i));
 			}
 			Assign();
+		}
+
+		public void Clear() {
+			for(int i=0; i<Function.Phase.Length; i++) {
+				Function.Phase[i] = 0f;
+				Function.Keys[i] = false;
+			}
 		}
 
 		

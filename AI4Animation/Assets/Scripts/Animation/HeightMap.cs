@@ -5,10 +5,14 @@ public class HeightMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	private float Size;
+	private float Size = 0.25f;
 	private const int Layer1 = 20;
 	private const int Layer2 = 40;
 	private const int Layer3 = 60;
+
+	public HeightMap() {
+		Size = 0.25f;
+	}
 
 	public HeightMap(float size) {
 		Size = size;
@@ -57,6 +61,14 @@ public class HeightMap {
 				Points[sample] = target;
 			}
 		}
+	}
+
+	public float[] GetDistances() {
+		float[] distances = new float[Points.Length];
+		for(int i=0; i<Points.Length; i++) {
+			distances[i] = Vector3.Distance(Pivot.GetPosition(), Points[i]);
+		}
+		return distances;
 	}
 
 	public void Draw() {

@@ -33,6 +33,9 @@ namespace DeepLearning {
 				case TYPE.PFNN:
 				Model = ScriptableObject.CreateInstance<PFNN>();
 				break;
+				case TYPE.HMANN:
+				Model = ScriptableObject.CreateInstance<HMANN>();
+				break;
 			}
 		}
 		

@@ -109,6 +109,14 @@ public class SphereMap {
         return vertices;
 	}
 
+	public float[] GetDistances() {
+		float[] distances = new float[Points.Length];
+		for(int i=0; i<Points.Length; i++) {
+			distances[i] = Vector3.Distance(Pivot.GetPosition(), Points[i]);
+		}
+		return distances;
+	}
+
 	public void Draw() {
 		UltiDraw.Begin();
 		UltiDraw.DrawTranslateGizmo(Pivot.GetPosition(), Pivot.GetRotation(), 0.1f);

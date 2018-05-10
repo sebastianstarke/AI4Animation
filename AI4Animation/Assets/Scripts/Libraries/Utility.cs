@@ -417,7 +417,7 @@ public static class Utility {
 		}
 	}
 
-	public static int ComputeSum(int[] values) {
+	public static int Sum(this int[] values) {
 		int sum = 0;
 		for(int i=0; i<values.Length; i++) {
 			sum += values[i];
@@ -425,7 +425,7 @@ public static class Utility {
 		return sum;
 	}
 
-	public static float ComputeSum(float[] values) {
+	public static float Sum(this float[] values) {
 		float sum = 0f;
 		for(int i=0; i<values.Length; i++) {
 			sum += values[i];
@@ -433,7 +433,7 @@ public static class Utility {
 		return sum;
 	}
 
-	public static double ComputeSum(double[] values) {
+	public static double Sum(this double[] values) {
 		double sum = 0.0;
 		for(int i=0; i<values.Length; i++) {
 			sum += values[i];
@@ -441,7 +441,7 @@ public static class Utility {
 		return sum;
 	}
 
-	public static int ComputeMin(int[] values) {
+	public static int Min(this int[] values) {
 		if(values.Length == 0) {
 			return 0;
 		}
@@ -452,7 +452,7 @@ public static class Utility {
 		return min;
 	}
 
-	public static float ComputeMin(float[] values) {
+	public static float Min(this float[] values) {
 		if(values.Length == 0) {
 			return 0f;
 		}
@@ -463,7 +463,7 @@ public static class Utility {
 		return min;
 	}
 
-	public static double ComputeMin(double[] values) {
+	public static double Min(this double[] values) {
 		if(values.Length == 0) {
 			return 0.0;
 		}
@@ -474,7 +474,7 @@ public static class Utility {
 		return min;
 	}
 
-	public static int ComputeMax(int[] values) {
+	public static int Max(this int[] values) {
 		if(values.Length == 0) {
 			return 0;
 		}
@@ -485,7 +485,7 @@ public static class Utility {
 		return max;
 	}
 
-	public static float ComputeMax(float[] values) {
+	public static float Max(this float[] values) {
 		if(values.Length == 0) {
 			return 0f;
 		}
@@ -496,7 +496,7 @@ public static class Utility {
 		return max;
 	}
 
-	public static double ComputeMax(double[] values) {
+	public static double Max(this double[] values) {
 		if(values.Length == 0) {
 			return 0.0;
 		}
@@ -507,7 +507,7 @@ public static class Utility {
 		return max;
 	}
 
-	public static float ComputeMean(int[] values) {
+	public static float Mean(this int[] values) {
 		if(values.Length == 0) {
 			return 0;
 		}
@@ -521,7 +521,7 @@ public static class Utility {
 		return mean;
 	}
 
-	public static float ComputeMean(float[] values) {
+	public static float Mean(this float[] values) {
 		if(values.Length == 0) {
 			return 0f;
 		}
@@ -535,7 +535,7 @@ public static class Utility {
 		return mean;
 	}
 
-	public static double ComputeMean(double[] values) {
+	public static double Mean(this double[] values) {
 		if(values.Length == 0) {
 			return 0.0;
 		}
@@ -549,12 +549,12 @@ public static class Utility {
 		return mean;
 	}
 
-	public static float ComputeSigma(int[] values) {
+	public static float Sigma(this int[] values) {
 		if(values.Length == 0) {
 			return 0f;
 		}
 		float variance = 0f;
-		float mean = ComputeMean(values);
+		float mean = values.Mean();
 		float args = 0f;
 		for(int i=0; i<values.Length; i++) {
 			variance += Mathf.Pow(values[i] - mean, 2f);
@@ -564,12 +564,12 @@ public static class Utility {
 		return Mathf.Sqrt(variance);
 	}
 
-	public static float ComputeSigma(float[] values) {
+	public static float Sigma(this float[] values) {
 		if(values.Length == 0) {
 			return 0f;
 		}
 		float variance = 0f;
-		float mean = ComputeMean(values);
+		float mean = values.Mean();
 		float args = 0f;
 		for(int i=0; i<values.Length; i++) {
 			variance += Mathf.Pow(values[i] - mean, 2f);
@@ -579,12 +579,12 @@ public static class Utility {
 		return Mathf.Sqrt(variance);
 	}
 
-	public static double ComputeSigma(double[] values) {
+	public static double Sigma(this double[] values) {
 		if(values.Length == 0) {
 			return 0.0;
 		}
 		double variance = 0.0;
-		double mean = ComputeMean(values);
+		double mean = values.Mean();
 		double args = 1.0;
 		for(int i=0; i<values.Length; i++) {
 			variance += System.Math.Pow(values[i] - mean, 2.0);
