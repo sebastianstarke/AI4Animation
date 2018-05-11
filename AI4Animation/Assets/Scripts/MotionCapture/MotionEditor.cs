@@ -288,8 +288,8 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, 0f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
-		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Red);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -1f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
+		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
 		UltiDraw.End();
 		*/
 	}
@@ -311,7 +311,7 @@ public class MotionEditor : MonoBehaviour {
 		public Vector3 RootMotion;
 		public Matrix4x4[] BoneTransformations;
 		public Vector3[] BoneVelocities;
-		public float[] Agilities;
+		//public float[] Agilities;
 		public Trajectory Trajectory;
 		public HeightMap HeightMap;
 		public DepthMap DepthMap;
@@ -322,7 +322,7 @@ public class MotionEditor : MonoBehaviour {
 			RootMotion = frame.GetRootMotion(mirrored);
 			BoneTransformations = frame.GetBoneTransformations(mirrored);
 			BoneVelocities = frame.GetBoneVelocities(mirrored);
-			Agilities = frame.GetAgilities(mirrored);
+			//Agilities = frame.GetAgilities(mirrored);
 			Trajectory = frame.GetTrajectory(mirrored);
 			HeightMap = frame.GetHeightMap(mirrored);
 			DepthMap = frame.GetDepthMap(mirrored);

@@ -696,8 +696,23 @@ public class MotionData : ScriptableObject {
 			return velocities;
 		}
 
-		public Vector3 GetBoneVelocity(int index, bool mirrored) {
-			return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
+		public Vector3 GetBoneVelocity(int index, bool mirrored, float smoothing = 0f) {
+			if(smoothing == 0f) {
+				return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
+			} else {
+				Frame[] frames = Data.GetFrames(Mathf.Clamp(Timestamp - smoothing, 0f, Data.GetTotalTime()), Mathf.Clamp(Timestamp + smoothing, 0f, Data.GetTotalTime()));
+				Vector3 velocity = Vector3.zero;
+				float sum = 0f;
+				for(int i=0; i<frames.Length; i++) {
+					float weight = 2f * (float)(i+1) / (float)(frames.Length+1);
+					if(weight > 1f) {
+						weight = 2f - weight;
+					}
+					sum += weight;
+					velocity += weight * frames[i].GetBoneVelocity(index, mirrored);
+				}
+				return velocity / sum;
+			}
 		}
 
 		public Vector3 GetLocalBoneVelocity(int index, bool mirrored) {
@@ -769,7 +784,13 @@ public class MotionData : ScriptableObject {
 		}
 
 		public float GetAgility(int index, bool mirrored) {
-			return Quaternion.Angle(GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetLocalBoneTransformation(index, mirrored).GetRotation()) / 10f;
+			float window = 0f;
+			float p1 = GetBoneVelocity(index, mirrored, window/2f).magnitude;
+			float p2 = GetPreviousFrame().GetBoneVelocity(index, mirrored, window/2f).magnitude;
+			return p1-p2;
+			//float p1 = Quaternion.Angle(GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetLocalBoneTransformation(index, mirrored).GetRotation()) / 5f;
+			//float p2 = Quaternion.Angle(GetPreviousFrame().GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation()) / 5f;
+			//return p2-p1;
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {

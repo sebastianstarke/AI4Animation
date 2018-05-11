@@ -536,8 +536,8 @@ public static class UltiDraw {
 		float scale = yMax - yMin;
 		for(int i=0; i<values.Length-1; i++) {
 			DrawGUILine(
-				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
-				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
 				line
 			);
 		}
@@ -550,8 +550,8 @@ public static class UltiDraw {
 		float scale = yMax - yMin;
 		for(int i=0; i<values.Length-1; i++) {
 			DrawGUILine(
-				new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i]/scale, 0f, 1f)*size.y),
-				new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
 				thickness,
 				line
 			);
@@ -566,8 +566,8 @@ public static class UltiDraw {
 		for(int k=0; k<values.Count; k++) {
 			for(int i=0; i<values[k].Length-1; i++) {
 				DrawGUILine(
-					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i]/scale, 0f, 1f)*size.y),
-					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i+1]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
 					lines[k]
 				);
 			}
@@ -582,8 +582,8 @@ public static class UltiDraw {
 		for(int k=0; k<values.Count; k++) {
 			for(int i=0; i<values[k].Length-1; i++) {
 				DrawGUILine(
-					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i]/scale, 0f, 1f)*size.y),
-					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(values[k][i+1]/scale, 0f, 1f)*size.y),
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
 					thickness,
 					lines[k]
 				);

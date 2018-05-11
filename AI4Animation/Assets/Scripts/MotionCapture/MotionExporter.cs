@@ -219,9 +219,9 @@ public class MotionExporter : EditorWindow {
 		file.WriteLine(index + " " + "RootMotionY"); index += 1;
 		file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
-		for(int i=0; i<Animations[0].Source.Bones.Length; i++) {
-			file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "Agility"+(i+1)); index += 1;
-		}
+		//for(int i=0; i<Animations[0].Source.Bones.Length; i++) {
+		//	file.WriteLine(index + " " + Animations[0].Source.Bones[i].Name + "Agility"+(i+1)); index += 1;
+		//}
 
 		//file.WriteLine(index + " " + "Phase"); index += 1;
 		//file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
@@ -340,7 +340,7 @@ public class MotionExporter : EditorWindow {
 									line += FormatVector3(state.RootMotion);
 
 									//Agilities
-									line += FormatArray(state.Agilities);
+									//line += FormatArray(state.Agilities);
 
 									//Phase
 									/*

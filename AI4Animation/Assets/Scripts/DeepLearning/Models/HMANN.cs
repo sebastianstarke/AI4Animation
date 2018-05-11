@@ -34,26 +34,26 @@ namespace DeepLearning {
 			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
 			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
 
-			Parameters.Store(Folder+"/wc0_w_1.bin", HDimBlend, XDimBlend);
-			Parameters.Store(Folder+"/wc0_b_1.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc1_w_1.bin", HDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc1_b_1.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc2_w_1.bin", YDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc2_b_1.bin", YDimBlend, 1);
+			Parameters.Store(Folder+"/wc0_w0.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b0.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w0.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b0.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w0.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b0.bin", YDimBlend, 1);
 
-			Parameters.Store(Folder+"/wc0_w_2.bin", HDimBlend, XDimBlend);
-			Parameters.Store(Folder+"/wc0_b_2.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc1_w_2.bin", HDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc1_b_2.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc2_w_2.bin", YDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc2_b_2.bin", YDimBlend, 1);
+			Parameters.Store(Folder+"/wc0_w1.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b1.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w1.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b1.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w1.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b1.bin", YDimBlend, 1);
 
-			Parameters.Store(Folder+"/wc0_w_3.bin", HDimBlend, XDimBlend);
-			Parameters.Store(Folder+"/wc0_b_3.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc1_w_3.bin", HDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc1_b_3.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc2_w_3.bin", YDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc2_b_3.bin", YDimBlend, 1);
+			Parameters.Store(Folder+"/wc0_w2.bin", HDimBlend, XDimBlend);
+			Parameters.Store(Folder+"/wc0_b2.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc1_w2.bin", HDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc1_b2.bin", HDimBlend, 1);
+			Parameters.Store(Folder+"/wc2_w2.bin", YDimBlend, HDimBlend);
+			Parameters.Store(Folder+"/wc2_b2.bin", YDimBlend, 1);
 
 			for(int i=0; i<YDimBlend; i++) {
 				Parameters.Store(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
