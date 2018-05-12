@@ -533,7 +533,7 @@ public static class UltiDraw {
 		DrawGUIRectangle(center, size, background);
 		float x = center.x - size.x/2f;
 		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
+		//float scale = yMax - yMin;
 		for(int i=0; i<values.Length-1; i++) {
 			DrawGUILine(
 					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
@@ -547,7 +547,7 @@ public static class UltiDraw {
 		DrawGUIRectangle(center, size, background);
 		float x = center.x - size.x/2f;
 		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
+		//float scale = yMax - yMin;
 		for(int i=0; i<values.Length-1; i++) {
 			DrawGUILine(
 					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
@@ -562,7 +562,7 @@ public static class UltiDraw {
 		DrawGUIRectangle(center, size, background);
 		float x = center.x - size.x/2f;
 		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
+		//float scale = yMax - yMin;
 		for(int k=0; k<values.Count; k++) {
 			for(int i=0; i<values[k].Length-1; i++) {
 				DrawGUILine(
@@ -578,7 +578,7 @@ public static class UltiDraw {
 		DrawGUIRectangle(center, size, background);
 		float x = center.x - size.x/2f;
 		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
+		//float scale = yMax - yMin;
 		for(int k=0; k<values.Count; k++) {
 			for(int i=0; i<values[k].Length-1; i++) {
 				DrawGUILine(
