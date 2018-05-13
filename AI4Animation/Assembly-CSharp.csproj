@@ -54,8 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation_Adam.cs" />
-     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation_Original.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2017\Adam\BioAnimation_Adam.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2017\Original\BioAnimation_Original.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\MinAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\TrackballAttribute.cs" />
@@ -201,7 +201,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
-     <None Include="Assets\Demo\SIGGRAPH_2017\NN\Adam\Link.txt" />
+     <None Include="Assets\Demo\SIGGRAPH_2017\Adam\NN\Link.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
@@ -237,7 +237,7 @@
      <None Include="Assets\Project\Backup\Smoothing.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
-     <None Include="Assets\Demo\SIGGRAPH_2017\NN\Original\Link.txt" />
+     <None Include="Assets\Demo\SIGGRAPH_2017\Original\NN\Link.txt" />
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
      <None Include="Assets\Scripts\UltiDraw\ReadMe.txt" />
