@@ -22,7 +22,7 @@ end-to-end fashion.
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
 
-Paper: https://github.com/sebastianstarke/AI4Animation/Media/SIGGRAPH_2018/Paper.pdf
+Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 <br /><br />
 A demo of our system will be availble in this repository very soon.
 
