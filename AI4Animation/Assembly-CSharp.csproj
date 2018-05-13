@@ -197,7 +197,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
      <None Include="Assets\Palette\low poly medieval buildings\readme.txt" />
-     <None Include="Assets\Palette\Valkyrie\model\meshes\materials\textures\CMakeLists.txt" />
+     <None Include="Assets\Project\Palette\Valkyrie\model\meshes\materials\textures\CMakeLists.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
