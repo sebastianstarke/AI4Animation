@@ -22,7 +22,6 @@ end-to-end fashion.
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
 
-<br /><br />
 A demo of our system will be availble in this repository very soon.
 
 SIGGRAPH 2017
