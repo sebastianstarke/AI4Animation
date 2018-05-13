@@ -1,0 +1,1 @@
+Download and extract the weights into this folder from http://www.starke-consult.de/UoE/GitHub/Weights_Adam_PFNN.zip
