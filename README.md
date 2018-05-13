@@ -19,7 +19,7 @@ Our system is implemented in the Unity 3D engine and trained with TensorFlow.
 
 
 <p align="center">
-[![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uFJvRYtjQ4c" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </p>
 
 SIGGRAPH 2017
