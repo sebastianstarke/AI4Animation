@@ -17,7 +17,9 @@ The system can produce natural animations from real motion data using a novel ne
 Our system is implemented in the Unity 3D engine and trained with TensorFlow.
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2018/Teaser.png" width="100%">
 
+<center>
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
+</center>
 
 SIGGRAPH 2017
 ------------
