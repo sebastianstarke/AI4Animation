@@ -11,7 +11,7 @@ This project explores the opportunities of deep learning and biologically-inspir
 
 SIGGRAPH 2018
 ------------
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2018/Teaser.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Teaser.png" width="100%">
 Animating characters is a pain, right? Especially those four-legged monsters!
 This year, we will be presenting our recent research on quadruped animation and character control at the SIGGRAPH 2018 in Vancouver.
 The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks.
@@ -22,6 +22,8 @@ end-to-end fashion.
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
 
+Paper: https://github.com/sebastianstarke/AI4Animation/Media/SIGGRAPH_2018/Paper.pdf
+<br /><br />
 A demo of our system will be availble in this repository very soon.
 
 SIGGRAPH 2017
@@ -36,7 +38,7 @@ A demo in Unity3D using the original weights for terrain-adaptive locomotion is 
 Another demo on flat ground using the Adam character is contained in the Assets/Demo/SIGGRAPH_2017/Adam folder.
 In order to run them, you need to download the neural network weights from the link provided in the Link.txt file, extract them into the /NN folder, 
 and store the parameters via the custom inspector button.
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/images/SIGGRAPH_2017/Demo.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Demo.png" width="100%">
 
 Motion Capture
 ------------
