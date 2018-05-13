@@ -12,13 +12,13 @@ This project explores the opportunities of deep learning and biologically-inspir
 SIGGRAPH 2018
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Teaser.png" width="100%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="50%" style="float:right">
 Animating characters is a pain, right? Especially those four-legged monsters!
 This year, we will be presenting our recent research on quadruped animation and character control at the SIGGRAPH 2018 in Vancouver.
 The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks.
 Instead of optimising a fixed group of weights, the system learns to dynamically blend a group of weights into a further neural network, based on the current
 state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an
 end-to-end fashion.
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="50%" align="right">
 <br /><br />
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
