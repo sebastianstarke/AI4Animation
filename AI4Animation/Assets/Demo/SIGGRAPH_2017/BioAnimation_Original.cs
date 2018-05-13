@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 
 namespace SIGGRAPH_2017 {
-	public class BioAnimation : MonoBehaviour {
+	public class BioAnimation_Original : MonoBehaviour {
 
 		public bool Inspect = false;
 
@@ -439,13 +439,13 @@ namespace SIGGRAPH_2017 {
 	}
 
 	#if UNITY_EDITOR
-	[CustomEditor(typeof(BioAnimation))]
-	public class BioAnimation_Editor : Editor {
+	[CustomEditor(typeof(BioAnimation_Original))]
+	public class BioAnimation_Original_Editor : Editor {
 
-			public BioAnimation Target;
+			public BioAnimation_Original Target;
 
 			void Awake() {
-				Target = (BioAnimation)target;
+				Target = (BioAnimation_Original)target;
 			}
 
 			public override void OnInspectorGUI() {

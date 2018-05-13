@@ -260,7 +260,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		
 		UltiDraw.Begin();
-		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
+		//UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
 		UltiDraw.End();
 
 		if(ShowDepthImage) {

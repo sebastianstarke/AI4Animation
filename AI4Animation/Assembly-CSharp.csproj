@@ -54,7 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation_Adam.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2017\BioAnimation_Original.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\MinAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\TrackballAttribute.cs" />
@@ -150,6 +151,7 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionExporter.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionTools.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\PhaseEditor.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\StateEditor.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\EditorCoroutines.cs" />
