@@ -223,15 +223,15 @@ public class MotionEditor : MonoBehaviour {
 
 	public void Draw() {
 		if(ShowMotion) {
-			for(int i=0; i<6; i++) {
-				MotionData.Frame previous = Data.GetFrame(Mathf.Clamp(GetState().Timestamp - 1f + (float)i/6f, 0f, Data.GetTotalTime()));
-				GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), previous.GetBoneTransformations(Mirror));
+			for(int i=0; i<GetState().PastBoneTransformations.Count; i++) {
+				GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), GetState().PastBoneTransformations[i]);
 			}
+			/*
 			for(int i=1; i<=5; i++) {
 				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(GetState().Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
-
 			}
+			*/
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
@@ -260,7 +260,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		
 		UltiDraw.Begin();
-		//UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
+		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
 		UltiDraw.End();
 
 		if(ShowDepthImage) {
@@ -315,6 +315,10 @@ public class MotionEditor : MonoBehaviour {
 		public Trajectory Trajectory;
 		public HeightMap HeightMap;
 		public DepthMap DepthMap;
+
+		public List<Matrix4x4[]> PastBoneTransformations;
+		public List<Vector3[]> PastBoneVelocities;
+
 		public FrameState(MotionData.Frame frame, bool mirrored) {
 			Index = frame.Index;
 			Timestamp = frame.Timestamp;
@@ -326,6 +330,14 @@ public class MotionEditor : MonoBehaviour {
 			Trajectory = frame.GetTrajectory(mirrored);
 			HeightMap = frame.GetHeightMap(mirrored);
 			DepthMap = frame.GetDepthMap(mirrored);
+
+			PastBoneTransformations = new List<Matrix4x4[]>(6);
+			PastBoneVelocities = new List<Vector3[]>(6);
+			for(int i=0; i<6; i++) {
+				MotionData.Frame previous = frame.Data.GetFrame(Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, frame.Data.GetTotalTime()));
+				PastBoneTransformations.Add(previous.GetBoneTransformations(mirrored));
+				PastBoneVelocities.Add(previous.GetBoneVelocities(mirrored));
+			}
 		}
 	}
 

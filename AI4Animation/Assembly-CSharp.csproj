@@ -109,7 +109,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\Water.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation_Wolf.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\AgilityMeasure.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\ContactProfile.cs" />

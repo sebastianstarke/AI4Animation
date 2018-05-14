@@ -195,34 +195,30 @@ public class MotionTools : EditorWindow {
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
         	if(Active[i]) {
-				//Data[i].HeightMapSize = 0.25f;
-				//Data[i].DepthMapResolution = 20;
-				//Data[i].DepthMapSize = 10f;
-				//Data[i].DepthMapDistance = 10f;
 				for(int s=0; s<Data[i].Sequences.Length; s++) {
 					//Trot
-					Data[i].Sequences[s].SetStyleCopies(3, 10);
-					Data[i].Sequences[s].SetTransitionCopies(3, 10);
+					Data[i].Sequences[s].SetStyleCopies("Trot", 9);
+					Data[i].Sequences[s].SetTransitionCopies("Trot", 9);
 
 					//Canter
-					Data[i].Sequences[s].SetStyleCopies(4, 2);
-					Data[i].Sequences[s].SetTransitionCopies(4, 2);
+					Data[i].Sequences[s].SetStyleCopies("Canter", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Canter", 3);
 
 					//Jump
-					Data[i].Sequences[s].SetStyleCopies(5, 10);
-					Data[i].Sequences[s].SetTransitionCopies(5, 10);
+					Data[i].Sequences[s].SetStyleCopies("Jump", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Jump", 9);
 
 					//Sit
-					Data[i].Sequences[s].SetStyleCopies(6, 0);
-					Data[i].Sequences[s].SetTransitionCopies(6, 5);
+					Data[i].Sequences[s].SetStyleCopies("Sit", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Sit", 5);
 
 					//Stand
-					Data[i].Sequences[s].SetStyleCopies(7, 0);
-					Data[i].Sequences[s].SetTransitionCopies(7, 10);
+					Data[i].Sequences[s].SetStyleCopies("Stand", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Stand", 5);
 
 					//Lie
-					Data[i].Sequences[s].SetStyleCopies(8, 0);
-					Data[i].Sequences[s].SetTransitionCopies(8, 10);
+					Data[i].Sequences[s].SetStyleCopies("Lie", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
              	EditorUtility.SetDirty(Data[i]);
             }
