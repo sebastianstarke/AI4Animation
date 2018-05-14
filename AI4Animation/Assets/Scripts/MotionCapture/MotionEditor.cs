@@ -465,28 +465,6 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.ObjectField("Data", Target.Data, typeof(MotionData), true);
 					}
 
-					Utility.SetGUIColor(UltiDraw.Grey);
-					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Utility.ResetGUIColor();
-
-						Utility.SetGUIColor(UltiDraw.Mustard);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							Target.InspectCamera = EditorGUILayout.Toggle("Camera", Target.InspectCamera);
-						}
-
-						if(Target.InspectCamera) {
-							if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-								Target.SetAutoFocus(!Target.AutoFocus);
-							}
-							Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
-							Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
-							Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
-							Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
-							Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
-						}
-					}
-
 					Utility.SetGUIColor(UltiDraw.LightGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
@@ -550,6 +528,28 @@ public class MotionEditor : MonoBehaviour {
 						Target.ShowDepthImage = !Target.ShowDepthImage;
 					}
 					EditorGUILayout.EndHorizontal();
+
+					Utility.SetGUIColor(UltiDraw.Grey);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							Target.InspectCamera = EditorGUILayout.Toggle("Camera", Target.InspectCamera);
+						}
+
+						if(Target.InspectCamera) {
+							if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+								Target.SetAutoFocus(!Target.AutoFocus);
+							}
+							Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+							Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
+							Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+							Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+							Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+						}
+					}
 
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
