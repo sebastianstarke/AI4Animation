@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-    public enum TYPE {Vanilla, MANN, PFNN, HMANN};
+    public enum TYPE {Vanilla, MANN, PFNN, HMANN, SPFNN};
 
     public abstract class Model : ScriptableObject {
 
