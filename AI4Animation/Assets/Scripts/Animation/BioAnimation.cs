@@ -34,6 +34,8 @@ public class BioAnimation : MonoBehaviour {
 	private Actor Actor;
 	private Trajectory Trajectory;
 
+	private HeightMap HeightMap;
+
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 
@@ -67,6 +69,7 @@ public class BioAnimation : MonoBehaviour {
 		Ups = new Vector3[Actor.Bones.Length];
 		Velocities = new Vector3[Actor.Bones.Length];
 		Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
+		HeightMap = new HeightMap(0.25f);
 		if(Controller.Styles.Length > 0) {
 			for(int i=0; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].Styles[0] = 1f;
@@ -231,6 +234,14 @@ public class BioAnimation : MonoBehaviour {
 			NN.Model.SetInput(start + i*JointDimIn + 11, vel.z);
 		}
 		start += JointDimIn*Actor.Bones.Length;
+
+		//Input Height Map
+		HeightMap.Sense(Actor.Bones[0].Transform.GetWorldMatrix(), LayerMask.GetMask("Ground", "Object"));
+		float[] distances = HeightMap.GetDistances();
+		for(int i=0; i<HeightMap.Points.Length; i++) {
+			NN.Model.SetInput(start + i, distances[i]);
+		}
+		start += HeightMap.Points.Length;
 
 		//Predict
 		NN.Model.Predict();
@@ -494,6 +505,8 @@ public class BioAnimation : MonoBehaviour {
 				}
 				UltiDraw.End();
 			}
+
+			HeightMap.Draw();
 		}
 	}
 

@@ -195,6 +195,7 @@ public class MotionTools : EditorWindow {
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
         	if(Active[i]) {
+				/*
 				for(int s=0; s<Data[i].Sequences.Length; s++) {
 					//Trot
 					Data[i].Sequences[s].SetStyleCopies("Trot", 9);
@@ -220,6 +221,8 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetStyleCopies("Lie", 0);
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
+				*/
+				Data[i].MotionSmoothing = 1;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

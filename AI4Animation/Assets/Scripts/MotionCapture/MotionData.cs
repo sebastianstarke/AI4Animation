@@ -15,7 +15,7 @@ public class MotionData : ScriptableObject {
 	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
-	public float MotionSmoothing = 0f;
+	public int MotionSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
 	public Axis MirrorAxis = Axis.XPositive;
@@ -674,10 +674,29 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
-			if(Data.MotionSmoothing  == 0f) {
+			if(Data.MotionSmoothing  == 0) {
 				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
 			} else {
-				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+				Frame[] frames = Data.GetFrames(Mathf.Clamp(Index - Data.MotionSmoothing, 1, Data.GetTotalFrames()), Mathf.Clamp(Index + Data.MotionSmoothing, 1, Data.GetTotalFrames()));
+				Vector3 P = Vector3.zero;
+				Vector3 Z = Vector3.zero;
+				Vector3 Y = Vector3.zero;
+				float sum = 0f;
+				for(int i=0; i<frames.Length; i++) {
+					float weight = 2f * (float)(i+1) / (float)(frames.Length+1);
+					if(weight > 1f) {
+						weight = 2f - weight;
+					}
+					Matrix4x4 matrix = mirrored ? frames[i].World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : frames[i].World[index];
+					P += weight * matrix.GetPosition();
+					Z += weight * matrix.GetForward();
+					Y += weight * matrix.GetUp();
+					sum += weight;
+				}
+				P /= sum;
+				Z /= sum;
+				Y /= sum;
+				return Matrix4x4.TRS(P, Quaternion.LookRotation(Z, Y), Vector3.one);
 			}
 		}
 
@@ -690,22 +709,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Vector3 GetBoneVelocity(int index, bool mirrored) {
-			if(Data.MotionSmoothing == 0f) {
-				return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
-			} else {
-				Frame[] frames = Data.GetFrames(Mathf.Clamp(Timestamp - Data.MotionSmoothing, 0f, Data.GetTotalTime()), Mathf.Clamp(Timestamp + Data.MotionSmoothing, 0f, Data.GetTotalTime()));
-				Vector3 velocity = Vector3.zero;
-				float sum = 0f;
-				for(int i=0; i<frames.Length; i++) {
-					float weight = 2f * (float)(i+1) / (float)(frames.Length+1);
-					if(weight > 1f) {
-						weight = 2f - weight;
-					}
-					sum += weight;
-					velocity += weight * (frames[i].GetBoneTransformation(index, mirrored).GetPosition() - frames[i].GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
-				}
-				return velocity / sum;
-			}
+			return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 		}
 
 		public Matrix4x4 GetRootTransformation(bool mirrored) {

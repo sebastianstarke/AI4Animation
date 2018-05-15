@@ -48,8 +48,8 @@ namespace DeepLearning {
 				Parameters.Store(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
 			}
 			for(int i=0; i<SDim; i++) {
-				Parameters.Store(Folder+"/cp0_a"+i.ToString()+".bin", YDim, YDim);
-				Parameters.Store(Folder+"/cp0_b"+i.ToString()+".bin", YDim, 1);
+				Parameters.Store(Folder+"/cp3_a"+i.ToString()+".bin", YDim, YDim);
+				Parameters.Store(Folder+"/cp3_b"+i.ToString()+".bin", YDim, 1);
 			}
 		}
 
