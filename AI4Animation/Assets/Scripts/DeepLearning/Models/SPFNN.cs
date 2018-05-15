@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -169,6 +170,10 @@ namespace DeepLearning {
 				HDim = EditorGUILayout.IntField("HDim", HDim);
 				YDim = EditorGUILayout.IntField("YDim", YDim);
 				SDim = EditorGUILayout.IntField("SDim", SDim);
+				Array.Resize(ref StyleNeurons, EditorGUILayout.IntField("Style Neurons", StyleNeurons.Length));
+				for(int i=0; i<StyleNeurons.Length; i++) {
+					StyleNeurons[i] = EditorGUILayout.IntField("Neuron " + (i+1), StyleNeurons[i]);
+				}
 				PhaseIndex = EditorGUILayout.IntField("Phase Index", PhaseIndex);
 
 				EditorGUILayout.Slider("Phase", Phase, 0f, 2f*Mathf.PI);
