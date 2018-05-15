@@ -201,12 +201,12 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Trot", 9);
 
 					//Canter
-					Data[i].Sequences[s].SetStyleCopies("Canter", 0);
-					Data[i].Sequences[s].SetTransitionCopies("Canter", 3);
+					Data[i].Sequences[s].SetStyleCopies("Canter", 1);
+					Data[i].Sequences[s].SetTransitionCopies("Canter", 1);
 
 					//Jump
-					Data[i].Sequences[s].SetStyleCopies("Jump", 0);
-					Data[i].Sequences[s].SetTransitionCopies("Jump", 9);
+					Data[i].Sequences[s].SetStyleCopies("Jump", 5);
+					Data[i].Sequences[s].SetTransitionCopies("Jump", 5);
 
 					//Sit
 					Data[i].Sequences[s].SetStyleCopies("Sit", 0);

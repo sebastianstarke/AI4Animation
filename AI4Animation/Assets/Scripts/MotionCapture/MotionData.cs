@@ -15,6 +15,7 @@ public class MotionData : ScriptableObject {
 	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
+	public float MotionSmoothing = 0f;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
 	public Axis MirrorAxis = Axis.XPositive;
@@ -672,20 +673,12 @@ public class MotionData : ScriptableObject {
 			return transformations;
 		}
 
-		public Matrix4x4[] GetLocalBoneTransformations(bool mirrored) {
-			Matrix4x4[] transformations = new Matrix4x4[Local.Length];
-			for(int i=0; i<Local.Length; i++) {
-				transformations[i] = GetLocalBoneTransformation(i, mirrored);
-			}
-			return transformations;
-		}
-
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
-			return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
-		}
-
-		public Matrix4x4 GetLocalBoneTransformation(int index, bool mirrored) {
-			return mirrored ? Local[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : Local[index];
+			if(Data.MotionSmoothing  == 0f) {
+				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+			} else {
+				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+			}
 		}
 
 		public Vector3[] GetBoneVelocities(bool mirrored) {
@@ -696,19 +689,11 @@ public class MotionData : ScriptableObject {
 			return velocities;
 		}
 
-		public Vector3[] GetLocalBoneVelocities(bool mirrored) {
-			Vector3[] velocities = new Vector3[World.Length];
-			for(int i=0; i<World.Length; i++) {
-				velocities[i] = GetLocalBoneVelocity(i, mirrored);
-			}
-			return velocities;
-		}
-
-		public Vector3 GetBoneVelocity(int index, bool mirrored, float smoothing = 0f) {
-			if(smoothing == 0f) {
+		public Vector3 GetBoneVelocity(int index, bool mirrored) {
+			if(Data.MotionSmoothing == 0f) {
 				return (GetBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 			} else {
-				Frame[] frames = Data.GetFrames(Mathf.Clamp(Timestamp - smoothing, 0f, Data.GetTotalTime()), Mathf.Clamp(Timestamp + smoothing, 0f, Data.GetTotalTime()));
+				Frame[] frames = Data.GetFrames(Mathf.Clamp(Timestamp - Data.MotionSmoothing, 0f, Data.GetTotalTime()), Mathf.Clamp(Timestamp + Data.MotionSmoothing, 0f, Data.GetTotalTime()));
 				Vector3 velocity = Vector3.zero;
 				float sum = 0f;
 				for(int i=0; i<frames.Length; i++) {
@@ -717,14 +702,10 @@ public class MotionData : ScriptableObject {
 						weight = 2f - weight;
 					}
 					sum += weight;
-					velocity += weight * frames[i].GetBoneVelocity(index, mirrored);
+					velocity += weight * (frames[i].GetBoneTransformation(index, mirrored).GetPosition() - frames[i].GetPreviousFrame().GetBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 				}
 				return velocity / sum;
 			}
-		}
-
-		public Vector3 GetLocalBoneVelocity(int index, bool mirrored) {
-			return (GetLocalBoneTransformation(index, mirrored).GetPosition() - GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetPosition()) * Data.Framerate;
 		}
 
 		public Matrix4x4 GetRootTransformation(bool mirrored) {
@@ -759,14 +740,16 @@ public class MotionData : ScriptableObject {
 		}
 
 		public Vector3 GetRootVelocity(bool mirrored) {
-			return (GetRootPosition(mirrored) - GetPreviousFrame().GetRootPosition(mirrored)) * Data.Framerate;
+			Vector3 velocity = GetBoneVelocity(0, mirrored);
+			velocity.y = 0f;
+			return velocity;
 		}
 
 		public Vector3 GetRootMotion(bool mirrored) {
-			Matrix4x4 currentRoot = GetRootTransformation(mirrored);
-			Matrix4x4 previousRoot = GetPreviousFrame().GetRootTransformation(mirrored);
-			Matrix4x4 delta = currentRoot.GetRelativeTransformationTo(previousRoot);
-			return new Vector3(delta.GetPosition().x, Vector3.SignedAngle(Vector3.forward, delta.GetForward(), Vector3.up), delta.GetPosition().z) * Data.Framerate;
+			Matrix4x4 reference = GetPreviousFrame().GetRootTransformation(mirrored);
+			Vector3 translationalMotion = GetRootVelocity(mirrored).GetRelativeDirectionTo(reference);
+			float angularMotion = Vector3.SignedAngle(reference.GetForward(), GetRootRotation(mirrored).GetForward(), Vector3.up) * Data.Framerate;
+			return new Vector3(translationalMotion.x, angularMotion, translationalMotion.z);
 		}
 
 		public float GetSpeed(bool mirrored) {
@@ -783,24 +766,6 @@ public class MotionData : ScriptableObject {
 				length += Vector3.Distance(positions[i-1], positions[i]);
 			}
 			return length;
-		}
-
-		public float[] GetAgilities(bool mirrored) {
-			float[] agilities = new float[Data.Source.Bones.Length];
-			for(int i=0; i<agilities.Length; i++) {
-				agilities[i] = GetAgility(i, mirrored);
-			}
-			return agilities;
-		}
-
-		public float GetAgility(int index, bool mirrored) {
-			float window = 0f;
-			float p1 = GetBoneVelocity(index, mirrored, window/2f).magnitude;
-			float p2 = GetPreviousFrame().GetBoneVelocity(index, mirrored, window/2f).magnitude;
-			return p1-p2;
-			//float p1 = Quaternion.Angle(GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetLocalBoneTransformation(index, mirrored).GetRotation()) / 5f;
-			//float p2 = Quaternion.Angle(GetPreviousFrame().GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation(), GetPreviousFrame().GetLocalBoneTransformation(index, mirrored).GetRotation()) / 5f;
-			//return p2-p1;
 		}
 
 		public Trajectory GetTrajectory(bool mirrored) {
