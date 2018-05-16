@@ -49,6 +49,10 @@ public class MotionTools : EditorWindow {
 					ExamineData();
 				}
 
+				if(Utility.GUIButton("Search Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+					SearchStyle();
+				}
+
 				if(Utility.GUIButton("Process Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ProcessData();
 				}
@@ -192,10 +196,21 @@ public class MotionTools : EditorWindow {
 		}
 	}
 
+	private void SearchStyle() {
+		int style = System.Array.FindIndex(Data[0].Styles, x => x == "Jump");
+		for(int i=0; i<Data.Length; i++) {
+			for(int j=0; j<Data[i].Frames.Length; j++) {
+				if(Data[i].Frames[j].IsStyleKey(style) && Data[i].Frames[j].StyleFlags[style]) {
+					Debug.Log("Jump at frame " + j + " in file " + Data[i]);
+				}
+			}
+		}
+	}
+
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
         	if(Active[i]) {
-				/*
+				
 				for(int s=0; s<Data[i].Sequences.Length; s++) {
 					//Trot
 					Data[i].Sequences[s].SetStyleCopies("Trot", 9);
@@ -206,8 +221,8 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Canter", 1);
 
 					//Jump
-					Data[i].Sequences[s].SetStyleCopies("Jump", 5);
-					Data[i].Sequences[s].SetTransitionCopies("Jump", 5);
+					Data[i].Sequences[s].SetStyleCopies("Jump", 10);
+					Data[i].Sequences[s].SetTransitionCopies("Jump", 10);
 
 					//Sit
 					Data[i].Sequences[s].SetStyleCopies("Sit", 0);
@@ -221,8 +236,8 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetStyleCopies("Lie", 0);
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
-				*/
-				Data[i].MotionSmoothing = 1;
+				
+				//Data[i].MotionSmoothing = 1;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}
