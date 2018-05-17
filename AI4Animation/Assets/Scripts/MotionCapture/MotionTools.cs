@@ -217,8 +217,8 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Trot", 9);
 
 					//Canter
-					Data[i].Sequences[s].SetStyleCopies("Canter", 1);
-					Data[i].Sequences[s].SetTransitionCopies("Canter", 1);
+					Data[i].Sequences[s].SetStyleCopies("Canter", 2);
+					Data[i].Sequences[s].SetTransitionCopies("Canter", 2);
 
 					//Jump
 					Data[i].Sequences[s].SetStyleCopies("Jump", 10);
@@ -237,7 +237,7 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
 				
-				//Data[i].MotionSmoothing = 1;
+				Data[i].MotionSmoothing = 0;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

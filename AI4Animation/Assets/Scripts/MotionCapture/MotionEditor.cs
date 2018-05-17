@@ -278,6 +278,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		//Motion Function
+		/*
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
 		float[] values = new float[frames.Length];
 		for(int i=0; i<frames.Length; i++) {
@@ -288,6 +289,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.Green);
 		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.IndianRed);
 		UltiDraw.End();
+		*/
 		/*
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
 		List<float[]> values = new List<float[]>();
@@ -304,7 +306,7 @@ public class MotionEditor : MonoBehaviour {
 			//values[2][i] = motion.z;
 		}
 		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, 0f, 10f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
 		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
 		UltiDraw.End();
 		*/
