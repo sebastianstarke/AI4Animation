@@ -278,6 +278,16 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		//Motion Function
+		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
+		float[] values = new float[frames.Length];
+		for(int i=0; i<frames.Length; i++) {
+			values[i] = frames[i].GetBoneVelocity(0, Mirror).magnitude;
+		}
+		Debug.Log(values[0]);
+		UltiDraw.Begin();
+		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.Green);
+		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.IndianRed);
+		UltiDraw.End();
 		/*
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
 		List<float[]> values = new List<float[]>();
