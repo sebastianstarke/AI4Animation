@@ -75,8 +75,8 @@ public class HeightMap {
 		UltiDraw.Begin();
 		UltiDraw.DrawTranslateGizmo(Pivot.GetPosition(), Pivot.GetRotation(), 0.1f);
 		for(int i=0; i<Points.Length; i++) {
-			UltiDraw.DrawLine(Pivot.GetPosition(), Points[i], UltiDraw.DarkGreen.Transparent(0.1f));
-			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.Orange.Transparent(0.5f));
+			UltiDraw.DrawLine(Pivot.GetPosition(), Points[i], UltiDraw.DarkGreen.Transparent(0.125f));
+			UltiDraw.DrawCircle(Points[i], 0.025f, UltiDraw.Mustard.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}

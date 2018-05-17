@@ -226,12 +226,12 @@ public class MotionEditor : MonoBehaviour {
 			for(int i=0; i<GetState().PastBoneTransformations.Count; i++) {
 				GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), GetState().PastBoneTransformations[i]);
 			}
-			/*
+			
 			for(int i=1; i<=5; i++) {
 				MotionData.Frame future = Data.GetFrame(Mathf.Clamp(GetState().Timestamp + (float)i/5f, 0f, Data.GetTotalTime()));
 				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)(i+1)/5f).Transparent(0.75f), future.GetBoneTransformations(Mirror));
 			}
-			*/
+			
 		}
 		if(ShowVelocities) {
 			UltiDraw.Begin();
