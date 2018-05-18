@@ -237,7 +237,7 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
 				
-				Data[i].MotionSmoothing = 0;
+				Data[i].RootSmoothing = 30;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

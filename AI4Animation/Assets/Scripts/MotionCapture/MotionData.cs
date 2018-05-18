@@ -15,7 +15,7 @@ public class MotionData : ScriptableObject {
 	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
-	public int MotionSmoothing = 0;
+	public int RootSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
 	public Axis MirrorAxis = Axis.XPositive;
@@ -673,11 +673,11 @@ public class MotionData : ScriptableObject {
 			return transformations;
 		}
 
-		public Matrix4x4 GetBoneTransformation(int index, bool mirrored) {
-			if(Data.MotionSmoothing  == 0) {
+		public Matrix4x4 GetBoneTransformation(int index, bool mirrored, int smoothing = 0) {
+			if(smoothing  == 0) {
 				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
 			} else {
-				Frame[] frames = Data.GetFrames(Mathf.Clamp(Index - Data.MotionSmoothing, 1, Data.GetTotalFrames()), Mathf.Clamp(Index + Data.MotionSmoothing, 1, Data.GetTotalFrames()));
+				Frame[] frames = Data.GetFrames(Mathf.Clamp(Index - smoothing, 1, Data.GetTotalFrames()), Mathf.Clamp(Index + smoothing, 1, Data.GetTotalFrames()));
 				Vector3 P = Vector3.zero;
 				Vector3 Z = Vector3.zero;
 				Vector3 Y = Vector3.zero;
@@ -717,11 +717,11 @@ public class MotionData : ScriptableObject {
 		}
 
 		private Vector3 GetRootPosition(bool mirrored) {
-			return Utility.ProjectGround(GetBoneTransformation(0, mirrored).GetPosition(), Data.GroundMask);
+			return Utility.ProjectGround(GetBoneTransformation(0, mirrored, Data.RootSmoothing).GetPosition(), Data.GroundMask);
 		}
 
 		private Quaternion GetRootRotation(bool mirrored) {
-			
+			/*
 			Vector3 v1 = GetBoneTransformation(Data.Source.FindBone("RightHip").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftHip").Index, mirrored).GetPosition();
 			Vector3 v2 = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition();
 			v1.y = 0f;
@@ -729,32 +729,45 @@ public class MotionData : ScriptableObject {
 			Vector3 v = (v1+v2).normalized;
 			Vector3 forward = -Vector3.Cross(v, Vector3.up);
 			forward.y = 0f;
-			
-
-			//Vector3 dir = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
-			/*
-			//Vector3 s = GetBoneTransformation(Data.Source.FindBone("Spine1").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
-			//Vector3 l = GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
-			//Vector3 r = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
-			//dir.y = 0f; s.y = 0f; l.y = 0f; r.y = 0f;
-			//Vector3 forward = (dir + s + l + r).normalized;
-			Vector3 forward = dir;
-			forward.y = 0f;
 			*/
 
+			int neck = Data.Source.FindBone("Neck").Index;
+			int hips = Data.Source.FindBone("Hips").Index;
+			int spine = Data.Source.FindBone("Spine1").Index;
+			int leftShoulder = Data.Source.FindBone("LeftShoulder").Index;
+			int rightShoulder = Data.Source.FindBone("RightShoulder").Index;
+			int leftUpLeg = Data.Source.FindBone("LeftUpLeg").Index;
+			int rightUpLeg = Data.Source.FindBone("RightUpLeg").Index;
+			Vector3 forward = Vector3.zero;
+			forward += GetBoneTransformation(spine, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(hips, mirrored, Data.RootSmoothing).GetPosition();
+			forward += GetBoneTransformation(neck, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(spine, mirrored, Data.RootSmoothing).GetPosition();
+			forward += GetBoneTransformation(leftShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(leftUpLeg, mirrored, Data.RootSmoothing).GetPosition();
+			forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootSmoothing).GetPosition();
+
+			/*
+			Vector3 dir = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			Vector3 s = GetBoneTransformation(Data.Source.FindBone("Spine1").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored).GetPosition();
+			Vector3 l = GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftUpLeg").Index, mirrored).GetPosition();
+			Vector3 r = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored).GetPosition() - GetBoneTransformation(Data.Source.FindBone("RightUpLeg").Index, mirrored).GetPosition();
+			dir.y = 0f; s.y = 0f; l.y = 0f; r.y = 0f;
+			Vector3 forward = (dir + s + l + r).normalized;
+			*/
+			
+			forward.y = 0f;
+			
 			return Quaternion.LookRotation(forward.normalized, Vector3.up);
 		}
 
 		public Vector3 GetRootVelocity(bool mirrored) {
-			Vector3 velocity = GetBoneVelocity(0, mirrored);
-			velocity.y = 0f;
-			return velocity;
+			return (GetRootPosition(mirrored) - GetPreviousFrame().GetRootPosition(mirrored)) * Data.Framerate;
 		}
 
 		public Vector3 GetRootMotion(bool mirrored) {
 			Matrix4x4 reference = GetPreviousFrame().GetRootTransformation(mirrored);
-			Vector3 translationalMotion = GetRootVelocity(mirrored).GetRelativeDirectionTo(reference);
-			float angularMotion = Vector3.SignedAngle(reference.GetForward(), GetRootRotation(mirrored).GetForward(), Vector3.up) * Data.Framerate;
+			Matrix4x4 current = GetRootTransformation(mirrored);
+			Matrix4x4 delta = current.GetRelativeTransformationTo(reference);
+			Vector3 translationalMotion = delta.GetPosition() * Data.Framerate;
+			float angularMotion = Vector3.SignedAngle(Vector3.forward, delta.GetForward(), Vector3.up) * Data.Framerate;
 			return new Vector3(translationalMotion.x, angularMotion, translationalMotion.z);
 		}
 

@@ -291,6 +291,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 		/*
+		//Bone Velocities
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
 		List<float[]> values = new List<float[]>();
 		for(int i=0; i<Actor.Bones.Length; i++) {
@@ -300,16 +301,32 @@ public class MotionEditor : MonoBehaviour {
 			for(int j=0; j<Actor.Bones.Length; j++) {
 				values[j][i] = frames[i].GetBoneVelocity(j, Mirror).magnitude;
 			}
-			//Vector3 motion = frames[i].GetRootMotion(Mirror);
-			//values[0][i] = motion.x;
-			//values[1][i] = motion.y / 180f;
-			//values[2][i] = motion.z;
 		}
 		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, 0f, 10f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, 0f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
 		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
 		UltiDraw.End();
 		*/
+		
+		/*
+		//Root Motion
+		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
+		List<float[]> values = new List<float[]>(3);
+		for(int i=0; i<3; i++) {
+			values.Add(new float[frames.Length]);
+		}
+		for(int i=0; i<frames.Length; i++) {
+			Vector3 motion = frames[i].GetRootMotion(Mirror);
+			values[0][i] = motion.x;
+			values[1][i] = motion.y / 180f;
+			values[2][i] = motion.z;
+		}
+		UltiDraw.Begin();
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
+		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
+		UltiDraw.End();
+		*/
+		
 		//Agility Function
 		/*
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
@@ -836,7 +853,7 @@ public class MotionEditor : MonoBehaviour {
 								EditorGUILayout.LabelField("General");
 
 								Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
-								Target.Data.MotionSmoothing = EditorGUILayout.IntField("Motion Smoothing", Target.Data.MotionSmoothing);
+								Target.Data.RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.Data.RootSmoothing);
 
 								Target.Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.GroundMask), InternalEditorUtility.layers));
 								Target.Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.ObjectMask), InternalEditorUtility.layers));

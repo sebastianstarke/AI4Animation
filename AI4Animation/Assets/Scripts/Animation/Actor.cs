@@ -101,6 +101,7 @@ public class Actor : MonoBehaviour {
 		if(DrawRoot) {
 			UltiDraw.DrawTranslateGizmo(GetRoot().position, GetRoot().rotation, 0.1f);
 			UltiDraw.DrawSphere(GetRoot().position, GetRoot().rotation, 0.025f, UltiDraw.Black);
+			UltiDraw.DrawLine(Bones[0].Transform.position, GetRoot().position, UltiDraw.Mustard);
 		}
 
 		if(DrawSkeleton) {
