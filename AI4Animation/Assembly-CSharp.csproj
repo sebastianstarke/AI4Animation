@@ -113,9 +113,11 @@
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\AgilityMeasure.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\ContactProfile.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\Demo.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\GaitPattern.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\SlidingMeasure.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TensorActivation.cs" />
+     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TerrainMotion.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TrajectoryController.cs" />
      <Compile Include="Assets\Scripts\Animation\Actor.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />

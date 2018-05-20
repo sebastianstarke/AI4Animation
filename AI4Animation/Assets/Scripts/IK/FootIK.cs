@@ -11,8 +11,14 @@ public class FootIK : MonoBehaviour {
 	public Transform Ankle;
 	public float Radius = 0.1f;
 	public Vector3 Offset = Vector3.zero;
+	public Vector3 WorldNormal = Vector3.down;
 	public Vector3 Normal = Vector3.down;
 	public LayerMask Ground = 0;
+
+	[ContextMenu("Compute Normal")]
+	public void ComputeNormal() {
+		Normal = WorldNormal.GetRelativeDirectionTo(Ankle.GetWorldMatrix());
+	}
 
 	private Vector3 TargetPosition;
 	private Quaternion TargetRotation;
@@ -53,18 +59,23 @@ public class FootIK : MonoBehaviour {
 	}
 
 	public void Solve() {
-		Vector3 groundPosition = Utility.ProjectGround(GetPivotPosition(), Ground);
-		Vector3 groundNormal = Utility.GetNormal(GetPivotPosition(), Ground);
-		Vector3 footNormal = GetPivotRotation() * Normal;
-		float stepHeight = Mathf.Max(0f, GetPivotPosition().y - Root.position.y);
+		Solve(GetPivotPosition(), GetPivotRotation());
+	}
+
+	public void Solve(Vector3 pivotPosition, Quaternion pivotRotation) {
+		Vector3 groundPosition = Utility.ProjectGround(pivotPosition, Ground);
+		Vector3 groundNormal = Utility.GetNormal(pivotPosition, Ground);
+		Vector3 footNormal = pivotRotation * Normal;
+		float stepHeight = Mathf.Max(0f, pivotPosition.y - Root.position.y);
 
 		TargetPosition = groundPosition;
-		TargetPosition.y = Mathf.Max(groundPosition.y + stepHeight, GetPivotPosition().y);
+		//TargetPosition.y = Mathf.Max(groundPosition.y + stepHeight, pivotPosition.y);
+		TargetPosition.y = groundPosition.y + stepHeight;
 		if(TargetPosition.y <= groundPosition.y) {
-			TargetRotation = Quaternion.FromToRotation(footNormal, -groundNormal) * GetPivotRotation();
+			TargetRotation = Quaternion.FromToRotation(footNormal, -groundNormal) * pivotRotation;
 		} else {
 			float weight = 1f - Mathf.Clamp(Vector3.Distance(TargetPosition, groundPosition) / Radius, 0f, 1f);
-			TargetRotation = Quaternion.Slerp(GetPivotRotation(), Quaternion.FromToRotation(footNormal, -groundNormal) * GetPivotRotation(), weight);
+			TargetRotation = Quaternion.Slerp(pivotRotation, Quaternion.FromToRotation(footNormal, -groundNormal) * pivotRotation, weight);
 		}
 
 		for(int k=0; k<Iterations; k++) {
@@ -75,27 +86,37 @@ public class FootIK : MonoBehaviour {
 					(float)(i+1)/(float)Joints.Length
 				);
 			}
-			Ankle.rotation = TargetRotation;
 		}
+		//Ankle.rotation = TargetRotation;
 	}
 
-	private Vector3 GetPivotPosition() {
+	public Vector3 GetPivotPosition() {
 		return Ankle.position + Ankle.rotation * Offset;
 	}
 	
-	private Quaternion GetPivotRotation() {
+	public Quaternion GetPivotRotation() {
 		return Ankle.rotation;
 	}
 
-	void OnDrawGizmos() {
+	void OnRenderObject() {
+		return;;
 		if(Ankle == null || Normal == Vector3.zero) {
 			return;
 		}
+		if(!Application.isPlaying) {
+			ComputeNormal();
+		}
 		UltiDraw.Begin();
 		UltiDraw.DrawSphere(GetPivotPosition(), Quaternion.identity, 0.025f, UltiDraw.Cyan.Transparent(0.5f));
-		UltiDraw.DrawArrow(GetPivotPosition(), GetPivotPosition() + 0.25f * (GetPivotRotation() * Normal), 0.75f, 0.025f, 0.1f, UltiDraw.Cyan.Transparent(0.5f));
-		UltiDraw.DrawSphere(GetPivotPosition(), Quaternion.identity, Radius, UltiDraw.Red.Transparent(0.5f));
+		UltiDraw.DrawArrow(GetPivotPosition(), GetPivotPosition() + 0.25f * (GetPivotRotation() * Normal.normalized), 0.8f, 0.02f, 0.1f, UltiDraw.Cyan.Transparent(0.5f));
+		UltiDraw.DrawSphere(GetPivotPosition(), Quaternion.identity, Radius, UltiDraw.Mustard.Transparent(0.5f));
 		UltiDraw.End();
+	}
+
+	void OnDrawGizmos() {
+		if(!Application.isPlaying) {
+			OnRenderObject();
+		}
 	}
 
 }

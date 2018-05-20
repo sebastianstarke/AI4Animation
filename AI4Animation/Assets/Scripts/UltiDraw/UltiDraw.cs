@@ -517,6 +517,7 @@ public static class UltiDraw {
 	}
 
 	public static void DrawGUIHorizontalBar(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float fillAmount, Color fillColor) {
+		fillAmount = Mathf.Clamp(fillAmount, 0f, 1f);
 		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
 		DrawGUIRectangle(new Vector2(center.x - size.x/2f + fillAmount * size.x/2f, center.y), new Vector2(fillAmount * size.x, size.y), fillColor);
 	}

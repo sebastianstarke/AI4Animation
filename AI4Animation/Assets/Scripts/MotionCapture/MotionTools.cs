@@ -129,6 +129,7 @@ public class MotionTools : EditorWindow {
 		MotionData.Axis mirrorAxis = Data[0].MirrorAxis;
 		LayerMask groundMask = Data[0].GroundMask;
 		LayerMask objectMask = Data[0].ObjectMask;
+		Vector3[] corrections = Data[0].Corrections;
 		//
 
 		for(int i=0; i<Data.Length; i++) {
@@ -155,6 +156,11 @@ public class MotionTools : EditorWindow {
 				}
 				if(Data[i].ObjectMask != objectMask) {
 					errors += 1;
+				}
+				for(int j=0; j<corrections.Length; j++) {
+					if(Data[i].Corrections[j] != corrections[j]) {
+						errors += 1;
+					}
 				}
 			}
 		}
@@ -212,17 +218,29 @@ public class MotionTools : EditorWindow {
         	if(Active[i]) {
 				
 				for(int s=0; s<Data[i].Sequences.Length; s++) {
+					//Idle
+					Data[i].Sequences[s].SetStyleCopies("Idle", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Idle", 0);
+
+					//Walk
+					Data[i].Sequences[s].SetStyleCopies("Walk", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Walk", 0);
+
+					//Pace
+					Data[i].Sequences[s].SetStyleCopies("Pace", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Pace", 0);
+
 					//Trot
-					Data[i].Sequences[s].SetStyleCopies("Trot", 9);
-					Data[i].Sequences[s].SetTransitionCopies("Trot", 9);
+					Data[i].Sequences[s].SetStyleCopies("Trot", 5);
+					Data[i].Sequences[s].SetTransitionCopies("Trot", 5);
 
 					//Canter
-					Data[i].Sequences[s].SetStyleCopies("Canter", 2);
-					Data[i].Sequences[s].SetTransitionCopies("Canter", 2);
+					Data[i].Sequences[s].SetStyleCopies("Canter", 0);
+					Data[i].Sequences[s].SetTransitionCopies("Canter", 0);
 
 					//Jump
-					Data[i].Sequences[s].SetStyleCopies("Jump", 10);
-					Data[i].Sequences[s].SetTransitionCopies("Jump", 10);
+					Data[i].Sequences[s].SetStyleCopies("Jump", 5);
+					Data[i].Sequences[s].SetTransitionCopies("Jump", 5);
 
 					//Sit
 					Data[i].Sequences[s].SetStyleCopies("Sit", 0);
@@ -236,8 +254,10 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetStyleCopies("Lie", 0);
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
-				
-				Data[i].RootSmoothing = 30;
+
+				Data[i].RootPositionSmoothing = 0;
+				Data[i].RootDirectionSmoothing = 0;
+				Data[i].RootVelocitySmoothing = 0;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

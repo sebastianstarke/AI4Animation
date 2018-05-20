@@ -308,7 +308,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 		
-		/*
+		
 		//Root Motion
 		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
 		List<float[]> values = new List<float[]>(3);
@@ -325,7 +325,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
 		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
 		UltiDraw.End();
-		*/
+		
 		
 		//Agility Function
 		/*
@@ -853,7 +853,9 @@ public class MotionEditor : MonoBehaviour {
 								EditorGUILayout.LabelField("General");
 
 								Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
-								Target.Data.RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.Data.RootSmoothing);
+								Target.Data.RootPositionSmoothing = EditorGUILayout.IntField("Root Position Smoothing", Target.Data.RootPositionSmoothing);
+								Target.Data.RootDirectionSmoothing = EditorGUILayout.IntField("Root Direction Smoothing", Target.Data.RootDirectionSmoothing);
+								Target.Data.RootVelocitySmoothing = EditorGUILayout.IntField("Root Velocity Smoothing", Target.Data.RootVelocitySmoothing);
 
 								Target.Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.GroundMask), InternalEditorUtility.layers));
 								Target.Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.ObjectMask), InternalEditorUtility.layers));
