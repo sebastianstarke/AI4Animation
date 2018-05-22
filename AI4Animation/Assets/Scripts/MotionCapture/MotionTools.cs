@@ -181,10 +181,13 @@ public class MotionTools : EditorWindow {
 							sequences += 1;
 							for(int f=intervals[interval].Start; f<=intervals[interval].End; f++) {
 								frames += 1;
-								for(int index=0; index<Data[i].Frames[f].StyleValues.Length; index++) {
-									if(Data[i].Frames[f].StyleFlags[index]) {
+								for(int index=0; index<Data[i].GetFrame(f).StyleValues.Length; index++) {
+									if(Data[i].GetFrame(f).StyleFlags[index]) {
 										styles[index] += 1;
 									}
+									//if(Data[i].Frames[f].StyleValues[index] > 0f) {
+									//	styles[index] += 1;
+									//}
 								}
 							}
 						}
@@ -203,11 +206,13 @@ public class MotionTools : EditorWindow {
 	}
 
 	private void SearchStyle() {
-		int style = System.Array.FindIndex(Data[0].Styles, x => x == "Jump");
+		int style = System.Array.FindIndex(Data[0].Styles, x => x == "Sit");
 		for(int i=0; i<Data.Length; i++) {
-			for(int j=0; j<Data[i].Frames.Length; j++) {
-				if(Data[i].Frames[j].IsStyleKey(style) && Data[i].Frames[j].StyleFlags[style]) {
-					Debug.Log("Jump at frame " + j + " in file " + Data[i]);
+			for(int s=0; s<Data[i].Sequences.Length; s++) {
+				for(int f=Data[i].Sequences[s].Start; f<=Data[i].Sequences[s].End; f++) {
+					if(Data[i].GetFrame(f).IsStyleKey(style) && Data[i].GetFrame(f).StyleFlags[style]) {
+						Debug.Log("Style at frame " + f + " in file " + Data[i]);
+					}
 				}
 			}
 		}
@@ -244,7 +249,7 @@ public class MotionTools : EditorWindow {
 
 					//Sit
 					Data[i].Sequences[s].SetStyleCopies("Sit", 0);
-					Data[i].Sequences[s].SetTransitionCopies("Sit", 5);
+					Data[i].Sequences[s].SetTransitionCopies("Sit", 0);
 
 					//Stand
 					Data[i].Sequences[s].SetStyleCopies("Stand", 0);

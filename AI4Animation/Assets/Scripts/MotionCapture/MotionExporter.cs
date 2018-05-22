@@ -304,7 +304,7 @@ public class MotionExporter : EditorWindow {
 										editor.SetMirror(true);
 									}
 									editor.LoadFrame(t);
-									MotionEditor.FrameState state = editor.GetState();
+									MotionState state = editor.GetState();
 
 									line += sequence + Separator;
 									line += state.Index + Separator;

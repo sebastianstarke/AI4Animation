@@ -52,6 +52,10 @@ public static class QuaternionExtensions {
 		return Mathf.Sqrt(rotation.x*rotation.x + rotation.y*rotation.y + rotation.z*rotation.z + rotation.w*rotation.w);
 	}
 
+	public static Quaternion GetInverse(this Quaternion rotation) {
+		return Quaternion.Inverse(rotation);
+	}
+
 	public static Quaternion GetLog(this Quaternion rotation) {
 		float mag = rotation.GetMagnitude();
 		float arg = (float)System.Math.Atan2(mag, rotation.w) / mag;

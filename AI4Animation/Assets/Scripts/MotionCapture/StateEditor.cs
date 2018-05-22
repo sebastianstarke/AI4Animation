@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿/*
+#if UNITY_EDITOR
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
@@ -161,3 +162,4 @@ public class StateEditor : MonoBehaviour {
 
 }
 #endif
+*/

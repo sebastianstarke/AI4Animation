@@ -9,6 +9,7 @@ public class FootIK : MonoBehaviour {
 	public int Iterations = 10;
 	public Transform Root;
 	public Transform Ankle;
+	public Transform Joint;
 	public float Radius = 0.1f;
 	public Vector3 Offset = Vector3.zero;
 	public Vector3 WorldNormal = Vector3.down;
@@ -86,8 +87,8 @@ public class FootIK : MonoBehaviour {
 					(float)(i+1)/(float)Joints.Length
 				);
 			}
+			Joint.rotation = TargetRotation;
 		}
-		//Ankle.rotation = TargetRotation;
 	}
 
 	public Vector3 GetPivotPosition() {
@@ -95,12 +96,18 @@ public class FootIK : MonoBehaviour {
 	}
 	
 	public Quaternion GetPivotRotation() {
-		return Ankle.rotation;
+		return Joint.rotation;
 	}
 
 	void OnRenderObject() {
-		return;;
-		if(Ankle == null || Normal == Vector3.zero) {
+		
+	}
+
+	void OnDrawGizmos() {
+		//if(!Application.isPlaying) {
+		//	OnRenderObject();
+		//}
+		if(Ankle == null || Joint == null || Normal == Vector3.zero) {
 			return;
 		}
 		if(!Application.isPlaying) {
@@ -111,12 +118,6 @@ public class FootIK : MonoBehaviour {
 		UltiDraw.DrawArrow(GetPivotPosition(), GetPivotPosition() + 0.25f * (GetPivotRotation() * Normal.normalized), 0.8f, 0.02f, 0.1f, UltiDraw.Cyan.Transparent(0.5f));
 		UltiDraw.DrawSphere(GetPivotPosition(), Quaternion.identity, Radius, UltiDraw.Mustard.Transparent(0.5f));
 		UltiDraw.End();
-	}
-
-	void OnDrawGizmos() {
-		if(!Application.isPlaying) {
-			OnRenderObject();
-		}
 	}
 
 }

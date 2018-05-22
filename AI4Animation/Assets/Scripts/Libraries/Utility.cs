@@ -51,6 +51,15 @@ public sealed class Gaussian {
 
 public static class Utility {
 
+	public static System.Random RNG;
+
+	public static System.Random GetRNG() {
+		if(RNG == null) {
+			RNG = new System.Random();
+		}
+		return RNG;
+	}
+
 	public static Quaternion QuaternionEuler(float roll, float pitch, float yaw) {
 		roll *= Mathf.Deg2Rad / 2f;
 		pitch *= Mathf.Deg2Rad / 2f;
@@ -595,6 +604,11 @@ public static class Utility {
 	}
 
 	public static void SoftMax(ref float[] values) {
+		float min = values.Min();
+		float max = values.Max();
+		for(int i=0; i<values.Length; i++) {
+			values[i] = Utility.Normalise(values[i], min, max, 0f, 1f);
+		}
         float frac = 0.0f;
         for(int i=0; i<values.Length; i++) {
             frac += values[i];
@@ -618,14 +632,20 @@ public static class Utility {
 		return Quaternion.LookRotation(forward, upwards);
 	}
 
-	public static float SampleGaussian(float mean, float sigma) {
-		System.Random random = new System.Random();
+	public static float GaussianValue(float mean, float sigma) {
+		if(mean == 0f && sigma == 0f) {
+			return 0f;
+		}
 		// The method requires sampling from a uniform random of (0,1]
 		// but Random.NextDouble() returns a sample of [0,1).
-		double x1 = 1 - random.NextDouble();
-		double x2 = 1 - random.NextDouble();
+		double x1 = 1 - GetRNG().NextDouble();
+		double x2 = 1 - GetRNG().NextDouble();
 		double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
 		return (float)(y1 * sigma + mean);
+	}
+
+	public static Vector3 GaussianVector3(float mean, float sigma) {
+		return new Vector3(GaussianValue(mean, sigma), GaussianValue(mean, sigma), GaussianValue(mean, sigma));
 	}
 	
 }

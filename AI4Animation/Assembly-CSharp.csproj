@@ -152,6 +152,8 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionData.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionEditor.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionExporter.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionExporterPlus.cs" />
+     <Compile Include="Assets\Scripts\MotionCapture\MotionState.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\MotionTools.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\PhaseEditor.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\StateEditor.cs" />
