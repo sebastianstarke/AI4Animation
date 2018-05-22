@@ -15,9 +15,7 @@ public class MotionData : ScriptableObject {
 	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float UnitScale = 100f;
-	public int RootPositionSmoothing = 0;
-	public int RootDirectionSmoothing = 0;
-	public int RootVelocitySmoothing = 0;
+	public int RootSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
 	public Axis MirrorAxis = Axis.XPositive;
@@ -713,7 +711,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		private Vector3 GetRootPosition(bool mirrored) {
-			return Utility.ProjectGround(GetBoneTransformation(0, mirrored, Data.RootPositionSmoothing).GetPosition(), Data.GroundMask);
+			return Utility.ProjectGround(GetBoneTransformation(0, mirrored, Data.RootSmoothing).GetPosition(), Data.GroundMask);
 		}
 
 		private Quaternion GetRootRotation(bool mirrored) {
@@ -727,16 +725,16 @@ public class MotionData : ScriptableObject {
 			forward.y = 0f;
 			*/
 
-			Vector3 neck = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored, Data.RootDirectionSmoothing).GetPosition();
-			Vector3 hips = GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored, Data.RootDirectionSmoothing).GetPosition();
+			Vector3 neck = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored, Data.RootSmoothing).GetPosition();
+			Vector3 hips = GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored, Data.RootSmoothing).GetPosition();
 			int leftShoulder = Data.Source.FindBone("LeftShoulder").Index;
 			int rightShoulder = Data.Source.FindBone("RightShoulder").Index;
 			int leftUpLeg = Data.Source.FindBone("LeftUpLeg").Index;
 			int rightUpLeg = Data.Source.FindBone("RightUpLeg").Index;
 			Vector3 forward = Vector3.zero;
 			forward += neck - hips;
-			forward += GetBoneTransformation(leftShoulder, mirrored, Data.RootDirectionSmoothing).GetPosition() - GetBoneTransformation(leftUpLeg, mirrored, Data.RootDirectionSmoothing).GetPosition();
-			forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootDirectionSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootDirectionSmoothing).GetPosition();
+			//forward += GetBoneTransformation(leftShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(leftUpLeg, mirrored, Data.RootSmoothing).GetPosition();
+			//forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootSmoothing).GetPosition();
 			
 			forward.y = 0f;
 			
@@ -747,7 +745,7 @@ public class MotionData : ScriptableObject {
 			if(Index == 1) {
 				return GetNextFrame().GetRootVelocity(mirrored);
 			} else {
-				Vector3 velocity = (GetBoneTransformation(0, mirrored, Data.RootVelocitySmoothing).GetPosition() - GetPreviousFrame().GetBoneTransformation(0, mirrored, Data.RootVelocitySmoothing).GetPosition()) * Data.Framerate;
+				Vector3 velocity = (GetBoneTransformation(0, mirrored, Data.RootSmoothing).GetPosition() - GetPreviousFrame().GetBoneTransformation(0, mirrored, Data.RootSmoothing).GetPosition()) * Data.Framerate;
 				velocity.y = 0f;
 				return velocity;
 			}

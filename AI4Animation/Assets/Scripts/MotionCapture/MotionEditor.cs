@@ -19,7 +19,7 @@ public class MotionEditor : MonoBehaviour {
 	private float FocusHeight = 1f;
 	private float FocusOffset = 0f;
 	private float FocusDistance = 2.5f;
-	private float FocusAngle = 270f;
+	private float FocusAngle = 0f;
 	private float FocusSmoothing = 0.05f;
 	private bool Mirror = false;
 	private bool Playing = false;
@@ -749,9 +749,9 @@ public class MotionEditor : MonoBehaviour {
 										GUILayout.FlexibleSpace();
 										EditorGUILayout.EndHorizontal();
 									}
-									for(int c=0; c<Target.Data.Sequences[i].Copies.Length; c++) {
-										EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.Data.Sequences[i].Copies[c].Start + " End: " + Target.Data.Sequences[i].Copies[c].End);
-									}
+									//for(int c=0; c<Target.Data.Sequences[i].Copies.Length; c++) {
+									//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.Data.Sequences[i].Copies[c].Start + " End: " + Target.Data.Sequences[i].Copies[c].End);
+									//}
 								}
 							}
 							EditorGUILayout.BeginHorizontal();
@@ -852,10 +852,8 @@ public class MotionEditor : MonoBehaviour {
 								EditorGUILayout.LabelField("General");
 
 								Target.Data.SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.Data.UnitScale));
-								Target.Data.RootPositionSmoothing = EditorGUILayout.IntField("Root Position Smoothing", Target.Data.RootPositionSmoothing);
-								Target.Data.RootDirectionSmoothing = EditorGUILayout.IntField("Root Direction Smoothing", Target.Data.RootDirectionSmoothing);
-								Target.Data.RootVelocitySmoothing = EditorGUILayout.IntField("Root Velocity Smoothing", Target.Data.RootVelocitySmoothing);
-
+								Target.Data.RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.Data.RootSmoothing);
+								
 								Target.Data.GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.GroundMask), InternalEditorUtility.layers));
 								Target.Data.ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.Data.ObjectMask), InternalEditorUtility.layers));
 								

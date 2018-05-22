@@ -56,12 +56,22 @@ public class Trajectory {
 		return length;
 	}
 
-	public float GetLength(int start, int end) {
+	public float GetLength(int start, int end, int step) {
 		float length = 0f;
-		for(int i=start+1; i<end; i++) {
-			length += Vector3.Distance(Points[i-1].GetPosition(), Points[i].GetPosition());
+		for(int i=0; i<end-step; i+=step) {
+			length += Vector3.Distance(Points[i+step].GetPosition(), Points[i].GetPosition());
 		}
 		return length;
+	}
+	
+	public float GetCurvature(int start, int end, int step) {
+		float curvature = 0f;
+		for(int i=step; i<end-step; i+=step) {
+			curvature += Vector3.SignedAngle(Points[i].GetPosition() - Points[i-step].GetPosition(), Points[i+step].GetPosition() - Points[i].GetPosition(), Vector3.up);
+		}
+		curvature = Mathf.Abs(curvature);
+		curvature = Mathf.Clamp(curvature / 180f, 0f, 1f);
+		return curvature;
 	}
 
 	public void Postprocess() {

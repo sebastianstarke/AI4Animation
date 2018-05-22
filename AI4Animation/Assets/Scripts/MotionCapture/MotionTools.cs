@@ -210,7 +210,7 @@ public class MotionTools : EditorWindow {
 		for(int i=0; i<Data.Length; i++) {
 			for(int s=0; s<Data[i].Sequences.Length; s++) {
 				for(int f=Data[i].Sequences[s].Start; f<=Data[i].Sequences[s].End; f++) {
-					if(Data[i].GetFrame(f).IsStyleKey(style) && Data[i].GetFrame(f).StyleFlags[style]) {
+					if((Data[i].GetFrame(f).IsStyleKey(style) || f==Data[i].Sequences[s].Start) && Data[i].GetFrame(f).StyleFlags[style]) {
 						Debug.Log("Style at frame " + f + " in file " + Data[i]);
 					}
 				}
@@ -236,16 +236,16 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Pace", 0);
 
 					//Trot
-					Data[i].Sequences[s].SetStyleCopies("Trot", 5);
-					Data[i].Sequences[s].SetTransitionCopies("Trot", 5);
+					Data[i].Sequences[s].SetStyleCopies("Trot", 6);
+					Data[i].Sequences[s].SetTransitionCopies("Trot", 6);
 
 					//Canter
-					Data[i].Sequences[s].SetStyleCopies("Canter", 0);
-					Data[i].Sequences[s].SetTransitionCopies("Canter", 0);
+					Data[i].Sequences[s].SetStyleCopies("Canter", 1);
+					Data[i].Sequences[s].SetTransitionCopies("Canter", 1);
 
 					//Jump
-					Data[i].Sequences[s].SetStyleCopies("Jump", 5);
-					Data[i].Sequences[s].SetTransitionCopies("Jump", 5);
+					Data[i].Sequences[s].SetStyleCopies("Jump", 9);
+					Data[i].Sequences[s].SetTransitionCopies("Jump", 9);
 
 					//Sit
 					Data[i].Sequences[s].SetStyleCopies("Sit", 0);
@@ -260,9 +260,7 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
 
-				Data[i].RootPositionSmoothing = 0;
-				Data[i].RootDirectionSmoothing = 0;
-				Data[i].RootVelocitySmoothing = 0;
+				Data[i].RootSmoothing = 10;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}
