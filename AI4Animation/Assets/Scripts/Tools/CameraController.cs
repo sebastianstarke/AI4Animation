@@ -31,7 +31,10 @@ public class CameraController : MonoBehaviour {
 	private Vector3 TargetPosition;
 	private Quaternion TargetRotation;
 
-	private GUIStyle Style;
+	private GUIStyle ButtonStyle;
+	private GUIStyle SliderStyle;
+	private GUIStyle ThumbStyle;
+	private GUIStyle FontStyle;
 
 	void Awake() {
 		TargetPosition = transform.position;
@@ -87,14 +90,38 @@ public class CameraController : MonoBehaviour {
 		}
 	}
 	
-	private GUIStyle GetStyle() {
-		if(Style == null) {
-			Style = new GUIStyle(GUI.skin.button);
-			Style.font = (Font)Resources.Load("Fonts/Coolvetica");
-			Style.normal.textColor = Color.white;
-			Style.alignment = TextAnchor.MiddleCenter;
+	private GUIStyle GetButtonStyle() {
+		if(ButtonStyle == null) {
+			ButtonStyle = new GUIStyle(GUI.skin.button);
+			ButtonStyle.font = (Font)Resources.Load("Fonts/Coolvetica");
+			ButtonStyle.normal.textColor = Color.white;
+			ButtonStyle.alignment = TextAnchor.MiddleCenter;
 		}
-		return Style;
+		return ButtonStyle;
+	}
+
+	private GUIStyle GetSliderStyle() {
+		if(SliderStyle == null) {
+			SliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
+		}
+		return SliderStyle;
+	}
+
+	private GUIStyle GetThumbStyle() {
+		if(ThumbStyle == null) {
+			ThumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
+		}
+		return ThumbStyle;
+	}
+
+	private GUIStyle GetFontStyle() {
+		if(FontStyle == null) {
+			FontStyle = new GUIStyle();
+			FontStyle.font = (Font)Resources.Load("Fonts/Coolvetica");
+			FontStyle.normal.textColor = Color.white;
+			FontStyle.alignment = TextAnchor.MiddleLeft;
+		}
+		return FontStyle;
 	}
 
 	private void UpdateFollowCamera() {
@@ -232,27 +259,32 @@ public class CameraController : MonoBehaviour {
 		if(!ShowGUI) {
 			return;
 		}
-		GetStyle().fontSize = Mathf.RoundToInt(0.01f * Screen.width);
+		GetButtonStyle().fontSize = Mathf.RoundToInt(0.01f * Screen.width);
+		GetSliderStyle().fixedHeight = Mathf.RoundToInt(0.01f * Screen.width);
+		GetThumbStyle().fixedHeight = Mathf.RoundToInt(0.01f * Screen.width);
+		GetThumbStyle().fixedWidth = Mathf.RoundToInt(0.01f * Screen.width);
+		GetFontStyle().fixedHeight = Mathf.RoundToInt(0.01f * Screen.width);
+		GetFontStyle().fontSize = Mathf.RoundToInt(0.01f * Screen.width);
 		GUI.color = UltiDraw.Mustard;
 		GUI.backgroundColor = UltiDraw.Black;
-		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.05f, 0.1f, 0.04f), "Follow", GetStyle())) {
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.05f, 0.1f, 0.04f), "Follow", GetButtonStyle())) {
 			SetMode(MODE.Follow);
 		}
-		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.1f, 0.1f, 0.04f), "Look At", GetStyle())) {
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.1f, 0.1f, 0.04f), "Look At", GetButtonStyle())) {
 			SetMode(MODE.LookAt);
 		}
-		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.15f, 0.1f, 0.04f), "Free View", GetStyle())) {
+		if(GUI.Button(Utility.GetGUIRect(0.85f, 0.15f, 0.1f, 0.04f), "Free View", GetButtonStyle())) {
 			SetMode(MODE.FreeView);
 		}
 		GUI.color = Color.black;
-		Yaw = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.2f, 0.1f, 0.025f), Yaw, -180f, 180f));
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.2f, 0.04f, 0.025f), "Yaw");
-		Pitch = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.225f, 0.1f, 0.025f), Pitch, -45f, 45f));
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.225f, 0.04f, 0.025f), "Pitch");
-		FOV = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.25f, 0.1f, 0.025f), FOV, 0f, 10f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.25f, 0.04f, 0.025f), "FOV");
-		Damping = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.275f, 0.1f, 0.025f), Damping, 0f, 1f);
-		GUI.Label(Utility.GetGUIRect(0.96f, 0.275f, 0.04f, 0.025f), "Damping");
+		Yaw = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.2f, 0.1f, 0.025f), Yaw, -180f, 180f, GetSliderStyle(), GetThumbStyle()));
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.2f, 0.04f, 0.025f), "Yaw", GetFontStyle());
+		Pitch = Mathf.RoundToInt(GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.225f, 0.1f, 0.025f), Pitch, -45f, 45f, GetSliderStyle(), GetThumbStyle()));
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.225f, 0.04f, 0.025f), "Pitch", GetFontStyle());
+		FOV = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.25f, 0.1f, 0.025f), FOV, 0f, 10f, GetSliderStyle(), GetThumbStyle());
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.25f, 0.04f, 0.025f), "FOV", GetFontStyle());
+		Damping = GUI.HorizontalSlider(Utility.GetGUIRect(0.85f, 0.275f, 0.1f, 0.025f), Damping, 0f, 1f, GetSliderStyle(), GetThumbStyle());
+		GUI.Label(Utility.GetGUIRect(0.96f, 0.275f, 0.04f, 0.025f), "Damping", GetFontStyle());
 	}
 
 	/*

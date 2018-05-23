@@ -727,10 +727,10 @@ public class MotionData : ScriptableObject {
 
 			Vector3 neck = GetBoneTransformation(Data.Source.FindBone("Neck").Index, mirrored, Data.RootSmoothing).GetPosition();
 			Vector3 hips = GetBoneTransformation(Data.Source.FindBone("Hips").Index, mirrored, Data.RootSmoothing).GetPosition();
-			int leftShoulder = Data.Source.FindBone("LeftShoulder").Index;
-			int rightShoulder = Data.Source.FindBone("RightShoulder").Index;
-			int leftUpLeg = Data.Source.FindBone("LeftUpLeg").Index;
-			int rightUpLeg = Data.Source.FindBone("RightUpLeg").Index;
+			//int leftShoulder = Data.Source.FindBone("LeftShoulder").Index;
+			//int rightShoulder = Data.Source.FindBone("RightShoulder").Index;
+			//int leftUpLeg = Data.Source.FindBone("LeftUpLeg").Index;
+			////int rightUpLeg = Data.Source.FindBone("RightUpLeg").Index;
 			Vector3 forward = Vector3.zero;
 			forward += neck - hips;
 			//forward += GetBoneTransformation(leftShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(leftUpLeg, mirrored, Data.RootSmoothing).GetPosition();
