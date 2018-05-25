@@ -221,7 +221,7 @@ public class MotionTools : EditorWindow {
 	private void ProcessData() {
         for(int i=0; i<Data.Length; i++) {
         	if(Active[i]) {
-				
+				/*
 				for(int s=0; s<Data[i].Sequences.Length; s++) {
 					//Idle
 					Data[i].Sequences[s].SetStyleCopies("Idle", 0);
@@ -259,8 +259,8 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetStyleCopies("Lie", 0);
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
-
-				Data[i].RootSmoothing = 10;
+				*/
+				Data[i].RootSmoothing = 30;
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

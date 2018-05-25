@@ -14,6 +14,7 @@ public class FootIK : MonoBehaviour {
 	public Vector3 Offset = Vector3.zero;
 	public Vector3 WorldNormal = Vector3.down;
 	public Vector3 Normal = Vector3.down;
+	[Range(0f, 1f)] public float MaxDamping = 1f;
 	public LayerMask Ground = 0;
 
 	[ContextMenu("Compute Normal")]
@@ -64,14 +65,18 @@ public class FootIK : MonoBehaviour {
 	}
 
 	public void Solve(Vector3 pivotPosition, Quaternion pivotRotation) {
+		float stepHeight = Mathf.Max(0f, pivotPosition.y - Root.position.y);
+
+		float damping = Mathf.Min(2f - Mathf.Pow(2f, Mathf.Clamp(stepHeight / Radius, 0f, 1f)), MaxDamping);
+		pivotPosition = Vector3.Lerp(TargetPosition, pivotPosition, 1f - damping);
+
 		Vector3 groundPosition = Utility.ProjectGround(pivotPosition, Ground);
 		Vector3 groundNormal = Utility.GetNormal(pivotPosition, Ground);
 		Vector3 footNormal = pivotRotation * Normal;
-		float stepHeight = Mathf.Max(0f, pivotPosition.y - Root.position.y);
 
-		TargetPosition = groundPosition;
+		TargetPosition = groundPosition + new Vector3(0f, stepHeight, 0f);
+		//TargetPosition = groundPosition;
 		//TargetPosition.y = Mathf.Max(groundPosition.y + stepHeight, pivotPosition.y);
-		TargetPosition.y = groundPosition.y + stepHeight;
 		if(TargetPosition.y <= groundPosition.y) {
 			TargetRotation = Quaternion.FromToRotation(footNormal, -groundNormal) * pivotRotation;
 		} else {
