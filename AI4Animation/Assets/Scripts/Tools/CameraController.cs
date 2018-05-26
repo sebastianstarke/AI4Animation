@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour {
 
-	public enum MODE {Follow, LookAt, FreeView}
+	public enum MODE {Follow, LookAt, FreeView, FixedView}
 
 	public bool ShowGUI = true;
 
@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour {
 	[Range(0f, 1f)] public float Damping = 0.975f;
 	[Range(-180f, 180f)] public float Yaw = 0f;
 	[Range(-45f, 45f)] public float Pitch = 0f;
-	[Range(0f, 10f)] public float FOV = 1f;
+	[Range(0f, 10f)] public float FOV = 1.5f;
 	public float MinHeight = 0.5f;
 
 	private float Velocity = 5f;
@@ -74,6 +74,9 @@ public class CameraController : MonoBehaviour {
 			}
 
 			LastMousePosition = MousePosition;
+		}
+		if(Mode == MODE.FixedView) {
+			UpdateFixedView();
 		}
 	}
 
@@ -139,6 +142,7 @@ public class CameraController : MonoBehaviour {
 
 		TargetPosition = transform.position;
 		TargetRotation = transform.rotation;
+		
 		transform.position = currentPosition;
 		transform.rotation = currentRotation;
 	}
@@ -173,6 +177,7 @@ public class CameraController : MonoBehaviour {
 
 		TargetPosition = transform.position;
 		TargetRotation = transform.rotation;
+
 		transform.position = currentPosition;
 		transform.rotation = currentRotation;
 	}
@@ -211,6 +216,21 @@ public class CameraController : MonoBehaviour {
 
 		TargetPosition = transform.position;
 		TargetRotation = transform.rotation;
+
+		transform.position = currentPosition;
+		transform.rotation = currentRotation;
+	}
+
+	private void UpdateFixedView() {
+		Vector3 currentPosition = transform.position;
+		Quaternion currentRotation = transform.rotation;
+
+		transform.position = Target.position + FOV*SelfOffset;
+		transform.LookAt(Target.position + FOV*TargetOffset);
+
+		TargetPosition = transform.position;
+		TargetRotation = transform.rotation;
+
 		transform.position = currentPosition;
 		transform.rotation = currentRotation;
 	}
