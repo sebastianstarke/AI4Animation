@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour {
 
 	private Vector3 LastTargetPosition;
 	private List<Vector3> TargetVelocities;
-	private int TargetSmoothing = 25;
+	private int TargetSmoothing = 30;
 	private float MaxVelocity = 0.1f;
 
 	void Awake() {
@@ -246,7 +246,7 @@ public class CameraController : MonoBehaviour {
 		}
 		velocity /= TargetVelocities.Count;
 		transform.position = Target.position + FOV*SelfOffset + Vector3.Scale(bias, velocity);
-		transform.LookAt(Target.position + FOV*TargetOffset + ahead*Vector3.Scale(bias, velocity));
+		transform.LookAt(Target.position + TargetOffset + ahead*Vector3.Scale(bias, velocity));
 
 		TargetPosition = transform.position;
 		TargetRotation = transform.rotation;
