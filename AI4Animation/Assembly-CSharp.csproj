@@ -109,6 +109,7 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\Water.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
+     <Compile Include="Assets\Project\MotionVisualiser\MotionVisualiser.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation_Wolf.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
      <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\Demo.cs" />
@@ -119,6 +120,7 @@
      <Compile Include="Assets\Project\Trash\AngleTest.cs" />
      <Compile Include="Assets\Project\Trash\BFGS.cs" />
      <Compile Include="Assets\Project\Trash\BodyIK.cs" />
+     <Compile Include="Assets\Project\Trash\CameraAction.cs" />
      <Compile Include="Assets\Project\Trash\ConstantTorque.cs" />
      <Compile Include="Assets\Project\Trash\ContactProfile.cs" />
      <Compile Include="Assets\Project\Trash\Footprint.cs" />
@@ -170,14 +172,11 @@
      <Compile Include="Assets\Scripts\MotionCapture\MotionTools.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\PhaseEditor.cs" />
      <Compile Include="Assets\Scripts\MotionCapture\StateEditor.cs" />
-     <Compile Include="Assets\Scripts\Tools\CameraAction.cs" />
      <Compile Include="Assets\Scripts\Tools\CameraController.cs" />
      <Compile Include="Assets\Scripts\Tools\EditorCoroutines.cs" />
      <Compile Include="Assets\Scripts\Tools\FPS.cs" />
-     <Compile Include="Assets\Scripts\Tools\FreeCamera.cs" />
      <Compile Include="Assets\Scripts\Tools\Modify.cs" />
      <Compile Include="Assets\Scripts\Tools\MotionTrail.cs" />
-     <Compile Include="Assets\Scripts\Tools\MotionVisualiser.cs" />
      <Compile Include="Assets\Scripts\Tools\MouseDrag.cs" />
      <Compile Include="Assets\Scripts\Tools\Orbit.cs" />
      <Compile Include="Assets\Scripts\Tools\Perlin.cs" />
