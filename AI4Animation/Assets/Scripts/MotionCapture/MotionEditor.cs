@@ -87,14 +87,22 @@ public class MotionEditor : MonoBehaviour {
 		if(Actor == null) {
 			Actor = GameObject.FindObjectOfType<Actor>();
 		}
-		return Actor;
+		if(Actor == null) {
+			return CreateSkeleton();
+		} else {
+ 			return Actor;
+		}
 	}
 
 	public Transform GetScene() {
 		if(Scene == null) {
 			return GameObject.Find("Scene").transform;
 		}
-		return Scene;
+		if(Scene == null) {
+			return new GameObject("Scene").transform;
+		} else {
+			return Scene;
+		}
 	}
 
 	public MotionState GetState() {
@@ -104,15 +112,14 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void LoadFile() {
-		if(!File.Exists(Path)) {
-			Debug.Log("File at path " + Path + " does not exist.");
+	public void LoadFile(string path) {
+		if(!File.Exists(path)) {
+			Debug.Log("File at path " + path + " does not exist.");
 			return;
 		}
-		Data = ScriptableObject.CreateInstance<MotionData>().Create(Path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
+		Data = ScriptableObject.CreateInstance<MotionData>().Create(path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
 		Data.Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
-		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Path.Substring(Path.LastIndexOf("/")+1));
-		LoadFrame(0f);
+		AssetDatabase.RenameAsset(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path, Data.name);
 	}
 
 	public void UnloadFile() {
@@ -237,7 +244,7 @@ public class MotionEditor : MonoBehaviour {
 		*/
 	}
 
-	public void CreateSkeleton() {
+	public Actor CreateSkeleton() {
 		Actor = new GameObject("Skeleton").AddComponent<Actor>();
 		string[] names = new string[Data.Source.Bones.Length];
 		string[] parents = new string[Data.Source.Bones.Length];
@@ -252,6 +259,7 @@ public class MotionEditor : MonoBehaviour {
 			instances.Add(instance);
 		}
 		GetActor().ExtractSkeleton(instances.ToArray());
+		return Actor.GetComponent<Actor>();
 	}
 
 	public void Draw() {
@@ -390,7 +398,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	[MenuItem("Assets/Create/Motion Capture")]
-	public static void CreateMotionCapture() {
+	public static string CreateMotionCapture() {
 		string source = Application.dataPath + "/Project/MotionCapture/Setup.unity";
 		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/Empty.unity";
 		int index = 0;
@@ -403,6 +411,23 @@ public class MotionEditor : MonoBehaviour {
 		} else {
 			FileUtil.CopyFileOrDirectory(source, destination);
 		}
+		return destination;
+	}
+
+	public static string CreateMotionCapture(string path, string name) {
+		string source = Application.dataPath + "/Project/MotionCapture/Setup.unity";
+		string destination = (path ==  "" ? AssetDatabase.GetAssetPath(Selection.activeObject) : path) + "/" + name + ".unity";
+		int index = 0;
+		while(File.Exists(destination)) {
+			index += 1;
+			destination = (path ==  "" ? AssetDatabase.GetAssetPath(Selection.activeObject) : path) + "/" + name + "(" + index +").unity";
+		}
+		if(!File.Exists(source)) {
+			Debug.Log("Source file at path " + source + " does not exist.");
+		} else {
+			FileUtil.CopyFileOrDirectory(source, destination);
+		}
+		return destination;
 	}
 
 	[CustomEditor(typeof(MotionEditor))]
@@ -488,7 +513,7 @@ public class MotionEditor : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
 						if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.LoadFile();
+							Target.LoadFile(MotionEditor.Path);
 						}
 					}
 				}
