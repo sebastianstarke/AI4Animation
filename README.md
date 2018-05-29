@@ -18,7 +18,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks.
 Instead of optimising a fixed group of weights, the system learns to dynamically blend a group of weights into a further neural network, based on the current
 state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an
-end-to-end fashion.
+end-to-end fashion.<br /><br />
 
 <p>
 Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
