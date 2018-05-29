@@ -24,7 +24,7 @@ end-to-end fashion.
 
 <div align="left">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="50%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img width="20%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
 </div>
 
