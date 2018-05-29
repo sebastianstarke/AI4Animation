@@ -20,9 +20,11 @@ state of the character. That said, the system does not require labels for the ph
 end-to-end fashion.
 <br /><br />
 
+<div align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img align="center" width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
+</div>
 
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="100%">
 
