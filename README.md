@@ -21,7 +21,7 @@ end-to-end fashion.
 <br /><br />
 
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img align="center" width="75%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img align="center" width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
 
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="100%">
