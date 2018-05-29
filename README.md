@@ -37,7 +37,7 @@ Demo: A demo of our system will be availble in this repository very soon.
 SIGGRAPH 2017
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Adam.png" width="100%">
-<img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Original.png" width="35%">
+<img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Original.png" width="40%">
 This work continues the recent work on PFNN (Phase-Functioned Neural Networks) for character control.
 A demo in Unity3D using the original weights for terrain-adaptive locomotion is contained in the Assets/Demo/SIGGRAPH_2017/Original folder.
 Another demo on flat ground using the Adam character is contained in the Assets/Demo/SIGGRAPH_2017/Adam folder.
