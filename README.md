@@ -22,12 +22,6 @@ end-to-end fashion.
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
 
-<div align="center">
-    <iframe width="620" height="315"
-        src="https://www.youtube.com/embed/OhlVBpEnjig">
-    </iframe>
-</div>
-
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="100%">
 
 Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
