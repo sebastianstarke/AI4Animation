@@ -22,19 +22,15 @@ end-to-end fashion.
 
 <br /><br />
 
-<div align="center">
-Video
-</div>
-<div align="center">
+<div align="left">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img width="50%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
 </div>
 
-<div align="center">
-Paper
+<div align="right">
+Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 </div>
-https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 
 <div align="center">
 Demo
