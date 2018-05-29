@@ -22,7 +22,7 @@ end-to-end fashion.
 
 <br /><br />
 
-<p align="left">
+<p align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
 <img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
@@ -32,7 +32,7 @@ end-to-end fashion.
 Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 </p>
 
-<p align="center">
+<p>
 Demo: A demo of our system will be availble in this repository very soon.
 </p>
 
