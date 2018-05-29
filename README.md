@@ -21,16 +21,18 @@ end-to-end fashion.
 <br /><br />
 
 <div align="center">
+<span style="font-size:20px;">Video</span>
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
 <img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
 </div>
 
-<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="100%">
-
 Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 <br /><br />
 A demo of our system will be availble in this repository very soon.
+
+
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="100%">
 
 SIGGRAPH 2017
 ------------
