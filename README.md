@@ -7,7 +7,7 @@ This code implementation is only for research or education purposes, and (especi
 
 Description
 ------------
-This project explores the opportunities of deep learning and biologically-inspired optimisation for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura. The development is done using Unity3D / Tensorflow, and the implementations are made available during my Ph.D. progress.
+This project explores the opportunities of deep learning and artificial intelligence for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura and in collaboration with He Zhang and Jun Saito. The development is done using Unity3D / Tensorflow, and the implementations are made available during my Ph.D. progress.
 
 SIGGRAPH 2018
 ------------
