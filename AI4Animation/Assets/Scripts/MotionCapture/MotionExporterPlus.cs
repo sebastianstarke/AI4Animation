@@ -304,7 +304,7 @@ public class MotionExporterPlus : EditorWindow {
 		StreamWriter file = File.CreateText(filename+".txt");
 
 		int index = 0;
-		for(int i=1; i<=12; i++) {
+		for(int i=7; i<=12; i++) {
 			file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;

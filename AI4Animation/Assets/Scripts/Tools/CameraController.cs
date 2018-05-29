@@ -94,6 +94,10 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		if(!Application.isPlaying) {
+			return;
+		}
+		
 		//Apply Transformation
 		float damping = Mode == MODE.FreeView ? 1f : 1f - GetDamping();
 		transform.position = Vector3.Lerp(transform.position, TargetPosition, damping);

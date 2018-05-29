@@ -27,9 +27,9 @@ public class PIDController {
 	public float Update(float target, float current, float update) {
 		Error = target-current;
 			
-		Integrator += Error*Time.deltaTime;
+		Integrator += Error*update;
 
-		Differentiator = (Error-LastError)/Time.deltaTime;
+		Differentiator = (Error-LastError)/update;
 
 		LastError = Error;
 
