@@ -20,7 +20,7 @@ state of the character. That said, the system does not require labels for the ph
 end-to-end fashion.
 <br /><br />
 
-<img align="center" width="100%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img align="center" width="50%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 
 
 [![Mode-Adaptive Neural Networks for Quadruped Motion Control](https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg)](https://www.youtube.com/watch?v=uFJvRYtjQ4c)
