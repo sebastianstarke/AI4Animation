@@ -20,20 +20,18 @@ Instead of optimising a fixed group of weights, the system learns to dynamically
 state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an
 end-to-end fashion.
 
-<br /><br />
-
-<p align="center">
-<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
-</a>
-</p>
-
 <p>
 Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
 </p>
 
 <p>
 Demo: A demo of our system will be availble in this repository very soon.
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
+<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+</a>
 </p>
 
 SIGGRAPH 2017
