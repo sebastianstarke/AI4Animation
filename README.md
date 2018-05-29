@@ -21,9 +21,7 @@ end-to-end fashion.
 <br /><br />
 
 <div align="center">
-<font size="10">
 Video
-</font>
 </div>
 <div align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
@@ -31,8 +29,14 @@ Video
 </a>
 </div>
 
-Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
-<br /><br />
+<div align="center">
+Paper
+</div>
+https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
+
+<div align="center">
+Demo
+</div>
 A demo of our system will be availble in this repository very soon.
 
 
