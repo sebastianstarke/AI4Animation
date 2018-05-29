@@ -21,7 +21,9 @@ end-to-end fashion.
 <br /><br />
 
 <div align="center">
+<font size="10">
 Video
+</font>
 </div>
 <div align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
