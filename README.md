@@ -12,7 +12,7 @@ This project explores the opportunities of deep learning and artificial intellig
 SIGGRAPH 2018
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Teaser.png" width="100%">
-<img align="right" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="40%">
+<img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="35%">
 Animating characters is a pain, right? Especially those four-legged monsters!
 This year, we will be presenting our recent research on quadruped animation and character control at the SIGGRAPH 2018 in Vancouver.
 The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks.
