@@ -7,13 +7,11 @@ public class Trajectory {
 
 	public Point[] Points = new Point[0];
 
-	private int Styles = 0;
 	private static float Width = 0.5f;
 
 	public Trajectory(int size, int styles) {
 		Inspect = false;
 		Points = new Point[size];
-		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
 			Points[i].SetTransformation(Matrix4x4.identity);
@@ -23,7 +21,6 @@ public class Trajectory {
 	public Trajectory(int size, int styles, Vector3 seedPosition, Vector3 seedDirection) {
 		Inspect = false;
 		Points = new Point[size];
-		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
 			Points[i].SetTransformation(Matrix4x4.TRS(seedPosition, Quaternion.LookRotation(seedDirection, Vector3.up), Vector3.one));
@@ -33,7 +30,6 @@ public class Trajectory {
 	public Trajectory(int size, int styles, Vector3[] positions, Vector3[] directions) {
 		Inspect = false;
 		Points = new Point[size];
-		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
 			Points[i] = new Point(i, styles);
 			Points[i].SetTransformation(Matrix4x4.TRS(positions[i], Quaternion.LookRotation(directions[i], Vector3.up), Vector3.one));
@@ -202,7 +198,7 @@ public class Trajectory {
 	public void Draw(int step=1) {
 		UltiDraw.Begin();
 
-		Color[] colors = UltiDraw.GetRainbowColors(Styles);
+		//Color[] colors = UltiDraw.GetRainbowColors(Styles);
 
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
@@ -240,6 +236,7 @@ public class Trajectory {
 			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + 0.25f*Points[i].GetDirection(), 0.025f, 0f, UltiDraw.Orange.Transparent(0.75f));
 		}
 
+		/*
 		//Styles
 		for(int i=0; i<Points.Length; i+=step) {
 			float r = 0f;
@@ -252,6 +249,7 @@ public class Trajectory {
 			}
 			UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f, new Color(r, g, b, 1f));
 		}
+		*/
 
 		/*
 		//Speed
