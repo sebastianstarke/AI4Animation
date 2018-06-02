@@ -25,9 +25,9 @@ Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRA
 </p>
 
 <p>
-Windows Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Windows.zip
-Linux Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Linux.zip
-Mac Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Mac.zip
+Windows Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Windows.zip<br />
+Linux Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Linux.zip<br />
+Mac Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Mac.zip<br />
 </p>
 
 <p align="center">
