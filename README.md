@@ -33,15 +33,15 @@ https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018
 
 <p align="center">
 Windows Demo<br />
-http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Windows.zip
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip
 </p>
 <p align="center">
 Linux Demo<br />
-http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Linux.zip
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip
 </p>
 <p align="center">
 Mac Demo<br />
-http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Mac.zip
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip
 </p>
 
 
