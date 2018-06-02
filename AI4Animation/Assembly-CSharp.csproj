@@ -214,7 +214,7 @@
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
-     <None Include="Assets\Demo\SIGGRAPH_2018\README.txt" />
+     <None Include="Assets\Demo\SIGGRAPH_2018\Demo.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
