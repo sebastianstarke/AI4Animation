@@ -20,21 +20,30 @@ Instead of optimising a fixed group of weights, the system learns to dynamically
 state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an
 end-to-end fashion.<br /><br /><br />
 
-<p>
-Paper: https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
-</p>
-
-<p>
-Windows Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Windows.zip<br />
-Linux Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Linux.zip<br />
-Mac Demo: http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Mac.zip<br />
-</p>
-
 <p align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
 <img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
 </p>
+
+<p align="center">
+Paper<br />
+https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf
+</p>
+
+<p align="center">
+Windows Demo<br />
+http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Windows.zip
+</p>
+<p align="center">
+Linux Demo<br />
+http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Linux.zip
+</p>
+<p align="center">
+Mac Demo<br />
+http://www.starke-consult.de/UoE/SIGGRAPH_2018/Demo_Mac.zip
+</p>
+
 
 SIGGRAPH 2017
 ------------
