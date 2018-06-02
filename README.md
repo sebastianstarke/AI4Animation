@@ -32,8 +32,7 @@ https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018
 </p>
 
 <p align="center">
-Windows Demo<br />
-http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 </p>
 <p align="center">
 Linux Demo<br />
@@ -44,6 +43,10 @@ Mac Demo<br />
 http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip
 </p>
 
+<p align="center">
+README<br />
+https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt
+</p>
 
 SIGGRAPH 2017
 ------------
