@@ -21,12 +21,6 @@ state of the character. That said, the system does not require labels for the ph
 end-to-end fashion.<br /><br /><br />
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
-</a>
-</p>
-
-<p align="center">
 -
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf">Paper</a>
 -
@@ -37,6 +31,12 @@ end-to-end fashion.<br /><br /><br />
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt">README</a>
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
+<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+</a>
 </p>
 
 SIGGRAPH 2017
