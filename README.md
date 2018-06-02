@@ -31,6 +31,7 @@ end-to-end fashion.<br /><br /><br />
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt">README</a>
+-
 </p>
 
 <p align="center">
@@ -49,9 +50,13 @@ Another demo on flat ground using the Adam character is contained in the Assets/
 In order to run them, you need to download the neural network weights from the link provided in the Link.txt file, extract them into the /NN folder, 
 and store the parameters via the custom inspector button.<br /><br /><br />
 
-Video: https://www.youtube.com/watch?v=Ul0Gilv5wvY
-
-Paper: http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf
+<p align="center">
+-
+<a href="https://www.youtube.com/watch?v=Ul0Gilv5wvY">Video</a>
+-
+<a href="http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf">Paper</a>
+-
+</p>
 
 Motion Capture
 ------------
