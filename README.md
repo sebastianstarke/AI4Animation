@@ -28,21 +28,13 @@ end-to-end fashion.<br /><br /><br />
 
 <p align="center">
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf">- Paper -</a>
-</p>
 
-<p align="center">
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">- Windows Demo -</a>
-</p>
 
-<p align="center">
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">- Linux Demo -</a>
-</p>
 
-<p align="center">
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">- Mac Demo -</a>
-</p>
 
-<p align="center">
 <a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt">- README -</a>
 </p>
 
