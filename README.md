@@ -22,6 +22,8 @@ end-to-end fashion.<br /><br /><br />
 
 <p align="center">
 -
+<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">Video</a>
+-
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf">Paper</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
