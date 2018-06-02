@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SerialCCD : MonoBehaviour {
+public class SerialIK : MonoBehaviour {
 
 	public bool AutoUpdate = true;
 

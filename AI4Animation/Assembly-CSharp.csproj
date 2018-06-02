@@ -56,6 +56,12 @@
   <ItemGroup>
      <Compile Include="Assets\Demo\SIGGRAPH_2017\Adam\BioAnimation_Adam.cs" />
      <Compile Include="Assets\Demo\SIGGRAPH_2017\Original\BioAnimation_Original.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\BioAnimation_Wolf.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\Scripts\Demo.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\Scripts\FootfallPattern.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\Scripts\MotionEditing.cs" />
+     <Compile Include="Assets\Demo\SIGGRAPH_2018\Scripts\TensorActivation.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\GetSetAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\MinAttribute.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Attributes\TrackballAttribute.cs" />
@@ -110,12 +116,6 @@
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterBase.cs" />
      <Compile Include="Assets\Palette\Water\Water\Scripts\WaterTile.cs" />
      <Compile Include="Assets\Project\MotionVisualiser\MotionVisualiser.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\BioAnimation_Wolf.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\BlendingActivation.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\Demo.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\FootfallPattern.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\MotionEditing.cs" />
-     <Compile Include="Assets\Project\SIGGRAPH_2018\Scripts\TensorActivation.cs" />
      <Compile Include="Assets\Project\Trash\AgilityMeasure.cs" />
      <Compile Include="Assets\Project\Trash\AngleTest.cs" />
      <Compile Include="Assets\Project\Trash\BFGS.cs" />
@@ -152,8 +152,8 @@
      <Compile Include="Assets\Scripts\DeepLearning\Parameters.cs" />
      <Compile Include="Assets\Scripts\DeepLearning\Tensor.cs" />
      <Compile Include="Assets\Scripts\IK\FootIK.cs" />
-     <Compile Include="Assets\Scripts\IK\IK.cs" />
-     <Compile Include="Assets\Scripts\IK\SerialCCD.cs" />
+     <Compile Include="Assets\Scripts\IK\FullBodyIK.cs" />
+     <Compile Include="Assets\Scripts\IK\SerialIK.cs" />
      <Compile Include="Assets\Scripts\Libraries\ArrayExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\EditorCoroutineExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Eigen.cs" />
@@ -214,7 +214,7 @@
      <None Include="Assets\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
-     <None Include="Assets\Project\SIGGRAPH_2018\README.txt" />
+     <None Include="Assets\Demo\SIGGRAPH_2018\README.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA3.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\MotionBlur.shader" />
@@ -224,6 +224,7 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\BuiltinDebugViews.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Common.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Bluenoise64\COPYING.txt" />
+     <None Include="Assets\Demo\SIGGRAPH_2018\NN\Link.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\Trackball.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.cginc" />
      <None Include="Assets\Plugins\Winterdust\MeshSkinnerDemoReadme.txt" />

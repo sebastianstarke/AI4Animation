@@ -1,0 +1,2 @@
+Download and extract the weights into this folder from:
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/NN_Wolf_MANN.zip

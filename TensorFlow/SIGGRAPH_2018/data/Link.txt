@@ -1,0 +1,3 @@
+Download the training data into this folder from:
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Input.txt
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Output.txt

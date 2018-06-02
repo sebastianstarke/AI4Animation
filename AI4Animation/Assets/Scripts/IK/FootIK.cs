@@ -75,9 +75,9 @@ public class FootIK : MonoBehaviour {
 		Vector3 groundNormal = Utility.GetNormal(pivotPosition, Ground);
 		Vector3 footNormal = pivotRotation * Normal;
 
-		TargetPosition = groundPosition + new Vector3(0f, stepHeight, 0f);
 		//TargetPosition = groundPosition;
 		//TargetPosition.y = Mathf.Max(groundPosition.y + stepHeight, pivotPosition.y);
+		TargetPosition = groundPosition + new Vector3(0f, stepHeight, 0f);
 		if(TargetPosition.y <= groundPosition.y) {
 			TargetRotation = Quaternion.FromToRotation(footNormal, -groundNormal) * pivotRotation;
 		} else {

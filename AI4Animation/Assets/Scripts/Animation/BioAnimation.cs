@@ -29,7 +29,7 @@ public class BioAnimation : MonoBehaviour {
 	public NeuralNetwork NN;
 
 	public bool MotionEditing = true;
-	public SerialCCD[] IKSolvers = new SerialCCD[0];
+	public SerialIK[] IKSolvers = new SerialIK[0];
 
 	private Actor Actor;
 	private Trajectory Trajectory;
@@ -570,7 +570,7 @@ public class BioAnimation : MonoBehaviour {
 						}
 						EditorGUILayout.EndHorizontal();
 						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (SerialCCD)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialCCD), true);
+							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
 						}
 					}
 				}

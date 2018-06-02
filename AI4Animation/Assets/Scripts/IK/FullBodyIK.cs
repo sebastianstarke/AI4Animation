@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IK : MonoBehaviour {
+public class FullBodyIK : MonoBehaviour {
 
 	public Transform[] Targets;
 	public Transform[] EndEffectors;
