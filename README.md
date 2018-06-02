@@ -43,7 +43,7 @@ end-to-end fashion.<br /><br /><br />
 </p>
 
 <p align="center">
-<a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt">README</a>
+<a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/Demo.txt">- README -</a>
 </p>
 
 SIGGRAPH 2017
