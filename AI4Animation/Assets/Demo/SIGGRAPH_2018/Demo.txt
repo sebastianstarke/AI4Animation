@@ -26,6 +26,11 @@ To generate the parameters yourself by training the network, you will need
 to download the input and output data into the TensorFlow folder outside of
 the AI4Animation project, as described in TensorFlow/SIGGRAPH_2018/data/Link.txt.
 
+The raw motion capture data can be downloaded from this link:
+http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip
+Using the developed motion capture editor tools inside Unity, you can 
+pre-process the data as you wish.
+
 Any question, feel free to ask. Any issues you might find, please let me know
 and send me a message to Sebastian.Starke@ed.ac.uk.
 ================================================================================
