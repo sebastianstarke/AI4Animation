@@ -7,7 +7,7 @@ This code implementation is only for research or education purposes, and (especi
 
 Description
 ------------
-This project explores the opportunities of deep learning and artificial intelligence for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by Taku Komura and in collaboration with He Zhang and Jun Saito. The development is done using Unity3D / Tensorflow, and the implementations are made available during my Ph.D. progress.
+This project explores the opportunities of deep learning and artificial intelligence for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a> and in collaboration with <a href="https://github.com/ShikamaruZhang">He Zhang</a> and <a href ="https://research.adobe.com/person/jun-saito">Jun Saito</a>. The development is done using Unity3D / Tensorflow, and the implementations are made available during my Ph.D. progress.
 
 SIGGRAPH 2018
 ------------
