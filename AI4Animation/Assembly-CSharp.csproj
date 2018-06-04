@@ -135,7 +135,6 @@
      <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
      <Compile Include="Assets\Scripts\Animation\Actor.cs" />
      <Compile Include="Assets\Scripts\Animation\BioAnimation.cs" />
-     <Compile Include="Assets\Scripts\Animation\Character.cs" />
      <Compile Include="Assets\Scripts\Animation\Controller.cs" />
      <Compile Include="Assets\Scripts\Animation\DepthMap.cs" />
      <Compile Include="Assets\Scripts\Animation\HeightMap.cs" />
