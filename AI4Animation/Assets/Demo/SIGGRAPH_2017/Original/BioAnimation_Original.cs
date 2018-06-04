@@ -13,21 +13,23 @@ namespace SIGGRAPH_2017 {
 		public float GaitTransition = 0.25f;
 		public float TrajectoryCorrection = 1f;
 
-		public Transform Root;
-		public Transform[] Joints = new Transform[0];
-
 		public Controller Controller;
-		public Character Character;
 
+		private Actor Actor;
 		private PFNN NN;
 		private Trajectory Trajectory;
 
 		private Vector3 TargetDirection;
 		private Vector3 TargetVelocity;
-		private Vector3[] Velocities = new Vector3[0];
 
 		//Rescaling for character (cm to m)
 		private float UnitScale = 100f;
+
+		//State
+		private Vector3[] Positions = new Vector3[0];
+		private Vector3[] Forwards = new Vector3[0];
+		private Vector3[] Ups = new Vector3[0];
+		private Vector3[] Velocities = new Vector3[0];
 
 		//Trajectory for 60 Hz framerate
 		private const int PointSamples = 12;
@@ -38,43 +40,41 @@ namespace SIGGRAPH_2017 {
 		private const int PointDensity = 10;
 
 		void Reset() {
-			Root = transform;
 			Controller = new Controller();
-			Character = new Character();
-			Character.BuildHierarchy(transform);
 		}
 
 		void Awake() {
+			Actor = GetComponent<Actor>();
 			NN = GetComponent<PFNN>();
-			TargetDirection = new Vector3(Root.forward.x, 0f, Root.forward.z);
+			TargetDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
 			TargetVelocity = Vector3.zero;
-			Velocities = new Vector3[Joints.Length];
-			Trajectory = new Trajectory(111, Controller.Styles.Length, Root.position, TargetDirection);
+			Positions = new Vector3[Actor.Bones.Length];
+			Forwards = new Vector3[Actor.Bones.Length];
+			Ups = new Vector3[Actor.Bones.Length];
+			Velocities = new Vector3[Actor.Bones.Length];
+			Trajectory = new Trajectory(111, Controller.Styles.Length, transform.position, TargetDirection);
 			Trajectory.Postprocess();
+			if(Controller.Styles.Length > 0) {
+				for(int i=0; i<Trajectory.Points.Length; i++) {
+					Trajectory.Points[i].Styles[0] = 1f;
+				}
+			}
+			for(int i=0; i<Actor.Bones.Length; i++) {
+				Positions[i] = Actor.Bones[i].Transform.position;
+				Forwards[i] = Actor.Bones[i].Transform.forward;
+				Ups[i] = Actor.Bones[i].Transform.up;
+				Velocities[i] = Vector3.zero;
+			}
+
+			if(NN.Parameters == null) {
+				Debug.Log("No parameters saved.");
+				return;
+			}
 			NN.LoadParameters();
 		}
 
 		void Start() {
 			Utility.SetFPS(60);
-		}
-
-		public void AutoDetect() {
-			SetJointCount(0);
-			System.Action<Transform> recursion = null;
-			recursion = new System.Action<Transform>((transform) => {
-				if(Character.FindSegment(transform.name) != null) {
-					AddJoint(transform);
-				}
-				for(int i=0; i<transform.childCount; i++) {
-					recursion(transform.GetChild(i));
-				}
-			});
-			recursion(Root);
-		}
-
-		public void AddJoint(Transform joint) {
-			System.Array.Resize(ref Joints, Joints.Length+1);
-			Joints[Joints.Length-1] = joint;
 		}
 
 		void Update() {
@@ -184,21 +184,21 @@ namespace SIGGRAPH_2017 {
 				}
 
 				//Input Previous Bone Positions / Velocities
-				for(int i=0; i<Joints.Length; i++) {
+				for(int i=0; i<Actor.Bones.Length; i++) {
 					int o = 10*PointSamples;
-					Vector3 pos = Joints[i].position.GetRelativePositionTo(previousRoot);
+					Vector3 pos = Positions[i].GetRelativePositionTo(previousRoot);
 					Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-					NN.SetInput(o + Joints.Length*3*0 + i*3+0, UnitScale * pos.x);
-					NN.SetInput(o + Joints.Length*3*0 + i*3+1, UnitScale * pos.y);
-					NN.SetInput(o + Joints.Length*3*0 + i*3+2, UnitScale * pos.z);
-					NN.SetInput(o + Joints.Length*3*1 + i*3+0, UnitScale * vel.x);
-					NN.SetInput(o + Joints.Length*3*1 + i*3+1, UnitScale * vel.y);
-					NN.SetInput(o + Joints.Length*3*1 + i*3+2, UnitScale * vel.z);
+					NN.SetInput(o + Actor.Bones.Length*3*0 + i*3+0, UnitScale * pos.x);
+					NN.SetInput(o + Actor.Bones.Length*3*0 + i*3+1, UnitScale * pos.y);
+					NN.SetInput(o + Actor.Bones.Length*3*0 + i*3+2, UnitScale * pos.z);
+					NN.SetInput(o + Actor.Bones.Length*3*1 + i*3+0, UnitScale * vel.x);
+					NN.SetInput(o + Actor.Bones.Length*3*1 + i*3+1, UnitScale * vel.y);
+					NN.SetInput(o + Actor.Bones.Length*3*1 + i*3+2, UnitScale * vel.z);
 				}
 
 				//Input Trajectory Heights
 				for(int i=0; i<PointSamples; i++) {
-					int o = 10*PointSamples + Joints.Length*3*2;
+					int o = 10*PointSamples + Actor.Bones.Length*3*2;
 					NN.SetInput(o + PointSamples*0 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetRightSample().y - currentRoot.GetPosition().y));
 					NN.SetInput(o + PointSamples*1 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetPosition().y - currentRoot.GetPosition().y));
 					NN.SetInput(o + PointSamples*2 + i, UnitScale * (Trajectory.Points[i*PointDensity].GetLeftSample().y - currentRoot.GetPosition().y));
@@ -276,30 +276,25 @@ namespace SIGGRAPH_2017 {
 				CollisionChecks(RootPointIndex);
 				
 				//Compute Posture
-				Vector3[] positions = new Vector3[Joints.Length];
-				Quaternion[] rotations = new Quaternion[Joints.Length];
-				int opos = 8 + 4*RootSampleIndex + Joints.Length*3*0;
-				int ovel = 8 + 4*RootSampleIndex + Joints.Length*3*1;
-				//int orot = 8 + 4*RootSampleIndex + Joints.Length*3*2;
-				for(int i=0; i<Joints.Length; i++) {			
+				int opos = 8 + 4*RootSampleIndex + Actor.Bones.Length*3*0;
+				int ovel = 8 + 4*RootSampleIndex + Actor.Bones.Length*3*1;
+				//int orot = 8 + 4*RootSampleIndex + Actor.Bones.Length*3*2;
+				for(int i=0; i<Actor.Bones.Length; i++) {			
 					Vector3 position = new Vector3(NN.GetOutput(opos+i*3+0), NN.GetOutput(opos+i*3+1), NN.GetOutput(opos+i*3+2)) / UnitScale;
 					Vector3 velocity = new Vector3(NN.GetOutput(ovel+i*3+0), NN.GetOutput(ovel+i*3+1), NN.GetOutput(ovel+i*3+2)) / UnitScale;
 					//Quaternion rotation = new Quaternion(PFNN.GetOutput(orot+i*3+0), PFNN.GetOutput(orot+i*3+1), PFNN.GetOutput(orot+i*3+2), 0f).Exp();
-					positions[i] = Vector3.Lerp(Joints[i].position.GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
+					Positions[i] = Vector3.Lerp(Positions[i].GetRelativePositionTo(currentRoot) + velocity, position, 0.5f).GetRelativePositionFrom(currentRoot);
 					Velocities[i] = velocity.GetRelativeDirectionFrom(currentRoot);
 					//rotations[i] = rotation.GetRelativeRotationFrom(currentRoot);
 				}
 				
 				//Update Posture
-				Root.position = nextRoot.GetPosition();
-				Root.rotation = nextRoot.GetRotation();
-				for(int i=0; i<Joints.Length; i++) {
-					Joints[i].position = positions[i];
-					Joints[i].rotation = rotations[i];
+				transform.position = nextRoot.GetPosition();
+				transform.rotation = nextRoot.GetRotation();
+				for(int i=0; i<Actor.Bones.Length; i++) {
+					Actor.Bones[i].Transform.position = Positions[i];
+					Actor.Bones[i].Transform.rotation = Quaternion.LookRotation(Forwards[i], Ups[i]);
 				}
-
-				//Map to Character
-				Character.FetchTransformations(Root);
 			}
 		}
 
@@ -354,20 +349,6 @@ namespace SIGGRAPH_2017 {
 			}
 		}
 
-		public void SetJoint(int index, Transform t) {
-			if(index < 0 || index >= Joints.Length) {
-				return;
-			}
-			Joints[index] = t;
-		}
-
-		public void SetJointCount(int count) {
-			count = Mathf.Max(0, count);
-			if(Joints.Length != count) {
-				System.Array.Resize(ref Joints, count);
-			}
-		}
-
 		void OnGUI() {
 			GUI.color = UltiDraw.Mustard;
 			GUI.backgroundColor = UltiDraw.Black;
@@ -385,10 +366,6 @@ namespace SIGGRAPH_2017 {
 		}
 
 		void OnRenderObject() {
-			if(Root == null) {
-				Root = transform;
-			}
-
 			/*
 			UltiDraw.Begin();
 			UltiDraw.DrawGUICircle(new Vector2(0.5f, 0.85f), 0.075f, UltiDraw.Black.Transparent(0.5f));
@@ -401,36 +378,29 @@ namespace SIGGRAPH_2017 {
 			*/
 
 			if(Application.isPlaying) {
+				if(NN.Parameters == null) {
+					return;
+				}
+
 				UltiDraw.Begin();
 				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetDirection, 0.05f, 0f, UltiDraw.Red.Transparent(0.75f));
 				UltiDraw.DrawLine(Trajectory.Points[RootPointIndex].GetPosition(), Trajectory.Points[RootPointIndex].GetPosition() + TargetVelocity, 0.05f, 0f, UltiDraw.Green.Transparent(0.75f));
 				UltiDraw.End();
 				Trajectory.Draw(10);
-			}
-			
-			if(!Application.isPlaying) {
-				Character.FetchTransformations(Root);
-			}
-			Character.Draw();
-
-			if(Application.isPlaying) {
+				
 				UltiDraw.Begin();
-				for(int i=0; i<Joints.Length; i++) {
-					Character.Segment segment = Character.FindSegment(Joints[i].name);
-					if(segment != null) {
-						UltiDraw.DrawArrow(
-							Joints[i].position,
-							Joints[i].position + Velocities[i] * 60f,
-							0.75f,
-							0.0075f,
-							0.05f,
-							UltiDraw.Purple.Transparent(0.5f)
-						);
-					}
+				for(int i=0; i<Actor.Bones.Length; i++) {
+					UltiDraw.DrawArrow(
+						Actor.Bones[i].Transform.position,
+						Actor.Bones[i].Transform.position + Velocities[i],
+						0.75f,
+						0.0075f,
+						0.05f,
+						UltiDraw.Purple.Transparent(0.5f)
+					);
 				}
 				UltiDraw.End();
 			}
-			
 		}
 
 		void OnDrawGizmos() {
@@ -455,7 +425,6 @@ namespace SIGGRAPH_2017 {
 
 				Inspector();
 				Target.Controller.Inspector();
-				Target.Character.Inspector(Target.transform);
 
 				if(GUI.changed) {
 					EditorUtility.SetDirty(Target);
@@ -467,13 +436,6 @@ namespace SIGGRAPH_2017 {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 
-					if(Target.Character.RebuildRequired(Target.Root)) {
-						EditorGUILayout.HelpBox("Rebuild required because hierarchy was changed externally.", MessageType.Error);
-						if(Utility.GUIButton("Build Hierarchy", Color.grey, Color.white)) {
-							Target.Character.BuildHierarchy(Target.Root);
-						}
-					}
-
 					if(Utility.GUIButton("Animation", UltiDraw.DarkGrey, UltiDraw.White)) {
 						Target.Inspect = !Target.Inspect;
 					}
@@ -483,22 +445,6 @@ namespace SIGGRAPH_2017 {
 							Target.TargetBlending = EditorGUILayout.Slider("Target Blending", Target.TargetBlending, 0f, 1f);
 							Target.GaitTransition = EditorGUILayout.Slider("Gait Transition", Target.GaitTransition, 0f, 1f);
 							Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
-							EditorGUI.BeginDisabledGroup(true);
-							EditorGUILayout.ObjectField("Root", Target.Root, typeof(Transform), true);
-							EditorGUI.EndDisabledGroup();
-							Target.SetJointCount(EditorGUILayout.IntField("Joint Count", Target.Joints.Length));
-							if(Utility.GUIButton("Auto Detect", UltiDraw.DarkGrey, UltiDraw.White)) {
-								Target.AutoDetect();
-							}
-							for(int i=0; i<Target.Joints.Length; i++) {
-								if(Target.Joints[i] != null) {
-									Utility.SetGUIColor(UltiDraw.Green);
-								} else {
-									Utility.SetGUIColor(UltiDraw.Red);
-								}
-								Target.SetJoint(i, (Transform)EditorGUILayout.ObjectField("Joint " + (i+1), Target.Joints[i], typeof(Transform), true));
-								Utility.ResetGUIColor();
-							}
 						}
 					}
 					
