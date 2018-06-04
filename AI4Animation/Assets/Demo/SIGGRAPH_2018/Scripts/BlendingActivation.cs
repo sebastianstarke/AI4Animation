@@ -16,16 +16,11 @@ public class BlendingActivation : MonoBehaviour {
 	private Queue<float>[] Values;
 
 	void Awake() {
-		if(GetComponent<BioAnimation>() != null) {
-			NN = GetComponent<BioAnimation>().NN;
-		}
-		if(GetComponent<SIGGRAPH_2018.BioAnimation_Wolf>() != null) {
-			NN = GetComponent<SIGGRAPH_2018.BioAnimation_Wolf>().NN;
-		}
+		NN = GetComponent<NeuralNetwork>();
 	}
 
 	void Start() {
-		Values = new Queue<float>[NN.Model.GetTensor("BY").GetRows()];
+		Values = new Queue<float>[NN.GetTensor("BY").GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
@@ -42,7 +37,7 @@ public class BlendingActivation : MonoBehaviour {
 	void OnRenderObject() {
 		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
-			Values[i].Enqueue(NN.Model.GetTensor("BY").GetValue(i, 0));
+			Values[i].Enqueue(NN.GetTensor("BY").GetValue(i, 0));
 		}
 
 		UltiDraw.Begin();

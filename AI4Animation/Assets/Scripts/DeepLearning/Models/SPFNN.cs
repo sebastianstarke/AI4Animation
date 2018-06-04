@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-	public class SPFNN : Model {
+	public class SPFNN : NeuralNetwork {
 
 		public int XDim = 0;
 		public int HDim = 0;
@@ -154,32 +154,6 @@ namespace DeepLearning {
 		public float GetPhase() {
 			return Phase;
 		}
-
-		#if UNITY_EDITOR
-		public override void Inspector() {
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				Folder = EditorGUILayout.TextField("Folder", Folder);
-				EditorGUILayout.BeginHorizontal();
-				if(GUILayout.Button("Store Parameters")) {
-					StoreParameters();
-				}
-				Parameters = (Parameters)EditorGUILayout.ObjectField(Parameters, typeof(Parameters), true);
-				EditorGUILayout.EndHorizontal();
-
-				XDim = EditorGUILayout.IntField("XDim", XDim);
-				HDim = EditorGUILayout.IntField("HDim", HDim);
-				YDim = EditorGUILayout.IntField("YDim", YDim);
-				SDim = EditorGUILayout.IntField("SDim", SDim);
-				Array.Resize(ref StyleNeurons, EditorGUILayout.IntField("Style Neurons", StyleNeurons.Length));
-				for(int i=0; i<StyleNeurons.Length; i++) {
-					StyleNeurons[i] = EditorGUILayout.IntField("Neuron " + (i+1), StyleNeurons[i]);
-				}
-				PhaseIndex = EditorGUILayout.IntField("Phase Index", PhaseIndex);
-
-				EditorGUILayout.Slider("Phase", Phase, 0f, 2f*Mathf.PI);
-			}
-		}
-		#endif
 
 	}
 

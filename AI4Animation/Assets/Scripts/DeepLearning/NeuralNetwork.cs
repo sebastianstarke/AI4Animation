@@ -1,66 +1,145 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace DeepLearning {
 
-	[System.Serializable]
-	public class NeuralNetwork {
+	public abstract class NeuralNetwork : MonoBehaviour {
 
-		public bool Inspect = false;
+		public string Folder = "Assets/Project/";
+        public Parameters Parameters;
 
-		public TYPE Type;
+        private List<Tensor> Tensors = new List<Tensor>();
+        private List<string> Identifiers = new List<string>();
 
-		public Model Model;
+        public abstract void StoreParameters();
+        public abstract void LoadParameters();
+        public abstract void Predict();
+        public abstract void SetInput(int index, float value);
+        public abstract float GetOutput(int index);
 
-		public NeuralNetwork(TYPE type) {
-			SetModel(type);
-		}
+        public Tensor CreateTensor(int rows, int cols, string id) {
+            if(Identifiers.Contains(id)) {
+                Debug.Log("Tensor with ID " + id + " already contained.");
+                return null;
+            }
+            Tensor T = new Tensor(rows, cols);
+            Tensors.Add(T);
+            Identifiers.Add(id);
+            return T;
+        }
 
-		public void SetModel(TYPE type) {
-			if(Type == type && Model != null) {
-				return;
-			}
-			Type = type;
-			switch(Type) {
-				case TYPE.Vanilla:
-				Model = ScriptableObject.CreateInstance<Vanilla>();
-				break;
-				case TYPE.MANN:
-				Model = ScriptableObject.CreateInstance<MANN>();
-				break;
-				case TYPE.PFNN:
-				Model = ScriptableObject.CreateInstance<PFNN>();
-				break;
-				case TYPE.HMANN:
-				Model = ScriptableObject.CreateInstance<HMANN>();
-				break;
-				case TYPE.SPFNN:
-				Model = ScriptableObject.CreateInstance<SPFNN>();
-				break;
-			}
-		}
-		
-		#if UNITY_EDITOR
-		public void Inspector() {
-			Utility.SetGUIColor(Color.grey);
-			using(new GUILayout.VerticalScope ("Box")) {
-				Utility.ResetGUIColor();
-				if(Utility.GUIButton("Neural Network", UltiDraw.DarkGrey, UltiDraw.White)) {
-					Inspect = !Inspect;
-				}
+        public Tensor CreateTensor(Parameters.FloatMatrix matrix, string id) {
+            if(Identifiers.Contains(id)) {
+                Debug.Log("Tensor with ID " + id + " already contained.");
+                return null;
+            }
+            Tensor T = new Tensor(matrix.Rows, matrix.Cols);
+            for(int x=0; x<matrix.Rows; x++) {
+                for(int y=0; y<matrix.Cols; y++) {
+                    T.SetValue(x, y, matrix.Values[x].Values[y]);
+                }
+            }
+            Tensors.Add(T);
+            Identifiers.Add(id);
+            return T;
+        }
 
-				if(Inspect) {
-					using(new EditorGUILayout.VerticalScope ("Box")) {
-						SetModel((TYPE)EditorGUILayout.EnumPopup(Type));
-						Model.Inspector();
-					}
-				}
-			}
-		}
-		#endif
+        public void DeleteTensor(Tensor T) {
+            int index = Tensors.IndexOf(T);
+            if(index == -1) {
+                Debug.Log("Tensor not found.");
+                return;
+            }
+            Tensors.RemoveAt(index);
+            Identifiers.RemoveAt(index);
+            T.Delete();
+        }
+
+        public Tensor GetTensor(string id) {
+            int index = Identifiers.IndexOf(id);
+            if(index == -1) {
+                return null;
+            }
+            return Tensors[index];
+        }
+
+        public string GetID(Tensor T) {
+            int index = Tensors.IndexOf(T);
+            if(index == -1) {
+                return null;
+            }
+            return Identifiers[index];
+        }
+
+        public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
+            Eigen.Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
+            return OUT;
+        }
+        
+        public Tensor Renormalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
+            Eigen.Renormalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
+            return OUT;
+        }
+
+        public Tensor Layer(Tensor IN, Tensor W, Tensor b, Tensor OUT) {
+            Eigen.Layer(IN.Ptr, W.Ptr, b.Ptr, OUT.Ptr);
+            return OUT;
+        }
+
+        public Tensor Blend(Tensor T, Tensor W, float w) {
+            Eigen.Blend(T.Ptr, W.Ptr, w);
+            return T;
+        }
+
+        public Tensor ELU(Tensor T) {
+            Eigen.ELU(T.Ptr);
+            return T;
+        }
+
+        public Tensor Sigmoid(Tensor T) {
+            Eigen.Sigmoid(T.Ptr);
+            return T;
+        }
+
+        public Tensor TanH(Tensor T) {
+            Eigen.TanH(T.Ptr);
+            return T;
+        }
+
+        public Tensor SoftMax(Tensor T) {
+            Eigen.SoftMax(T.Ptr);
+            return T;
+        }
 
 	}
+
+	#if UNITY_EDITOR
+	[CustomEditor(typeof(NeuralNetwork), true)]
+	public class NeuralNetwork_Editor : Editor {
+
+		public NeuralNetwork Target;
+
+		void Awake() {
+			Target = (NeuralNetwork)target;
+		}
+
+		public override void OnInspectorGUI() {
+			Undo.RecordObject(Target, Target.name);
+	
+            DrawDefaultInspector();
+            if(Utility.GUIButton("Store Parameters", UltiDraw.DarkGrey, UltiDraw.White)) {
+                Target.StoreParameters();
+            }
+
+			if(GUI.changed) {
+				EditorUtility.SetDirty(Target);
+			}
+		}
+        
+	}
+	#endif
 
 }

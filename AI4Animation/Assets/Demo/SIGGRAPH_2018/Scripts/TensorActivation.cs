@@ -15,7 +15,7 @@ public class TensorActivation : MonoBehaviour {
     public OPERATOR Operator;
     public PLOTTING Plotting;
 
-    private Model Model;
+    private NeuralNetwork NN;
     private Tensor T;
     private float[] Values;
 
@@ -23,7 +23,7 @@ public class TensorActivation : MonoBehaviour {
     private float Maximum;
 
 	void Awake() {
-		Model = GetComponent<SIGGRAPH_2018.BioAnimation_Wolf>().NN.Model;
+		NN = GetComponent<NeuralNetwork>();
         Minimum = float.MaxValue;
         Maximum = float.MinValue;
     }
@@ -38,7 +38,7 @@ public class TensorActivation : MonoBehaviour {
     }
 
 	void OnRenderObject() {
-        Tensor t = Model.GetTensor(ID);
+        Tensor t = NN.GetTensor(ID);
         if(t == null) {
             return;
         }

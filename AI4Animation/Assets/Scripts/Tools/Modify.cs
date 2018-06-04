@@ -10,6 +10,11 @@ public class Modify : MonoBehaviour {
 	private Vector3 LastPosition;
 	private Quaternion LastRotation;
 
+	void Awake() {
+		LastPosition = transform.localPosition;
+		LastRotation = transform.localRotation;
+	}
+
 	void LateUpdate() {
 		if(LastPosition != transform.localPosition || LastRotation != transform.localRotation) {
 			transform.localPosition += Position;

@@ -21,9 +21,9 @@ namespace SIGGRAPH_2018 {
 		public float TrajectoryCorrection = 1f;
 
 		public Controller Controller;
-		public NeuralNetwork NN;
 
 		private Actor Actor;
+		private MANN NN;
 		private Trajectory Trajectory;
 
 		private Vector3 TargetDirection;
@@ -64,11 +64,11 @@ namespace SIGGRAPH_2018 {
 
 		void Reset() {
 			Controller = new Controller();
-			NN = new NeuralNetwork(TYPE.Vanilla);
 		}
 
 		void Awake() {
 			Actor = GetComponent<Actor>();
+			NN = GetComponent<MANN>();
 			MotionEditing = GetComponent<MotionEditing>();
 			TargetDirection = new Vector3(transform.forward.x, 0f, transform.forward.z);
 			TargetVelocity = Vector3.zero;
@@ -89,11 +89,11 @@ namespace SIGGRAPH_2018 {
 				Ups[i] = Actor.Bones[i].Transform.up;
 				Velocities[i] = Vector3.zero;
 			}
-			if(NN.Model.Parameters == null) {
+			if(NN.Parameters == null) {
 				Debug.Log("No parameters saved.");
 				return;
 			}
-			NN.Model.LoadParameters();
+			NN.LoadParameters();
 		}
 
 		void Start() {
@@ -146,7 +146,7 @@ namespace SIGGRAPH_2018 {
 		}
 
 		void Update() {
-			if(NN.Model.Parameters == null) {
+			if(NN.Parameters == null) {
 				return;
 			}
 
@@ -154,7 +154,7 @@ namespace SIGGRAPH_2018 {
 				PredictTrajectory();
 			}
 
-			if(NN.Model.Parameters != null) {
+			if(NN.Parameters != null) {
 				Animate();
 			}
 
@@ -284,15 +284,15 @@ namespace SIGGRAPH_2018 {
 				Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 				Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
 				float speed = GetSample(i).GetSpeed();
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-				NN.Model.SetInput(start + i*TrajectoryDimIn + 6, speed);
+				NN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
+				NN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
+				NN.SetInput(start + i*TrajectoryDimIn + 2, dir.x);
+				NN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
+				NN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
+				NN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
+				NN.SetInput(start + i*TrajectoryDimIn + 6, speed);
 				for(int j=0; j<Controller.Styles.Length; j++) {
-					NN.Model.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
+					NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 				}
 			}
 			start += TrajectoryDimIn*PointSamples;
@@ -306,24 +306,24 @@ namespace SIGGRAPH_2018 {
 				Vector3 forward = Forwards[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 up = Ups[i].GetRelativeDirectionTo(previousRoot);
 				Vector3 vel = Velocities[i].GetRelativeDirectionTo(previousRoot);
-				NN.Model.SetInput(start + i*JointDimIn + 0, pos.x);
-				NN.Model.SetInput(start + i*JointDimIn + 1, pos.y);
-				NN.Model.SetInput(start + i*JointDimIn + 2, pos.z);
-				NN.Model.SetInput(start + i*JointDimIn + 3, forward.x);
-				NN.Model.SetInput(start + i*JointDimIn + 4, forward.y);
-				NN.Model.SetInput(start + i*JointDimIn + 5, forward.z);
-				NN.Model.SetInput(start + i*JointDimIn + 6, up.x);
-				NN.Model.SetInput(start + i*JointDimIn + 7, up.y);
-				NN.Model.SetInput(start + i*JointDimIn + 8, up.z);
-				NN.Model.SetInput(start + i*JointDimIn + 9, vel.x);
-				NN.Model.SetInput(start + i*JointDimIn + 10, vel.y);
-				NN.Model.SetInput(start + i*JointDimIn + 11, vel.z);
+				NN.SetInput(start + i*JointDimIn + 0, pos.x);
+				NN.SetInput(start + i*JointDimIn + 1, pos.y);
+				NN.SetInput(start + i*JointDimIn + 2, pos.z);
+				NN.SetInput(start + i*JointDimIn + 3, forward.x);
+				NN.SetInput(start + i*JointDimIn + 4, forward.y);
+				NN.SetInput(start + i*JointDimIn + 5, forward.z);
+				NN.SetInput(start + i*JointDimIn + 6, up.x);
+				NN.SetInput(start + i*JointDimIn + 7, up.y);
+				NN.SetInput(start + i*JointDimIn + 8, up.z);
+				NN.SetInput(start + i*JointDimIn + 9, vel.x);
+				NN.SetInput(start + i*JointDimIn + 10, vel.y);
+				NN.SetInput(start + i*JointDimIn + 11, vel.z);
 			}
 			start += JointDimIn*Actor.Bones.Length;
 
 			//Predict
 			System.DateTime timestamp = Utility.GetTimestamp();
-			NN.Model.Predict();
+			NN.Predict();
 			NetworkPredictionTime = (float)Utility.GetElapsedTime(timestamp);
 
 			//Update Past Trajectory
@@ -345,7 +345,7 @@ namespace SIGGRAPH_2018 {
 								+ Trajectory.Points[RootPointIndex].Styles[5]
 							), 	0.5f)
 			);
-			Vector3 rootMotion = update * new Vector3(NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 0), NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 1), NN.Model.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 2));
+			Vector3 rootMotion = update * new Vector3(NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 0), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 1), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 2));
 			rootMotion /= Framerate;
 			Vector3 translation = new Vector3(rootMotion.x, 0f, rootMotion.z);
 			float angle = rootMotion.y;
@@ -372,35 +372,35 @@ namespace SIGGRAPH_2018 {
 				float factor = (float)(i % PointDensity) / PointDensity;
 
 				Vector3 prevPos = new Vector3(
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0),
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 0),
 					0f,
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1)
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 1)
 				).GetRelativePositionFrom(nextRoot);
 				Vector3 prevDir = new Vector3(
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2),
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 2),
 					0f,
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3)
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 3)
 				).normalized.GetRelativeDirectionFrom(nextRoot);
 				Vector3 prevVel = new Vector3(
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 4),
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 4),
 					0f,
-					NN.Model.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 5)
+					NN.GetOutput(start + (prevSampleIndex-6)*TrajectoryDimOut + 5)
 				).GetRelativeDirectionFrom(nextRoot);
 
 				Vector3 nextPos = new Vector3(
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0),
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 0),
 					0f,
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1)
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 1)
 				).GetRelativePositionFrom(nextRoot);
 				Vector3 nextDir = new Vector3(
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2),
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 2),
 					0f,
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3)
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 3)
 				).normalized.GetRelativeDirectionFrom(nextRoot);
 				Vector3 nextVel = new Vector3(
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 4),
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 4),
 					0f,
-					NN.Model.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 5)
+					NN.GetOutput(start + (nextSampleIndex-6)*TrajectoryDimOut + 5)
 				).GetRelativeDirectionFrom(nextRoot);
 
 				Vector3 pos = (1f - factor) * prevPos + factor * nextPos;
@@ -435,10 +435,10 @@ namespace SIGGRAPH_2018 {
 
 			//Compute Posture
 			for(int i=0; i<Actor.Bones.Length; i++) {
-				Vector3 position = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 0), NN.Model.GetOutput(start + i*JointDimOut + 1), NN.Model.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
-				Vector3 forward = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 3), NN.Model.GetOutput(start + i*JointDimOut + 4), NN.Model.GetOutput(start + i*JointDimOut + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
-				Vector3 up = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 6), NN.Model.GetOutput(start + i*JointDimOut + 7), NN.Model.GetOutput(start + i*JointDimOut + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
-				Vector3 velocity = new Vector3(NN.Model.GetOutput(start + i*JointDimOut + 9), NN.Model.GetOutput(start + i*JointDimOut + 10), NN.Model.GetOutput(start + i*JointDimOut + 11)).GetRelativeDirectionFrom(currentRoot);
+				Vector3 position = new Vector3(NN.GetOutput(start + i*JointDimOut + 0), NN.GetOutput(start + i*JointDimOut + 1), NN.GetOutput(start + i*JointDimOut + 2)).GetRelativePositionFrom(currentRoot);
+				Vector3 forward = new Vector3(NN.GetOutput(start + i*JointDimOut + 3), NN.GetOutput(start + i*JointDimOut + 4), NN.GetOutput(start + i*JointDimOut + 5)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 up = new Vector3(NN.GetOutput(start + i*JointDimOut + 6), NN.GetOutput(start + i*JointDimOut + 7), NN.GetOutput(start + i*JointDimOut + 8)).normalized.GetRelativeDirectionFrom(currentRoot);
+				Vector3 velocity = new Vector3(NN.GetOutput(start + i*JointDimOut + 9), NN.GetOutput(start + i*JointDimOut + 10), NN.GetOutput(start + i*JointDimOut + 11)).GetRelativeDirectionFrom(currentRoot);
 
 				Positions[i] = Vector3.Lerp(Positions[i] + velocity / Framerate, position, 0.5f);
 				Forwards[i] = forward;
@@ -494,7 +494,7 @@ namespace SIGGRAPH_2018 {
 		}
 
 		void OnGUI() {
-			if(NN.Model.Parameters == null) {
+			if(NN.Parameters == null) {
 				return;
 			}
 
@@ -558,7 +558,7 @@ namespace SIGGRAPH_2018 {
 
 		void OnRenderObject() {
 			if(Application.isPlaying) {
-				if(NN.Model.Parameters == null) {
+				if(NN.Parameters == null) {
 					return;
 				}
 
@@ -612,7 +612,6 @@ namespace SIGGRAPH_2018 {
 
 				Inspector();
 				Target.Controller.Inspector();
-				Target.NN.Inspector();
 
 				if(GUI.changed) {
 					EditorUtility.SetDirty(Target);
