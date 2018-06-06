@@ -15,6 +15,8 @@ public class MotionEditor : MonoBehaviour {
 	
 	public MotionData Data = null;
 
+	public MotionData[] Datas = new MotionData[0];
+
 	private bool AutoFocus = true;
 	private float FocusHeight = 1f;
 	private float FocusOffset = 0f;
@@ -110,6 +112,12 @@ public class MotionEditor : MonoBehaviour {
 			LoadFrame(Timestamp);
 		}
 		return State;
+	}
+
+	public void LoadData(int index) {
+		if(Data != Datas[index]) {
+			Data = Datas[index];
+		}
 	}
 
 	public void LoadFile(string path) {
@@ -548,6 +556,16 @@ public class MotionEditor : MonoBehaviour {
 						Utility.ResetGUIColor();
 
 						EditorGUILayout.ObjectField("Data", Target.Data, typeof(MotionData), true);
+
+						string[] names = new string[Target.Datas.Length];
+						if(names.Length == 0) {
+							EditorGUILayout.LabelField("No data available.");
+						} else {
+							for(int i=0; i<names.Length; i++) {
+								names[i] = Target.Datas[i].name;
+							}
+							Target.LoadData(EditorGUILayout.Popup(0, names));
+						}
 					}
 
 					Utility.SetGUIColor(UltiDraw.LightGrey);

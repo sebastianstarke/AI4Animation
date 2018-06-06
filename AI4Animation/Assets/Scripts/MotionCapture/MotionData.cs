@@ -716,7 +716,7 @@ public class MotionData : ScriptableObject {
 
 		private Quaternion GetRootRotation(bool mirrored) {
 			
-			Vector3 v1 = GetBoneTransformation(Data.Source.FindBone("RightUpLeg").Index, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftUpLeg").Index, mirrored, Data.RootSmoothing).GetPosition();
+			Vector3 v1 = GetBoneTransformation(Data.Source.FindBone("RightHip").Index, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftHip").Index, mirrored, Data.RootSmoothing).GetPosition();
 			Vector3 v2 = GetBoneTransformation(Data.Source.FindBone("RightShoulder").Index, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(Data.Source.FindBone("LeftShoulder").Index, mirrored, Data.RootSmoothing).GetPosition();
 			v1.y = 0f;
 			v2.y = 0f;
