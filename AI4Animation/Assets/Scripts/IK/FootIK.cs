@@ -111,9 +111,6 @@ public class FootIK : MonoBehaviour {
 
 	void OnDrawGizmos() {
 		if(Visualise) {
-			//if(!Application.isPlaying) {
-			//	OnRenderObject();
-			//}
 			if(Ankle == null || Joint == null || Normal == Vector3.zero) {
 				return;
 			}

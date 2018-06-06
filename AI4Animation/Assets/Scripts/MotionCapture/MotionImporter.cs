@@ -125,7 +125,7 @@ public class MotionImporter : EditorWindow {
 
         for(int i=0; i<Files.Length; i++) {
             if(Import[i]) {
-				string scene = MotionEditor.CreateMotionCapture(Application.dataPath + "/" + Destination, Files[i].Name);
+				string scene = MotionEditor.CreateAnimationScene(Application.dataPath + "/" + Destination, Files[i].Name);
                 EditorSceneManager.OpenScene(scene);
 				yield return new WaitForSeconds(0f);
                 MotionEditor editor = FindObjectOfType<MotionEditor>();
@@ -135,7 +135,7 @@ public class MotionImporter : EditorWindow {
 					foreach(Actor actor in GameObject.FindObjectsOfType<Actor>()) {
 						Utility.Destroy(actor.gameObject);
 					}
-					editor.LoadFile(Files[i].FullName);
+					editor.AddData(Files[i].FullName);
 					EditorUtility.SetDirty(editor);
 					EditorUtility.SetDirty(editor.Data);
 					EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());

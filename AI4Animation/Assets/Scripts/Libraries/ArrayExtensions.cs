@@ -53,6 +53,10 @@ public static class ArrayExtensions {
 		return Array.FindIndex(array, x => x.Equals(element));
 	}
 
+	public static T Find<T>(ref T[] array, T element) {
+		return Array.Find(array, x => x.Equals(element));
+	}
+
 	public static bool Contains<T>(ref T[] array, T element) {
 		return FindIndex(ref array, element) >= 0;
 	}
