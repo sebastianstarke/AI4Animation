@@ -11,7 +11,7 @@ using UnityEditorInternal;
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
-	public MotionData[] Datas = new MotionData[0];
+	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
 
 	private bool AutoFocus = false;
@@ -103,12 +103,12 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public MotionData GetData() {
-		if(Datas.Length == 0) {
+		if(Files.Length == 0) {
 			ID = -1;
 			return null;
 		}
-		LoadData(Mathf.Clamp(ID, 0, Datas.Length-1));
-		return Datas[ID];
+		Load(Mathf.Clamp(ID, 0, Files.Length-1));
+		return Files[ID];
 	}
 
 	public MotionState GetState() {
@@ -118,39 +118,75 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void AddData(string path) {
+	public void Import(string path) {
 		if(!File.Exists(path)) {
-			Debug.Log("File at path " + path + " does not exist.");
+			//Debug.Log("File at path " + path + " does not exist.");
 			return;
 		}
 		string name = path.Substring(path.LastIndexOf("/")+1);
-		if(System.Array.Find(Datas, x => x.Name == name)) {
+		if(System.Array.Find(Files, x => x.Name == name)) {
 			Debug.Log("File with name " + name + "already exists.");
 			return;
 		}
-		MotionData data = ScriptableObject.CreateInstance<MotionData>().Create(path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
-		data.Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
-		ArrayExtensions.Add(ref Datas, data);
-		Transform environment = new GameObject(name).transform;
-		environment.SetParent(GetScene());
-		environment.gameObject.SetActive(false);
-		ArrayExtensions.Add(ref Environments, environment);
+		ScriptableObject.CreateInstance<MotionData>().Create(path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
+		Refresh();
 	}
 
+	public void Refresh() {
+		string folder = EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/"));
+		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{folder});
+		//Files
+		Files = new MotionData[assets.Length];
+		for(int i=0; i<Files.Length; i++) {
+			Files[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
+		}
+		//Environments
+		Transform container = GetScene().Find("Environments");
+		if(container == null) {
+			container = new GameObject("Environments").transform;
+			container.SetParent(GetScene());
+		}
+		//Cleanup
+		for(int i=0; i<container.childCount; i++) {
+			if(!System.Array.Find(Files, x => x.Name == container.GetChild(i).name)) {
+				Utility.Destroy(container.GetChild(i).gameObject);
+				i--;
+			}
+		}
+		//Fill
+		Environments = new Transform[assets.Length];
+		for(int i=0; i<Environments.Length; i++) {
+			Environments[i] = container.Find(Files[i].Name);
+			if(Environments[i] == null) {
+				Environments[i] = new GameObject(Files[i].Name).transform;
+				Environments[i].SetParent(container);
+			}
+		}
+		//Finalise
+		for(int i=0; i<Environments.Length; i++) {
+			Environments[i].gameObject.SetActive(i == ID);
+			Environments[i].SetSiblingIndex(i);
+		}
+	}
+
+	/*
 	public void RemoveData() {
-		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Datas[ID]));
+		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Files[ID]));
 		Utility.Destroy(Environments[ID].gameObject);
-		ArrayExtensions.RemoveAt(ref Datas, ID);
+		ArrayExtensions.RemoveAt(ref Files, ID);
 		ArrayExtensions.RemoveAt(ref Environments, ID);
 	}
+	*/
 
-	public void LoadData(int id) {
+	public void Load(int id) {
 		if(ID != id) {
 			ID = id;
-			for(int i=0; i<Environments.Length; i++) {
-				Environments[i].gameObject.SetActive(false);
+			if(ID == -1) {
+				return;
 			}
-			Environments[ID].gameObject.SetActive(true);
+			for(int i=0; i<Environments.Length; i++) {
+				Environments[i].gameObject.SetActive(i == ID);
+			}
 			State = null;
 			Timestamp = 0f;
 		}
@@ -367,8 +403,11 @@ public class MotionEditor : MonoBehaviour {
 		private float RefreshRate = 30f;
 		private System.DateTime Timestamp;
 
+		//private int Files = 0;
+
 		void Awake() {
 			Target = (MotionEditor)target;
+			Target.Refresh();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
@@ -396,6 +435,17 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 
+		/*
+		public void CheckRefresh() {
+			DirectoryInfo info = new DirectoryInfo(Application.dataPath.Replace("/Assets", "") + "/" + EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")));
+			FileInfo[] files = info.GetFiles();
+			if(Files != files.Length) {
+				Files = files.Length;
+				Target.RefreshData();
+			}
+		}
+		*/
+
 		public void EditorUpdate() {
 			if(Utility.GetElapsedTime(Timestamp) >= 1f/RefreshRate) {
 				Repaint();
@@ -412,6 +462,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		public void Inspector() {
+			//CheckRefresh();
 
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -434,15 +485,23 @@ public class MotionEditor : MonoBehaviour {
 						Utility.ResetGUIColor();
 
 						EditorGUILayout.BeginHorizontal();
-						string[] names = new string[Target.Datas.Length];
+						string[] names = new string[Target.Files.Length];
 						if(names.Length == 0) {
-							Target.LoadData(EditorGUILayout.Popup("Data", -1, names));
+							Target.Load(EditorGUILayout.Popup("Data", -1, names));
 						} else {
 							for(int i=0; i<names.Length; i++) {
-								names[i] = Target.Datas[i].name;
+								names[i] = Target.Files[i].name;
 							}
-							Target.LoadData(EditorGUILayout.Popup("Data", Target.ID, names));
+							Target.Load(EditorGUILayout.Popup("Data", Target.ID, names));
 						}
+						if(GUILayout.Button("Import", GUILayout.Width(50f))) {
+							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
+							GUI.SetNextControlName("");
+							GUI.FocusControl("");
+							Target.Import(path);
+							GUIUtility.ExitGUI();
+						}
+						/*
 						if(GUILayout.Button("+", GUILayout.Width(18f))) {
 							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
 							GUI.SetNextControlName("");
@@ -453,6 +512,10 @@ public class MotionEditor : MonoBehaviour {
 						if(GUILayout.Button("-", GUILayout.Width(18f))) {
 							Target.RemoveData();
 						}
+						if(GUILayout.Button("R", GUILayout.Width(18f))) {
+							Target.RefreshData();
+						}
+						*/
 						EditorGUILayout.EndHorizontal();
 
 					}
@@ -764,6 +827,10 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+										Target.CreateSkeleton();
+									}
+									if(Utility.GUIButton("Refresh Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+										Utility.Destroy(Target.GetActor().gameObject);
 										Target.CreateSkeleton();
 									}
 								}

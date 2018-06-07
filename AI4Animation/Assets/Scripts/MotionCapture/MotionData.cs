@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 public class MotionData : ScriptableObject {
 
@@ -181,6 +182,7 @@ public class MotionData : ScriptableObject {
 
 	public MotionData Create(string path, string currentDirectory) {
 		Name = path.Substring(path.LastIndexOf("/")+1);
+		Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
 		if(AssetDatabase.LoadAssetAtPath(currentDirectory+Name+".asset", typeof(MotionData)) == null) {
 			AssetDatabase.CreateAsset(this , currentDirectory+Name+".asset");
 		} else {
