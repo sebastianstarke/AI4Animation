@@ -40,7 +40,7 @@ public class MotionEditor : MonoBehaviour {
 	private Transform Scene = null;
 	private MotionState State = null;
 
-	private int ID = 0;
+	private int ID = -1;
 	
 	public void VisualiseMotion(bool value) {
 		ShowMotion = value;
@@ -104,11 +104,11 @@ public class MotionEditor : MonoBehaviour {
 
 	public MotionData GetData() {
 		if(Datas.Length == 0) {
-			ID = 0;
+			ID = -1;
 			return null;
 		}
-		LoadData(Mathf.Clamp(ID, 1, Datas.Length)-1);
-		return Datas[ID-1];
+		LoadData(Mathf.Clamp(ID, 0, Datas.Length-1));
+		return Datas[ID];
 	}
 
 	public MotionState GetState() {
@@ -138,24 +138,19 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void RemoveData() {
-		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Datas[ID-1]));
-		Utility.Destroy(Environments[ID-1].gameObject);
-		ArrayExtensions.RemoveAt(ref Datas, ID-1);
-		ArrayExtensions.RemoveAt(ref Environments, ID-1);
-		State = null;
-		Timestamp = 0f;
+		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Datas[ID]));
+		Utility.Destroy(Environments[ID].gameObject);
+		ArrayExtensions.RemoveAt(ref Datas, ID);
+		ArrayExtensions.RemoveAt(ref Environments, ID);
 	}
 
-	public void LoadData(int index) {
-		if(ID != index+1) {
-			ID = index+1;
-			if(ID == 0) {
-				return;
-			}
+	public void LoadData(int id) {
+		if(ID != id) {
+			ID = id;
 			for(int i=0; i<Environments.Length; i++) {
 				Environments[i].gameObject.SetActive(false);
 			}
-			Environments[index].gameObject.SetActive(true);
+			Environments[ID].gameObject.SetActive(true);
 			State = null;
 			Timestamp = 0f;
 		}
@@ -314,82 +309,11 @@ public class MotionEditor : MonoBehaviour {
 				for(int y=0; y<GetState().DepthMap.GetResolution(); y++) {
 					float distance = Vector3.Distance(GetState().DepthMap.Points[GetState().DepthMap.GridToArray(x,y)], GetState().DepthMap.Pivot.GetPosition());
 					float intensity = 1f - distance / GetState().DepthMap.GetDistance();
-					//intensity = Utility.TanH(intensity);
 					UltiDraw.DrawGUIRectangle(Vector2.one/2f - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / (GetState().DepthMap.GetResolution()-1), size / (GetState().DepthMap.GetResolution()-1), Color.Lerp(Color.black, Color.white, intensity));
 				}
 			}
 			UltiDraw.End();
 		}
-
-		//Motion Function
-		/*
-		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
-		float[] values = new float[frames.Length];
-		for(int i=0; i<frames.Length; i++) {
-			values[i] = frames[i].GetBoneVelocity(0, Mirror).magnitude;
-		}
-		Debug.Log(values[0]);
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.Green);
-		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.IndianRed);
-		UltiDraw.End();
-		*/
-		/*
-		//Bone Velocities
-		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
-		List<float[]> values = new List<float[]>();
-		for(int i=0; i<Actor.Bones.Length; i++) {
-			values.Add(new float[frames.Length]);
-		}
-		for(int i=0; i<frames.Length; i++) {
-			for(int j=0; j<Actor.Bones.Length; j++) {
-				values[j][i] = frames[i].GetBoneVelocity(j, Mirror).magnitude;
-			}
-		}
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, 0f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
-		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
-		UltiDraw.End();
-		*/
-		
-		/*
-		//Trajectory Motion
-		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
-		List<float[]> values = new List<float[]>(3);
-		for(int i=0; i<6; i++) {
-			values.Add(new float[frames.Length]);
-		}
-		for(int i=0; i<frames.Length; i++) {
-			Vector3 motion = frames[i].GetRootMotion(Mirror);
-			values[0][i] = motion.x;
-			values[1][i] = motion.y / 180f;
-			values[2][i] = motion.z;
-			Vector3 velocity = frames[i].GetRootVelocity(Mirror);
-			values[3][i] = velocity.x;
-			values[4][i] = velocity.y;
-			values[5][i] = velocity.z;
-		}
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -2f, 2f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
-		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
-		UltiDraw.End();
-		*/		
-		
-		//Agility Function
-		/*
-		MotionData.Frame[] frames = Data.GetFrames(Mathf.Clamp(GetState().Timestamp-1f, 0f, Data.GetTotalTime()), Mathf.Clamp(GetState().Timestamp+1f, 0f, Data.GetTotalTime()));
-		List<float[]> values = new List<float[]>();
-		for(int i=0; i<Data.Source.Bones.Length; i++) {
-			values.Add(new float[frames.Length]);
-			for(int j=0; j<frames.Length; j++) {
-				values[i][j] = frames[j].GetAgility(i, Mirror);
-			}
-		}
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), values, -1f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(values.Count));
-		UltiDraw.DrawGUILine(new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), 0.0025f, UltiDraw.Green);
-		UltiDraw.End();
-		*/
 	}
 
 	void OnRenderObject() {
@@ -517,7 +441,7 @@ public class MotionEditor : MonoBehaviour {
 							for(int i=0; i<names.Length; i++) {
 								names[i] = Target.Datas[i].name;
 							}
-							Target.LoadData(EditorGUILayout.Popup("Data", Target.ID-1, names));
+							Target.LoadData(EditorGUILayout.Popup("Data", Target.ID, names));
 						}
 						if(GUILayout.Button("+", GUILayout.Width(18f))) {
 							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
