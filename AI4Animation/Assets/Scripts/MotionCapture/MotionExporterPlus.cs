@@ -396,15 +396,15 @@ public class MotionExporterPlus : EditorWindow {
 						StreamWriter input = CreateFile(Animations[i].name + "_" + (m==1 ? "Default" : "Mirror") + "_" + "Input");
 						StreamWriter output = CreateFile(Animations[i].name + "_" + (m==1 ? "Default" : "Mirror") + "_" + "Output");
 
-						for(int s=0; s<editor.Data.Sequences.Length; s++) {
-							MotionData.Sequence.Interval[] intervals = editor.Data.Sequences[s].GetIntervals();
+						for(int s=0; s<editor.GetData().Sequences.Length; s++) {
+							MotionData.Sequence.Interval[] intervals = editor.GetData().Sequences[s].GetIntervals();
 							for(int interval=0; interval<intervals.Length; interval++) {
 								Generating = 0f;
 								Writing = 0f;
 
 								List<MotionState> states = new List<MotionState>();
-								float start = editor.Data.GetFrame(intervals[interval].Start).Timestamp;
-								float end = editor.Data.GetFrame(intervals[interval].End).Timestamp;
+								float start = editor.GetData().GetFrame(intervals[interval].Start).Timestamp;
+								float end = editor.GetData().GetFrame(intervals[interval].End).Timestamp;
 
 								for(float t=start; t<=end; t+=1f/Framerate) {
 									Generating = (t-start) / (end-start-1f/Framerate);

@@ -17,6 +17,8 @@ public class FootIK : MonoBehaviour {
 	
 	public LayerMask Ground = 0;
 
+	public bool ImproveContact = false;
+
 	public bool Visualise = false;
 
 	public void ComputeNormal() {
@@ -68,8 +70,12 @@ public class FootIK : MonoBehaviour {
 	public void Solve(Vector3 pivotPosition, Quaternion pivotRotation, float damping=0f) {
 		float stepHeight = Mathf.Max(0f, pivotPosition.y - Root.position.y);
 
-		//float damping = MinDamping;// Mathf.Max(Mathf.Min(2f - Mathf.Pow(2f, Mathf.Clamp(stepHeight / Radius, 0f, 1f)), MaxDamping), MinDamping);
-		pivotPosition = Vector3.Lerp(TargetPosition, pivotPosition, 1f - damping);
+		if(ImproveContact) {
+			float sliding = Mathf.Min(2f - Mathf.Pow(2f, Mathf.Clamp(stepHeight / Radius, 0f, 1f)));
+			pivotPosition = Vector3.Lerp(TargetPosition, pivotPosition, 1f - Mathf.Max(damping, sliding));
+		} else {
+			pivotPosition = Vector3.Lerp(TargetPosition, pivotPosition, 1f - damping);
+		}
 
 		Vector3 groundPosition = Utility.ProjectGround(pivotPosition, Ground);
 		Vector3 groundNormal = Utility.GetNormal(pivotPosition, Ground);

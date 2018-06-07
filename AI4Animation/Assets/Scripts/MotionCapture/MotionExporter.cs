@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿/*
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -248,7 +249,7 @@ public class MotionExporter : EditorWindow {
 			}
 		}
 		*/
-
+		/*
         yield return new WaitForSeconds(0f);
 
 		file.Close();
@@ -354,6 +355,7 @@ public class MotionExporter : EditorWindow {
 									*/
 
 									//Root motion
+									/*
 									line += FormatVector3(state.RootMotion);
 
 									/*
@@ -393,6 +395,7 @@ public class MotionExporter : EditorWindow {
 									*/
 
 									//Finish
+									/*
 									line = line.Remove(line.Length-1);
 									line = line.Replace(",",".");
 									file.WriteLine(line);
@@ -475,3 +478,4 @@ public class MotionExporter : EditorWindow {
 
 }
 #endif
+*/
