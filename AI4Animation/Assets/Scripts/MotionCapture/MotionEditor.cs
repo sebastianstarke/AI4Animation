@@ -73,7 +73,10 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void SetMirror(bool value) {
-		Mirror = value;
+		if(Mirror != value) {
+			Mirror = value;
+			LoadFrame(Timestamp);
+		}
 	}
 
 	public bool IsMirror() {
@@ -107,7 +110,7 @@ public class MotionEditor : MonoBehaviour {
 			ID = -1;
 			return null;
 		}
-		Load(Mathf.Clamp(ID, 0, Files.Length-1));
+		LoadFile(Mathf.Clamp(ID, 0, Files.Length-1));
 		return Files[ID];
 	}
 
@@ -185,16 +188,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	/*
-	public void RemoveData() {
-		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Files[ID]));
-		Utility.Destroy(Environments[ID].gameObject);
-		ArrayExtensions.RemoveAt(ref Files, ID);
-		ArrayExtensions.RemoveAt(ref Environments, ID);
-	}
-	*/
-
-	public void Load(int id) {
+	public void LoadFile(int id) {
 		if(ID != id) {
 			SaveCurrent();
 			ID = id;
@@ -204,8 +198,7 @@ public class MotionEditor : MonoBehaviour {
 			for(int i=0; i<Environments.Length; i++) {
 				Environments[i].gameObject.SetActive(i == ID);
 			}
-			State = null;
-			Timestamp = 0f;
+			LoadFrame(0f);
 		}
 	}
 
@@ -473,12 +466,12 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.BeginHorizontal();
 						string[] names = new string[Target.Files.Length];
 						if(names.Length == 0) {
-							Target.Load(EditorGUILayout.Popup("Data", -1, names));
+							Target.LoadFile(EditorGUILayout.Popup("Data", -1, names));
 						} else {
 							for(int i=0; i<names.Length; i++) {
 								names[i] = Target.Files[i].name;
 							}
-							Target.Load(EditorGUILayout.Popup("Data", Target.ID, names));
+							Target.LoadFile(EditorGUILayout.Popup("Data", Target.ID, names));
 						}
 						if(GUILayout.Button("Import", GUILayout.Width(50f))) {
 							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
