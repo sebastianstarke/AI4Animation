@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 
 public class MotionData : ScriptableObject {
 
-	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative,ZNegative};
+	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative, ZNegative};
 
 	public SceneAsset Scene;
 

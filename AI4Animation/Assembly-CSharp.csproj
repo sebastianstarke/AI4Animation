@@ -248,10 +248,10 @@
      <None Include="Assets\Scripts\UltiDraw\ReadMe.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEditor.StandardEvents">
- <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+ <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>
  <Reference Include="Unity.PackageManagerUI.Editor">
- <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+ <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>/home/blacksquirrel/Unity-2018.1.2f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -449,7 +449,7 @@
  <HintPath>/home/blacksquirrel/Unity-2018.1.2f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
  </Reference>
  <Reference Include="MeshSkinnerDemo1.0.1">
- <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Assets/Plugins/Winterdust/MeshSkinnerDemo1.0.1.dll</HintPath>
+ <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/Winterdust/MeshSkinnerDemo1.0.1.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/home/blacksquirrel/.config/unity3d/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>

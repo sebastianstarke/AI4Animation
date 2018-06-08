@@ -11,8 +11,8 @@ using UnityEditorInternal;
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
-	public MotionData[] Files = new MotionData[0];
-	public Transform[] Environments = new Transform[0];
+	private MotionData[] Files = new MotionData[0];
+	private Transform[] Environments = new Transform[0];
 
 	private bool AutoFocus = false;
 	private float FocusHeight = 1f;
@@ -169,6 +169,22 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	public void SaveAll() {
+		for(int i=0; i<Files.Length; i++) {
+			EditorUtility.SetDirty(Files[i]);
+		}
+		AssetDatabase.SaveAssets();
+		AssetDatabase.Refresh();
+	}
+	
+	public void SaveCurrent() {
+		if(ID >= 0) {
+			EditorUtility.SetDirty(Files[ID]);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
+		}
+	}
+
 	/*
 	public void RemoveData() {
 		AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(Files[ID]));
@@ -180,8 +196,9 @@ public class MotionEditor : MonoBehaviour {
 
 	public void Load(int id) {
 		if(ID != id) {
+			SaveCurrent();
 			ID = id;
-			if(ID == -1) {
+			if(ID < 0) {
 				return;
 			}
 			for(int i=0; i<Environments.Length; i++) {
@@ -403,8 +420,6 @@ public class MotionEditor : MonoBehaviour {
 		private float RefreshRate = 30f;
 		private System.DateTime Timestamp;
 
-		//private int Files = 0;
-
 		void Awake() {
 			Target = (MotionEditor)target;
 			Target.Refresh();
@@ -414,37 +429,10 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
 			if(!Application.isPlaying && Target != null) {
-				EditorUtility.SetDirty(Target);
-				if(Target.GetData() != null) {
-					EditorUtility.SetDirty(Target.GetData());
-				}
-				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+				Target.SaveCurrent();
 			}
 			EditorApplication.update -= EditorUpdate;
 		}
-
-		public void Save() {
-			if(!Application.isPlaying && Target != null) {
-				if(Target.GetData() != null) {
-					EditorUtility.SetDirty(Target.GetData());
-					AssetDatabase.SaveAssets();
-					AssetDatabase.Refresh();
-				}
-				EditorUtility.SetDirty(Target);
-				EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-			}
-		}
-
-		/*
-		public void CheckRefresh() {
-			DirectoryInfo info = new DirectoryInfo(Application.dataPath.Replace("/Assets", "") + "/" + EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")));
-			FileInfo[] files = info.GetFiles();
-			if(Files != files.Length) {
-				Files = files.Length;
-				Target.RefreshData();
-			}
-		}
-		*/
 
 		public void EditorUpdate() {
 			if(Utility.GetElapsedTime(Timestamp) >= 1f/RefreshRate) {
@@ -462,8 +450,6 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		public void Inspector() {
-			//CheckRefresh();
-
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -877,8 +863,8 @@ public class MotionEditor : MonoBehaviour {
 								Utility.SetGUIColor(UltiDraw.LightGrey);
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
-									EditorGUILayout.LabelField("Mirroring");
-									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Axis", Target.GetData().MirrorAxis);
+									EditorGUILayout.LabelField("Geometry");
+									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
 									string[] names = new string[Target.GetData().Source.Bones.Length];
 									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 										names[i] = Target.GetData().Source.Bones[i].Name;
