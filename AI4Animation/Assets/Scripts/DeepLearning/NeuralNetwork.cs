@@ -8,7 +8,7 @@ namespace DeepLearning {
 
 	public abstract class NeuralNetwork : MonoBehaviour {
 
-		public string Folder = "Assets/Project/";
+		public string Folder = "Assets/";
         public Parameters Parameters;
 
         private List<Tensor> Tensors = new List<Tensor>();
