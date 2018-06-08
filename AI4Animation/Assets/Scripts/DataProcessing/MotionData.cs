@@ -9,13 +9,10 @@ public class MotionData : ScriptableObject {
 
 	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative, ZNegative};
 
-	public SceneAsset Scene;
-
-	public BVHData Source;
+	public Hierarchy Source;
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
-	public float UnitScale = 100f;
 	public int RootSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
@@ -99,13 +96,6 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void SetUnitScale(float value) {
-		if(UnitScale != value) {
-			UnitScale = value;
-			ComputePostures();
-		}
-	}
-
 	public void SetStyleTransition(float value) {
 		if(StyleTransition != value) {
 			StyleTransition = value;
@@ -180,129 +170,8 @@ public class MotionData : ScriptableObject {
 		ArrayExtensions.RemoveAt(ref Sequences, index);
 	}
 
-	public MotionData Create(string path, string currentDirectory) {
-		Name = path.Substring(path.LastIndexOf("/")+1);
-		Scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
-		if(AssetDatabase.LoadAssetAtPath(currentDirectory+Name+".asset", typeof(MotionData)) == null) {
-			AssetDatabase.CreateAsset(this , currentDirectory+Name+".asset");
-		} else {
-			int i = 1;
-			while(AssetDatabase.LoadAssetAtPath(currentDirectory+Name+Name+" ("+i+").asset", typeof(MotionData)) != null) {
-				i += 1;
-			}
-			AssetDatabase.CreateAsset(this,currentDirectory+Name+Name+" ("+i+").asset");
-		}
-
-		string[] lines = File.ReadAllLines(path);
-		char[] whitespace = new char[] {' '};
-		int index = 0;
-
-		//Read BVH
-		Source = new BVHData();
-		string name = string.Empty;
-		string parent = string.Empty;
-		Vector3 offset = Vector3.zero;
-		int[] channels = null;
-		for(index = 0; index<lines.Length; index++) {
-			if(lines[index] == "MOTION") {
-				break;
-			}
-			string[] entries = lines[index].Split(whitespace);
-			for(int entry=0; entry<entries.Length; entry++) {
-				if(entries[entry].Contains("ROOT")) {
-					parent = "None";
-					name = entries[entry+1];
-					break;
-				} else if(entries[entry].Contains("JOINT")) {
-					parent = name;
-					name = entries[entry+1];
-					break;
-				} else if(entries[entry].Contains("End")) {
-					parent = name;
-					name = name+entries[entry+1];
-					string[] subEntries = lines[index+2].Split(whitespace);
-					for(int subEntry=0; subEntry<subEntries.Length; subEntry++) {
-						if(subEntries[subEntry].Contains("OFFSET")) {
-							offset.x = Utility.ReadFloat(subEntries[subEntry+1]);
-							offset.y = Utility.ReadFloat(subEntries[subEntry+2]);
-							offset.z = Utility.ReadFloat(subEntries[subEntry+3]);
-							break;
-						}
-					}
-					Source.AddBone(name, parent, offset, new int[0]);
-					index += 2;
-					break;
-				} else if(entries[entry].Contains("OFFSET")) {
-					offset.x = Utility.ReadFloat(entries[entry+1]);
-					offset.y = Utility.ReadFloat(entries[entry+2]);
-					offset.z = Utility.ReadFloat(entries[entry+3]);
-					break;
-				} else if(entries[entry].Contains("CHANNELS")) {
-					channels = new int[Utility.ReadInt(entries[entry+1])];
-					for(int i=0; i<channels.Length; i++) {
-						if(entries[entry+2+i] == "Xposition") {
-							channels[i] = 1;
-						} else if(entries[entry+2+i] == "Yposition") {
-							channels[i] = 2;
-						} else if(entries[entry+2+i] == "Zposition") {
-							channels[i] = 3;
-						} else if(entries[entry+2+i] == "Xrotation") {
-							channels[i] = 4;
-						} else if(entries[entry+2+i] == "Yrotation") {
-							channels[i] = 5;
-						} else if(entries[entry+2+i] == "Zrotation") {
-							channels[i] = 6;
-						}
-					}
-					Source.AddBone(name, parent, offset, channels);
-					break;
-				} else if(entries[entry].Contains("}")) {
-					name = parent;
-					parent = name == "None" ? "None" : Source.FindBone(name).Parent;
-					break;
-				}
-			}
-		}
-
-		//Read frame count
-		index += 1;
-		while(lines[index].Length == 0) {
-			index += 1;
-		}
-		ArrayExtensions.Resize(ref Frames, Utility.ReadInt(lines[index].Substring(8)));
-
-		//Read frame time
-		index += 1;
-		Framerate = Mathf.RoundToInt(1f / Utility.ReadFloat(lines[index].Substring(12)));
-
-		//Read motions
-		index += 1;
-		for(int i=index; i<lines.Length; i++) {
-			Source.AddMotion(Utility.ReadArray(lines[i]));
-		}
-
-		//Detect settings
-		DetectHeightMapSensor();
-		DetectDepthMapSensor();
-		DetectSymmetry();
-		DetectCorrections();
-
-		//Create frames
-		for(int i=0; i<GetTotalFrames(); i++) {
-			Frames[i] = new Frame(this, i+1, (float)i / Framerate);
-		}
-
-		//Generate
-		ComputePostures();
-		ComputeStyles();
-		AddSequence();
-
-		//Finish
-		return this;
-	}
-
 	public void DetectHeightMapSensor() {
-		BVHData.Bone bone = Source.FindBone("Hips");
+		Hierarchy.Bone bone = Source.FindBone("Hips");
 		if(bone == null) {
 			Debug.Log("Could not find height map sensor.");
 		} else {
@@ -312,7 +181,7 @@ public class MotionData : ScriptableObject {
 
 
 	public void DetectDepthMapSensor() {
-		BVHData.Bone bone = Source.FindBone("Head");
+		Hierarchy.Bone bone = Source.FindBone("Head");
 		if(bone == null) {
 			Debug.Log("Could not find depth map sensor.");
 		} else {
@@ -325,28 +194,30 @@ public class MotionData : ScriptableObject {
 		for(int i=0; i<Source.Bones.Length; i++) {
 			string name = Source.Bones[i].Name;
 			if(name.Contains("Left")) {
-				BVHData.Bone bone = Source.FindBone("Right"+name.Substring(4));
+				int pivot = name.IndexOf("Left");
+				Hierarchy.Bone bone = Source.FindBone(name.Substring(0, pivot)+"Right"+name.Substring(pivot+4));
 				if(bone == null) {
 					Debug.Log("Could not find mapping for " + name + ".");
 				} else {
 					Symmetry[i] = bone.Index;
 				}
 			} else if(name.Contains("Right")) {
-				BVHData.Bone bone = Source.FindBone("Left"+name.Substring(5));
+				int pivot = name.IndexOf("Right");
+				Hierarchy.Bone bone = Source.FindBone(name.Substring(0, pivot)+"Left"+name.Substring(pivot+5));
 				if(bone == null) {
 					Debug.Log("Could not find mapping for " + name + ".");
 				} else {
 					Symmetry[i] = bone.Index;
 				}
 			} else if(name.StartsWith("L") && char.IsUpper(name[1])) {
-				BVHData.Bone bone = Source.FindBone("R"+name.Substring(1));
+				Hierarchy.Bone bone = Source.FindBone("R"+name.Substring(1));
 				if(bone == null) {
 					Debug.Log("Could not find mapping for " + name + ".");
 				} else {
 					Symmetry[i] = bone.Index;
 				}
 			} else if(name.StartsWith("R") && char.IsUpper(name[1])) {
-				BVHData.Bone bone = Source.FindBone("L"+name.Substring(1));
+				Hierarchy.Bone bone = Source.FindBone("L"+name.Substring(1));
 				if(bone == null) {
 					Debug.Log("Could not find mapping for " + name + ".");
 				} else {
@@ -358,10 +229,6 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void DetectCorrections() {
-		Corrections = new Vector3[Source.Bones.Length];
-	}
-
 	public void SetSymmetry(int source, int target) {
 		if(Symmetry[source] != target) {
 			Symmetry[source] = target;
@@ -369,16 +236,10 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void SetCorrection(int index, Vector3 correction) {
-		if(Corrections[index] != correction) {
-			Corrections[index] = correction;
-			ComputePostures();
-		}
-	}
-
-	public void ComputePostures() {
-		for(int i=1; i<=GetTotalFrames(); i++) {
-			GetFrame(i).ComputePosture();
-		}
+		//if(Corrections[index] != correction) {
+		//	Corrections[index] = correction;
+		//	ComputePostures();
+		//}
 	}
 
 	public void ComputeStyles() {
@@ -393,25 +254,19 @@ public class MotionData : ScriptableObject {
 	}
 
 	[System.Serializable]
-	public class BVHData {
+	public class Hierarchy {
 		public Bone[] Bones;
-		public Motion[] Motions;
 
-		public BVHData() {
+		public Hierarchy() {
 			Bones = new Bone[0];
-			Motions = new Motion[0];
 		}
 
-		public void AddBone(string name, string parent, Vector3 offset, int[] channels) {
-			ArrayExtensions.Add(ref Bones, new Bone(Bones.Length, name, parent, offset, channels));
+		public void AddBone(string name, string parent) {
+			ArrayExtensions.Add(ref Bones, new Bone(Bones.Length, name, parent));
 		}
 
 		public Bone FindBone(string name) {
 			return System.Array.Find(Bones, x => x.Name == name);
-		}
-
-		public void AddMotion(float[] values) {
-			ArrayExtensions.Add(ref Motions, new Motion(values));
 		}
 
 		[System.Serializable]
@@ -419,22 +274,10 @@ public class MotionData : ScriptableObject {
 			public int Index;
 			public string Name;
 			public string Parent;
-			public Vector3 Offset;
-			public int[] Channels;
-			public Bone(int index, string name, string parent, Vector3 offset, int[] channels) {
+			public Bone(int index, string name, string parent) {
 				Index = index;
 				Name = name;
 				Parent = parent;
-				Offset = offset;
-				Channels = channels;
-			}
-		}
-
-		[System.Serializable]
-		public class Motion {
-			public float[] Values;
-			public Motion(float[] values) {
-				Values = values;
 			}
 		}
 	}
@@ -619,44 +462,6 @@ public class MotionData : ScriptableObject {
 
 		public Frame GetNextFrame() {
 			return Data.GetFrame(Mathf.Clamp(Index+1, 1, Data.GetTotalFrames()));
-		}
-
-		public void ComputePosture() {
-			int channel = 0;
-			BVHData.Motion motion = Data.Source.Motions[Index-1];
-			for(int i=0; i<Data.Source.Bones.Length; i++) {
-				BVHData.Bone info = Data.Source.Bones[i];
-				Vector3 position = Vector3.zero;
-				Quaternion rotation = Quaternion.identity;
-				for(int j=0; j<info.Channels.Length; j++) {
-					if(info.Channels[j] == 1) {
-						position.x = motion.Values[channel]; channel += 1;
-					}
-					if(info.Channels[j] == 2) {
-						position.y = motion.Values[channel]; channel += 1;
-					}
-					if(info.Channels[j] == 3) {
-						position.z = motion.Values[channel]; channel += 1;
-					}
-					if(info.Channels[j] == 4) {
-						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.right); channel += 1;
-					}
-					if(info.Channels[j] == 5) {
-						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.up); channel += 1;
-					}
-					if(info.Channels[j] == 6) {
-						rotation *= Quaternion.AngleAxis(motion.Values[channel], Vector3.forward); channel += 1;
-					}
-				}
-
-				position = (position == Vector3.zero ? info.Offset : position) / Data.UnitScale;
-				Local[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
-				World[i] = info.Parent == "None" ? Local[i] : World[Data.Source.FindBone(info.Parent).Index] * Local[i];
-			}
-			for(int i=0; i<Data.Source.Bones.Length; i++) {
-				Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Data.Corrections[i]), Vector3.one);
-				World[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Data.Corrections[i]), Vector3.one);
-			}
 		}
 
 		public Matrix4x4[] GetBoneTransformations(bool mirrored) {

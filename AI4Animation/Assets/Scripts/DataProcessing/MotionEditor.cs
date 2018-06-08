@@ -121,20 +121,6 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void Import(string path) {
-		if(!File.Exists(path)) {
-			//Debug.Log("File at path " + path + " does not exist.");
-			return;
-		}
-		string name = path.Substring(path.LastIndexOf("/")+1);
-		if(System.Array.Find(Files, x => x.Name == name)) {
-			Debug.Log("File with name " + name + "already exists.");
-			return;
-		}
-		ScriptableObject.CreateInstance<MotionData>().Create(path, EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/")+1));
-		Refresh();
-	}
-
 	public void Refresh() {
 		string folder = EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/"));
 		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{folder});
@@ -170,6 +156,8 @@ public class MotionEditor : MonoBehaviour {
 			Environments[i].gameObject.SetActive(i == ID);
 			Environments[i].SetSiblingIndex(i);
 		}
+		//Initialise
+		LoadFrame(0f);
 	}
 
 	public void SaveAll() {
@@ -180,9 +168,9 @@ public class MotionEditor : MonoBehaviour {
 		AssetDatabase.Refresh();
 	}
 	
-	public void SaveCurrent() {
-		if(ID >= 0) {
-			EditorUtility.SetDirty(Files[ID]);
+	public void Save(int id) {
+		if(id >= 0 && id < Files.Length) {
+			EditorUtility.SetDirty(Files[id]);
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 		}
@@ -190,7 +178,7 @@ public class MotionEditor : MonoBehaviour {
 
 	public void LoadFile(int id) {
 		if(ID != id) {
-			SaveCurrent();
+			Save(ID);
 			ID = id;
 			if(ID < 0) {
 				return;
@@ -389,7 +377,7 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
 			if(!Application.isPlaying && Target != null) {
-				Target.SaveCurrent();
+				Target.Save(Target.ID);
 			}
 			EditorApplication.update -= EditorUpdate;
 		}
@@ -439,13 +427,6 @@ public class MotionEditor : MonoBehaviour {
 								names[i] = Target.Files[i].name;
 							}
 							Target.LoadFile(EditorGUILayout.Popup("Data", Target.ID, names));
-						}
-						if(GUILayout.Button("Import", GUILayout.Width(50f))) {
-							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
-							GUI.SetNextControlName("");
-							GUI.FocusControl("");
-							Target.Import(path);
-							GUIUtility.ExitGUI();
 						}
 						/*
 						if(GUILayout.Button("+", GUILayout.Width(18f))) {
@@ -714,7 +695,6 @@ public class MotionEditor : MonoBehaviour {
 									break;
 									case 1:
 									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().SetUnitScale(10f);
 									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;
 									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
 										Target.GetData().SetCorrection(i, Vector3.zero);
@@ -729,7 +709,6 @@ public class MotionEditor : MonoBehaviour {
 
 									case 2:
 									Target.GetData().DepthMapAxis = MotionData.Axis.XPositive;
-									Target.GetData().SetUnitScale(100f);
 									Target.GetData().MirrorAxis = MotionData.Axis.ZPositive;
 									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
 										if(i==4 || i==5 || i==6 || i==11) {
@@ -754,7 +733,6 @@ public class MotionEditor : MonoBehaviour {
 
 									case 3:
 									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().SetUnitScale(100f);
 									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;							
 									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
 										Target.GetData().SetCorrection(i, Vector3.zero);
@@ -786,7 +764,6 @@ public class MotionEditor : MonoBehaviour {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("General");
 
-									Target.GetData().SetUnitScale(EditorGUILayout.FloatField("Unit Scale", Target.GetData().UnitScale));
 									Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
 									
 									Target.GetData().GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().GroundMask), InternalEditorUtility.layers));
@@ -824,6 +801,9 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("Geometry");
+									if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
+										Target.GetData().DetectSymmetry();
+									}
 									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
 									string[] names = new string[Target.GetData().Source.Bones.Length];
 									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {

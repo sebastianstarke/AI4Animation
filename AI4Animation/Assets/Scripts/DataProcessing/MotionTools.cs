@@ -125,7 +125,6 @@ public class MotionTools : EditorWindow {
 		int errors = 0;
 
 		//Default Values
-		float unitScale = Data[0].UnitScale;
 		MotionData.Axis mirrorAxis = Data[0].MirrorAxis;
 		LayerMask groundMask = Data[0].GroundMask;
 		LayerMask objectMask = Data[0].ObjectMask;
@@ -145,9 +144,6 @@ public class MotionTools : EditorWindow {
 					}
 				}
 
-				if(Data[i].UnitScale != unitScale) {
-					errors += 1;
-				}
 				if(Data[i].MirrorAxis != mirrorAxis) {
 					errors += 1;
 				}
@@ -260,13 +256,12 @@ public class MotionTools : EditorWindow {
 					Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 				}
 				*/
-				string path = AssetDatabase.GetAssetPath(Data[i]);
-				path = path.Substring(0, path.LastIndexOf(".")) + ".unity";
-				SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(path);
-				Data[i].Scene = scene;
+				//string path = AssetDatabase.GetAssetPath(Data[i]);
+				//path = path.Substring(0, path.LastIndexOf(".")) + ".unity";
+				//SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(path);
+				//Data[i].Scene = scene;
 				Data[i].Sequences[0].SetStart(1);
 				Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
-				Data[i].SetUnitScale(10f);
 				Data[i].RootSmoothing = 10;
              	EditorUtility.SetDirty(Data[i]);
             }
