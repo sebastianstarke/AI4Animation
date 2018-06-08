@@ -105,32 +105,6 @@
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Utils\MaterialFactory.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Utils\ReflectionUtils.cs" />
      <Compile Include="Assets\Palette\PostProcessing\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
-     <Compile Include="Assets\Project\MotionVisualiser\MotionVisualiser.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\Displace.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\GerstnerDisplace.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\MeshContainer.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\PlanarReflection.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\SpecularLighting.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\Water.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\WaterBase.cs" />
-     <Compile Include="Assets\Project\Palette\Water\Water\Scripts\WaterTile.cs" />
-     <Compile Include="Assets\Project\Trash\AgilityMeasure.cs" />
-     <Compile Include="Assets\Project\Trash\AngleTest.cs" />
-     <Compile Include="Assets\Project\Trash\BFGS.cs" />
-     <Compile Include="Assets\Project\Trash\BodyIK.cs" />
-     <Compile Include="Assets\Project\Trash\CameraAction.cs" />
-     <Compile Include="Assets\Project\Trash\ConstantTorque.cs" />
-     <Compile Include="Assets\Project\Trash\ContactProfile.cs" />
-     <Compile Include="Assets\Project\Trash\Footprint.cs" />
-     <Compile Include="Assets\Project\Trash\GamePad.cs" />
-     <Compile Include="Assets\Project\Trash\Hierarchy.cs" />
-     <Compile Include="Assets\Project\Trash\LogExpTest.cs" />
-     <Compile Include="Assets\Project\Trash\Matrix.cs" />
-     <Compile Include="Assets\Project\Trash\MeshCombiner\CombineMeshes.cs" />
-     <Compile Include="Assets\Project\Trash\MeshCombiner\SmartMesh.cs" />
-     <Compile Include="Assets\Project\Trash\MotionViewer.cs" />
-     <Compile Include="Assets\Project\Trash\SlidingMeasure.cs" />
-     <Compile Include="Assets\Project\Trash\TrajectoryController.cs" />
      <Compile Include="Assets\Scripts\Analysis\BlendingActivation.cs" />
      <Compile Include="Assets\Scripts\Analysis\FootfallPattern.cs" />
      <Compile Include="Assets\Scripts\Analysis\TensorActivation.cs" />
@@ -202,15 +176,12 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\UI\CurveBackground.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ScreenSpaceReflection.shader" />
-     <None Include="Assets\Project\Palette\LowPolyMedieval\readme.txt" />
-     <None Include="Assets\Project\Palette\Valkyrie\model\meshes\materials\textures\CMakeLists.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ACES.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Tonemapping.cginc" />
      <None Include="Assets\Demo\SIGGRAPH_2017\Adam\NN\Link.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Uber.shader" />
-     <None Include="Assets\Project\Palette\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Blit.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformRender.shader" />
      <None Include="Assets\Demo\SIGGRAPH_2018\ReadMe.txt" />
@@ -231,7 +202,6 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\TAA.cginc" />
      <None Include="Assets\Scripts\UltiDraw\Resources\UltiDraw.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.cginc" />
-     <None Include="Assets\Project\Palette\Water\Water\Shaders\FXWaterPro.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\GrainGen.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\FXAA.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\DiskKernels.cginc" />
@@ -240,18 +210,16 @@
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\Bloom.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\VectorscopeRender.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\EyeAdaptation.shader" />
-     <None Include="Assets\Project\Palette\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\ColorGrading.cginc" />
      <None Include="Assets\Demo\SIGGRAPH_2017\Original\NN\Link.txt" />
-     <None Include="Assets\Project\Palette\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Resources\Shaders\AmbientOcclusion.cginc" />
      <None Include="Assets\Scripts\UltiDraw\ReadMe.txt" />
      <None Include="Assets\Palette\PostProcessing\PostProcessing\Editor Resources\Monitors\WaveformCompute.compute" />
  <Reference Include="UnityEditor.StandardEvents">
- <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+ <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>
  <Reference Include="Unity.PackageManagerUI.Editor">
- <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+ <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>/home/blacksquirrel/Unity-2018.1.2f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -449,7 +417,7 @@
  <HintPath>/home/blacksquirrel/Unity-2018.1.2f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
  </Reference>
  <Reference Include="MeshSkinnerDemo1.0.1">
- <HintPath>/media/blacksquirrel/Data/Development/AI4Animation/AI4Animation/Assets/Plugins/Winterdust/MeshSkinnerDemo1.0.1.dll</HintPath>
+ <HintPath>/home/blacksquirrel/Desktop/Development/AI4Animation/AI4Animation/Assets/Plugins/Winterdust/MeshSkinnerDemo1.0.1.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/home/blacksquirrel/.config/unity3d/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
