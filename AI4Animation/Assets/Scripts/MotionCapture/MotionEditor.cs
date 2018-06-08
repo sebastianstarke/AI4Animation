@@ -372,39 +372,6 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	[MenuItem("Assets/Create/Animation Scene")]
-	public static string CreateAnimationScene() {
-		string source = Application.dataPath + "/Resources/AnimationScene.unity";
-		string destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/AnimationScene.unity";
-		int index = 0;
-		while(File.Exists(destination)) {
-			index += 1;
-			destination = AssetDatabase.GetAssetPath(Selection.activeObject) + "/AnimationScene (" + index +").unity";
-		}
-		if(!File.Exists(source)) {
-			Debug.Log("Source file at path " + source + " does not exist.");
-		} else {
-			FileUtil.CopyFileOrDirectory(source, destination);
-		}
-		return destination;
-	}
-
-	public static string CreateAnimationScene(string path, string name) {
-		string source = Application.dataPath + "/Resources/AnimationScene.unity";
-		string destination = (path ==  "" ? AssetDatabase.GetAssetPath(Selection.activeObject) : path) + "/" + name + ".unity";
-		int index = 0;
-		while(File.Exists(destination)) {
-			index += 1;
-			destination = (path ==  "" ? AssetDatabase.GetAssetPath(Selection.activeObject) : path) + "/" + name + "(" + index +").unity";
-		}
-		if(!File.Exists(source)) {
-			Debug.Log("Source file at path " + source + " does not exist.");
-		} else {
-			FileUtil.CopyFileOrDirectory(source, destination);
-		}
-		return destination;
-	}
-
 	[CustomEditor(typeof(MotionEditor))]
 	public class MotionEditor_Editor : Editor {
 

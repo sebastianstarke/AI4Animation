@@ -129,6 +129,7 @@
      <Compile Include="Assets\Scripts\IK\SerialIK.cs" />
      <Compile Include="Assets\Scripts\Libraries\ArrayExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\EditorCoroutineExtensions.cs" />
+     <Compile Include="Assets\Scripts\Libraries\EditorExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Eigen.cs" />
      <Compile Include="Assets\Scripts\Libraries\LayerMaskExtensions.cs" />
      <Compile Include="Assets\Scripts\Libraries\Matrix4x4Extensions.cs" />
