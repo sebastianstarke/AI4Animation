@@ -105,6 +105,18 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
+	public MotionData[] GetFiles() {
+		return Files;
+	}
+
+	public Transform[] GetEnvironments() {
+		return Environments;
+	}
+
+	public int GetID() {
+		return ID;
+	}
+
 	public MotionData GetData() {
 		if(Files.Length == 0) {
 			ID = -1;

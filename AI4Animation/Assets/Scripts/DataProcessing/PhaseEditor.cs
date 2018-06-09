@@ -5,168 +5,205 @@ using UnityEditor;
 [RequireComponent(typeof(MotionEditor))]
 public class PhaseEditor : MonoBehaviour {
 
-	public float Pivot = 0f;
-	public float TimeWindow = 0f;
+	public MotionEditor Editor = null;
+	public PhaseModule[] Modules = new PhaseModule[0];
 
-	public bool ShowVelocities = true;
-	public bool ShowCycle = false;
-
-	public float MaximumVelocity = 5f;
-	public float VelocityThreshold = 0.1f;
-
-	public float[] RegularPhase;
-	public float[] InversePhase;
-
-	public bool[] RegularVariables;
-	public bool[] InverseVariables;
-	public float[] RegularVelocities;
-	public float[] InverseVelocities;
-	public float[] RegularNormalisedVelocities;
-	public float[] InverseNormalisedVelocities;
-
-	private PhaseFunction RegularPhaseFunction;
-	private PhaseFunction InversePhaseFunction;
-
-	private MotionEditor Editor;
-
-	void Reset() {
-		Pivot = 0f;
-		TimeWindow = GetEditor().GetData().GetTotalTime();
-		RegularPhase = new float[GetEditor().GetData().GetTotalFrames()];
-		InversePhase = new float[GetEditor().GetData().GetTotalFrames()];
-		RegularVariables = new bool[GetEditor().GetData().Source.Bones.Length];
-		InverseVariables = new bool[GetEditor().GetData().Source.Bones.Length];
-		RegularVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		RegularNormalisedVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		InverseVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		InverseNormalisedVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-	}
-
-	private MotionEditor GetEditor() {
+	public MotionEditor GetEditor() {
 		if(Editor == null) {
 			Editor = GetComponent<MotionEditor>();
 		}
 		return Editor;
 	}
 
-	public void SetPivot(float value) {
-		if(Pivot != value) {
-			Pivot = value;
-			GetEditor().LoadFrame(Pivot * GetEditor().GetData().GetTotalTime());
+	public PhaseModule GetModule() {
+		if(Modules.Length == 0) {
+			return null;
 		}
+		return Modules[GetEditor().GetID()];
 	}
 
-	public void SetMaximumVelocity(float value) {
-		value = Mathf.Max(1f, value);
-		if(MaximumVelocity != value) {
-			MaximumVelocity = value;
+	public void Refresh() {
+		MotionData[] files = GetEditor().GetFiles();
+		foreach(PhaseModule module in Modules) {
+			if(!System.Array.Find(files, x => x == module.Data)) {
+				ArrayExtensions.Remove(ref Modules, module);
+			}
+		}
+		PhaseModule[] modules = new PhaseModule[GetEditor().GetFiles().Length];
+		for(int i=0; i<files.Length; i++) {
+			modules[i] = System.Array.Find(Modules, x => x.Data == files[i]);
+			if(modules[i] == null) {
+				modules[i] = new PhaseModule(files[i]);
+			}
+		}
+		Modules = modules;
+	}
+
+	[System.Serializable]
+	public class PhaseModule {
+		public MotionData Data;
+		
+		public float[] RegularPhase;
+		public float[] InversePhase;
+
+		public bool[] Variables;
+		public float MaximumVelocity = 5f;
+		public float VelocityThreshold = 0.1f;
+		public bool ShowVelocities = false;
+		public bool ShowCycle = false;
+		public float TimeWindow;
+		public float[] RegularVelocities;
+		public float[] InverseVelocities;
+		public float[] RegularNormalisedVelocities;
+		public float[] InverseNormalisedVelocities;
+
+		private PhaseFunction RegularPhaseFunction;
+		private PhaseFunction InversePhaseFunction;
+
+		public PhaseModule(MotionData data) {
+			Data = data;
+			TimeWindow = data.GetTotalTime();
+			RegularPhase = new float[data.GetTotalFrames()];
+			InversePhase = new float[data.GetTotalFrames()];
+
+			Variables = new bool[data.Source.Bones.Length];
+			RegularVelocities = new float[data.GetTotalFrames()];
+			InverseVelocities = new float[data.GetTotalFrames()];
+			RegularNormalisedVelocities = new float[data.GetTotalFrames()];
+			InverseNormalisedVelocities = new float[data.GetTotalFrames()];
+		}
+
+		public PhaseFunction GetRegularPhaseFunction() {
+			if(RegularPhaseFunction == null) {
+				RegularPhaseFunction = new PhaseFunction(this, RegularPhase);
+			}
+			return RegularPhaseFunction;
+		}
+
+		public PhaseFunction GetInversePhaseFunction() {
+			if(InversePhaseFunction == null) {
+				InversePhaseFunction = new PhaseFunction(this, InversePhase);
+			}
+			return InversePhaseFunction;
+		}
+
+		public void SetMaximumVelocity(float value) {
+			value = Mathf.Max(1f, value);
+			if(MaximumVelocity != value) {
+				MaximumVelocity = value;
+				ComputeValues();
+			}
+		}
+
+		public void SetVelocityThreshold(float value) {
+			value = Mathf.Max(0f, value);
+			if(VelocityThreshold != value) {
+				VelocityThreshold = value;
+				ComputeValues();
+			}
+		}
+
+		public void ToggleVariable(int index) {
+			Variables[index] = !Variables[index];
 			ComputeValues();
 		}
-	}
 
-	public void SetVelocityThreshold(float value) {
-		value = Mathf.Max(0f, value);
-		if(VelocityThreshold != value) {
-			VelocityThreshold = value;
-			ComputeValues();
-		}
-	}
+		private void ComputeValues() {
+			float min, max;
 
-	public void ToggleVariable(int index) {
-		RegularVariables[index] = !RegularVariables[index];
-		InverseVariables[GetEditor().GetData().Symmetry[index]] = RegularVariables[index];
-		ComputeValues();
-	}
-
-	private void ComputeValues() {
-		float min, max;
-
-		RegularVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		RegularNormalisedVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		min = float.MaxValue;
-		max = float.MinValue;
-		for(int i=0; i<RegularVelocities.Length; i++) {
-			for(int j=0; j<RegularVariables.Length; j++) {
-				if(RegularVariables[j]) {
-					float boneVelocity = Mathf.Min(GetEditor().GetData().Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
-					RegularVelocities[i] += boneVelocity;
+			RegularVelocities = new float[Data.GetTotalFrames()];
+			RegularNormalisedVelocities = new float[Data.GetTotalFrames()];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<RegularVelocities.Length; i++) {
+				for(int j=0; j<Variables.Length; j++) {
+					if(Variables[j]) {
+						float boneVelocity = Mathf.Min(Data.Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
+						RegularVelocities[i] += boneVelocity;
+					}
+				}
+				if(RegularVelocities[i] < VelocityThreshold) {
+					RegularVelocities[i] = 0f;
+				}
+				if(RegularVelocities[i] < min) {
+					min = RegularVelocities[i];
+				}
+				if(RegularVelocities[i] > max) {
+					max = RegularVelocities[i];
 				}
 			}
-			if(RegularVelocities[i] < VelocityThreshold) {
-				RegularVelocities[i] = 0f;
+			for(int i=0; i<RegularVelocities.Length; i++) {
+				RegularNormalisedVelocities[i] = Utility.Normalise(RegularVelocities[i], min, max, 0f, 1f);
 			}
-			if(RegularVelocities[i] < min) {
-				min = RegularVelocities[i];
-			}
-			if(RegularVelocities[i] > max) {
-				max = RegularVelocities[i];
-			}
-		}
-		for(int i=0; i<RegularVelocities.Length; i++) {
-			RegularNormalisedVelocities[i] = Utility.Normalise(RegularVelocities[i], min, max, 0f, 1f);
-		}
 
-		InverseVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		InverseNormalisedVelocities = new float[GetEditor().GetData().GetTotalFrames()];
-		min = float.MaxValue;
-		max = float.MinValue;
-		for(int i=0; i<InverseVelocities.Length; i++) {
-			for(int j=0; j<InverseVariables.Length; j++) {
-				if(InverseVariables[j]) {
-					float boneVelocity = Mathf.Min(GetEditor().GetData().Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
-					InverseVelocities[i] += boneVelocity;
+			InverseVelocities = new float[Data.GetTotalFrames()];
+			InverseNormalisedVelocities = new float[Data.GetTotalFrames()];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<InverseVelocities.Length; i++) {
+				for(int j=0; j<Variables.Length; j++) {
+					if(Variables[Data.Symmetry[j]]) {
+						float boneVelocity = Mathf.Min(Data.Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
+						InverseVelocities[i] += boneVelocity;
+					}
+				}
+				if(InverseVelocities[i] < VelocityThreshold) {
+					InverseVelocities[i] = 0f;
+				}
+				if(InverseVelocities[i] < min) {
+					min = InverseVelocities[i];
+				}
+				if(InverseVelocities[i] > max) {
+					max = InverseVelocities[i];
 				}
 			}
-			if(InverseVelocities[i] < VelocityThreshold) {
-				InverseVelocities[i] = 0f;
+			for(int i=0; i<InverseVelocities.Length; i++) {
+				InverseNormalisedVelocities[i] = Utility.Normalise(InverseVelocities[i], min, max, 0f, 1f);
 			}
-			if(InverseVelocities[i] < min) {
-				min = InverseVelocities[i];
-			}
-			if(InverseVelocities[i] > max) {
-				max = InverseVelocities[i];
-			}
-		}
-		for(int i=0; i<InverseVelocities.Length; i++) {
-			InverseNormalisedVelocities[i] = Utility.Normalise(InverseVelocities[i], min, max, 0f, 1f);
 		}
 	}
 
 	public class PhaseFunction {
-		public PhaseEditor Editor;
+		public PhaseModule Module;
 
 		public float[] Phase;
 		public bool[] Keys;
-
 		public float[] Cycle;
 		public float[] NormalisedCycle;
 
 		public PhaseEvolution Optimiser;
 		public bool Optimising;
 
-		public PhaseFunction(PhaseEditor editor, float[] values) {
-			Editor = editor;
+		public PhaseFunction(PhaseModule module, float[] values) {
+			Module = module;
 
-			int frames = editor.GetEditor().GetData().GetTotalFrames();
-			int bones = editor.GetEditor().GetData().Source.Bones.Length;
+			int frames = module.Data.GetTotalFrames();
+			int bones = module.Data.Source.Bones.Length;
 
 			Phase = values.Length != frames ? new float[frames] : values;
 			Keys = new bool[frames];
 			Cycle = new float[frames];
 			NormalisedCycle = new float[frames];
 
-			Optimiser = new PhaseEvolution(Editor, this);
-
 			for(int i=0; i<Phase.Length; i++) {
 				Keys[i] = Phase[i] == 1f;
 			}
 		}
 
+		public void Clear() {
+			for(int i=0; i<Phase.Length; i++) {
+				Phase[i] = 0f;
+				Keys[i] = false;
+				Cycle[i] = 0f;
+				NormalisedCycle[i] = 0f;
+			}
+		}
+
 		public void Save() {
-			if(this == Editor.RegularPhaseFunction) {
-				Editor.RegularPhase = (float[])Phase.Clone();
+			if(this == Module.GetRegularPhaseFunction()) {
+				Module.RegularPhase = (float[])Phase.Clone();
 			} else {
-				Editor.InversePhase = (float[])Phase.Clone();
+				Module.InversePhase = (float[])Phase.Clone();
 			}
 		}
 
@@ -207,31 +244,31 @@ public class PhaseEditor : MonoBehaviour {
 			if(frame != null) {
 				for(int i=frame.Index-1; i>=1; i--) {
 					if(Keys[i-1]) {
-						return Editor.GetEditor().GetData().Frames[i-1];
+						return Module.Data.Frames[i-1];
 					}
 				}
 			}
-			return Editor.GetEditor().GetData().Frames[0];
+			return Module.Data.Frames[0];
 		}
 
 		public MotionData.Frame GetNextKey(MotionData.Frame frame) {
 			if(frame != null) {
-				for(int i=frame.Index+1; i<=Editor.GetEditor().GetData().GetTotalFrames(); i++) {
+				for(int i=frame.Index+1; i<=Module.Data.GetTotalFrames(); i++) {
 					if(Keys[i-1]) {
-						return Editor.GetEditor().GetData().Frames[i-1];
+						return Module.Data.Frames[i-1];
 					}
 				}
 			}
-			return Editor.GetEditor().GetData().Frames[Editor.GetEditor().GetData().GetTotalFrames()-1];
+			return Module.Data.Frames[Module.Data.GetTotalFrames()-1];
 		}
 
 		public void Recompute() {
-			for(int i=0; i<Editor.GetEditor().GetData().Frames.Length; i++) {
-				if(IsKey(Editor.GetEditor().GetData().Frames[i])) {
+			for(int i=0; i<Module.Data.Frames.Length; i++) {
+				if(IsKey(Module.Data.Frames[i])) {
 					Phase[i] = 1f;
 				}
 			}
-			MotionData.Frame A = Editor.GetEditor().GetData().Frames[0];
+			MotionData.Frame A = Module.Data.Frames[0];
 			MotionData.Frame B = GetNextKey(A);
 			while(A != B) {
 				Interpolate(A, B);
@@ -264,7 +301,7 @@ public class PhaseEditor : MonoBehaviour {
 			}
 
 			if(a.Index == 1) {
-				MotionData.Frame first = Editor.GetEditor().GetData().Frames[0];
+				MotionData.Frame first = Module.Data.Frames[0];
 				MotionData.Frame next1 = GetNextKey(first);
 				MotionData.Frame next2 = GetNextKey(next1);
 				Keys[0] = true;
@@ -272,11 +309,11 @@ public class PhaseEditor : MonoBehaviour {
 				float mFirst = next2.Timestamp - next1.Timestamp;
 				SetPhase(first, Mathf.Clamp(1f - xFirst / mFirst, 0f, 1f));
 			}
-			if(b.Index == Editor.GetEditor().GetData().GetTotalFrames()) {
-				MotionData.Frame last = Editor.GetEditor().GetData().Frames[Editor.GetEditor().GetData().GetTotalFrames()-1];
+			if(b.Index == Module.Data.GetTotalFrames()) {
+				MotionData.Frame last = Module.Data.Frames[Module.Data.GetTotalFrames()-1];
 				MotionData.Frame previous1 = GetPreviousKey(last);
 				MotionData.Frame previous2 = GetPreviousKey(previous1);
-				Keys[Editor.GetEditor().GetData().GetTotalFrames()-1] = true;
+				Keys[Module.Data.GetTotalFrames()-1] = true;
 				float xLast = last.Timestamp - previous1.Timestamp;
 				float mLast = previous1.Timestamp - previous2.Timestamp;
 				SetPhase(last, Mathf.Clamp(xLast / mLast, 0f, 1f));
@@ -285,12 +322,19 @@ public class PhaseEditor : MonoBehaviour {
 
 		public void EditorUpdate() {
 			if(Optimising) {
+				if(Optimiser == null) {
+					Optimiser = new PhaseEvolution(this);
+				}
 				Optimiser.Optimise();
+			} else {
+				Optimiser = null;
 			}
 		}
 
 		public void Inspector() {
 			UltiDraw.Begin();
+
+			MotionEditor motionEditor = GameObject.FindObjectOfType<MotionEditor>();
 
 			Utility.SetGUIColor(UltiDraw.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -299,7 +343,7 @@ public class PhaseEditor : MonoBehaviour {
 				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
-					EditorGUILayout.LabelField(this == Editor.RegularPhaseFunction ? "Regular" : "Inverse");
+					EditorGUILayout.LabelField(this == Module.GetRegularPhaseFunction() ? "Regular" : "Inverse");
 				}
 
 				Utility.SetGUIColor(UltiDraw.Grey);
@@ -315,38 +359,13 @@ public class PhaseEditor : MonoBehaviour {
 							Optimising = !Optimising;
 						}
 					}
-					EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Restart", UltiDraw.Brown, UltiDraw.White)) {
-						Optimiser.Initialise();
+					if(Utility.GUIButton("Clear", UltiDraw.DarkGrey, UltiDraw.White)) {
+						Clear();
+						Save();
 					}
-					if(Utility.GUIButton("Clear", UltiDraw.Brown, UltiDraw.White)) {
-						Optimiser.Clear();
-					}
-					EditorGUILayout.EndHorizontal();
-					/*
-					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Fitness: " + Optimiser.GetFitness(), GUILayout.Width(150f));
-					float[] configuration = Optimiser.GetPeakConfiguration();
-					EditorGUILayout.LabelField("Peak: " + configuration[0] + " | " + configuration[1] + " | " + configuration[2] + " | " + configuration[3] + " | " + configuration[4]);
-					EditorGUILayout.EndHorizontal();
-					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField("Exploration", GUILayout.Width(100f));
-					GUILayout.FlexibleSpace();
-					Optimiser.Behaviour = EditorGUILayout.Slider(Optimiser.Behaviour, 0f, 1f);
-					GUILayout.FlexibleSpace();
-					EditorGUILayout.LabelField("Exploitation", GUILayout.Width(100f));
-					EditorGUILayout.EndHorizontal();
-					Optimiser.SetAmplitude(EditorGUILayout.Slider("Amplitude", Optimiser.Amplitude, 0, PhaseEvolution.AMPLITUDE));
-					Optimiser.SetFrequency(EditorGUILayout.Slider("Frequency", Optimiser.Frequency, 0f, PhaseEvolution.FREQUENCY));
-					Optimiser.SetShift(EditorGUILayout.Slider("Shift", Optimiser.Shift, 0, PhaseEvolution.SHIFT));
-					Optimiser.SetOffset(EditorGUILayout.Slider("Offset", Optimiser.Offset, 0, PhaseEvolution.OFFSET));
-					Optimiser.SetSlope(EditorGUILayout.Slider("Slope", Optimiser.Slope, 0, PhaseEvolution.SLOPE));
-					Optimiser.SetWindow(EditorGUILayout.Slider("Window", Optimiser.Window, 0.1f, PhaseEvolution.WINDOW));
-					Optimiser.Blending = EditorGUILayout.Slider("Blending", Optimiser.Blending, 0f, 1f);
-					*/
 				}
 
-				MotionData.Frame frame = Editor.GetEditor().GetData().GetFrame(Editor.GetEditor().GetState().Index);
+				MotionData.Frame frame = Module.Data.GetFrame(motionEditor.GetState().Index);
 
 				if(IsKey(frame)) {
 					SetPhase(frame, EditorGUILayout.Slider("Phase", GetPhase(frame), 0f, 1f));
@@ -370,7 +389,7 @@ public class PhaseEditor : MonoBehaviour {
 				
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-					Editor.GetEditor().LoadFrame((GetPreviousKey(frame).Timestamp));
+					motionEditor.LoadFrame((GetPreviousKey(frame).Timestamp));
 				}
 
 				EditorGUILayout.BeginVertical(GUILayout.Height(50f));
@@ -378,20 +397,20 @@ public class PhaseEditor : MonoBehaviour {
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 				EditorGUI.DrawRect(rect, UltiDraw.Black);
 
-				float startTime = frame.Timestamp-Editor.TimeWindow/2f;
-				float endTime = frame.Timestamp+Editor.TimeWindow/2f;
+				float startTime = frame.Timestamp-Module.TimeWindow/2f;
+				float endTime = frame.Timestamp+Module.TimeWindow/2f;
 				if(startTime < 0f) {
 					endTime -= startTime;
 					startTime = 0f;
 				}
-				if(endTime > Editor.GetEditor().GetData().GetTotalTime()) {
-					startTime -= endTime-Editor.GetEditor().GetData().GetTotalTime();
-					endTime = Editor.GetEditor().GetData().GetTotalTime();
+				if(endTime > Module.Data.GetTotalTime()) {
+					startTime -= endTime-Module.Data.GetTotalTime();
+					endTime = Module.Data.GetTotalTime();
 				}
 				startTime = Mathf.Max(0f, startTime);
-				endTime = Mathf.Min(Editor.GetEditor().GetData().GetTotalTime(), endTime);
-				int start = Editor.GetEditor().GetData().GetFrame(startTime).Index;
-				int end = Editor.GetEditor().GetData().GetFrame(endTime).Index;
+				endTime = Mathf.Min(Module.Data.GetTotalTime(), endTime);
+				int start = Module.Data.GetFrame(startTime).Index;
+				int end = Module.Data.GetFrame(endTime).Index;
 				int elements = end-start;
 
 				Vector3 prevPos = Vector3.zero;
@@ -399,27 +418,27 @@ public class PhaseEditor : MonoBehaviour {
 				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
 				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
 
-				if(Editor.ShowVelocities) {
+				if(Module.ShowVelocities) {
 					//Regular Velocities
 					for(int i=1; i<elements; i++) {
 						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-						prevPos.y = rect.yMax - Editor.RegularNormalisedVelocities[i+start-1] * rect.height;
+						prevPos.y = rect.yMax - Module.RegularNormalisedVelocities[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-						newPos.y = rect.yMax - Editor.RegularNormalisedVelocities[i+start] * rect.height;
-						UltiDraw.DrawLine(prevPos, newPos, this == Editor.RegularPhaseFunction ? UltiDraw.Green : UltiDraw.Red);
+						newPos.y = rect.yMax - Module.RegularNormalisedVelocities[i+start] * rect.height;
+						UltiDraw.DrawLine(prevPos, newPos, this == Module.GetRegularPhaseFunction() ? UltiDraw.Green : UltiDraw.Red);
 					}
 
 					//Inverse Velocities
 					for(int i=1; i<elements; i++) {
 						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-						prevPos.y = rect.yMax - Editor.InverseNormalisedVelocities[i+start-1] * rect.height;
+						prevPos.y = rect.yMax - Module.InverseNormalisedVelocities[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-						newPos.y = rect.yMax - Editor.InverseNormalisedVelocities[i+start] * rect.height;
-						UltiDraw.DrawLine(prevPos, newPos, this == Editor.RegularPhaseFunction ? UltiDraw.Red : UltiDraw.Green);
+						newPos.y = rect.yMax - Module.InverseNormalisedVelocities[i+start] * rect.height;
+						UltiDraw.DrawLine(prevPos, newPos, this == Module.GetRegularPhaseFunction() ? UltiDraw.Red : UltiDraw.Green);
 					}
 				}
 				
-				if(Editor.ShowCycle) {
+				if(Module.ShowCycle) {
 					//Cycle
 					for(int i=1; i<elements; i++) {
 						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
@@ -431,21 +450,19 @@ public class PhaseEditor : MonoBehaviour {
 				}
 
 				//Phase
-				/*
-				for(int i=1; i<Editor.GetEditor().GetData().Frames.Length; i++) {
-					MotionData.Frame A = Editor.GetEditor().GetData().Frames[i-1];
-					MotionData.Frame B = Editor.GetEditor().GetData().Frames[i];
-					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
-					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
-					newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
-					UltiDraw.DrawLine(prevPos, newPos, UltiDraw.White);
-					bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-					top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
-				}
-				*/
+				//for(int i=1; i<Module.Data.Frames.Length; i++) {
+				//	MotionData.Frame A = Module.Data.Frames[i-1];
+				//	MotionData.Frame B = Module.Data.Frames[i];
+				//	prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
+				//	prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
+				//	newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+				//	newPos.y = rect.yMax - Phase[B.Index-1] * rect.height;
+				//	UltiDraw.DrawLine(prevPos, newPos, UltiDraw.White);
+				//	bottom.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+				//	top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
+				//}
 				
-				MotionData.Frame A = Editor.GetEditor().GetData().GetFrame(start);
+				MotionData.Frame A = Module.Data.GetFrame(start);
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
@@ -473,7 +490,7 @@ public class PhaseEditor : MonoBehaviour {
 				while(timestamp <= endTime) {
 					float floor = Mathf.FloorToInt(timestamp);
 					if(floor >= startTime && floor <= endTime) {
-						top.x = rect.xMin + (float)(Editor.GetEditor().GetData().GetFrame(floor).Index-start)/elements * rect.width;
+						top.x = rect.xMin + (float)(Module.Data.GetFrame(floor).Index-start)/elements * rect.width;
 						UltiDraw.DrawCircle(top, 5f, UltiDraw.White);
 					}
 					timestamp += 1f;
@@ -491,7 +508,7 @@ public class PhaseEditor : MonoBehaviour {
 				EditorGUILayout.EndVertical();
 
 				if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-					Editor.GetEditor().LoadFrame(GetNextKey(frame).Timestamp);
+					motionEditor.LoadFrame(GetNextKey(frame).Timestamp);
 				}
 				EditorGUILayout.EndHorizontal();
 			}
@@ -499,7 +516,6 @@ public class PhaseEditor : MonoBehaviour {
 			UltiDraw.End();
 		}
 	}
-
 
 	public class PhaseEvolution {
 		public static float AMPLITUDE = 10f;
@@ -509,7 +525,6 @@ public class PhaseEditor : MonoBehaviour {
 		public static float SLOPE = 5f;
 		public static float WINDOW = 5f;
 		
-		public PhaseEditor Editor;
 		public PhaseFunction Function;
 
 		public Population[] Populations;
@@ -528,8 +543,7 @@ public class PhaseEditor : MonoBehaviour {
 		public float Window = 1f;
 		public float Blending = 1f;
 
-		public PhaseEvolution(PhaseEditor editor, PhaseFunction function) {
-			Editor = editor;
+		public PhaseEvolution(PhaseFunction function) {
 			Function = function;
 
 			LowerBounds = new float[5];
@@ -582,11 +596,11 @@ public class PhaseEditor : MonoBehaviour {
 		}
 
 		public void Initialise() {
-			Interval[] intervals = new Interval[Mathf.FloorToInt(Editor.GetEditor().GetData().GetTotalTime() / Window) + 1];
+			Interval[] intervals = new Interval[Mathf.FloorToInt(Function.Module.Data.GetTotalTime() / Window) + 1];
 			for(int i=0; i<intervals.Length; i++) {
-				int start = Editor.GetEditor().GetData().GetFrame(i*Window).Index-1;
-				int end = Editor.GetEditor().GetData().GetFrame(Mathf.Min(Editor.GetEditor().GetData().GetTotalTime(), (i+1)*Window)).Index-2;
-				if(end == Editor.GetEditor().GetData().GetTotalFrames()-2) {
+				int start = Function.Module.Data.GetFrame(i*Window).Index-1;
+				int end = Function.Module.Data.GetFrame(Mathf.Min(Function.Module.Data.GetTotalTime(), (i+1)*Window)).Index-2;
+				if(end == Function.Module.Data.GetTotalFrames()-2) {
 					end += 1;
 				}
 				intervals[i] = new Interval(start, end);
@@ -606,17 +620,9 @@ public class PhaseEditor : MonoBehaviour {
 			}
 			Assign();
 		}
-
-		public void Clear() {
-			for(int i=0; i<Function.Phase.Length; i++) {
-				Function.Phase[i] = 0f;
-				Function.Keys[i] = false;
-			}
-		}
-
 		
 		public void Assign() {
-			for(int i=0; i<Editor.GetEditor().GetData().GetTotalFrames(); i++) {
+			for(int i=0; i<Function.Module.Data.GetTotalFrames(); i++) {
 				Function.Keys[i] = false;
 				Function.Phase[i] = 0f;
 				Function.Cycle[i] = 0f;
@@ -651,7 +657,7 @@ public class PhaseEditor : MonoBehaviour {
 			//Compute phase
 			for(int i=0; i<Function.Keys.Length; i++) {
 				if(Function.Keys[i]) {
-					Function.SetPhase(Editor.GetEditor().GetData().Frames[i], i == 0 ? 0f : 1f);
+					Function.SetPhase(Function.Module.Data.Frames[i], i == 0 ? 0f : 1f);
 				}
 			}
 		}
@@ -685,7 +691,7 @@ public class PhaseEditor : MonoBehaviour {
 		public bool IsActive(int interval) {
 			float velocity = 0f;
 			for(int i=Populations[interval].Interval.Start; i<=Populations[interval].Interval.End; i++) {
-				velocity += Editor.RegularVelocities[i] + Editor.InverseVelocities[i];
+				velocity += Function.Module.RegularVelocities[i] + Function.Module.InverseVelocities[i];
 			}
 			return velocity / Populations[interval].Interval.Length > 0f;
 		}
@@ -1035,8 +1041,8 @@ public class PhaseEditor : MonoBehaviour {
 			private float ComputeFitness(float[] genes) {
 				float fitness = 0f;
 				for(int i=Interval.Start; i<=Interval.End; i++) {
-					float y1 = Evolution.Function == Evolution.Editor.RegularPhaseFunction ? Evolution.Editor.RegularVelocities[i] : Evolution.Editor.InverseVelocities[i];
-					float y2 = Evolution.Function == Evolution.Editor.RegularPhaseFunction ? Evolution.Editor.InverseVelocities[i] : Evolution.Editor.RegularVelocities[i];
+					float y1 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.Module.RegularVelocities[i] : Evolution.Function.Module.InverseVelocities[i];
+					float y2 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.Module.InverseVelocities[i] : Evolution.Function.Module.RegularVelocities[i];
 					float x = Phenotype(genes, i);
 					float error = (y1-x)*(y1-x) + (-y2-x)*(-y2-x);
 					float sqrError = error*error;
@@ -1052,9 +1058,9 @@ public class PhaseEditor : MonoBehaviour {
 					genes[0], 
 					genes[1], 
 					genes[2], 
-					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Editor.GetEditor().GetData().Framerate, 
+					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Function.Module.Data.Framerate, 
 					genes[4], 
-					frame/Evolution.Editor.GetEditor().GetData().Framerate
+					frame/Evolution.Function.Module.Data.Framerate
 					);
 			}
 
@@ -1063,9 +1069,9 @@ public class PhaseEditor : MonoBehaviour {
 					genes[0], 
 					genes[1], 
 					genes[2], 
-					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Editor.GetEditor().GetData().Framerate,
+					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Function.Module.Data.Framerate,
 					genes[4], 
-					frame/Evolution.Editor.GetEditor().GetData().Framerate
+					frame/Evolution.Function.Module.Data.Framerate
 					);
 			}
 
@@ -1074,9 +1080,9 @@ public class PhaseEditor : MonoBehaviour {
 					genes[0], 
 					genes[1], 
 					genes[2], 
-					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Editor.GetEditor().GetData().Framerate,
+					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Function.Module.Data.Framerate,
 					genes[4], 
-					frame/Evolution.Editor.GetEditor().GetData().Framerate
+					frame/Evolution.Function.Module.Data.Framerate
 					);
 			}
 
@@ -1085,9 +1091,9 @@ public class PhaseEditor : MonoBehaviour {
 					genes[0], 
 					genes[1], 
 					genes[2], 
-					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Editor.GetEditor().GetData().Framerate,
+					genes[3] - (float)(frame-Interval.Start)*genes[4]/Evolution.Function.Module.Data.Framerate,
 					genes[4], 
-					frame/Evolution.Editor.GetEditor().GetData().Framerate
+					frame/Evolution.Function.Module.Data.Framerate
 					);
 			}
 
@@ -1136,6 +1142,7 @@ public class PhaseEditor : MonoBehaviour {
 
 		void Awake() {
 			Target = (PhaseEditor)target;
+			Target.Refresh();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
@@ -1160,55 +1167,41 @@ public class PhaseEditor : MonoBehaviour {
 		}
 
 		public void Inspector() {
-			Utility.SetGUIColor(UltiDraw.Grey);
-			using(new EditorGUILayout.VerticalScope ("Box")) {
-				Utility.ResetGUIColor();
-
-				Utility.SetGUIColor(UltiDraw.DarkGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-
-					Utility.SetGUIColor(UltiDraw.Mustard);
-					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Utility.ResetGUIColor();
-
-						EditorGUILayout.ObjectField("Data", Target.GetEditor().GetData(), typeof(MotionData), true);
-					}
-
-					Target.SetPivot(EditorGUILayout.Slider("Pivot", Target.Pivot, 0f, 1f));
-					Target.TimeWindow = EditorGUILayout.Slider("Time Window", Target.TimeWindow, 0f, Target.GetEditor().GetData().GetTotalTime());
-					Target.SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", Target.MaximumVelocity));
-					Target.SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", Target.VelocityThreshold));
-					string[] names = new string[1 + Target.GetEditor().GetData().Source.Bones.Length];
-					names[0] = "Select...";
-					for(int i=0; i<names.Length-1; i++) {
-						names[i+1] = Target.GetEditor().GetData().Source.Bones[i].Name;
-					}
-					int index = EditorGUILayout.Popup("Phase Detector", 0, names);
-					if(index > 0) {
-						Target.ToggleVariable(index-1);
-					}
-
-
-					Target.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", Target.ShowVelocities);
-					Target.ShowCycle = EditorGUILayout.Toggle("Show Cycle", Target.ShowCycle);
-
-
-					if(Target.RegularPhaseFunction == null) {
-						Target.RegularPhaseFunction = new PhaseFunction(Target, Target.RegularPhase);
-					}
-					if(Target.InversePhaseFunction == null) {
-						Target.InversePhaseFunction = new PhaseFunction(Target, Target.InversePhase);
-					}
-					Target.RegularPhaseFunction.Inspector();
-					Target.RegularPhaseFunction.EditorUpdate();
-					Target.InversePhaseFunction.Inspector();
-					Target.InversePhaseFunction.EditorUpdate();
+			if(Utility.GUIButton("Reset", UltiDraw.DarkGrey, UltiDraw.White)) {
+				Target.Modules = new PhaseModule[0];
+				Target.Refresh();
+			}
+			EditorGUILayout.LabelField("Modules: " + Target.Modules.Length);
+			PhaseModule module = Target.GetModule();
+			if(module == null) {
+				return;
+			}
+			EditorGUILayout.LabelField("Module: " + module.Data.Name);
+			module.TimeWindow = EditorGUILayout.Slider("Time Window", module.TimeWindow, 0f, module.Data.GetTotalTime());
+			module.SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", module.MaximumVelocity));
+			module.SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", module.VelocityThreshold));
+			string[] names = new string[1 + Target.GetEditor().GetData().Source.Bones.Length];
+			names[0] = "Select...";
+			for(int i=0; i<names.Length-1; i++) {
+				names[i+1] = Target.GetEditor().GetData().Source.Bones[i].Name;
+			}
+			int index = EditorGUILayout.Popup("Phase Detector", 0, names);
+			if(index > 0) {
+				module.ToggleVariable(index-1);
+			}
+			for(int i=0; i<module.Data.Source.Bones.Length; i++) {
+				if(module.Variables[i]) {
+					EditorGUILayout.LabelField(module.Data.Source.Bones[i].Name + " <-> " + module.Data.Source.Bones[module.Data.Symmetry[i]].Name);
 				}
 			}
+			module.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", module.ShowVelocities);
+			module.ShowCycle = EditorGUILayout.Toggle("Show Cycle", module.ShowCycle);
+			module.GetRegularPhaseFunction().Inspector();
+			module.GetInversePhaseFunction().Inspector();
+			module.GetRegularPhaseFunction().EditorUpdate();
+			module.GetInversePhaseFunction().EditorUpdate();
 
 		}
 	}
-
 }
 #endif
