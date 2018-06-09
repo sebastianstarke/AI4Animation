@@ -13,6 +13,7 @@ public class MotionData : ScriptableObject {
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
+	public float Scaling = 1f;
 	public int RootSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
@@ -474,7 +475,7 @@ public class MotionData : ScriptableObject {
 
 		public Matrix4x4 GetBoneTransformation(int index, bool mirrored, int smoothing = 0) {
 			if(smoothing  == 0) {
-				return mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index];
+				return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Data.Scaling * Vector3.one) * (mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index]);
 			} else {
 				Frame[] frames = Data.GetFrames(Mathf.Clamp(Index - smoothing, 1, Data.GetTotalFrames()), Mathf.Clamp(Index + smoothing, 1, Data.GetTotalFrames()));
 				Vector3 P = Vector3.zero;
@@ -495,7 +496,7 @@ public class MotionData : ScriptableObject {
 				P /= sum;
 				Z /= sum;
 				Y /= sum;
-				return Matrix4x4.TRS(P, Quaternion.LookRotation(Z, Y), Vector3.one);
+				return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Data.Scaling * Vector3.one) * Matrix4x4.TRS(P, Quaternion.LookRotation(Z, Y), Vector3.one);
 			}
 		}
 

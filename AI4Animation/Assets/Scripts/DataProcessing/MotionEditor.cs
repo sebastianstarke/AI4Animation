@@ -157,7 +157,9 @@ public class MotionEditor : MonoBehaviour {
 			Environments[i].SetSiblingIndex(i);
 		}
 		//Initialise
-		LoadFrame(0f);
+		if(GetData() != null) {
+			LoadFrame(0f);
+		}
 	}
 
 	public void SaveAll() {
@@ -764,6 +766,7 @@ public class MotionEditor : MonoBehaviour {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("General");
 
+									Target.GetData().Scaling = EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling);
 									Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
 									
 									Target.GetData().GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().GroundMask), InternalEditorUtility.layers));

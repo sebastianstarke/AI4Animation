@@ -17,6 +17,9 @@ public class FBXImporter : EditorWindow {
 	public bool[] Import = new bool[0];
 	public GameObject[] Files = new GameObject[0];
 	public bool Importing = false;
+
+	public int Page = 1;
+	public int Items = 50;
 	
 	[MenuItem ("Addons/FBX Importer")]
 	static void Init() {
@@ -81,7 +84,23 @@ public class FBXImporter : EditorWindow {
 					Destination = EditorGUILayout.TextField(Destination);
 					EditorGUILayout.EndHorizontal();
 
-					for(int i=0; i<Files.Length; i++) {
+					int start = (Page-1)*Items;
+					int end = Mathf.Min(start+Items, Files.Length);
+					int pages = Mathf.CeilToInt(Files.Length/Items)+1;
+					Utility.SetGUIColor(UltiDraw.Orange);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Page = Mathf.Max(Page-1, 1);
+						}
+						EditorGUILayout.LabelField("Page " + Page + "/" + pages);
+						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Page = Mathf.Min(Page+1, pages);
+						}
+						EditorGUILayout.EndHorizontal();
+					}
+					for(int i=start; i<end; i++) {
 						if(Import[i]) {
 							Utility.SetGUIColor(UltiDraw.DarkGreen);
 						} else {
@@ -119,6 +138,7 @@ public class FBXImporter : EditorWindow {
 					Import[i] = true;
 				}
 			}
+			Page = 1;
 		}
 	}
 

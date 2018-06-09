@@ -1,11 +1,6 @@
 ﻿#if UNITY_EDITOR
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEditorInternal;
 
 [RequireComponent(typeof(MotionEditor))]
 public class PhaseEditor : MonoBehaviour {
