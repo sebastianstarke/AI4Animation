@@ -49,16 +49,13 @@ public class PhaseEditor : MonoBehaviour {
 		public bool[] Variables;
 		public float MaximumVelocity = 5f;
 		public float VelocityThreshold = 0.1f;
-		public bool ShowVelocities = false;
-		public bool ShowCycle = false;
+		public bool ShowVelocities = true;
+		public bool ShowCycle = true;
 		public float TimeWindow;
-		public float[] RegularVelocities;
-		public float[] InverseVelocities;
-		public float[] RegularNormalisedVelocities;
-		public float[] InverseNormalisedVelocities;
 
-		private PhaseFunction RegularPhaseFunction;
-		private PhaseFunction InversePhaseFunction;
+		public PhaseFunction RegularPhaseFunction;
+		public PhaseFunction InversePhaseFunction;
+		public bool Optimising;
 
 		public PhaseModule(MotionData data) {
 			Data = data;
@@ -67,10 +64,6 @@ public class PhaseEditor : MonoBehaviour {
 			InversePhase = new float[data.GetTotalFrames()];
 
 			Variables = new bool[data.Source.Bones.Length];
-			RegularVelocities = new float[data.GetTotalFrames()];
-			InverseVelocities = new float[data.GetTotalFrames()];
-			RegularNormalisedVelocities = new float[data.GetTotalFrames()];
-			InverseNormalisedVelocities = new float[data.GetTotalFrames()];
 		}
 
 		public PhaseFunction GetRegularPhaseFunction() {
@@ -91,7 +84,8 @@ public class PhaseEditor : MonoBehaviour {
 			value = Mathf.Max(1f, value);
 			if(MaximumVelocity != value) {
 				MaximumVelocity = value;
-				ComputeValues();
+				GetRegularPhaseFunction().ComputeVelocities();
+				GetInversePhaseFunction().ComputeVelocities();
 			}
 		}
 
@@ -99,67 +93,15 @@ public class PhaseEditor : MonoBehaviour {
 			value = Mathf.Max(0f, value);
 			if(VelocityThreshold != value) {
 				VelocityThreshold = value;
-				ComputeValues();
+				GetRegularPhaseFunction().ComputeVelocities();
+				GetInversePhaseFunction().ComputeVelocities();
 			}
 		}
 
 		public void ToggleVariable(int index) {
 			Variables[index] = !Variables[index];
-			ComputeValues();
-		}
-
-		private void ComputeValues() {
-			float min, max;
-
-			RegularVelocities = new float[Data.GetTotalFrames()];
-			RegularNormalisedVelocities = new float[Data.GetTotalFrames()];
-			min = float.MaxValue;
-			max = float.MinValue;
-			for(int i=0; i<RegularVelocities.Length; i++) {
-				for(int j=0; j<Variables.Length; j++) {
-					if(Variables[j]) {
-						float boneVelocity = Mathf.Min(Data.Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
-						RegularVelocities[i] += boneVelocity;
-					}
-				}
-				if(RegularVelocities[i] < VelocityThreshold) {
-					RegularVelocities[i] = 0f;
-				}
-				if(RegularVelocities[i] < min) {
-					min = RegularVelocities[i];
-				}
-				if(RegularVelocities[i] > max) {
-					max = RegularVelocities[i];
-				}
-			}
-			for(int i=0; i<RegularVelocities.Length; i++) {
-				RegularNormalisedVelocities[i] = Utility.Normalise(RegularVelocities[i], min, max, 0f, 1f);
-			}
-
-			InverseVelocities = new float[Data.GetTotalFrames()];
-			InverseNormalisedVelocities = new float[Data.GetTotalFrames()];
-			min = float.MaxValue;
-			max = float.MinValue;
-			for(int i=0; i<InverseVelocities.Length; i++) {
-				for(int j=0; j<Variables.Length; j++) {
-					if(Variables[Data.Symmetry[j]]) {
-						float boneVelocity = Mathf.Min(Data.Frames[i].GetBoneVelocity(j, false).magnitude, MaximumVelocity);
-						InverseVelocities[i] += boneVelocity;
-					}
-				}
-				if(InverseVelocities[i] < VelocityThreshold) {
-					InverseVelocities[i] = 0f;
-				}
-				if(InverseVelocities[i] < min) {
-					min = InverseVelocities[i];
-				}
-				if(InverseVelocities[i] > max) {
-					max = InverseVelocities[i];
-				}
-			}
-			for(int i=0; i<InverseVelocities.Length; i++) {
-				InverseNormalisedVelocities[i] = Utility.Normalise(InverseVelocities[i], min, max, 0f, 1f);
-			}
+			GetRegularPhaseFunction().ComputeVelocities();
+			GetInversePhaseFunction().ComputeVelocities();
 		}
 	}
 
@@ -171,8 +113,12 @@ public class PhaseEditor : MonoBehaviour {
 		public float[] Cycle;
 		public float[] NormalisedCycle;
 
+		public float[] RegularVelocities;
+		public float[] InverseVelocities;
+		public float[] RegularNormalisedVelocities;
+		public float[] InverseNormalisedVelocities;
+
 		public PhaseEvolution Optimiser;
-		public bool Optimising;
 
 		public PhaseFunction(PhaseModule module, float[] values) {
 			Module = module;
@@ -187,6 +133,62 @@ public class PhaseEditor : MonoBehaviour {
 
 			for(int i=0; i<Phase.Length; i++) {
 				Keys[i] = Phase[i] == 1f;
+			}
+
+			ComputeVelocities();
+		}
+
+		public void ComputeVelocities() {
+			float min, max;
+
+			RegularVelocities = new float[Module.Data.GetTotalFrames()];
+			RegularNormalisedVelocities = new float[Module.Data.GetTotalFrames()];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<RegularVelocities.Length; i++) {
+				for(int j=0; j<Module.Variables.Length; j++) {
+					if(Module.Variables[j]) {
+						float boneVelocity = Mathf.Min(Module.Data.Frames[i].GetBoneVelocity(j, false).magnitude, Module.MaximumVelocity);
+						RegularVelocities[i] += boneVelocity;
+					}
+				}
+				if(RegularVelocities[i] < Module.VelocityThreshold) {
+					RegularVelocities[i] = 0f;
+				}
+				if(RegularVelocities[i] < min) {
+					min = RegularVelocities[i];
+				}
+				if(RegularVelocities[i] > max) {
+					max = RegularVelocities[i];
+				}
+			}
+			for(int i=0; i<RegularVelocities.Length; i++) {
+				RegularNormalisedVelocities[i] = Utility.Normalise(RegularVelocities[i], min, max, 0f, 1f);
+			}
+
+			InverseVelocities = new float[Module.Data.GetTotalFrames()];
+			InverseNormalisedVelocities = new float[Module.Data.GetTotalFrames()];
+			min = float.MaxValue;
+			max = float.MinValue;
+			for(int i=0; i<InverseVelocities.Length; i++) {
+				for(int j=0; j<Module.Variables.Length; j++) {
+					if(Module.Variables[Module.Data.Symmetry[j]]) {
+						float boneVelocity = Mathf.Min(Module.Data.Frames[i].GetBoneVelocity(j, false).magnitude, Module.MaximumVelocity);
+						InverseVelocities[i] += boneVelocity;
+					}
+				}
+				if(InverseVelocities[i] < Module.VelocityThreshold) {
+					InverseVelocities[i] = 0f;
+				}
+				if(InverseVelocities[i] < min) {
+					min = InverseVelocities[i];
+				}
+				if(InverseVelocities[i] > max) {
+					max = InverseVelocities[i];
+				}
+			}
+			for(int i=0; i<InverseVelocities.Length; i++) {
+				InverseNormalisedVelocities[i] = Utility.Normalise(InverseVelocities[i], min, max, 0f, 1f);
 			}
 		}
 
@@ -321,7 +323,7 @@ public class PhaseEditor : MonoBehaviour {
 		}
 
 		public void EditorUpdate() {
-			if(Optimising) {
+			if(Module.Optimising) {
 				if(Optimiser == null) {
 					Optimiser = new PhaseEvolution(this);
 				}
@@ -344,25 +346,6 @@ public class PhaseEditor : MonoBehaviour {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField(this == Module.GetRegularPhaseFunction() ? "Regular" : "Inverse");
-				}
-
-				Utility.SetGUIColor(UltiDraw.Grey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					if(Optimising) {
-						if(Utility.GUIButton("Stop Optimisation", UltiDraw.LightGrey, UltiDraw.Black)) {
-							Optimising = !Optimising;
-							Save();
-						}
-					} else {
-						if(Utility.GUIButton("Start Optimisation", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Optimising = !Optimising;
-						}
-					}
-					if(Utility.GUIButton("Clear", UltiDraw.DarkGrey, UltiDraw.White)) {
-						Clear();
-						Save();
-					}
 				}
 
 				MotionData.Frame frame = Module.Data.GetFrame(motionEditor.GetState().Index);
@@ -422,18 +405,18 @@ public class PhaseEditor : MonoBehaviour {
 					//Regular Velocities
 					for(int i=1; i<elements; i++) {
 						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-						prevPos.y = rect.yMax - Module.RegularNormalisedVelocities[i+start-1] * rect.height;
+						prevPos.y = rect.yMax - RegularNormalisedVelocities[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-						newPos.y = rect.yMax - Module.RegularNormalisedVelocities[i+start] * rect.height;
+						newPos.y = rect.yMax - RegularNormalisedVelocities[i+start] * rect.height;
 						UltiDraw.DrawLine(prevPos, newPos, this == Module.GetRegularPhaseFunction() ? UltiDraw.Green : UltiDraw.Red);
 					}
 
 					//Inverse Velocities
 					for(int i=1; i<elements; i++) {
 						prevPos.x = rect.xMin + (float)(i-1)/(elements-1) * rect.width;
-						prevPos.y = rect.yMax - Module.InverseNormalisedVelocities[i+start-1] * rect.height;
+						prevPos.y = rect.yMax - InverseNormalisedVelocities[i+start-1] * rect.height;
 						newPos.x = rect.xMin + (float)(i)/(elements-1) * rect.width;
-						newPos.y = rect.yMax - Module.InverseNormalisedVelocities[i+start] * rect.height;
+						newPos.y = rect.yMax - InverseNormalisedVelocities[i+start] * rect.height;
 						UltiDraw.DrawLine(prevPos, newPos, this == Module.GetRegularPhaseFunction() ? UltiDraw.Red : UltiDraw.Green);
 					}
 				}
@@ -691,7 +674,7 @@ public class PhaseEditor : MonoBehaviour {
 		public bool IsActive(int interval) {
 			float velocity = 0f;
 			for(int i=Populations[interval].Interval.Start; i<=Populations[interval].Interval.End; i++) {
-				velocity += Function.Module.RegularVelocities[i] + Function.Module.InverseVelocities[i];
+				velocity += Function.RegularVelocities[i] + Function.InverseVelocities[i];
 			}
 			return velocity / Populations[interval].Interval.Length > 0f;
 		}
@@ -1041,8 +1024,8 @@ public class PhaseEditor : MonoBehaviour {
 			private float ComputeFitness(float[] genes) {
 				float fitness = 0f;
 				for(int i=Interval.Start; i<=Interval.End; i++) {
-					float y1 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.Module.RegularVelocities[i] : Evolution.Function.Module.InverseVelocities[i];
-					float y2 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.Module.InverseVelocities[i] : Evolution.Function.Module.RegularVelocities[i];
+					float y1 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.RegularVelocities[i] : Evolution.Function.InverseVelocities[i];
+					float y2 = Evolution.Function == Evolution.Function.Module.GetRegularPhaseFunction() ? Evolution.Function.InverseVelocities[i] : Evolution.Function.RegularVelocities[i];
 					float x = Phenotype(genes, i);
 					float error = (y1-x)*(y1-x) + (-y2-x)*(-y2-x);
 					float sqrError = error*error;
@@ -1196,6 +1179,27 @@ public class PhaseEditor : MonoBehaviour {
 			}
 			module.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", module.ShowVelocities);
 			module.ShowCycle = EditorGUILayout.Toggle("Show Cycle", module.ShowCycle);
+			Utility.SetGUIColor(UltiDraw.Grey);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				if(module.Optimising) {
+					if(Utility.GUIButton("Stop Optimisation", UltiDraw.LightGrey, UltiDraw.Black)) {
+						module.Optimising = !module.Optimising;
+						module.GetRegularPhaseFunction().Save();
+						module.GetInversePhaseFunction().Save();
+					}
+				} else {
+					if(Utility.GUIButton("Start Optimisation", UltiDraw.DarkGrey, UltiDraw.White)) {
+						module.Optimising = !module.Optimising;
+					}
+				}
+				if(Utility.GUIButton("Clear", UltiDraw.DarkGrey, UltiDraw.White)) {
+					module.GetRegularPhaseFunction().Clear();
+					module.GetInversePhaseFunction().Clear();
+					module.GetRegularPhaseFunction().Save();
+					module.GetInversePhaseFunction().Save();
+				}
+			}
 			module.GetRegularPhaseFunction().Inspector();
 			module.GetInversePhaseFunction().Inspector();
 			module.GetRegularPhaseFunction().EditorUpdate();
