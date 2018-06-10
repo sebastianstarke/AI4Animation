@@ -138,7 +138,6 @@
      <Compile Include="Assets\Scripts\DataProcessing\MotionData.cs" />
      <Compile Include="Assets\Scripts\DataProcessing\MotionEditor.cs" />
      <Compile Include="Assets\Scripts\DataProcessing\MotionExporter.cs" />
-     <Compile Include="Assets\Scripts\DataProcessing\MotionExporterPlus.cs" />
      <Compile Include="Assets\Scripts\DataProcessing\MotionImporter.cs" />
      <Compile Include="Assets\Scripts\DataProcessing\MotionState.cs" />
      <Compile Include="Assets\Scripts\DataProcessing\MotionTools.cs" />

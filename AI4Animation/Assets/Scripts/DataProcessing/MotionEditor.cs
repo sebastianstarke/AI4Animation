@@ -11,6 +11,7 @@ using UnityEditorInternal;
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
+	public string Folder = string.Empty;
 	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
 
@@ -132,8 +133,10 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void Refresh() {
-		string folder = EditorSceneManager.GetActiveScene().path.Substring(0, EditorSceneManager.GetActiveScene().path.LastIndexOf("/"));
+	public void Import() {
+		string scenePath = EditorSceneManager.GetActiveScene().path;
+		string sceneName = EditorSceneManager.GetActiveScene().name;
+		string folder = scenePath.Substring(0, scenePath.IndexOf(sceneName)) + Folder;
 		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{folder});
 		//Files
 		Files = new MotionData[assets.Length];
@@ -195,6 +198,14 @@ public class MotionEditor : MonoBehaviour {
 			}
 			LoadFrame(0f);
 		}
+	}
+
+	public void LoadPreviousFile() {
+		LoadFile(Mathf.Max(ID-1, 0));
+	}
+
+	public void LoadNextFile() {
+		LoadFile(Mathf.Min(ID+1, Files.Length-1));
 	}
 
 	public void LoadFrame(MotionState state) {
@@ -286,6 +297,9 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public Actor CreateSkeleton() {
+		if(GetData() == null) {
+			return null;
+		}
 		Actor actor = new GameObject("Skeleton").AddComponent<Actor>();
 		actor.transform.SetParent(transform);
 		string[] names = new string[GetData().Source.Bones.Length];
@@ -378,7 +392,6 @@ public class MotionEditor : MonoBehaviour {
 
 		void Awake() {
 			Target = (MotionEditor)target;
-			Target.Refresh();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
@@ -418,12 +431,34 @@ public class MotionEditor : MonoBehaviour {
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
 						
+						EditorGUILayout.BeginHorizontal();
+						Target.Folder = EditorGUILayout.TextField("Folder", Target.Folder);
+						if(Utility.GUIButton("Import", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Target.Import();
+						}
+						EditorGUILayout.EndHorizontal();
+
 						Utility.SetGUIColor(Target.GetActor() == null ? UltiDraw.DarkRed : UltiDraw.White);
 						Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
 						Utility.ResetGUIColor();
 
 						EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
 
+						if(Target.Files.Length == 0) {
+							Target.LoadFile(-1);
+						} else {
+							Target.LoadFile(EditorGUILayout.IntSlider(Target.GetData().Name, Target.ID, 0, Target.Files.Length-1));
+						}
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadPreviousFile();
+						}
+						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadNextFile();
+						}
+						EditorGUILayout.EndHorizontal();
+
+						/*
 						EditorGUILayout.BeginHorizontal();
 						string[] names = new string[Target.Files.Length];
 						if(names.Length == 0) {
@@ -434,14 +469,24 @@ public class MotionEditor : MonoBehaviour {
 							}
 							Target.LoadFile(EditorGUILayout.Popup("Data", Target.ID, names));
 						}
+						*/
+						
 						/*
-						if(GUILayout.Button("+", GUILayout.Width(18f))) {
-							string path = EditorUtility.OpenFilePanel("Motion Editor", Application.dataPath, "bvh");
+						if(GUILayout.Button("Import", GUILayout.Width(50f))) {
+							string folder = EditorUtility.OpenFolderPanel("Motion Editor", Application.dataPath, "");
 							GUI.SetNextControlName("");
 							GUI.FocusControl("");
-							Target.AddData(path);
+							int pivot = folder.IndexOf("Assets");
+							if(pivot >= 0) {
+								folder = folder.Substring(pivot);
+								if(AssetDatabase.IsValidFolder(folder)) {
+									Target.Import(folder);
+								}
+							}
 							GUIUtility.ExitGUI();
 						}
+						*/
+						/*
 						if(GUILayout.Button("-", GUILayout.Width(18f))) {
 							Target.RemoveData();
 						}
@@ -449,7 +494,7 @@ public class MotionEditor : MonoBehaviour {
 							Target.RefreshData();
 						}
 						*/
-						EditorGUILayout.EndHorizontal();
+						//EditorGUILayout.EndHorizontal();
 
 					}
 
