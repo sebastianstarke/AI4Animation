@@ -11,8 +11,8 @@ using UnityEditorInternal;
 [UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
-	private MotionData[] Files = new MotionData[0];
-	private Transform[] Environments = new Transform[0];
+	public MotionData[] Files = new MotionData[0];
+	public Transform[] Environments = new Transform[0];
 
 	private bool AutoFocus = false;
 	private float FocusHeight = 1f;
@@ -37,7 +37,7 @@ public class MotionEditor : MonoBehaviour {
 	private bool InspectSettings = true;
 
 	private Actor Actor = null;
-	private Transform Scene = null;
+	private Transform Environment = null;
 	private MotionState State = null;
 
 	private int ID = -1;
@@ -85,28 +85,27 @@ public class MotionEditor : MonoBehaviour {
 
 	public Actor GetActor() {
 		if(Actor == null) {
-			Actor = GameObject.FindObjectOfType<Actor>();
+			Actor = transform.GetComponentInChildren<Actor>();
 		}
 		if(Actor == null) {
-			return CreateSkeleton();
-		} else {
- 			return Actor;
+			Actor = CreateSkeleton();
 		}
-	}
-
-	public Transform GetScene() {
-		if(Scene == null) {
-			return GameObject.Find("Scene").transform;
-		}
-		if(Scene == null) {
-			return new GameObject("Scene").transform;
-		} else {
-			return Scene;
-		}
+		return Actor;
 	}
 
 	public MotionData[] GetFiles() {
 		return Files;
+	}
+
+	public Transform GetEnvironment() {
+		if(Environment == null) {
+			Environment = transform.Find("Environment");
+		}
+		if(Environment == null) {
+			Environment = new GameObject("Environment").transform;
+			Environment.SetParent(transform);
+		}
+		return Environment;
 	}
 
 	public Transform[] GetEnvironments() {
@@ -141,26 +140,20 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<Files.Length; i++) {
 			Files[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
 		}
-		//Environments
-		Transform container = GetScene().Find("Environments");
-		if(container == null) {
-			container = new GameObject("Environments").transform;
-			container.SetParent(GetScene());
-		}
 		//Cleanup
-		for(int i=0; i<container.childCount; i++) {
-			if(!System.Array.Find(Files, x => x.Name == container.GetChild(i).name)) {
-				Utility.Destroy(container.GetChild(i).gameObject);
+		for(int i=0; i<GetEnvironment().childCount; i++) {
+			if(!System.Array.Find(Files, x => x.Name == GetEnvironment().GetChild(i).name)) {
+				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
 				i--;
 			}
 		}
 		//Fill
 		Environments = new Transform[assets.Length];
 		for(int i=0; i<Environments.Length; i++) {
-			Environments[i] = container.Find(Files[i].Name);
+			Environments[i] = GetEnvironment().Find(Files[i].Name);
 			if(Environments[i] == null) {
 				Environments[i] = new GameObject(Files[i].Name).transform;
-				Environments[i].SetParent(container);
+				Environments[i].SetParent(GetEnvironment());
 			}
 		}
 		//Finalise
@@ -208,9 +201,9 @@ public class MotionEditor : MonoBehaviour {
 		Timestamp = state.Timestamp;
 		State = state;
 		if(state.Mirrored) {
-			GetScene().localScale = Vector3.one.GetMirror(GetData().GetAxis(GetData().MirrorAxis));
+			GetEnvironment().localScale = Vector3.one.GetMirror(GetData().GetAxis(GetData().MirrorAxis));
 		} else {
-			GetScene().localScale = Vector3.one;
+			GetEnvironment().localScale = Vector3.one;
 		}
 
 		GetActor().GetRoot().position = GetState().Root.GetPosition();
@@ -293,7 +286,8 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public Actor CreateSkeleton() {
-		Actor = new GameObject("Skeleton").AddComponent<Actor>();
+		Actor actor = new GameObject("Skeleton").AddComponent<Actor>();
+		actor.transform.SetParent(transform);
 		string[] names = new string[GetData().Source.Bones.Length];
 		string[] parents = new string[GetData().Source.Bones.Length];
 		for(int i=0; i<GetData().Source.Bones.Length; i++) {
@@ -303,11 +297,11 @@ public class MotionEditor : MonoBehaviour {
 		List<Transform> instances = new List<Transform>();
 		for(int i=0; i<names.Length; i++) {
 			Transform instance = new GameObject(names[i]).transform;
-			instance.SetParent(parents[i] == "None" ? GetActor().GetRoot() : GetActor().FindTransform(parents[i]));
+			instance.SetParent(parents[i] == "None" ? actor.GetRoot() : actor.FindTransform(parents[i]));
 			instances.Add(instance);
 		}
-		GetActor().ExtractSkeleton(instances.ToArray());
-		return Actor.GetComponent<Actor>();
+		actor.ExtractSkeleton(instances.ToArray());
+		return actor;
 	}
 
 	public void Draw() {
@@ -428,9 +422,7 @@ public class MotionEditor : MonoBehaviour {
 						Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
 						Utility.ResetGUIColor();
 
-						Utility.SetGUIColor(Target.GetScene() == null ? UltiDraw.DarkRed : UltiDraw.White);
-						EditorGUILayout.ObjectField("Scene", Target.GetScene(), typeof(Transform), true);
-						Utility.ResetGUIColor();
+						EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
 
 						EditorGUILayout.BeginHorizontal();
 						string[] names = new string[Target.Files.Length];
@@ -765,10 +757,6 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.CreateSkeleton();
-									}
-									if(Utility.GUIButton("Refresh Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Utility.Destroy(Target.GetActor().gameObject);
 										Target.CreateSkeleton();
 									}
 								}
