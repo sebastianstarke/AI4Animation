@@ -548,7 +548,7 @@ public class MotionData : ScriptableObject {
 			//forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootSmoothing).GetPosition();
 			*/
 
-			Vector3 forward = Vector3.forward;
+			Vector3 forward = GetBoneTransformation(Data.Source.FindBone("arissa:Head").Index, mirrored, Data.RootSmoothing).GetForward();
 
 			forward.y = 0f;
 			return Quaternion.LookRotation(forward.normalized, Vector3.up);
