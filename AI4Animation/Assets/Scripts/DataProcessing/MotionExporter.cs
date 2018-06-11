@@ -164,7 +164,7 @@ public class MotionExporter : EditorWindow {
 
 	private StreamWriter CreateFile(string name) {
 		string filename = string.Empty;
-		string folder = Application.dataPath + "/../../../Export/";
+		string folder = Application.dataPath + "/../../Export/";
 		if(!File.Exists(folder+name+".txt")) {
 			filename = folder+name;
 		} else {
@@ -184,7 +184,7 @@ public class MotionExporter : EditorWindow {
 		
 		string name = "InputLabels";
 		string filename = string.Empty;
-		string folder = Application.dataPath + "/../../../Export/";
+		string folder = Application.dataPath + "/../../Export/";
 		if(!File.Exists(folder+name+".txt")) {
 			filename = folder+name;
 		} else {
@@ -244,7 +244,7 @@ public class MotionExporter : EditorWindow {
 
 			string name = "OutputLabels";
 			string filename = string.Empty;
-			string folder = Application.dataPath + "/../../../Export/";
+			string folder = Application.dataPath + "/../../Export/";
 			if(!File.Exists(folder+name+".txt")) {
 				filename = folder+name;
 			} else {

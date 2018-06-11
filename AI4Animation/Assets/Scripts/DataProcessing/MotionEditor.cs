@@ -141,12 +141,7 @@ public class MotionEditor : MonoBehaviour {
 			Files[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
 		}
 		//Cleanup
-		for(int i=0; i<GetEnvironment().childCount; i++) {
-			if(!System.Array.Find(Files, x => x.Name == GetEnvironment().GetChild(i).name)) {
-				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
-				i--;
-			}
-		}
+		Cleanup();
 		//Fill
 		Environments = new Transform[assets.Length];
 		for(int i=0; i<Environments.Length; i++) {
@@ -164,6 +159,21 @@ public class MotionEditor : MonoBehaviour {
 		//Initialise
 		if(GetData() != null) {
 			LoadFrame(0f);
+		}
+	}
+
+	public void Cleanup() {
+		for(int i=0; i<Files.Length; i++) {
+			if(Files[i] == null) {
+				ArrayExtensions.RemoveAt(ref Files, i);
+				i--;
+			}
+		}
+		for(int i=0; i<GetEnvironment().childCount; i++) {
+			if(!System.Array.Find(Files, x => x.Name == GetEnvironment().GetChild(i).name)) {
+				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
+				i--;
+			}
 		}
 	}
 
@@ -389,6 +399,7 @@ public class MotionEditor : MonoBehaviour {
 
 		void Awake() {
 			Target = (MotionEditor)target;
+			Target.Cleanup();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
