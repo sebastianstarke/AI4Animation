@@ -26,14 +26,11 @@ public class BioAnimation : MonoBehaviour {
 
 	public Controller Controller;
 
-	public bool MotionEditing = true;
-	public SerialIK[] IKSolvers = new SerialIK[0];
-
 	private Actor Actor;
 	private NeuralNetwork NN;
 	private Trajectory Trajectory;
 
-	private HeightMap HeightMap;
+	//private HeightMap HeightMap;
 
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
@@ -67,7 +64,7 @@ public class BioAnimation : MonoBehaviour {
 		Ups = new Vector3[Actor.Bones.Length];
 		Velocities = new Vector3[Actor.Bones.Length];
 		Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
-		HeightMap = new HeightMap(0.25f);
+		//HeightMap = new HeightMap(0.25f);
 		if(Controller.Styles.Length > 0) {
 			for(int i=0; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].Styles[0] = 1f;
@@ -95,15 +92,6 @@ public class BioAnimation : MonoBehaviour {
 		return Trajectory;
 	}
 
-	public void EditMotion(bool value) {
-		MotionEditing = value;
-		if(MotionEditing) {
-			for(int i=0; i<IKSolvers.Length; i++) {
-				IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
-			}
-		}
-	}
-
 	void Update() {
 		if(NN.Parameters == null) {
 			return;
@@ -115,12 +103,6 @@ public class BioAnimation : MonoBehaviour {
 
 		if(NN.Parameters != null) {
 			Animate();
-		}
-
-		if(MotionEditing) {
-			EditMotion();
-		} else {
-			transform.position = Trajectory.Points[RootPointIndex].GetPosition();
 		}
 	}
 
@@ -169,15 +151,11 @@ public class BioAnimation : MonoBehaviour {
 		//	Trajectory.Points[i].SetVelocity((Trajectory.Points[i].GetPosition() - Trajectory.Points[i-1].GetPosition()) * Framerate);
 		//}
 		float[] style = Controller.GetStyle();
-		if(style[2] == 0f) {
-			style[1] = Mathf.Max(style[1], Mathf.Clamp(Trajectory.Points[RootPointIndex].GetVelocity().magnitude, 0f, 1f));
-		}
 		for(int i=RootPointIndex; i<Trajectory.Points.Length; i++) {
-			float weight = (float)(i - RootPointIndex) / (float)FuturePoints; //w between 0 and 1
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
-				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Utility.Normalise(weight, 0f, 1f, Controller.Styles[j].Transition, 1f));
+				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			Utility.SoftMax(ref Trajectory.Points[i].Styles);
+			//Utility.SoftMax(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}
@@ -233,6 +211,7 @@ public class BioAnimation : MonoBehaviour {
 		}
 		start += JointDimIn*Actor.Bones.Length;
 
+		/*
 		//Input Height Map
 		HeightMap.Sense(Actor.Bones[0].Transform.GetWorldMatrix(), LayerMask.GetMask("Ground", "Object"));
 		float[] distances = HeightMap.GetDistances();
@@ -240,6 +219,7 @@ public class BioAnimation : MonoBehaviour {
 			NN.SetInput(start + i, distances[i]);
 		}
 		start += HeightMap.Points.Length;
+		*/
 
 		//Predict
 		NN.Predict();
@@ -258,7 +238,8 @@ public class BioAnimation : MonoBehaviour {
 		//Update Root
 		Vector3 translationalOffset = Vector3.zero;
 		float rotationalOffset = 0f;
-		float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+		//float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+		float rest = 1f;
 		Vector3 rootMotion = new Vector3(NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 0), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 1), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 2));
 		rootMotion /= Framerate;
 		translationalOffset = rest * new Vector3(rootMotion.x, 0f, rootMotion.z);
@@ -370,67 +351,6 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
-	private void EditMotion() {
-		transform.position = new Vector3(transform.position.x, 0f, transform.position.z); //For flat terrain
-
-		//Step #1
-		for(int i=0; i<IKSolvers.Length; i++) {
-			if(IKSolvers[i].name != "Tail") {
-				float threshold = 0.025f;
-				Vector3 target = IKSolvers[i].EndEffector.position;
-				IKSolvers[i].TargetPosition.y = target.y;
-				float height = target.y;
-				float damping = 2f - Mathf.Pow(2f, Mathf.Clamp(height / threshold, 0f, 1f));
-				IKSolvers[i].TargetPosition = Vector3.Lerp(IKSolvers[i].TargetPosition, target, 1f - damping);
-			}
-		}
-		for(int i=0; i<IKSolvers.Length; i++) {
-			if(IKSolvers[i].name != "Tail") {
-				IKSolvers[i].Solve();
-			}
-		}
-
-		//for(int i=0; i<Actor.Bones.Length; i++) {
-		//	Velocities[i] += (Actor.Bones[i].Transform.position - Positions[i]) * Framerate;
-		//	Positions[i] = Actor.Bones[i].Transform.position;
-		//	Forwards[i] = Actor.Bones[i].Transform.forward;
-		//	Ups[i] = Actor.Bones[i].Transform.up;
-		//}
-
-		transform.position = Trajectory.Points[RootPointIndex].GetPosition();
-
-		//Step #2
-		for(int i=0; i<IKSolvers.Length; i++) {
-			IKSolvers[i].TargetPosition = IKSolvers[i].EndEffector.position;
-			float height = Utility.GetHeight(IKSolvers[i].TargetPosition, LayerMask.GetMask("Ground"));
-			if(IKSolvers[i].name == "Tail") {
-				IKSolvers[i].TargetPosition.y = Mathf.Max(height, height + (IKSolvers[i].TargetPosition.y - transform.position.y));
-			} else {
-				IKSolvers[i].TargetPosition.y = height + (IKSolvers[i].TargetPosition.y - transform.position.y);
-			}
-		}
-		Transform spine = Array.Find(Actor.Bones, x => x.Transform.name == "Spine1").Transform;
-		Transform neck = Array.Find(Actor.Bones, x => x.Transform.name == "Neck").Transform;
-		Transform leftShoulder = Array.Find(Actor.Bones, x => x.Transform.name == "LeftShoulder").Transform;
-		Transform rightShoulder = Array.Find(Actor.Bones, x => x.Transform.name == "RightShoulder").Transform;
-		Vector3 spinePosition = spine.position;
-		Vector3 neckPosition = neck.position;
-		Vector3 leftShoulderPosition = leftShoulder.position;
-		Vector3 rightShoulderPosition = rightShoulder.position;
-		float spineHeight = Utility.GetHeight(spine.position, LayerMask.GetMask("Ground"));
-		float neckHeight = Utility.GetHeight(neck.position, LayerMask.GetMask("Ground"));
-		float leftShoulderHeight = Utility.GetHeight(leftShoulder.position, LayerMask.GetMask("Ground"));
-		float rightShoulderHeight = Utility.GetHeight(rightShoulder.position, LayerMask.GetMask("Ground"));
-		spine.rotation = Quaternion.Slerp(spine.rotation, Quaternion.FromToRotation(neckPosition - spinePosition, new Vector3(neckPosition.x, neckHeight + (neckPosition.y - transform.position.y), neckPosition.z) - spinePosition) * spine.rotation, 0.5f);
-		spine.position = new Vector3(spinePosition.x, spineHeight + (spinePosition.y - transform.position.y), spinePosition.z);
-		neck.position = new Vector3(neckPosition.x, neckHeight + (neckPosition.y - transform.position.y), neckPosition.z);
-		leftShoulder.position = new Vector3(leftShoulderPosition.x, leftShoulderHeight + (leftShoulderPosition.y - transform.position.y), leftShoulderPosition.z);
-		rightShoulder.position = new Vector3(rightShoulderPosition.x, rightShoulderHeight + (rightShoulderPosition.y - transform.position.y), rightShoulderPosition.z);
-		for(int i=0; i<IKSolvers.Length; i++) {
-			IKSolvers[i].Solve();
-		}
-	}
-
 	private float PoolBias() {
 		float[] styles = Trajectory.Points[RootPointIndex].Styles;
 		float bias = 0f;
@@ -504,7 +424,7 @@ public class BioAnimation : MonoBehaviour {
 				UltiDraw.End();
 			}
 
-			HeightMap.Draw();
+			//HeightMap.Draw();
 		}
 	}
 
@@ -556,19 +476,6 @@ public class BioAnimation : MonoBehaviour {
 						Target.TargetDecay = EditorGUILayout.Slider("Target Decay", Target.TargetDecay, 0f, 1f);
 						Target.TrajectoryControl = EditorGUILayout.Toggle("Trajectory Control", Target.TrajectoryControl);
 						Target.TrajectoryCorrection = EditorGUILayout.Slider("Trajectory Correction", Target.TrajectoryCorrection, 0f, 1f);
-
-						Target.MotionEditing = EditorGUILayout.Toggle("Motion Editing", Target.MotionEditing);
-						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Add IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							ArrayExtensions.Expand(ref Target.IKSolvers);
-						}
-						if(Utility.GUIButton("Remove IK Solver", UltiDraw.Brown, UltiDraw.White)) {
-							ArrayExtensions.Shrink(ref Target.IKSolvers);
-						}
-						EditorGUILayout.EndHorizontal();
-						for(int i=0; i<Target.IKSolvers.Length; i++) {
-							Target.IKSolvers[i] = (SerialIK)EditorGUILayout.ObjectField(Target.IKSolvers[i], typeof(SerialIK), true);
-						}
 					}
 				}
 			}

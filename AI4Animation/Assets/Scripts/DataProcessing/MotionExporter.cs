@@ -15,6 +15,8 @@ public class MotionExporter : EditorWindow {
 	public int Framerate = 60;
 	public int BatchSize = 10;
 
+	public bool Mirror = true;
+
 	public MotionEditor[] Editors = new MotionEditor[0];
 	public bool[] Export = new bool[0];
 	public StyleFilter[] StyleFilters = new StyleFilter[0];
@@ -106,6 +108,7 @@ public class MotionExporter : EditorWindow {
 				
 				Framerate = EditorGUILayout.IntField("Framerate", Framerate);
 				BatchSize = Mathf.Max(1, EditorGUILayout.IntField("Batch Size", BatchSize));
+				Mirror = EditorGUILayout.Toggle("Mirror", Mirror);
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					for(int i=0; i<StyleFilters.Length; i++) {
@@ -202,8 +205,11 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
 			file.WriteLine(index + " " + "TrajectorySpeed"+i); index += 1;
-			for(int j=1; j<=StyleFilters.Length; j++) {
-				file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
+			//for(int j=1; j<=StyleFilters.Length; j++) {
+			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
+			//}
+			for(int j=1; j<=editor.GetData().Styles.Length; j++) {
+				file.WriteLine(index + " " + editor.GetData().Styles[j-1] + i); index += 1;
 			}
 		}
 		for(int i=0; i<editor.GetData().Source.Bones.Length; i++) {
@@ -301,7 +307,7 @@ public class MotionExporter : EditorWindow {
 				int items = 0;
 				for(int i=0; i<editor.GetFiles().Length; i++) {
 					editor.LoadFile(i);
-					for(int m=1; m<=2; m++) {
+					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 						if(m==1) {
 							editor.SetMirror(false);
 						}
@@ -344,7 +350,8 @@ public class MotionExporter : EditorWindow {
 										Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 										Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 										float speed = current.Trajectory.Points[k].GetSpeed();
-										float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
+										//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
+										float[] style = current.Trajectory.Points[k].Styles;
 										inputLine += FormatValue(position.x);
 										inputLine += FormatValue(position.z);
 										inputLine += FormatValue(direction.x);
@@ -420,6 +427,7 @@ public class MotionExporter : EditorWindow {
 		return Mathf.Repeat(((next-previous) + 1f), 1f);
 	}
 
+	/*
 	private float[] FilterStyle(float[] style) {
 		if(StyleFilters.Length == 0) {
 			return style;
@@ -434,6 +442,7 @@ public class MotionExporter : EditorWindow {
 			return filter;
 		}
 	}
+	*/
 
 	private string FormatString(string value) {
 		return value + Separator;

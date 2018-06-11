@@ -14,6 +14,7 @@ public class FBXImporter : EditorWindow {
 	public Actor Character = null;
 	public string Source = string.Empty;
 	public string Destination = string.Empty;
+	public string Filter = string.Empty;
 	public bool[] Import = new bool[0];
 	public GameObject[] Files = new GameObject[0];
 	public bool Importing = false;
@@ -84,6 +85,8 @@ public class FBXImporter : EditorWindow {
 					Destination = EditorGUILayout.TextField(Destination);
 					EditorGUILayout.EndHorizontal();
 
+					Filter = EditorGUILayout.TextField("Filter", Filter);
+
 					int start = (Page-1)*Items;
 					int end = Mathf.Min(start+Items, Files.Length);
 					int pages = Mathf.CeilToInt(Files.Length/Items)+1;
@@ -101,18 +104,20 @@ public class FBXImporter : EditorWindow {
 						EditorGUILayout.EndHorizontal();
 					}
 					for(int i=start; i<end; i++) {
-						if(Import[i]) {
-							Utility.SetGUIColor(UltiDraw.DarkGreen);
-						} else {
-							Utility.SetGUIColor(UltiDraw.DarkRed);
-						}
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							EditorGUILayout.BeginHorizontal();
-							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
-							Import[i] = EditorGUILayout.Toggle(Import[i], GUILayout.Width(20f));
-							EditorGUILayout.LabelField(Files[i].name);
-							EditorGUILayout.EndHorizontal();
+						if(Filter == string.Empty || Files[i].name.Contains(Filter)) {
+							if(Import[i]) {
+								Utility.SetGUIColor(UltiDraw.DarkGreen);
+							} else {
+								Utility.SetGUIColor(UltiDraw.DarkRed);
+							}
+							using(new EditorGUILayout.VerticalScope ("Box")) {
+								Utility.ResetGUIColor();
+								EditorGUILayout.BeginHorizontal();
+								EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
+								Import[i] = EditorGUILayout.Toggle(Import[i], GUILayout.Width(20f));
+								EditorGUILayout.LabelField(Files[i].name);
+								EditorGUILayout.EndHorizontal();
+							}
 						}
 					}
 				}
