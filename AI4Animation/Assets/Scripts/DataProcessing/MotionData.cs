@@ -270,6 +270,10 @@ public class MotionData : ScriptableObject {
 			return System.Array.Find(Bones, x => x.Name == name);
 		}
 
+		public Bone FindBoneContains(string name) {
+			return System.Array.Find(Bones, x => x.Name.Contains(name));
+		}
+
 		[System.Serializable]
 		public class Bone {
 			public int Index;
@@ -548,7 +552,7 @@ public class MotionData : ScriptableObject {
 			//forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootSmoothing).GetPosition();
 			*/
 
-			Vector3 forward = GetBoneTransformation(Data.Source.FindBone("arissa:Head").Index, mirrored, Data.RootSmoothing).GetForward();
+			Vector3 forward = GetBoneTransformation(Data.Source.FindBoneContains("Head").Index, mirrored, Data.RootSmoothing).GetForward();
 
 			forward.y = 0f;
 			return Quaternion.LookRotation(forward.normalized, Vector3.up);
