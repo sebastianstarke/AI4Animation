@@ -128,7 +128,6 @@ public class MotionTools : EditorWindow {
 		MotionData.Axis mirrorAxis = Data[0].MirrorAxis;
 		LayerMask groundMask = Data[0].GroundMask;
 		LayerMask objectMask = Data[0].ObjectMask;
-		Vector3[] corrections = Data[0].Corrections;
 		//
 
 		for(int i=0; i<Data.Length; i++) {
@@ -152,11 +151,6 @@ public class MotionTools : EditorWindow {
 				}
 				if(Data[i].ObjectMask != objectMask) {
 					errors += 1;
-				}
-				for(int j=0; j<corrections.Length; j++) {
-					if(Data[i].Corrections[j] != corrections[j]) {
-						errors += 1;
-					}
 				}
 			}
 		}

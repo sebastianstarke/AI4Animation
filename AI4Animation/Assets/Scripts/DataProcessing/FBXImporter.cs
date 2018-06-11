@@ -171,10 +171,6 @@ public class FBXImporter : EditorWindow {
 						data.Source.AddBone(Character.Bones[i].GetName(), Character.Bones[i].GetParent() == null ? "None" : Character.Bones[i].GetParent().GetName());
 					}
 
-					//REMOVE LATER
-					data.Corrections = new Vector3[data.Source.Bones.Length];
-					//
-
 					//Set Frames
 					ArrayExtensions.Resize(ref data.Frames, Mathf.RoundToInt((float)Framerate * clip.length));
 

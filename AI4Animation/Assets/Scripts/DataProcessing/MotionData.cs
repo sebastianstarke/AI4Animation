@@ -19,7 +19,6 @@ public class MotionData : ScriptableObject {
 	public float StyleTransition = 0.5f;
 	public Axis MirrorAxis = Axis.XPositive;
 	public int[] Symmetry = new int[0];
-	public Vector3[] Corrections = new Vector3[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
 	public int HeightMapSensor = 0;

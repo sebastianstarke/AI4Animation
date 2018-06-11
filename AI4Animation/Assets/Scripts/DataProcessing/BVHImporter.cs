@@ -223,7 +223,7 @@ public class BVHImporter : EditorWindow {
 					}
 
 					//REMOVE LATER
-					data.Corrections = new Vector3[data.Source.Bones.Length];
+					//data.Corrections = new Vector3[data.Source.Bones.Length];
 					//
 
 					//Set Frames
@@ -274,10 +274,12 @@ public class BVHImporter : EditorWindow {
 							data.Frames[k].Local[i] = Matrix4x4.TRS(position, rotation, Vector3.one);
 							data.Frames[k].World[i] = info.Parent == "None" ? data.Frames[k].Local[i] : data.Frames[k].World[data.Source.FindBone(info.Parent).Index] * data.Frames[k].Local[i];
 						}
+						/*
 						for(int i=0; i<data.Source.Bones.Length; i++) {
 							data.Frames[k].Local[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(data.Corrections[i]), Vector3.one);
 							data.Frames[k].World[i] *= Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(data.Corrections[i]), Vector3.one);
 						}
+						*/
 					}
 
 					//Finalise
@@ -296,3 +298,63 @@ public class BVHImporter : EditorWindow {
 	}
 
 }
+
+								/*
+								string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
+								switch(EditorGUILayout.Popup(0, presets)) {
+									case 0:
+									break;
+									case 1:
+									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
+									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;
+									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+										Target.GetData().SetCorrection(i, Vector3.zero);
+									}
+									Target.GetData().ClearStyles();
+									Target.GetData().AddStyle("Idle");
+									Target.GetData().AddStyle("Walk");
+									Target.GetData().AddStyle("Run");
+									Target.GetData().AddStyle("Jump");
+									Target.GetData().AddStyle("Crouch");
+									break;
+
+									case 2:
+									Target.GetData().DepthMapAxis = MotionData.Axis.XPositive;
+									Target.GetData().MirrorAxis = MotionData.Axis.ZPositive;
+									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+										if(i==4 || i==5 || i==6 || i==11) {
+											Target.GetData().SetCorrection(i, new Vector3(90f, 90f, 90f));
+										} else if(i==24) {
+											Target.GetData().SetCorrection(i, new Vector3(-45f, 0f, 0f));
+										} else {
+											Target.GetData().SetCorrection(i, new Vector3(0f, 0f, 0f));
+										}
+									}
+									Target.GetData().ClearStyles();
+									Target.GetData().AddStyle("Idle");
+									Target.GetData().AddStyle("Walk");
+									Target.GetData().AddStyle("Pace");
+									Target.GetData().AddStyle("Trot");
+									Target.GetData().AddStyle("Canter");
+									Target.GetData().AddStyle("Jump");
+									Target.GetData().AddStyle("Sit");
+									Target.GetData().AddStyle("Stand");
+									Target.GetData().AddStyle("Lie");
+									break;
+
+									case 3:
+									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
+									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;							
+									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+										Target.GetData().SetCorrection(i, Vector3.zero);
+									}
+									Target.GetData().ClearStyles();
+									Target.GetData().AddStyle("Idle");
+									Target.GetData().AddStyle("Walk");
+									Target.GetData().AddStyle("Run");
+									Target.GetData().AddStyle("Jump");
+									Target.GetData().AddStyle("Crouch");
+									Target.GetData().AddStyle("Sit");
+									break;
+								}
+								*/

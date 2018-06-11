@@ -734,64 +734,6 @@ public class MotionEditor : MonoBehaviour {
 							}
 
 							if(Target.InspectSettings) {
-								string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
-								switch(EditorGUILayout.Popup(0, presets)) {
-									case 0:
-									break;
-									case 1:
-									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										Target.GetData().SetCorrection(i, Vector3.zero);
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Run");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Crouch");
-									break;
-
-									case 2:
-									Target.GetData().DepthMapAxis = MotionData.Axis.XPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.ZPositive;
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										if(i==4 || i==5 || i==6 || i==11) {
-											Target.GetData().SetCorrection(i, new Vector3(90f, 90f, 90f));
-										} else if(i==24) {
-											Target.GetData().SetCorrection(i, new Vector3(-45f, 0f, 0f));
-										} else {
-											Target.GetData().SetCorrection(i, new Vector3(0f, 0f, 0f));
-										}
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Pace");
-									Target.GetData().AddStyle("Trot");
-									Target.GetData().AddStyle("Canter");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Sit");
-									Target.GetData().AddStyle("Stand");
-									Target.GetData().AddStyle("Lie");
-									break;
-
-									case 3:
-									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;							
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										Target.GetData().SetCorrection(i, Vector3.zero);
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Run");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Crouch");
-									Target.GetData().AddStyle("Sit");
-									break;
-								}
-
 								Utility.SetGUIColor(UltiDraw.LightGrey);
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
@@ -843,11 +785,7 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("Geometry");
-									if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.GetData().DetectSymmetry();
-									}
-									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
-									string[] names = new string[Target.GetData().Source.Bones.Length];
+									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);							string[] names = new string[Target.GetData().Source.Bones.Length];
 									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 										names[i] = Target.GetData().Source.Bones[i].Name;
 									}
@@ -857,9 +795,11 @@ public class MotionEditor : MonoBehaviour {
 										EditorGUILayout.TextField(names[i]);
 										EditorGUI.EndDisabledGroup();
 										Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
-										Target.GetData().SetCorrection(i, EditorGUILayout.Vector3Field("", Target.GetData().Corrections[i]));
 										EditorGUILayout.EndHorizontal();
 									}
+									if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
+										Target.GetData().DetectSymmetry();
+									}		
 								}
 							}
 						}
