@@ -224,7 +224,7 @@ public class Trajectory {
 			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, new Color(r, g, b, 0.5f));
 			*/
 
-			//UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].GetVelocity(), 0.025f, 0f, UltiDraw.DarkGreen.Transparent(0.5f));
 		}
 
 		//Directions

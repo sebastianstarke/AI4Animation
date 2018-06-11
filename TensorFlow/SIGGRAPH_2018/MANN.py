@@ -19,7 +19,7 @@ class MANN(object):
                  num_experts,
                  hidden_size = 512,
                  hidden_size_gt = 32, 
-                 feetJoints = [10, 15, 19, 23],
+                 index_gating = [10, 15, 19, 23],
                  batch_size = 32 , epoch = 150, Te = 10, Tmult =2, 
                  learning_rate_ini = 0.0001, weightDecay_ini = 0.0025, keep_prob_ini = 0.7):
         
@@ -41,7 +41,7 @@ class MANN(object):
         #gatingNN
         self.num_experts    = num_experts
         self.hidden_size_gt = hidden_size_gt
-        self.feetJoints     = feetJoints
+        self.index_gating   = index_gating
         
         #training hyperpara
         self.batch_size    = batch_size
@@ -73,8 +73,8 @@ class MANN(object):
         
         """BUILD gatingNN"""
         #input of gatingNN
-        self.gating_input, self.input_size_gt = GT.getInput(self.nn_X, self.feetJoints, self.num_styles)
-        self.gating_input = tf.transpose(self.gating_input)
+        self.input_size_gt  = len(self.index_gating)
+        self.gating_input   = tf.transpose(GT.getInput(self.nn_X, self.index_gating))
         self.gatingNN = Gating(self.rng, self.gating_input, self.input_size_gt, self.num_experts, self.hidden_size_gt, self.nn_keep_prob)
         #bleding coefficients
         self.BC = self.gatingNN.BC

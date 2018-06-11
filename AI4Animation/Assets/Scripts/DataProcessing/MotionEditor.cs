@@ -136,14 +136,23 @@ public class MotionEditor : MonoBehaviour {
 	public void Import() {
 		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{Folder});
 		//Files
-		Files = new MotionData[assets.Length];
-		for(int i=0; i<Files.Length; i++) {
-			Files[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
+		List<MotionData> files = new List<MotionData>();
+		for(int i=0; i<assets.Length; i++) {
+			MotionData file = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
+			if(!files.Find(x => x.Name == file.Name)) {
+				files.Add(file);
+			}
 		}
+		Files = files.ToArray();
 		//Cleanup
-		Cleanup();
+		for(int i=0; i<GetEnvironment().childCount; i++) {
+			if(!System.Array.Find(Files, x => x.Name == GetEnvironment().GetChild(i).name)) {
+				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
+				i--;
+			}
+		}
 		//Fill
-		Environments = new Transform[assets.Length];
+		Environments = new Transform[Files.Length];
 		for(int i=0; i<Environments.Length; i++) {
 			Environments[i] = GetEnvironment().Find(Files[i].Name);
 			if(Environments[i] == null) {
@@ -166,12 +175,8 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<Files.Length; i++) {
 			if(Files[i] == null) {
 				ArrayExtensions.RemoveAt(ref Files, i);
-				i--;
-			}
-		}
-		for(int i=0; i<GetEnvironment().childCount; i++) {
-			if(!System.Array.Find(Files, x => x.Name == GetEnvironment().GetChild(i).name)) {
-				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
+				Utility.Destroy(Environments[i].gameObject);
+				ArrayExtensions.RemoveAt(ref Environments, i);
 				i--;
 			}
 		}
@@ -455,12 +460,12 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.BeginHorizontal();
 						string[] names = new string[Target.Files.Length];
 						if(names.Length == 0) {
-							Target.LoadFile(EditorGUILayout.Popup("Data", -1, names));
+							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + names.Length + ")", -1, names));
 						} else {
 							for(int i=0; i<names.Length; i++) {
 								names[i] = Target.Files[i].name;
 							}
-							Target.LoadFile(EditorGUILayout.Popup("Data", Target.ID, names));
+							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + names.Length + ")", Target.ID, names));
 						}
 						EditorGUILayout.EndHorizontal();
 						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID, 0, Target.Files.Length-1));

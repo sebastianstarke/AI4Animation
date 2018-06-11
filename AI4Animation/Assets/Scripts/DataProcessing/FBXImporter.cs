@@ -141,7 +141,7 @@ public class FBXImporter : EditorWindow {
 			for(int i=0; i<files.Length; i++) {
 				Files[i] = new File();
 				Files[i].Object = (GameObject)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(GameObject));
-				Files[i].Import = true;
+				Files[i].Import = false;
 			}
 		} else {
 			Files = new File[0];
@@ -156,7 +156,7 @@ public class FBXImporter : EditorWindow {
 		} else {
 			List<File> instances = new List<File>();
 			for(int i=0; i<Files.Length; i++) {
-				if(Files[i].Object.name.Contains(Filter)) {
+				if(Files[i].Object.name.ToLowerInvariant().Contains(Filter.ToLowerInvariant())) {
 					instances.Add(Files[i]);
 				}
 			}
@@ -212,11 +212,15 @@ public class FBXImporter : EditorWindow {
 						data.DetectSymmetry();
 						data.ComputeStyles();
 						data.AddSequence();
+
+						EditorUtility.SetDirty(data);
 					} else {
 						Debug.Log("File with name " + name + " already exists.");
 					}
 				}
 			}
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 			Importing = false;
 		}
 		

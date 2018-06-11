@@ -254,9 +254,13 @@ public class MotionTools : EditorWindow {
 				//path = path.Substring(0, path.LastIndexOf(".")) + ".unity";
 				//SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(path);
 				//Data[i].Scene = scene;
-				Data[i].Sequences[0].SetStart(1);
-				Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
-				Data[i].RootSmoothing = 10;
+				//Data[i].Sequences[0].SetStart(1);
+				//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
+				//Data[i].RootSmoothing = 10;
+				if(Data[i].Styles.Length == 0) {
+					Data[i].AddStyle("Idle");
+					Data[i].AddStyle("Move");
+				}
              	EditorUtility.SetDirty(Data[i]);
             }
 		}
