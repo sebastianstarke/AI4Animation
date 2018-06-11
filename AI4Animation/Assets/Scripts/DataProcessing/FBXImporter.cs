@@ -15,8 +15,8 @@ public class FBXImporter : EditorWindow {
 	public string Source = string.Empty;
 	public string Destination = string.Empty;
 	public string Filter = string.Empty;
-	public bool[] Import = new bool[0];
-	public GameObject[] Files = new GameObject[0];
+	public File[] Files = new File[0];
+	public File[] Instances = new File[0];
 	public bool Importing = false;
 
 	public int Page = 1;
@@ -44,24 +44,11 @@ public class FBXImporter : EditorWindow {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField("FBX Importer");
 				}
-		
+
 				if(!Importing) {
 					if(Utility.GUIButton("Import Motion Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 						this.StartCoroutine(ImportMotionData());
 					}
-
-					EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
-						for(int i=0; i<Import.Length; i++) {
-							Import[i] = true;
-						}
-					}
-					if(Utility.GUIButton("Disable All", UltiDraw.DarkGrey, UltiDraw.White)) {
-						for(int i=0; i<Import.Length; i++) {
-							Import[i] = false;
-						}
-					}
-					EditorGUILayout.EndHorizontal();
 				} else {
 					if(Utility.GUIButton("Stop", UltiDraw.DarkRed, UltiDraw.White)) {
 						this.StopAllCoroutines();
@@ -76,7 +63,7 @@ public class FBXImporter : EditorWindow {
 					EditorGUILayout.LabelField("Source");
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(50));
-					LoadDirectory(EditorGUILayout.TextField(Source));
+					Source = EditorGUILayout.TextField(Source);
 					EditorGUILayout.EndHorizontal();
 
 					EditorGUILayout.LabelField("Destination");
@@ -85,11 +72,19 @@ public class FBXImporter : EditorWindow {
 					Destination = EditorGUILayout.TextField(Destination);
 					EditorGUILayout.EndHorizontal();
 
-					Filter = EditorGUILayout.TextField("Filter", Filter);
+					string filter = EditorGUILayout.TextField("Filter", Filter);
+					if(Filter != filter) {
+						Filter = filter;
+						ApplyFilter();
+					}
+
+					if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
+						LoadDirectory();
+					}
 
 					int start = (Page-1)*Items;
-					int end = Mathf.Min(start+Items, Files.Length);
-					int pages = Mathf.CeilToInt(Files.Length/Items)+1;
+					int end = Mathf.Min(start+Items, Instances.Length);
+					int pages = Mathf.CeilToInt(Instances.Length/Items)+1;
 					Utility.SetGUIColor(UltiDraw.Orange);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
@@ -103,21 +98,31 @@ public class FBXImporter : EditorWindow {
 						}
 						EditorGUILayout.EndHorizontal();
 					}
+					EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
+						for(int i=0; i<Instances.Length; i++) {
+							Instances[i].Import = true;
+						}
+					}
+					if(Utility.GUIButton("Disable All", UltiDraw.DarkGrey, UltiDraw.White)) {
+						for(int i=0; i<Instances.Length; i++) {
+							Instances[i].Import = false;
+						}
+					}
+					EditorGUILayout.EndHorizontal();
 					for(int i=start; i<end; i++) {
-						if(Filter == string.Empty || Files[i].name.Contains(Filter)) {
-							if(Import[i]) {
-								Utility.SetGUIColor(UltiDraw.DarkGreen);
-							} else {
-								Utility.SetGUIColor(UltiDraw.DarkRed);
-							}
-							using(new EditorGUILayout.VerticalScope ("Box")) {
-								Utility.ResetGUIColor();
-								EditorGUILayout.BeginHorizontal();
-								EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
-								Import[i] = EditorGUILayout.Toggle(Import[i], GUILayout.Width(20f));
-								EditorGUILayout.LabelField(Files[i].name);
-								EditorGUILayout.EndHorizontal();
-							}
+						if(Instances[i].Import) {
+							Utility.SetGUIColor(UltiDraw.DarkGreen);
+						} else {
+							Utility.SetGUIColor(UltiDraw.DarkRed);
+						}
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							EditorGUILayout.BeginHorizontal();
+							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
+							Instances[i].Import = EditorGUILayout.Toggle(Instances[i].Import, GUILayout.Width(20f));
+							EditorGUILayout.LabelField(Instances[i].Object.name);
+							EditorGUILayout.EndHorizontal();
 						}
 					}
 				}
@@ -128,25 +133,37 @@ public class FBXImporter : EditorWindow {
 		EditorGUILayout.EndScrollView();
 	}
 
-	private void LoadDirectory(string source) {
-		if(Source != source) {
-			Source = source;
-			Files = new GameObject[0];
-			Import = new bool[0];
-			string folder = "Assets/"+Source;
-			if(AssetDatabase.IsValidFolder(folder)) {
-				string[] files = AssetDatabase.FindAssets("t:AnimationClip", new string[1]{folder});
-				Files = new GameObject[files.Length];
-				Import = new bool[files.Length];
-				for(int i=0; i<files.Length; i++) {
-					Files[i] = (GameObject)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(GameObject));
-					Import[i] = true;
-				}
+	private void LoadDirectory() {
+		string folder = "Assets/"+Source;
+		if(AssetDatabase.IsValidFolder(folder)) {
+			string[] files = AssetDatabase.FindAssets("t:AnimationClip", new string[1]{folder});
+			Files = new File[files.Length];
+			for(int i=0; i<files.Length; i++) {
+				Files[i] = new File();
+				Files[i].Object = (GameObject)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(GameObject));
+				Files[i].Import = true;
 			}
-			Page = 1;
+		} else {
+			Files = new File[0];
 		}
+		ApplyFilter();
+		Page = 1;
 	}
 
+	private void ApplyFilter() {
+		if(Filter == string.Empty) {
+			Instances = Files;
+		} else {
+			List<File> instances = new List<File>();
+			for(int i=0; i<Files.Length; i++) {
+				if(Files[i].Object.name.Contains(Filter)) {
+					instances.Add(Files[i]);
+				}
+			}
+			Instances = instances.ToArray();
+		}
+	}
+	
 	private IEnumerator ImportMotionData() {
 		string destination = "Assets/" + Destination;
 		if(Character == null) {
@@ -156,10 +173,10 @@ public class FBXImporter : EditorWindow {
 		} else {
 			Importing = true;
 			for(int f=0; f<Files.Length; f++) {
-				if(Import[f]) {
-					AnimationClip clip = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(Files[f]), typeof(AnimationClip));
+				if(Files[f].Import) {
+					AnimationClip clip = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(Files[f].Object), typeof(AnimationClip));
 					MotionData data = ScriptableObject.CreateInstance<MotionData>();
-					data.Name = Files[f].name.Substring(Files[f].name.LastIndexOf("/")+1);
+					data.Name = Files[f].Object.name.Substring(Files[f].Object.name.LastIndexOf("/")+1);
 					if(AssetDatabase.LoadAssetAtPath(destination+"/"+data.Name+".asset", typeof(MotionData)) == null) {
 						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
 					} else {
@@ -204,6 +221,12 @@ public class FBXImporter : EditorWindow {
 		}
 		
 		yield return new WaitForSeconds(0f);
+	}
+
+	[System.Serializable]
+	public class File {
+		public GameObject Object;
+		public bool Import;
 	}
 
 }

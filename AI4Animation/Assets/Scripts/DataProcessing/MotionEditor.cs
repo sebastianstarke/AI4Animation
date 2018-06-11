@@ -134,10 +134,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Import() {
-		string scenePath = EditorSceneManager.GetActiveScene().path;
-		string sceneName = EditorSceneManager.GetActiveScene().name;
-		string folder = scenePath.Substring(0, scenePath.IndexOf(sceneName)) + Folder;
-		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{folder});
+		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{Folder});
 		//Files
 		Files = new MotionData[assets.Length];
 		for(int i=0; i<Files.Length; i++) {
@@ -432,7 +429,7 @@ public class MotionEditor : MonoBehaviour {
 						Utility.ResetGUIColor();
 						
 						EditorGUILayout.BeginHorizontal();
-						Target.Folder = EditorGUILayout.TextField("Folder", Target.Folder);
+						Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
 						if(Utility.GUIButton("Import", UltiDraw.DarkGrey, UltiDraw.White)) {
 							Target.Import();
 						}
