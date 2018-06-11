@@ -444,21 +444,6 @@ public class MotionEditor : MonoBehaviour {
 
 						EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
 
-						if(Target.Files.Length == 0) {
-							Target.LoadFile(-1);
-						} else {
-							Target.LoadFile(EditorGUILayout.IntSlider(Target.GetData().Name, Target.ID, 0, Target.Files.Length-1));
-						}
-						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
-							Target.LoadPreviousFile();
-						}
-						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
-							Target.LoadNextFile();
-						}
-						EditorGUILayout.EndHorizontal();
-
-						/*
 						EditorGUILayout.BeginHorizontal();
 						string[] names = new string[Target.Files.Length];
 						if(names.Length == 0) {
@@ -469,7 +454,16 @@ public class MotionEditor : MonoBehaviour {
 							}
 							Target.LoadFile(EditorGUILayout.Popup("Data", Target.ID, names));
 						}
-						*/
+						EditorGUILayout.EndHorizontal();
+						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID, 0, Target.Files.Length-1));
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadPreviousFile();
+						}
+						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadNextFile();
+						}
+						EditorGUILayout.EndHorizontal();
 						
 						/*
 						if(GUILayout.Button("Import", GUILayout.Width(50f))) {

@@ -606,8 +606,11 @@ public class MotionData : ScriptableObject {
 			for(int i=0; i<6; i++) {
 				float delta = -1f + (float)i/6f;
 				if(Timestamp + delta < 0f) {
-					Frame reference = Data.GetFrame(Mathf.Clamp(-(Timestamp + delta), 0f, Data.GetTotalTime()));
-					trajectory.Points[i].SetPosition(Data.GetFrame(0f).GetRootPosition(mirrored) - (reference.GetRootPosition(mirrored) - Data.GetFrame(0f).GetRootPosition(mirrored)));
+					float pivot = - Timestamp - delta;
+					float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+					float ratio = (pivot - Timestamp) / (clamped - Timestamp);
+					Frame reference = Data.GetFrame(clamped);
+					trajectory.Points[i].SetPosition(Data.GetFrame(0f).GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFrame(0f).GetRootPosition(mirrored)));
 					trajectory.Points[i].SetRotation(reference.GetRootRotation(mirrored));
 					trajectory.Points[i].SetVelocity(reference.GetRootVelocity(mirrored));
 					trajectory.Points[i].SetSpeed(reference.GetSpeed(mirrored));
@@ -625,8 +628,11 @@ public class MotionData : ScriptableObject {
 			for(int i=1; i<=5; i++) {
 				float delta = (float)i/5f;
 				if(Timestamp + delta > Data.GetTotalTime()) {
-					Frame reference = Data.GetFrame(Mathf.Clamp(Data.GetTotalTime() - (Timestamp + delta - Data.GetTotalTime()), 0f, Data.GetTotalTime()));
-					trajectory.Points[6+i].SetPosition(Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored) - (reference.GetRootPosition(mirrored) - Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored)));
+					float pivot = 2f*Data.GetTotalTime() - Timestamp - delta;
+					float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+					float ratio = (pivot - Timestamp) / (clamped - Timestamp);
+					Frame reference = Data.GetFrame(clamped);
+					trajectory.Points[6+i].SetPosition(Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored)));
 					trajectory.Points[6+i].SetRotation(reference.GetRootRotation(mirrored));
 					trajectory.Points[6+i].SetVelocity(reference.GetRootVelocity(mirrored));
 					trajectory.Points[6+i].SetSpeed(reference.GetSpeed(mirrored));
