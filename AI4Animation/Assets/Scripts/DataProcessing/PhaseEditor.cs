@@ -46,6 +46,10 @@ public class PhaseEditor : MonoBehaviour {
 		if(Variables.Length != GetEditor().GetActor().Bones.Length) {
 			Variables = new bool[GetEditor().GetActor().Bones.Length];
 		}
+		for(int i=0; i<Modules.Length; i++) {
+			Modules[i].GetRegularPhaseFunction().ComputeVelocities();
+			Modules[i].GetInversePhaseFunction().ComputeVelocities();
+		}
 	}
 
 	public void SetMaximumVelocity(float value) {
