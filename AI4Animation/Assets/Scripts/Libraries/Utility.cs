@@ -411,7 +411,7 @@ public static class Utility {
 		if(int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
 			return parsed;
 		} else {
-			Debug.Log("Error parsing " + value + "!");
+			//Debug.Log("Error parsing " + value + "!");
 			return 0;
 		}
 	}
@@ -421,7 +421,7 @@ public static class Utility {
 		if(float.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out parsed)) {
 			return parsed;
 		} else {
-			Debug.Log("Error parsing " + value + "!");
+			//Debug.Log("Error parsing " + value + "!");
 			return 0f;
 		}
 	}

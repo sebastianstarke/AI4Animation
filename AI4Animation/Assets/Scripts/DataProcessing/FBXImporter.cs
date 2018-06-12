@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections;
@@ -235,7 +236,6 @@ public class FBXImporter : EditorWindow {
 
 }
 
-
 /*
 using System.Collections;
 using System.Collections.Generic;
@@ -254,3 +254,4 @@ public class FBXImporter : MonoBehaviour {
 	}
 }
 */
+#endif

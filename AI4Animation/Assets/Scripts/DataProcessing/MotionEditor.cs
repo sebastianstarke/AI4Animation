@@ -15,6 +15,17 @@ public class MotionEditor : MonoBehaviour {
 	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
 
+	public bool ShowMotion = false;
+	public bool ShowVelocities = false;
+	public bool ShowTrajectory = false;
+	public bool ShowHeightMap = false;
+	public bool ShowDepthMap = false;
+	public bool ShowDepthImage = false;
+
+	public bool InspectFrame = true;
+	public bool InspectExport = true;
+	public bool InspectSettings = true;
+
 	private bool AutoFocus = false;
 	private float FocusHeight = 1f;
 	private float FocusOffset = 0f;
@@ -25,17 +36,6 @@ public class MotionEditor : MonoBehaviour {
 	private bool Playing = false;
 	private float Timescale = 1f;
 	private float Timestamp = 0f;
-
-	private bool ShowMotion = false;
-	private bool ShowVelocities = false;
-	private bool ShowTrajectory = false;
-	private bool ShowHeightMap = false;
-	private bool ShowDepthMap = false;
-	private bool ShowDepthImage = false;
-
-	private bool InspectFrame = true;
-	private bool InspectExport = true;
-	private bool InspectSettings = true;
 
 	private Actor Actor = null;
 	private Transform Environment = null;
@@ -798,7 +798,8 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("Geometry");
-									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);							string[] names = new string[Target.GetData().Source.Bones.Length];
+									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
+									string[] names = new string[Target.GetData().Source.Bones.Length];
 									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 										names[i] = Target.GetData().Source.Bones[i].Name;
 									}
