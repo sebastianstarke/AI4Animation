@@ -118,7 +118,7 @@ public class BioAnimation : MonoBehaviour {
 		//Update Target Direction / Velocity / Correction
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn * 60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), control ? TargetGain : TargetDecay);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, bias * (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, control ? TargetGain : TargetDecay);
-		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(move.normalized.magnitude, Mathf.Abs(turn)), control ? TargetGain : TargetDecay);
+		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, 0.25f * Mathf.Max(move.normalized.magnitude, Mathf.Abs(turn)), control ? TargetGain : TargetDecay);
 
 		//Predict Future Trajectory
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
