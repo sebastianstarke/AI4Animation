@@ -125,7 +125,7 @@ public class MotionTools : EditorWindow {
 		int errors = 0;
 
 		//Default Values
-		MotionData.Axis mirrorAxis = Data[0].MirrorAxis;
+		MotionData.AXIS mirrorAxis = Data[0].MirrorAxis;
 		LayerMask groundMask = Data[0].GroundMask;
 		LayerMask objectMask = Data[0].ObjectMask;
 		//

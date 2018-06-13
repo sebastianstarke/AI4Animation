@@ -7,9 +7,10 @@ using UnityEditor.SceneManagement;
 
 public class MotionData : ScriptableObject {
 
-	public enum Axis {XPositive, YPositive, ZPositive, XNegative, YNegative, ZNegative};
+	public enum AXIS {XPositive, YPositive, ZPositive, XNegative, YNegative, ZNegative};
 
-	public Hierarchy Source;
+	public Hierarchy Source = null;
+	public Frame[] Frames = new Frame[0];
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
@@ -17,20 +18,19 @@ public class MotionData : ScriptableObject {
 	public int RootSmoothing = 0;
 	public string[] Styles = new string[0];
 	public float StyleTransition = 0.5f;
-	public Axis MirrorAxis = Axis.XPositive;
+	public AXIS MirrorAxis = AXIS.XPositive;
 	public int[] Symmetry = new int[0];
 	public LayerMask GroundMask = -1;
 	public LayerMask ObjectMask = -1;
 	public int HeightMapSensor = 0;
 	public float HeightMapSize = 0.25f;
 	public int DepthMapSensor = 0;
-	public Axis DepthMapAxis = Axis.ZPositive;
+	public AXIS DepthMapAxis = AXIS.ZPositive;
 	public int DepthMapResolution = 20;
 	public float DepthMapSize = 10f;
 	public float DepthMapDistance = 10f;
+	public bool Export = true;
 	public Sequence[] Sequences = new Sequence[0];
-
-	public Frame[] Frames;
 
 	public float GetTotalTime() {
 		return GetTotalFrames() / Framerate;
@@ -77,19 +77,19 @@ public class MotionData : ScriptableObject {
 		return GetFrames(GetFrame(start).Index, GetFrame(end).Index);
 	}
 
-	public Vector3 GetAxis(Axis axis) {
+	public Vector3 GetAxis(AXIS axis) {
 		switch(axis) {
-			case Axis.XPositive:
+			case AXIS.XPositive:
 			return Vector3.right;
-			case Axis.YPositive:
+			case AXIS.YPositive:
 			return Vector3.up;
-			case Axis.ZPositive:
+			case AXIS.ZPositive:
 			return Vector3.forward;
-			case Axis.XNegative:
+			case AXIS.XNegative:
 			return -Vector3.right;
-			case Axis.YNegative:
+			case AXIS.YNegative:
 			return -Vector3.up;
-			case Axis.ZNegative:
+			case AXIS.ZNegative:
 			return -Vector3.forward;
 			default:
 			return Vector3.zero;

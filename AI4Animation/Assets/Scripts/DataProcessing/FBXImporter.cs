@@ -180,15 +180,16 @@ public class FBXImporter : EditorWindow {
 			Debug.Log("Folder " + "'" + destination + "'" + " is not valid.");
 		} else {
 			Importing = true;
+			Character.transform.position = Vector3.zero;
+			Character.transform.rotation = Quaternion.identity;
 			for(int f=0; f<Files.Length; f++) {
 				if(Files[f].Import) {
-					string name = Files[f].Object.name.Substring(Files[f].Object.name.LastIndexOf("/")+1);
-					if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
+					if(AssetDatabase.LoadAssetAtPath(destination+"/"+Files[f].Object.name+".asset", typeof(MotionData)) == null) {
 						AnimationClip clip = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(Files[f].Object), typeof(AnimationClip));
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();
 
 						//Assign Name
-						data.Name = name;
+						data.Name = Files[f].Object.name;
 
 						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
 
@@ -223,7 +224,7 @@ public class FBXImporter : EditorWindow {
 
 						EditorUtility.SetDirty(data);
 					} else {
-						Debug.Log("File with name " + name + " already exists.");
+						Debug.Log("File with name " + Files[f].Object.name + " already exists.");
 					}
 				}
 			}

@@ -14,6 +14,7 @@ public class MotionEditor : MonoBehaviour {
 	public string Folder = string.Empty;
 	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
+	public MotionPlugin[] Plugins = new MotionPlugin[0];
 
 	public bool ShowMotion = false;
 	public bool ShowVelocities = false;
@@ -43,6 +44,29 @@ public class MotionEditor : MonoBehaviour {
 
 	private int ID = -1;
 	
+	public void AddPlugin(MotionPlugin.TYPE type) {
+		if(System.Array.Exists(Plugins, x => x.Type == type)) {
+			Debug.Log("Plugin of type " + type.ToString() + " already exists.");
+		} else {
+			switch(type) {
+				case MotionPlugin.TYPE.Style:
+				ArrayExtensions.Add(ref Plugins, new StylePlugin(this));
+				break;
+				case MotionPlugin.TYPE.Phase:
+				ArrayExtensions.Add(ref Plugins, new PhasePlugin(this));
+				break;
+			}
+		}
+	}
+
+	public void RemovePlugin(MotionPlugin.TYPE type) {
+		if(!System.Array.Exists(Plugins, x => x.Type == type)) {
+			Debug.Log("Plugin of type " + type.ToString() + " does not exist.");
+		} else {
+			ArrayExtensions.Remove(ref Plugins, System.Array.Find(Plugins, x => x.Type == type));
+		}
+	}
+
 	public void VisualiseMotion(bool value) {
 		ShowMotion = value;
 	}
@@ -133,7 +157,7 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void Import() {
+	public void Load() {
 		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{Folder});
 		//Files
 		List<MotionData> files = new List<MotionData>();
@@ -399,12 +423,15 @@ public class MotionEditor : MonoBehaviour {
 
 		public MotionEditor Target;
 
+		private string[] Names = new string[0];
+
 		private float RefreshRate = 30f;
 		private System.DateTime Timestamp;
 
 		void Awake() {
 			Target = (MotionEditor)target;
 			Target.Cleanup();
+			GenerateNames();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
@@ -430,6 +457,13 @@ public class MotionEditor : MonoBehaviour {
 				EditorUtility.SetDirty(Target);
 			}
 		}
+		
+		public void GenerateNames() {
+			Names = new string[Target.Files.Length];
+			for(int i=0; i<Target.Files.Length; i++) {
+				Names[i] = Target.Files[i].Name;
+			}
+		}
 
 		public void Inspector() {
 			Utility.SetGUIColor(UltiDraw.Grey);
@@ -446,8 +480,9 @@ public class MotionEditor : MonoBehaviour {
 						
 						EditorGUILayout.BeginHorizontal();
 						Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
-						if(Utility.GUIButton("Import", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.Import();
+						if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Target.Load();
+							GenerateNames();
 						}
 						EditorGUILayout.EndHorizontal();
 
@@ -458,23 +493,20 @@ public class MotionEditor : MonoBehaviour {
 						EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
 
 						EditorGUILayout.BeginHorizontal();
-						string[] names = new string[Target.Files.Length];
-						if(names.Length == 0) {
-							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + names.Length + ")", -1, names));
+						if(Target.Files.Length == 0) {
+							Target.LoadFile(-1);
+							EditorGUILayout.LabelField("No data available.");
 						} else {
-							for(int i=0; i<names.Length; i++) {
-								names[i] = Target.Files[i].name;
+							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.ID, Names));
+							EditorGUILayout.EndHorizontal();
+							Target.LoadFile(EditorGUILayout.IntSlider(Target.ID+1, 1, Target.Files.Length)-1);
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
+								Target.LoadPreviousFile();
 							}
-							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + names.Length + ")", Target.ID, names));
-						}
-						EditorGUILayout.EndHorizontal();
-						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID, 0, Target.Files.Length-1));
-						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
-							Target.LoadPreviousFile();
-						}
-						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
-							Target.LoadNextFile();
+							if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
+								Target.LoadNextFile();
+							}
 						}
 						EditorGUILayout.EndHorizontal();
 						
@@ -599,7 +631,7 @@ public class MotionEditor : MonoBehaviour {
 							Utility.SetGUIColor(UltiDraw.Mustard);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								Target.InspectFrame = EditorGUILayout.Toggle("Frame", Target.InspectFrame);
+								Target.InspectFrame = EditorGUILayout.Toggle("Style Plugin", Target.InspectFrame);
 							}
 
 							if(Target.InspectFrame) {
@@ -694,6 +726,7 @@ public class MotionEditor : MonoBehaviour {
 							}
 
 							if(Target.InspectExport) {
+								Target.GetData().Export = EditorGUILayout.Toggle("Export", Target.GetData().Export);
 								for(int i=0; i<Target.GetData().Sequences.Length; i++) {
 								Utility.SetGUIColor(UltiDraw.LightGrey);
 									using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -773,7 +806,7 @@ public class MotionEditor : MonoBehaviour {
 									Target.GetData().HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.GetData().HeightMapSensor, names);
 									Target.GetData().HeightMapSize = EditorGUILayout.Slider("Height Map Size", Target.GetData().HeightMapSize, 0f, 1f);
 									Target.GetData().DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.GetData().DepthMapSensor, names);
-									Target.GetData().DepthMapAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Depth Map Axis", Target.GetData().DepthMapAxis);
+									Target.GetData().DepthMapAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Depth Map Axis", Target.GetData().DepthMapAxis);
 									Target.GetData().DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.GetData().DepthMapResolution);
 									Target.GetData().DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.GetData().DepthMapSize);
 									Target.GetData().DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.GetData().DepthMapDistance);
@@ -798,7 +831,7 @@ public class MotionEditor : MonoBehaviour {
 								using(new EditorGUILayout.VerticalScope ("Box")) {
 									Utility.ResetGUIColor();
 									EditorGUILayout.LabelField("Geometry");
-									Target.GetData().MirrorAxis = (MotionData.Axis)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
+									Target.GetData().MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
 									string[] names = new string[Target.GetData().Source.Bones.Length];
 									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 										names[i] = Target.GetData().Source.Bones[i].Name;
@@ -815,6 +848,25 @@ public class MotionEditor : MonoBehaviour {
 										Target.GetData().DetectSymmetry();
 									}		
 								}
+
+								for(int i=0; i<Target.Plugins.Length; i++) {
+									EditorGUILayout.LabelField(Target.Plugins[i].Type.ToString());
+									if(Utility.GUIButton("Remove", UltiDraw.Red, UltiDraw.White)) {
+										Target.RemovePlugin(Target.Plugins[i].Type);
+									}
+								}
+								
+								string[] types = new string[3] {"Add Plugin...", "Style", "Phase"};
+								switch(EditorGUILayout.Popup(0, types)) {
+									case 0:
+									break;
+									case 1:
+									Target.AddPlugin(MotionPlugin.TYPE.Style);
+									break;
+									case 2:
+									Target.AddPlugin(MotionPlugin.TYPE.Phase);
+									break;
+								}								
 							}
 						}
 					}

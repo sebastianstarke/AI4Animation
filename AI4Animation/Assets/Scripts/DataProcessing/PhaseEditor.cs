@@ -366,8 +366,6 @@ public class PhaseEditor : MonoBehaviour {
 		public void Inspector() {
 			UltiDraw.Begin();
 
-			MotionEditor motionEditor = GameObject.FindObjectOfType<MotionEditor>();
-
 			Utility.SetGUIColor(UltiDraw.LightGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -378,7 +376,7 @@ public class PhaseEditor : MonoBehaviour {
 					EditorGUILayout.LabelField(this == Module.GetRegularPhaseFunction() ? "Regular" : "Inverse");
 				}
 
-				MotionData.Frame frame = Module.Data.GetFrame(motionEditor.GetState().Index);
+				MotionData.Frame frame = Module.Data.GetFrame(Module.Editor.GetEditor().GetState().Index);
 
 				if(IsKey(frame)) {
 					SetPhase(frame, EditorGUILayout.Slider("Phase", GetPhase(frame), 0f, 1f));
@@ -402,7 +400,7 @@ public class PhaseEditor : MonoBehaviour {
 				
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-					motionEditor.LoadFrame((GetPreviousKey(frame).Timestamp));
+					Module.Editor.GetEditor().LoadFrame((GetPreviousKey(frame).Timestamp));
 				}
 
 				EditorGUILayout.BeginVertical(GUILayout.Height(50f));
@@ -521,7 +519,7 @@ public class PhaseEditor : MonoBehaviour {
 				EditorGUILayout.EndVertical();
 
 				if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-					motionEditor.LoadFrame(GetNextKey(frame).Timestamp);
+					Module.Editor.GetEditor().LoadFrame(GetNextKey(frame).Timestamp);
 				}
 				EditorGUILayout.EndHorizontal();
 			}
