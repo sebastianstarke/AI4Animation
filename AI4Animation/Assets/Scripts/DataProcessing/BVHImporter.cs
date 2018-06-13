@@ -13,16 +13,20 @@ public class BVHImporter : EditorWindow {
 
 	public string Source = string.Empty;
 	public string Destination = string.Empty;
-	public bool[] Import = new bool[0];
-	public FileInfo[] Files = new FileInfo[0];
+	public string Filter = string.Empty;
+	public File[] Files = new File[0];
+	public File[] Instances = new File[0];
 	public bool Importing = false;
 	
+	public int Page = 1;
+	public const int Items = 25;
+
 	[MenuItem ("Addons/BVH Importer")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(BVHImporter));
 		Scroll = Vector3.zero;
 	}
-
+	
 	void OnGUI() {
 		Scroll = EditorGUILayout.BeginScrollView(Scroll);
 
@@ -44,19 +48,6 @@ public class BVHImporter : EditorWindow {
 					if(Utility.GUIButton("Import Motion Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 						this.StartCoroutine(ImportMotionData());
 					}
-
-					EditorGUILayout.BeginHorizontal();
-					if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
-						for(int i=0; i<Import.Length; i++) {
-							Import[i] = true;
-						}
-					}
-					if(Utility.GUIButton("Disable All", UltiDraw.DarkGrey, UltiDraw.White)) {
-						for(int i=0; i<Import.Length; i++) {
-							Import[i] = false;
-						}
-					}
-					EditorGUILayout.EndHorizontal();
 				} else {
 					if(Utility.GUIButton("Stop", UltiDraw.DarkRed, UltiDraw.White)) {
 						this.StopAllCoroutines();
@@ -68,14 +59,10 @@ public class BVHImporter : EditorWindow {
 					EditorGUILayout.LabelField("Source");
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("<Path>", GUILayout.Width(50));
-					LoadDirectory(EditorGUILayout.TextField(Source));
+					Source = EditorGUILayout.TextField(Source);
 					GUI.skin.button.alignment = TextAnchor.MiddleCenter;
 					if(GUILayout.Button("O", GUILayout.Width(20))) {
-						string source = EditorUtility.OpenFilePanel("BVH Importer", Source == string.Empty ? Application.dataPath : Source, "");
-						source = source.Substring(0, source.LastIndexOf("/"));
-						LoadDirectory(source);
-						GUI.SetNextControlName("");
-						GUI.FocusControl("");
+						Source = EditorUtility.OpenFolderPanel("BVH Importer", Source == string.Empty ? Application.dataPath : Source, "");
 						GUIUtility.ExitGUI();
 					}
 					EditorGUILayout.EndHorizontal();
@@ -86,8 +73,46 @@ public class BVHImporter : EditorWindow {
 					Destination = EditorGUILayout.TextField(Destination);
 					EditorGUILayout.EndHorizontal();
 
-					for(int i=0; i<Files.Length; i++) {
-						if(Import[i]) {
+					string filter = EditorGUILayout.TextField("Filter", Filter);
+					if(Filter != filter) {
+						Filter = filter;
+						ApplyFilter();
+					}
+
+					if(Utility.GUIButton("Load Directory", UltiDraw.DarkGrey, UltiDraw.White)) {
+						LoadDirectory();
+					}
+
+					int start = (Page-1)*Items;
+					int end = Mathf.Min(start+Items, Instances.Length);
+					int pages = Mathf.CeilToInt(Instances.Length/Items)+1;
+					Utility.SetGUIColor(UltiDraw.Orange);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Page = Mathf.Max(Page-1, 1);
+						}
+						EditorGUILayout.LabelField("Page " + Page + "/" + pages);
+						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White)) {
+							Page = Mathf.Min(Page+1, pages);
+						}
+						EditorGUILayout.EndHorizontal();
+					}
+					EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
+						for(int i=0; i<Instances.Length; i++) {
+							Instances[i].Import = true;
+						}
+					}
+					if(Utility.GUIButton("Disable All", UltiDraw.DarkGrey, UltiDraw.White)) {
+						for(int i=0; i<Instances.Length; i++) {
+							Instances[i].Import = false;
+						}
+					}
+					EditorGUILayout.EndHorizontal();
+					for(int i=start; i<end; i++) {
+						if(Instances[i].Import) {
 							Utility.SetGUIColor(UltiDraw.DarkGreen);
 						} else {
 							Utility.SetGUIColor(UltiDraw.DarkRed);
@@ -96,8 +121,8 @@ public class BVHImporter : EditorWindow {
 							Utility.ResetGUIColor();
 							EditorGUILayout.BeginHorizontal();
 							EditorGUILayout.LabelField((i+1).ToString(), GUILayout.Width(20f));
-							Import[i] = EditorGUILayout.Toggle(Import[i], GUILayout.Width(20f));
-							EditorGUILayout.LabelField(Files[i].Name);
+							Instances[i].Import = EditorGUILayout.Toggle(Instances[i].Import, GUILayout.Width(20f));
+							EditorGUILayout.LabelField(Instances[i].Object.Name);
 							EditorGUILayout.EndHorizontal();
 						}
 					}
@@ -109,19 +134,34 @@ public class BVHImporter : EditorWindow {
 		EditorGUILayout.EndScrollView();
 	}
 
-	private void LoadDirectory(string source) {
-		if(Source != source) {
-			Source = source;
-			Files = new FileInfo[0];
-			Import = new bool[0];
-			if(Directory.Exists(Source)) {
-				DirectoryInfo info = new DirectoryInfo(Source);
-				Files = info.GetFiles("*.bvh");
-				Import = new bool[Files.Length];
-				for(int i=0; i<Files.Length; i++) {
-					Import[i] = true;
+	private void LoadDirectory() {
+		if(Directory.Exists(Source)) {
+			DirectoryInfo info = new DirectoryInfo(Source);
+			FileInfo[] items = info.GetFiles("*.bvh");
+			Files = new File[items.Length];
+			for(int i=0; i<items.Length; i++) {
+				Files[i] = new File();
+				Files[i].Object = items[i];
+				Files[i].Import = false;
+			}
+		} else {
+			Files = new File[0];
+		}
+		ApplyFilter();
+		Page = 1;
+	}
+
+	private void ApplyFilter() {
+		if(Filter == string.Empty) {
+			Instances = Files;
+		} else {
+			List<File> instances = new List<File>();
+			for(int i=0; i<Files.Length; i++) {
+				if(Files[i].Object.Name.ToLowerInvariant().Contains(Filter.ToLowerInvariant())) {
+					instances.Add(Files[i]);
 				}
 			}
+			Instances = instances.ToArray();
 		}
 	}
 
@@ -132,9 +172,9 @@ public class BVHImporter : EditorWindow {
 		} else {
 			Importing = true;
 			for(int f=0; f<Files.Length; f++) {
-				if(Import[f]) {
+				if(Files[f].Import) {
 					MotionData data = ScriptableObject.CreateInstance<MotionData>();
-					data.Name = Files[f].FullName.Substring(Files[f].FullName.LastIndexOf("/")+1);
+					data.Name = Files[f].Object.FullName.Substring(Files[f].Object.FullName.LastIndexOf("/")+1);
 					if(AssetDatabase.LoadAssetAtPath(destination+"/"+data.Name+".asset", typeof(MotionData)) == null) {
 						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
 					} else {
@@ -145,7 +185,7 @@ public class BVHImporter : EditorWindow {
 						AssetDatabase.CreateAsset(data, destination+"/"+data.Name+data.Name+" ("+i+").asset");
 					}
 
-					string[] lines = File.ReadAllLines(Files[f].FullName);
+					string[] lines = System.IO.File.ReadAllLines(Files[f].Object.FullName);
 					char[] whitespace = new char[] {' '};
 					int index = 0;
 
@@ -298,65 +338,71 @@ public class BVHImporter : EditorWindow {
 		yield return new WaitForSeconds(0f);
 	}
 
+	[System.Serializable]
+	public class File {
+		public FileInfo Object;
+		public bool Import;
+	}
+
 }
-
-								/*
-								string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
-								switch(EditorGUILayout.Popup(0, presets)) {
-									case 0:
-									break;
-									case 1:
-									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										Target.GetData().SetCorrection(i, Vector3.zero);
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Run");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Crouch");
-									break;
-
-									case 2:
-									Target.GetData().DepthMapAxis = MotionData.Axis.XPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.ZPositive;
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										if(i==4 || i==5 || i==6 || i==11) {
-											Target.GetData().SetCorrection(i, new Vector3(90f, 90f, 90f));
-										} else if(i==24) {
-											Target.GetData().SetCorrection(i, new Vector3(-45f, 0f, 0f));
-										} else {
-											Target.GetData().SetCorrection(i, new Vector3(0f, 0f, 0f));
-										}
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Pace");
-									Target.GetData().AddStyle("Trot");
-									Target.GetData().AddStyle("Canter");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Sit");
-									Target.GetData().AddStyle("Stand");
-									Target.GetData().AddStyle("Lie");
-									break;
-
-									case 3:
-									Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
-									Target.GetData().MirrorAxis = MotionData.Axis.XPositive;							
-									for(int i=0; i<Target.GetData().Corrections.Length; i++) {
-										Target.GetData().SetCorrection(i, Vector3.zero);
-									}
-									Target.GetData().ClearStyles();
-									Target.GetData().AddStyle("Idle");
-									Target.GetData().AddStyle("Walk");
-									Target.GetData().AddStyle("Run");
-									Target.GetData().AddStyle("Jump");
-									Target.GetData().AddStyle("Crouch");
-									Target.GetData().AddStyle("Sit");
-									break;
-								}
-								*/
 #endif
+
+/*
+string[] presets = new string[4] {"Select preset...", "Dan", "Dog", "Interaction"};
+switch(EditorGUILayout.Popup(0, presets)) {
+	case 0:
+	break;
+	case 1:
+	Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
+	Target.GetData().MirrorAxis = MotionData.Axis.XPositive;
+	for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+		Target.GetData().SetCorrection(i, Vector3.zero);
+	}
+	Target.GetData().ClearStyles();
+	Target.GetData().AddStyle("Idle");
+	Target.GetData().AddStyle("Walk");
+	Target.GetData().AddStyle("Run");
+	Target.GetData().AddStyle("Jump");
+	Target.GetData().AddStyle("Crouch");
+	break;
+
+	case 2:
+	Target.GetData().DepthMapAxis = MotionData.Axis.XPositive;
+	Target.GetData().MirrorAxis = MotionData.Axis.ZPositive;
+	for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+		if(i==4 || i==5 || i==6 || i==11) {
+			Target.GetData().SetCorrection(i, new Vector3(90f, 90f, 90f));
+		} else if(i==24) {
+			Target.GetData().SetCorrection(i, new Vector3(-45f, 0f, 0f));
+		} else {
+			Target.GetData().SetCorrection(i, new Vector3(0f, 0f, 0f));
+		}
+	}
+	Target.GetData().ClearStyles();
+	Target.GetData().AddStyle("Idle");
+	Target.GetData().AddStyle("Walk");
+	Target.GetData().AddStyle("Pace");
+	Target.GetData().AddStyle("Trot");
+	Target.GetData().AddStyle("Canter");
+	Target.GetData().AddStyle("Jump");
+	Target.GetData().AddStyle("Sit");
+	Target.GetData().AddStyle("Stand");
+	Target.GetData().AddStyle("Lie");
+	break;
+
+	case 3:
+	Target.GetData().DepthMapAxis = MotionData.Axis.ZPositive;
+	Target.GetData().MirrorAxis = MotionData.Axis.XPositive;							
+	for(int i=0; i<Target.GetData().Corrections.Length; i++) {
+		Target.GetData().SetCorrection(i, Vector3.zero);
+	}
+	Target.GetData().ClearStyles();
+	Target.GetData().AddStyle("Idle");
+	Target.GetData().AddStyle("Walk");
+	Target.GetData().AddStyle("Run");
+	Target.GetData().AddStyle("Jump");
+	Target.GetData().AddStyle("Crouch");
+	Target.GetData().AddStyle("Sit");
+	break;
+}
+*/

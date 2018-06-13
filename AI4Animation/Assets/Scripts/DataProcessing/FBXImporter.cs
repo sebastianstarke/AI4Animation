@@ -11,8 +11,6 @@ public class FBXImporter : EditorWindow {
 	public static EditorWindow Window;
 	public static Vector2 Scroll;
 
-	public int Framerate = 60;
-	public Actor Character = null;
 	public string Source = string.Empty;
 	public string Destination = string.Empty;
 	public string Filter = string.Empty;
@@ -20,8 +18,11 @@ public class FBXImporter : EditorWindow {
 	public File[] Instances = new File[0];
 	public bool Importing = false;
 
+	public int Framerate = 60;
+	public Actor Character = null;
+
 	public int Page = 1;
-	public int Items = 50;
+	public const int Items = 25;
 	
 	[MenuItem ("Addons/FBX Importer")]
 	static void Init() {
@@ -58,9 +59,6 @@ public class FBXImporter : EditorWindow {
 				}
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Framerate = EditorGUILayout.IntField("Framerate", Framerate);
-					Character = (Actor)EditorGUILayout.ObjectField("Character", Character, typeof(Actor), true);
-
 					EditorGUILayout.LabelField("Source");
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(50));
@@ -79,7 +77,10 @@ public class FBXImporter : EditorWindow {
 						ApplyFilter();
 					}
 
-					if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
+					Framerate = EditorGUILayout.IntField("Framerate", Framerate);
+					Character = (Actor)EditorGUILayout.ObjectField("Character", Character, typeof(Actor), true);
+
+					if(Utility.GUIButton("Load Directory", UltiDraw.DarkGrey, UltiDraw.White)) {
 						LoadDirectory();
 					}
 
@@ -135,15 +136,21 @@ public class FBXImporter : EditorWindow {
 	}
 
 	private void LoadDirectory() {
-		string folder = "Assets/"+Source;
-		if(AssetDatabase.IsValidFolder(folder)) {
-			string[] files = AssetDatabase.FindAssets("t:AnimationClip", new string[1]{folder});
-			Files = new File[files.Length];
-			for(int i=0; i<files.Length; i++) {
-				Files[i] = new File();
-				Files[i].Object = (GameObject)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(GameObject));
-				Files[i].Import = false;
+		string source = Application.dataPath + "/" + Source;
+		if(Directory.Exists(source)) {
+			DirectoryInfo info = new DirectoryInfo(source);
+			FileInfo[] items = info.GetFiles();
+			List<File> files = new List<File>();
+			for(int i=0; i<items.Length; i++) {
+				string path = items[i].FullName.Substring(items[i].FullName.IndexOf("Assets/"));
+				if((AnimationClip)AssetDatabase.LoadAssetAtPath(path, typeof(AnimationClip))) {
+					File file = new File();
+					file.Object = (GameObject)AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
+					file.Import = false;
+					files.Add(file);
+				}
 			}
+			Files = files.ToArray();
 		} else {
 			Files = new File[0];
 		}

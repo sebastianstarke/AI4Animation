@@ -1180,10 +1180,6 @@ public class PhaseEditor : MonoBehaviour {
 		}
 
 		public void Inspector() {
-			if(Utility.GUIButton("Reset", UltiDraw.DarkGrey, UltiDraw.White)) {
-				Target.Modules = new PhaseModule[0];
-				Target.Refresh();
-			}
 			Target.SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", Target.MaximumVelocity));
 			Target.SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", Target.VelocityThreshold));
 			string[] names = new string[1 + Target.GetEditor().GetData().Source.Bones.Length];
@@ -1202,12 +1198,10 @@ public class PhaseEditor : MonoBehaviour {
 			}
 			Target.ShowVelocities = EditorGUILayout.Toggle("Show Velocities", Target.ShowVelocities);
 			Target.ShowCycle = EditorGUILayout.Toggle("Show Cycle", Target.ShowCycle);
-			EditorGUILayout.LabelField("Modules: " + Target.Modules.Length);
 			PhaseModule module = Target.GetModule();
 			if(module == null) {
 				return;
 			}
-			EditorGUILayout.LabelField("Module: " + module.Data.Name);
 			module.TimeWindow = EditorGUILayout.Slider("Time Window", module.TimeWindow, 0f, module.Data.GetTotalTime());
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
