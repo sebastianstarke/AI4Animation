@@ -311,11 +311,11 @@ public static class Utility {
 		return normal;
 	}
 
-	public static void Destroy(UnityEngine.Object o) {
+	public static void Destroy(UnityEngine.Object o, bool allowDestroyingAssets = true) {
 		if(Application.isPlaying) {
 			GameObject.Destroy(o);
 		} else {
-			GameObject.DestroyImmediate(o);
+			GameObject.DestroyImmediate(o, allowDestroyingAssets);
 		}
 	}
 

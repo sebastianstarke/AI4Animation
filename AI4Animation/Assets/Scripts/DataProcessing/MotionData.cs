@@ -11,6 +11,7 @@ public class MotionData : ScriptableObject {
 
 	public Hierarchy Source = null;
 	public Frame[] Frames = new Frame[0];
+	public DataModule[] Modules = new DataModule[0];
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
@@ -31,6 +32,32 @@ public class MotionData : ScriptableObject {
 	public float DepthMapDistance = 10f;
 	public bool Export = true;
 	public Sequence[] Sequences = new Sequence[0];
+
+	public void AddModule(DataModule.TYPE type) {
+		if(System.Array.Find(Modules, x => x.Type == type)) {
+			Debug.Log("Module of type " + type.ToString() + " already exists.");
+		} else {
+			switch(type) {
+				case DataModule.TYPE.Style:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<StyleModule>().Initialise(this));
+				break;
+				case DataModule.TYPE.Phase:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<PhaseModule>().Initialise(this));
+				break;
+			}
+			AssetDatabase.AddObjectToAsset(Modules[Modules.Length-1], this);
+		}
+	}
+
+	public void RemoveModule(DataModule.TYPE type) {
+		DataModule module = System.Array.Find(Modules, x => x.Type == type);
+		if(!module) {
+			Debug.Log("Module of type " + type.ToString() + " does not exist.");
+		} else {
+			ArrayExtensions.Remove(ref Modules, module);
+			Utility.Destroy(module);
+		}
+	}
 
 	public float GetTotalTime() {
 		return GetTotalFrames() / Framerate;

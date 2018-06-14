@@ -606,7 +606,7 @@ public class MotionEditor : MonoBehaviour {
 							Utility.SetGUIColor(UltiDraw.Mustard);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								Target.InspectFrame = EditorGUILayout.Toggle("Style Plugin", Target.InspectFrame);
+								Target.InspectFrame = EditorGUILayout.Toggle("Style", Target.InspectFrame);
 							}
 
 							if(Target.InspectFrame) {
@@ -825,6 +825,19 @@ public class MotionEditor : MonoBehaviour {
 								}
 							
 							}
+						}
+
+						for(int i=0; i<Target.GetData().Modules.Length; i++) {
+							Target.GetData().Modules[i].Inspector();
+						}
+						int module = EditorGUILayout.Popup(0, new string[3]{"Add Module...", "Style", "Phase"});
+						switch(module) {
+							case 1:
+							Target.GetData().AddModule(DataModule.TYPE.Style);
+							break;
+							case 2:
+							Target.GetData().AddModule(DataModule.TYPE.Phase);
+							break;
 						}
 					}
 				}
