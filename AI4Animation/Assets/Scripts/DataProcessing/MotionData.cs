@@ -34,7 +34,7 @@ public class MotionData : ScriptableObject {
 	public Sequence[] Sequences = new Sequence[0];
 
 	public void AddModule(DataModule.TYPE type) {
-		if(System.Array.Find(Modules, x => x.Type == type)) {
+		if(System.Array.Find(Modules, x => x.Type() == type)) {
 			Debug.Log("Module of type " + type.ToString() + " already exists.");
 		} else {
 			switch(type) {
@@ -50,7 +50,7 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void RemoveModule(DataModule.TYPE type) {
-		DataModule module = System.Array.Find(Modules, x => x.Type == type);
+		DataModule module = System.Array.Find(Modules, x => x.Type() == type);
 		if(!module) {
 			Debug.Log("Module of type " + type.ToString() + " does not exist.");
 		} else {

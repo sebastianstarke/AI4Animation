@@ -25,12 +25,15 @@ public class MotionEditor : MonoBehaviour {
 	public bool InspectExport = true;
 	public bool InspectSettings = true;
 
+	/*
 	private bool AutoFocus = false;
 	private float FocusHeight = 1f;
 	private float FocusOffset = 0f;
 	private float FocusDistance = 2.5f;
 	private float FocusAngle = 0f;
 	private float FocusSmoothing = 0.05f;
+	*/
+
 	private bool Mirror = false;
 	private bool Playing = false;
 	private float Timescale = 1f;
@@ -61,6 +64,7 @@ public class MotionEditor : MonoBehaviour {
 		ShowDepthImage = value;
 	}
 
+	/*
 	public void SetAutoFocus(bool value) {
 		if(AutoFocus != value) {
 			AutoFocus = value;
@@ -71,6 +75,7 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 	}
+	*/
 
 	public void SetMirror(bool value) {
 		if(Mirror != value) {
@@ -235,6 +240,7 @@ public class MotionEditor : MonoBehaviour {
 			GetActor().Bones[i].Transform.rotation = GetState().BoneTransformations[i].GetRotation();
 		}
 
+		/*
 		if(AutoFocus) {
 			if(SceneView.lastActiveSceneView != null) {
 				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
@@ -249,6 +255,7 @@ public class MotionEditor : MonoBehaviour {
 				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
 			}
 		}
+		*/
 	}
 
 	public void LoadFrame(float timestamp) {
@@ -441,98 +448,74 @@ public class MotionEditor : MonoBehaviour {
 		}
 
 		public void Inspector() {
-			Utility.SetGUIColor(UltiDraw.Grey);
+			
+			Utility.SetGUIColor(UltiDraw.DarkGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Utility.SetGUIColor(UltiDraw.DarkGrey);
+				Utility.SetGUIColor(UltiDraw.LightGrey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					
+					EditorGUILayout.BeginHorizontal();
+					Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
+					if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
+						Target.Load();
+						GenerateNames();
+					}
+					EditorGUILayout.EndHorizontal();
+
+					Utility.SetGUIColor(Target.GetActor() == null ? UltiDraw.DarkRed : UltiDraw.White);
+					Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
+					Utility.ResetGUIColor();
+
+					EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
+
+					EditorGUILayout.BeginHorizontal();
+					if(Target.Files.Length == 0) {
+						Target.LoadFile(-1);
+						EditorGUILayout.LabelField("No data available.");
+					} else {
+						Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.ID, Names));
+						EditorGUILayout.EndHorizontal();
+						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID+1, 1, Target.Files.Length)-1);
+						EditorGUILayout.BeginHorizontal();
+						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadPreviousFile();
+						}
+						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
+							Target.LoadNextFile();
+						}
+					}
+					EditorGUILayout.EndHorizontal();
+				}
+
+				/*
+				Utility.SetGUIColor(UltiDraw.Grey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 
 					Utility.SetGUIColor(UltiDraw.Cyan);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-						
-						EditorGUILayout.BeginHorizontal();
-						Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
-						if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.Load();
-							GenerateNames();
-						}
-						EditorGUILayout.EndHorizontal();
-
-						Utility.SetGUIColor(Target.GetActor() == null ? UltiDraw.DarkRed : UltiDraw.White);
-						Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
-						Utility.ResetGUIColor();
-
-						EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
-
-						EditorGUILayout.BeginHorizontal();
-						if(Target.Files.Length == 0) {
-							Target.LoadFile(-1);
-							EditorGUILayout.LabelField("No data available.");
-						} else {
-							Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.ID, Names));
-							EditorGUILayout.EndHorizontal();
-							Target.LoadFile(EditorGUILayout.IntSlider(Target.ID+1, 1, Target.Files.Length)-1);
-							EditorGUILayout.BeginHorizontal();
-							if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
-								Target.LoadPreviousFile();
-							}
-							if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White)) {
-								Target.LoadNextFile();
-							}
-						}
-						EditorGUILayout.EndHorizontal();
-						
-						/*
-						if(GUILayout.Button("Import", GUILayout.Width(50f))) {
-							string folder = EditorUtility.OpenFolderPanel("Motion Editor", Application.dataPath, "");
-							GUI.SetNextControlName("");
-							GUI.FocusControl("");
-							int pivot = folder.IndexOf("Assets");
-							if(pivot >= 0) {
-								folder = folder.Substring(pivot);
-								if(AssetDatabase.IsValidFolder(folder)) {
-									Target.Import(folder);
-								}
-							}
-							GUIUtility.ExitGUI();
-						}
-						*/
-						/*
-						if(GUILayout.Button("-", GUILayout.Width(18f))) {
-							Target.RemoveData();
-						}
-						if(GUILayout.Button("R", GUILayout.Width(18f))) {
-							Target.RefreshData();
-						}
-						*/
-						//EditorGUILayout.EndHorizontal();
-
+						EditorGUILayout.LabelField("Camera");
 					}
 
+					if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.SetAutoFocus(!Target.AutoFocus);
+					}
+					Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+					Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
+					Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+					Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+					Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+				}
+				*/
+
+				if(Target.GetData() != null) {
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-
-						Utility.SetGUIColor(UltiDraw.Cyan);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							EditorGUILayout.LabelField("Camera");
-						}
-
-						if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.SetAutoFocus(!Target.AutoFocus);
-						}
-						Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
-						Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
-						Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
-						Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
-						Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
-					}
-
-					if(Target.GetData() != null) {
 						MotionData.Frame frame = Target.GetData().GetFrame(Target.Timestamp);
 
 						Utility.SetGUIColor(UltiDraw.Mustard);
@@ -599,246 +582,239 @@ public class MotionEditor : MonoBehaviour {
 						}
 						EditorGUILayout.EndHorizontal();
 
-						Utility.SetGUIColor(UltiDraw.Grey);
+						Utility.SetGUIColor(UltiDraw.Mustard);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
 							Utility.ResetGUIColor();
+							Target.InspectFrame = EditorGUILayout.Toggle("Style", Target.InspectFrame);
+						}
 
-							Utility.SetGUIColor(UltiDraw.Mustard);
+						if(Target.InspectFrame) {
+							Color[] colors = UltiDraw.GetRainbowColors(Target.GetData().Styles.Length);
+							for(int i=0; i<Target.GetData().Styles.Length; i++) {
+								float height = 25f;
+								EditorGUILayout.BeginHorizontal();
+								if(Utility.GUIButton(Target.GetData().Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
+									frame.ToggleStyle(i);
+								}
+								Rect c = EditorGUILayout.GetControlRect();
+								Rect r = new Rect(c.x, c.y, frame.StyleValues[i] * c.width, height);
+								EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
+								EditorGUILayout.FloatField(frame.StyleValues[i], GUILayout.Width(50f));
+								EditorGUILayout.EndHorizontal();
+							}
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
+								MotionData.Frame previous = frame.GetAnyPreviousStyleKey();
+								Target.LoadFrame(previous == null ? 0f : previous.Timestamp);
+							}
+							EditorGUILayout.BeginVertical(GUILayout.Height(50f));
+							Rect ctrl = EditorGUILayout.GetControlRect();
+							Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
+							EditorGUI.DrawRect(rect, UltiDraw.Black);
+							UltiDraw.Begin();
+							//Sequences
+							for(int i=0; i<Target.GetData().Sequences.Length; i++) {
+								float start = rect.x + (float)(Target.GetData().Sequences[i].Start-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+								float end = rect.x + (float)(Target.GetData().Sequences[i].End-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+								Vector3 a = new Vector3(start, rect.y, 0f);
+								Vector3 b = new Vector3(end, rect.y, 0f);
+								Vector3 c = new Vector3(start, rect.y+rect.height, 0f);
+								Vector3 d = new Vector3(end, rect.y+rect.height, 0f);
+								UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
+								UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
+							}
+							//Styles
+							for(int i=0; i<Target.GetData().Styles.Length; i++) {
+								int x = 0;
+								for(int j=1; j<Target.GetData().GetTotalFrames(); j++) {
+									float val = Target.GetData().Frames[j].StyleValues[i];
+									if(
+										Target.GetData().Frames[x].StyleValues[i]<1f && val==1f ||
+										Target.GetData().Frames[x].StyleValues[i]>0f && val==0f
+										) {
+										float xStart = rect.x + (float)(Mathf.Max(x-1, 0))/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float xEnd = rect.x + (float)j/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float yStart = rect.y + (1f - Target.GetData().Frames[Mathf.Max(x-1, 0)].StyleValues[i]) * rect.height;
+										float yEnd = rect.y + (1f - Target.GetData().Frames[j].StyleValues[i]) * rect.height;
+										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+										x = j;
+									}
+									if(
+										Target.GetData().Frames[x].StyleValues[i]==0f && val>0f || 
+										Target.GetData().Frames[x].StyleValues[i]==1f && val<1f
+										) {
+										float xStart = rect.x + (float)(x)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
+										float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
+										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+										x = j;
+									}
+									if(j==Target.GetData().GetTotalFrames()-1) {
+										float xStart = rect.x + (float)x/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+										float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
+										float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
+										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+										x = j;
+									}
+								}
+							}
+							float pivot = rect.x + (float)(frame.Index-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
+							UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
+							UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y, 0f), 8f, UltiDraw.Green);
+							UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y + rect.height, 0f), 8f, UltiDraw.Green);
+							UltiDraw.End();
+							EditorGUILayout.EndVertical();
+							if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
+								MotionData.Frame next = frame.GetAnyNextStyleKey();
+								Target.LoadFrame(next == null ? Target.GetData().GetTotalTime() : next.Timestamp);
+							}
+							EditorGUILayout.EndHorizontal();
+						}
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							Target.InspectExport = EditorGUILayout.Toggle("Export", Target.InspectExport);
+						}
+
+						if(Target.InspectExport) {
+							Target.GetData().Export = EditorGUILayout.Toggle("Export", Target.GetData().Export);
+							for(int i=0; i<Target.GetData().Sequences.Length; i++) {
+							Utility.SetGUIColor(UltiDraw.LightGrey);
+								using(new EditorGUILayout.VerticalScope ("Box")) {
+									Utility.ResetGUIColor();
+									
+									EditorGUILayout.BeginHorizontal();
+									GUILayout.FlexibleSpace();
+									if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
+										Target.GetData().Sequences[i].SetStart(Target.GetState().Index);
+									}
+									EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
+									Target.GetData().Sequences[i].SetStart(EditorGUILayout.IntField(Target.GetData().Sequences[i].Start, GUILayout.Width(100f)));
+									EditorGUILayout.LabelField("End", GUILayout.Width(50f));
+									Target.GetData().Sequences[i].SetEnd(EditorGUILayout.IntField(Target.GetData().Sequences[i].End, GUILayout.Width(100f)));
+									if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
+										Target.GetData().Sequences[i].SetEnd(Target.GetState().Index);
+									}
+									GUILayout.FlexibleSpace();
+									EditorGUILayout.EndHorizontal();
+
+									for(int s=0; s<Target.GetData().Styles.Length; s++) {
+										EditorGUILayout.BeginHorizontal();
+										GUILayout.FlexibleSpace();
+										EditorGUILayout.LabelField(Target.GetData().Styles[s], GUILayout.Width(50f));
+										EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
+										Target.GetData().Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
+										EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
+										Target.GetData().Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
+										GUILayout.FlexibleSpace();
+										EditorGUILayout.EndHorizontal();
+									}
+									//for(int c=0; c<Target.GetData().Sequences[i].Copies.Length; c++) {
+									//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetData().Sequences[i].Copies[c].Start + " End: " + Target.GetData().Sequences[i].Copies[c].End);
+									//}
+								}
+							}
+							EditorGUILayout.BeginHorizontal();
+							if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
+								Target.GetData().AddSequence(1, Target.GetData().GetTotalFrames());
+							}
+							if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
+								Target.GetData().RemoveSequence();
+							}
+							EditorGUILayout.EndHorizontal();
+						}
+
+						Utility.SetGUIColor(UltiDraw.Mustard);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
+							Target.InspectSettings = EditorGUILayout.Toggle("Settings", Target.InspectSettings);
+						}
+
+						if(Target.InspectSettings) {
+							Utility.SetGUIColor(UltiDraw.LightGrey);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								Target.InspectFrame = EditorGUILayout.Toggle("Style", Target.InspectFrame);
+								if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.CreateSkeleton();
+								}
 							}
 
-							if(Target.InspectFrame) {
-								Color[] colors = UltiDraw.GetRainbowColors(Target.GetData().Styles.Length);
+							Utility.SetGUIColor(UltiDraw.LightGrey);
+							using(new EditorGUILayout.VerticalScope ("Box")) {
+								Utility.ResetGUIColor();
+								EditorGUILayout.LabelField("General");
+
+								Target.GetData().Scaling = EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling);
+								Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
+								
+								Target.GetData().GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().GroundMask), InternalEditorUtility.layers));
+								Target.GetData().ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().ObjectMask), InternalEditorUtility.layers));
+								
+								string[] names = new string[Target.GetData().Source.Bones.Length];
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
+									names[i] = Target.GetData().Source.Bones[i].Name;
+								}
+								Target.GetData().HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.GetData().HeightMapSensor, names);
+								Target.GetData().HeightMapSize = EditorGUILayout.Slider("Height Map Size", Target.GetData().HeightMapSize, 0f, 1f);
+								Target.GetData().DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.GetData().DepthMapSensor, names);
+								Target.GetData().DepthMapAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Depth Map Axis", Target.GetData().DepthMapAxis);
+								Target.GetData().DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.GetData().DepthMapResolution);
+								Target.GetData().DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.GetData().DepthMapSize);
+								Target.GetData().DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.GetData().DepthMapDistance);
+								
+								Target.GetData().SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.GetData().StyleTransition, 0.1f, 1f));
 								for(int i=0; i<Target.GetData().Styles.Length; i++) {
-									float height = 25f;
 									EditorGUILayout.BeginHorizontal();
-									if(Utility.GUIButton(Target.GetData().Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
-										frame.ToggleStyle(i);
-									}
-									Rect c = EditorGUILayout.GetControlRect();
-									Rect r = new Rect(c.x, c.y, frame.StyleValues[i] * c.width, height);
-									EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
-									EditorGUILayout.FloatField(frame.StyleValues[i], GUILayout.Width(50f));
+									Target.GetData().Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.GetData().Styles[i]);
 									EditorGUILayout.EndHorizontal();
 								}
 								EditorGUILayout.BeginHorizontal();
-								if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-									MotionData.Frame previous = frame.GetAnyPreviousStyleKey();
-									Target.LoadFrame(previous == null ? 0f : previous.Timestamp);
+								if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().AddStyle("Style");
 								}
-								EditorGUILayout.BeginVertical(GUILayout.Height(50f));
-								Rect ctrl = EditorGUILayout.GetControlRect();
-								Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
-								EditorGUI.DrawRect(rect, UltiDraw.Black);
-								UltiDraw.Begin();
-								//Sequences
-								for(int i=0; i<Target.GetData().Sequences.Length; i++) {
-									float start = rect.x + (float)(Target.GetData().Sequences[i].Start-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-									float end = rect.x + (float)(Target.GetData().Sequences[i].End-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-									Vector3 a = new Vector3(start, rect.y, 0f);
-									Vector3 b = new Vector3(end, rect.y, 0f);
-									Vector3 c = new Vector3(start, rect.y+rect.height, 0f);
-									Vector3 d = new Vector3(end, rect.y+rect.height, 0f);
-									UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
-									UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
-								}
-								//Styles
-								for(int i=0; i<Target.GetData().Styles.Length; i++) {
-									int x = 0;
-									for(int j=1; j<Target.GetData().GetTotalFrames(); j++) {
-										float val = Target.GetData().Frames[j].StyleValues[i];
-										if(
-											Target.GetData().Frames[x].StyleValues[i]<1f && val==1f ||
-											Target.GetData().Frames[x].StyleValues[i]>0f && val==0f
-											) {
-											float xStart = rect.x + (float)(Mathf.Max(x-1, 0))/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float xEnd = rect.x + (float)j/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float yStart = rect.y + (1f - Target.GetData().Frames[Mathf.Max(x-1, 0)].StyleValues[i]) * rect.height;
-											float yEnd = rect.y + (1f - Target.GetData().Frames[j].StyleValues[i]) * rect.height;
-											UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-											x = j;
-										}
-										if(
-											Target.GetData().Frames[x].StyleValues[i]==0f && val>0f || 
-											Target.GetData().Frames[x].StyleValues[i]==1f && val<1f
-											) {
-											float xStart = rect.x + (float)(x)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
-											float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
-											UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-											x = j;
-										}
-										if(j==Target.GetData().GetTotalFrames()-1) {
-											float xStart = rect.x + (float)x/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-											float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
-											float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
-											UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-											x = j;
-										}
-									}
-								}
-								float pivot = rect.x + (float)(frame.Index-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-								UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
-								UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y, 0f), 8f, UltiDraw.Green);
-								UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y + rect.height, 0f), 8f, UltiDraw.Green);
-								UltiDraw.End();
-								EditorGUILayout.EndVertical();
-								if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-									MotionData.Frame next = frame.GetAnyNextStyleKey();
-									Target.LoadFrame(next == null ? Target.GetData().GetTotalTime() : next.Timestamp);
+								if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().RemoveStyle();
 								}
 								EditorGUILayout.EndHorizontal();
 							}
 
-							Utility.SetGUIColor(UltiDraw.Mustard);
+							Utility.SetGUIColor(UltiDraw.LightGrey);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								Target.InspectExport = EditorGUILayout.Toggle("Export", Target.InspectExport);
-							}
-
-							if(Target.InspectExport) {
-								Target.GetData().Export = EditorGUILayout.Toggle("Export", Target.GetData().Export);
-								for(int i=0; i<Target.GetData().Sequences.Length; i++) {
-								Utility.SetGUIColor(UltiDraw.LightGrey);
-									using(new EditorGUILayout.VerticalScope ("Box")) {
-										Utility.ResetGUIColor();
-										
-										EditorGUILayout.BeginHorizontal();
-										GUILayout.FlexibleSpace();
-										if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
-											Target.GetData().Sequences[i].SetStart(Target.GetState().Index);
-										}
-										EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
-										Target.GetData().Sequences[i].SetStart(EditorGUILayout.IntField(Target.GetData().Sequences[i].Start, GUILayout.Width(100f)));
-										EditorGUILayout.LabelField("End", GUILayout.Width(50f));
-										Target.GetData().Sequences[i].SetEnd(EditorGUILayout.IntField(Target.GetData().Sequences[i].End, GUILayout.Width(100f)));
-										if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
-											Target.GetData().Sequences[i].SetEnd(Target.GetState().Index);
-										}
-										GUILayout.FlexibleSpace();
-										EditorGUILayout.EndHorizontal();
-
-										for(int s=0; s<Target.GetData().Styles.Length; s++) {
-											EditorGUILayout.BeginHorizontal();
-											GUILayout.FlexibleSpace();
-											EditorGUILayout.LabelField(Target.GetData().Styles[s], GUILayout.Width(50f));
-											EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
-											Target.GetData().Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
-											EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
-											Target.GetData().Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
-											GUILayout.FlexibleSpace();
-											EditorGUILayout.EndHorizontal();
-										}
-										//for(int c=0; c<Target.GetData().Sequences[i].Copies.Length; c++) {
-										//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetData().Sequences[i].Copies[c].Start + " End: " + Target.GetData().Sequences[i].Copies[c].End);
-										//}
-									}
+								EditorGUILayout.LabelField("Geometry");
+								Target.GetData().MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
+								string[] names = new string[Target.GetData().Source.Bones.Length];
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
+									names[i] = Target.GetData().Source.Bones[i].Name;
 								}
-								EditorGUILayout.BeginHorizontal();
-								if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
-									Target.GetData().AddSequence(1, Target.GetData().GetTotalFrames());
-								}
-								if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
-									Target.GetData().RemoveSequence();
-								}
-								EditorGUILayout.EndHorizontal();
-							}
-
-							Utility.SetGUIColor(UltiDraw.Mustard);
-							using(new EditorGUILayout.VerticalScope ("Box")) {
-								Utility.ResetGUIColor();
-								Target.InspectSettings = EditorGUILayout.Toggle("Settings", Target.InspectSettings);
-							}
-
-							if(Target.InspectSettings) {
-								Utility.SetGUIColor(UltiDraw.LightGrey);
-								using(new EditorGUILayout.VerticalScope ("Box")) {
-									Utility.ResetGUIColor();
-									if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.CreateSkeleton();
-									}
-								}
-
-								Utility.SetGUIColor(UltiDraw.LightGrey);
-								using(new EditorGUILayout.VerticalScope ("Box")) {
-									Utility.ResetGUIColor();
-									EditorGUILayout.LabelField("General");
-
-									Target.GetData().Scaling = EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling);
-									Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
-									
-									Target.GetData().GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().GroundMask), InternalEditorUtility.layers));
-									Target.GetData().ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().ObjectMask), InternalEditorUtility.layers));
-									
-									string[] names = new string[Target.GetData().Source.Bones.Length];
-									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
-										names[i] = Target.GetData().Source.Bones[i].Name;
-									}
-									Target.GetData().HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.GetData().HeightMapSensor, names);
-									Target.GetData().HeightMapSize = EditorGUILayout.Slider("Height Map Size", Target.GetData().HeightMapSize, 0f, 1f);
-									Target.GetData().DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.GetData().DepthMapSensor, names);
-									Target.GetData().DepthMapAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Depth Map Axis", Target.GetData().DepthMapAxis);
-									Target.GetData().DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.GetData().DepthMapResolution);
-									Target.GetData().DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.GetData().DepthMapSize);
-									Target.GetData().DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.GetData().DepthMapDistance);
-									
-									Target.GetData().SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.GetData().StyleTransition, 0.1f, 1f));
-									for(int i=0; i<Target.GetData().Styles.Length; i++) {
-										EditorGUILayout.BeginHorizontal();
-										Target.GetData().Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.GetData().Styles[i]);
-										EditorGUILayout.EndHorizontal();
-									}
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 									EditorGUILayout.BeginHorizontal();
-									if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.GetData().AddStyle("Style");
-									}
-									if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.GetData().RemoveStyle();
-									}
+									EditorGUI.BeginDisabledGroup(true);
+									EditorGUILayout.TextField(names[i]);
+									EditorGUI.EndDisabledGroup();
+									Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
 									EditorGUILayout.EndHorizontal();
 								}
-
-								Utility.SetGUIColor(UltiDraw.LightGrey);
-								using(new EditorGUILayout.VerticalScope ("Box")) {
-									Utility.ResetGUIColor();
-									EditorGUILayout.LabelField("Geometry");
-									Target.GetData().MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
-									string[] names = new string[Target.GetData().Source.Bones.Length];
-									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
-										names[i] = Target.GetData().Source.Bones[i].Name;
-									}
-									for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
-										EditorGUILayout.BeginHorizontal();
-										EditorGUI.BeginDisabledGroup(true);
-										EditorGUILayout.TextField(names[i]);
-										EditorGUI.EndDisabledGroup();
-										Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
-										EditorGUILayout.EndHorizontal();
-									}
-									if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
-										Target.GetData().DetectSymmetry();
-									}		
-								}
-							
+								if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().DetectSymmetry();
+								}		
 							}
 						}
-
-						for(int i=0; i<Target.GetData().Modules.Length; i++) {
-							Target.GetData().Modules[i].Inspector();
-						}
-						int module = EditorGUILayout.Popup(0, new string[3]{"Add Module...", "Style", "Phase"});
-						switch(module) {
-							case 1:
-							Target.GetData().AddModule(DataModule.TYPE.Style);
-							break;
-							case 2:
-							Target.GetData().AddModule(DataModule.TYPE.Phase);
-							break;
-						}
+					}
+					for(int i=0; i<Target.GetData().Modules.Length; i++) {
+						Target.GetData().Modules[i].Inspector(Target);
+					}
+					int module = EditorGUILayout.Popup(0, new string[3]{"Add Module...", "Style", "Phase"});
+					switch(module) {
+						case 1:
+						Target.GetData().AddModule(DataModule.TYPE.Style);
+						break;
+						case 2:
+						Target.GetData().AddModule(DataModule.TYPE.Phase);
+						break;
 					}
 				}
 			}

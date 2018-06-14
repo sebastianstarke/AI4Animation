@@ -9,14 +9,39 @@ public abstract class DataModule : ScriptableObject {
 	public enum TYPE {Style, Phase};
 
 	public MotionData Data;
-	public TYPE Type;
+	public bool Inspect;
 
-	public DataModule Initialise(MotionData data) {
-		Data = data;
-		return this;
+	public void Inspector(MotionEditor editor) {
+		Utility.SetGUIColor(UltiDraw.Grey);
+		using(new EditorGUILayout.VerticalScope ("Box")) {
+			Utility.ResetGUIColor();
+
+			Utility.SetGUIColor(UltiDraw.Mustard);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				EditorGUILayout.BeginHorizontal();
+				Inspect = EditorGUILayout.Toggle(Inspect, GUILayout.Width(20f));
+				EditorGUILayout.LabelField(Type().ToString() + " Module");
+				GUILayout.FlexibleSpace();
+				if(Utility.GUIButton("X", UltiDraw.DarkRed, UltiDraw.White, 20f, 20f)) {
+					Data.RemoveModule(Type());
+				}
+				EditorGUILayout.EndHorizontal();
+			}
+
+			if(Inspect) {
+				Utility.SetGUIColor(UltiDraw.LightGrey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					DerivedInspector(editor);
+				}
+			}
+		}
 	}
 
-	public abstract void Inspector();
+	public abstract TYPE Type();
+	public abstract DataModule Initialise(MotionData data);
+	protected abstract void DerivedInspector(MotionEditor editor);
 
 }
 #endif

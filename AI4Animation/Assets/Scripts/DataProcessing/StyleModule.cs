@@ -6,13 +6,18 @@ using UnityEditor;
 
 public class StyleModule : DataModule {
 
-	public override void Inspector() {
-		EditorGUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField(Type.ToString());
-		if(Utility.GUIButton("X", UltiDraw.DarkRed, UltiDraw.White)) {
-			Data.RemoveModule(Type);
-		}
-		EditorGUILayout.EndHorizontal();
+	public override TYPE Type() {
+		return TYPE.Style;
+	}
+
+	public override DataModule Initialise(MotionData data) {
+		Data = data;
+		Inspect = true;
+		return this;
+	}
+
+	protected override void DerivedInspector(MotionEditor editor) {
+		EditorGUILayout.LabelField("Content.");
 	}
 
 }
