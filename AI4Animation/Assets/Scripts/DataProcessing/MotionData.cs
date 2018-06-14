@@ -55,7 +55,7 @@ public class MotionData : ScriptableObject {
 		int count = end-start+1;
 		Frame[] frames = new Frame[count];
 		for(int i=start; i<=end; i++) {
-			frames[i-start] = GetFrame(i);
+			frames[i-start] = Frames[i-1];
 		}
 		return frames;
 	}
