@@ -8,13 +8,11 @@ using UnityEditor.SceneManagement;
 using UnityEditorInternal;
 
 [ExecuteInEditMode]
-[UnityEditor.Callbacks.DidReloadScripts]
 public class MotionEditor : MonoBehaviour {
 
 	public string Folder = string.Empty;
 	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
-	public MotionPlugin[] Plugins = new MotionPlugin[0];
 
 	public bool ShowMotion = false;
 	public bool ShowVelocities = false;
@@ -43,29 +41,6 @@ public class MotionEditor : MonoBehaviour {
 	private MotionState State = null;
 
 	private int ID = -1;
-	
-	public void AddPlugin(MotionPlugin.TYPE type) {
-		if(System.Array.Exists(Plugins, x => x.Type == type)) {
-			Debug.Log("Plugin of type " + type.ToString() + " already exists.");
-		} else {
-			switch(type) {
-				case MotionPlugin.TYPE.Style:
-				ArrayExtensions.Add(ref Plugins, new StylePlugin(this));
-				break;
-				case MotionPlugin.TYPE.Phase:
-				ArrayExtensions.Add(ref Plugins, new PhasePlugin(this));
-				break;
-			}
-		}
-	}
-
-	public void RemovePlugin(MotionPlugin.TYPE type) {
-		if(!System.Array.Exists(Plugins, x => x.Type == type)) {
-			Debug.Log("Plugin of type " + type.ToString() + " does not exist.");
-		} else {
-			ArrayExtensions.Remove(ref Plugins, System.Array.Find(Plugins, x => x.Type == type));
-		}
-	}
 
 	public void VisualiseMotion(bool value) {
 		ShowMotion = value;
@@ -848,25 +823,7 @@ public class MotionEditor : MonoBehaviour {
 										Target.GetData().DetectSymmetry();
 									}		
 								}
-
-								for(int i=0; i<Target.Plugins.Length; i++) {
-									EditorGUILayout.LabelField(Target.Plugins[i].Type.ToString());
-									if(Utility.GUIButton("Remove", UltiDraw.Red, UltiDraw.White)) {
-										Target.RemovePlugin(Target.Plugins[i].Type);
-									}
-								}
-								
-								string[] types = new string[3] {"Add Plugin...", "Style", "Phase"};
-								switch(EditorGUILayout.Popup(0, types)) {
-									case 0:
-									break;
-									case 1:
-									Target.AddPlugin(MotionPlugin.TYPE.Style);
-									break;
-									case 2:
-									Target.AddPlugin(MotionPlugin.TYPE.Phase);
-									break;
-								}								
+							
 							}
 						}
 					}
