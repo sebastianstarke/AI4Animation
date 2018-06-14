@@ -122,6 +122,7 @@ public class MotionTools : EditorWindow {
 	}
 
 	private void VerifyData() {
+		/*
 		int errors = 0;
 
 		//Default Values
@@ -155,9 +156,11 @@ public class MotionTools : EditorWindow {
 			}
 		}
 		Debug.Log("Errors: " + errors);
+		*/
 	}
 
 	private void ExamineData() {
+		/*
 		int sequences = 0;
 		int frames = 0;
 		int[] styles = new int[Data[0].Styles.Length];
@@ -193,9 +196,11 @@ public class MotionTools : EditorWindow {
 		for(int i=0; i<styles.Length; i++) {
 			Debug.Log(Data[0].Styles[i] + " -> " + (float)styles[i] / (float)frames + "%" + " (" + styles[i] + " frames; " + (float)styles[i]/(float)Data[0].Framerate + "s)");
 		}
+		*/
 	}
 
 	private void SearchStyle() {
+		/*
 		int style = System.Array.FindIndex(Data[0].Styles, x => x == "Sit");
 		for(int i=0; i<Data.Length; i++) {
 			for(int s=0; s<Data[i].Sequences.Length; s++) {
@@ -206,6 +211,7 @@ public class MotionTools : EditorWindow {
 				}
 			}
 		}
+		*/
 	}
 
 	private void ProcessData() {
@@ -257,10 +263,6 @@ public class MotionTools : EditorWindow {
 				//Data[i].Sequences[0].SetStart(1);
 				//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
 				//Data[i].RootSmoothing = 10;
-				if(Data[i].Styles.Length == 0) {
-					Data[i].AddStyle("Idle");
-					Data[i].AddStyle("Move");
-				}
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

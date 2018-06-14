@@ -179,7 +179,6 @@ public class MotionExporter : EditorWindow {
 
 	private IEnumerator ExportInputLabels() {
 		MotionEditor editor = Editors[0];
-		PhaseEditor phaseEditor = editor.GetComponent<PhaseEditor>();
 
 		Exporting = true;
 		
@@ -209,9 +208,9 @@ public class MotionExporter : EditorWindow {
 			//for(int j=1; j<=StyleFilters.Length; j++) {
 			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			//}
-			for(int j=1; j<=editor.GetData().Styles.Length; j++) {
-				file.WriteLine(index + " " + editor.GetData().Styles[j-1] + i); index += 1;
-			}
+			//for(int j=1; j<=editor.GetData().Styles.Length; j++) {
+			//	file.WriteLine(index + " " + editor.GetData().Styles[j-1] + i); index += 1;
+			//}
 		}
 		for(int i=0; i<editor.GetData().Source.Bones.Length; i++) {
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "PositionX"+(i+1)); index += 1;
@@ -227,9 +226,6 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "VelocityY"+(i+1)); index += 1;
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "VelocityZ"+(i+1)); index += 1;
 		}
-		if(phaseEditor != null) {
-			file.WriteLine(index + " " + "Phase"); index += 1;
-		}
 
 		yield return new WaitForSeconds(0f);
 
@@ -240,7 +236,6 @@ public class MotionExporter : EditorWindow {
 
 	private IEnumerator ExportOutputLabels() {
 		MotionEditor editor = Editors[0];
-		PhaseEditor phaseEditor = editor.GetComponent<PhaseEditor>();
 
 		if(editor == null) {
 			Debug.Log("No editor found.");
@@ -287,9 +282,6 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "RootMotionX"); index += 1;
 			file.WriteLine(index + " " + "RootMotionY"); index += 1;
 			file.WriteLine(index + " " + "RootMotionZ"); index += 1;
-			if(phaseEditor != null) {
-				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
-			}
 
 			yield return new WaitForSeconds(0f);
 
@@ -308,7 +300,6 @@ public class MotionExporter : EditorWindow {
 		for(int e=0; e<Editors.Length; e++) {
 			if(Export[e]) {
 				MotionEditor editor = Editors[e];
-				PhaseEditor phaseEditor = editor.GetComponent<PhaseEditor>();
 				editor.VisualiseTrajectory(true);
 				editor.VisualiseVelocities(true);
 				int items = 0;
@@ -378,10 +369,7 @@ public class MotionExporter : EditorWindow {
 										inputLine += FormatVector3(up);
 										inputLine += FormatVector3(velocity);
 									}
-									if(phaseEditor != null) {
-										float p = editor.IsMirror() ? phaseEditor.Modules[i].InversePhase[state] : phaseEditor.Modules[i].RegularPhase[state];
-										inputLine += FormatValue(p);
-									}
+
 									inputLine = inputLine.Remove(inputLine.Length-1);
 									inputLine = inputLine.Replace(",",".");
 									input.WriteLine(inputLine);
@@ -410,11 +398,7 @@ public class MotionExporter : EditorWindow {
 										outputLine += FormatVector3(velocity);
 									}
 									outputLine += FormatVector3(next.RootMotion);
-									if(phaseEditor != null) {
-										float a = editor.IsMirror() ? phaseEditor.Modules[i].InversePhase[state-1] : phaseEditor.Modules[i].RegularPhase[state-1];
-										float b = editor.IsMirror() ? phaseEditor.Modules[i].InversePhase[state] : phaseEditor.Modules[i].RegularPhase[state];
-										outputLine += FormatValue(GetPhaseUpdate(a, b));
-									}
+
 									outputLine = outputLine.Remove(outputLine.Length-1);
 									outputLine = outputLine.Replace(",",".");
 									output.WriteLine(outputLine);

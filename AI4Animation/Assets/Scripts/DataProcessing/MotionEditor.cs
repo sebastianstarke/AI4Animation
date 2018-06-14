@@ -14,12 +14,9 @@ public class MotionEditor : MonoBehaviour {
 	public MotionData[] Files = new MotionData[0];
 	public Transform[] Environments = new Transform[0];
 
-	public bool ShowMotion = false;
+	//public bool ShowMotion = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
-	public bool ShowHeightMap = false;
-	public bool ShowDepthMap = false;
-	public bool ShowDepthImage = false;
 
 	public bool InspectFrame = true;
 	public bool InspectExport = true;
@@ -43,25 +40,16 @@ public class MotionEditor : MonoBehaviour {
 	private Transform Environment = null;
 	private MotionState State = null;
 
-	private int ID = -1;
+	private int FileID = -1;
 
-	public void VisualiseMotion(bool value) {
-		ShowMotion = value;
-	}
+	//public void VisualiseMotion(bool value) {
+	//	ShowMotion = value;
+	//}
 	public void VisualiseVelocities(bool value) {
 		ShowVelocities = value;
 	}
 	public void VisualiseTrajectory(bool value) {
 		ShowTrajectory = value;
-	}
-	public void VisualiseHeightMap(bool value) {
-		ShowHeightMap = value;
-	}
-	public void VisualiseDepthMap(bool value) {
-		ShowDepthMap = value;
-	}
-	public void VisualiseDepthImage(bool value) {
-		ShowDepthImage = value;
 	}
 
 	/*
@@ -117,17 +105,17 @@ public class MotionEditor : MonoBehaviour {
 		return Environments;
 	}
 
-	public int GetID() {
-		return ID;
+	public int GetFileID() {
+		return FileID;
 	}
 
 	public MotionData GetData() {
 		if(Files.Length == 0) {
-			ID = -1;
+			FileID = -1;
 			return null;
 		}
-		LoadFile(Mathf.Clamp(ID, 0, Files.Length-1));
-		return Files[ID];
+		LoadFile(Mathf.Clamp(FileID, 0, Files.Length-1));
+		return Files[FileID];
 	}
 
 	public MotionState GetState() {
@@ -166,7 +154,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		//Finalise
 		for(int i=0; i<Environments.Length; i++) {
-			Environments[i].gameObject.SetActive(i == ID);
+			Environments[i].gameObject.SetActive(i == FileID);
 			Environments[i].SetSiblingIndex(i);
 		}
 		//Initialise
@@ -203,25 +191,25 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void LoadFile(int id) {
-		if(ID != id) {
-			Save(ID);
-			ID = id;
-			if(ID < 0) {
+		if(FileID != id) {
+			Save(FileID);
+			FileID = id;
+			if(FileID < 0) {
 				return;
 			}
 			for(int i=0; i<Environments.Length; i++) {
-				Environments[i].gameObject.SetActive(i == ID);
+				Environments[i].gameObject.SetActive(i == FileID);
 			}
 			LoadFrame(0f);
 		}
 	}
 
 	public void LoadPreviousFile() {
-		LoadFile(Mathf.Max(ID-1, 0));
+		LoadFile(Mathf.Max(FileID-1, 0));
 	}
 
 	public void LoadNextFile() {
-		LoadFile(Mathf.Min(ID+1, Files.Length-1));
+		LoadFile(Mathf.Min(FileID+1, Files.Length-1));
 	}
 
 	public void LoadFrame(MotionState state) {
@@ -337,14 +325,14 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Draw() {
-		if(ShowMotion) {
-			for(int i=0; i<GetState().PastBoneTransformations.Count; i++) {
-				GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), GetState().PastBoneTransformations[i]);
-			}
-			for(int i=0; i<GetState().FutureBoneTransformations.Count; i++) {
-				GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)i/5f).Transparent(0.75f), GetState().FutureBoneTransformations[i]);
-			}
-		}
+		//if(ShowMotion) {
+		//	for(int i=0; i<GetState().PastBoneTransformations.Count; i++) {
+		//		GetActor().DrawSimple(Color.Lerp(UltiDraw.Blue, UltiDraw.Cyan, 1f - (float)(i+1)/6f).Transparent(0.75f), GetState().PastBoneTransformations[i]);
+		//	}
+		//	for(int i=0; i<GetState().FutureBoneTransformations.Count; i++) {
+		//		GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)i/5f).Transparent(0.75f), GetState().FutureBoneTransformations[i]);
+		//	}
+		//}
 
 		if(ShowVelocities) {
 			UltiDraw.Begin();
@@ -363,30 +351,6 @@ public class MotionEditor : MonoBehaviour {
 
 		if(ShowTrajectory) {
 			GetState().Trajectory.Draw();
-		}
-		
-		if(ShowHeightMap) {
-			GetState().HeightMap.Draw();
-		}
-		
-		if(ShowDepthMap) {
-			GetState().DepthMap.Draw();
-		}
-
-		UltiDraw.Begin();
-		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
-		UltiDraw.End();
-		if(ShowDepthImage) {
-			UltiDraw.Begin();
-			Vector2 size = new Vector2(0.5f, 0.5f*Screen.width/Screen.height);
-			for(int x=0; x<GetState().DepthMap.GetResolution(); x++) {
-				for(int y=0; y<GetState().DepthMap.GetResolution(); y++) {
-					float distance = Vector3.Distance(GetState().DepthMap.Points[GetState().DepthMap.GridToArray(x,y)], GetState().DepthMap.Pivot.GetPosition());
-					float intensity = 1f - distance / GetState().DepthMap.GetDistance();
-					UltiDraw.DrawGUIRectangle(Vector2.one/2f - size/2f + new Vector2((float)x*size.x, (float)y*size.y) / (GetState().DepthMap.GetResolution()-1), size / (GetState().DepthMap.GetResolution()-1), Color.Lerp(Color.black, Color.white, intensity));
-				}
-			}
-			UltiDraw.End();
 		}
 	}
 
@@ -420,7 +384,7 @@ public class MotionEditor : MonoBehaviour {
 
 		void OnDestroy() {
 			if(!Application.isPlaying && Target != null) {
-				Target.Save(Target.ID);
+				Target.Save(Target.FileID);
 			}
 			EditorApplication.update -= EditorUpdate;
 		}
@@ -476,9 +440,9 @@ public class MotionEditor : MonoBehaviour {
 						Target.LoadFile(-1);
 						EditorGUILayout.LabelField("No data available.");
 					} else {
-						Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.ID, Names));
+						Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.FileID, Names));
 						EditorGUILayout.EndHorizontal();
-						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID+1, 1, Target.Files.Length)-1);
+						Target.LoadFile(EditorGUILayout.IntSlider(Target.FileID+1, 1, Target.Files.Length)-1);
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White)) {
 							Target.LoadPreviousFile();
@@ -513,10 +477,11 @@ public class MotionEditor : MonoBehaviour {
 				*/
 
 				if(Target.GetData() != null) {
+					//Target.GetData().Inspector(Target);
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
-						MotionData.Frame frame = Target.GetData().GetFrame(Target.Timestamp);
+						Frame frame = Target.GetData().GetFrame(Target.Timestamp);
 
 						Utility.SetGUIColor(UltiDraw.Mustard);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -562,116 +527,16 @@ public class MotionEditor : MonoBehaviour {
 						}
 
 						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Motion", Target.ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowMotion = !Target.ShowMotion;
-						}
+						//if(Utility.GUIButton("Motion", Target.ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						//	Target.ShowMotion = !Target.ShowMotion;
+						//}
 						if(Utility.GUIButton("Trajectory", Target.ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 							Target.ShowTrajectory = !Target.ShowTrajectory;
 						}
 						if(Utility.GUIButton("Velocities", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 							Target.ShowVelocities = !Target.ShowVelocities;
 						}
-						if(Utility.GUIButton("Height Map", Target.ShowHeightMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowHeightMap = !Target.ShowHeightMap;
-						}
-						if(Utility.GUIButton("Depth Map", Target.ShowDepthMap ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowDepthMap = !Target.ShowDepthMap;
-						}
-						if(Utility.GUIButton("Depth Image", Target.ShowDepthImage ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowDepthImage = !Target.ShowDepthImage;
-						}
 						EditorGUILayout.EndHorizontal();
-
-						Utility.SetGUIColor(UltiDraw.Mustard);
-						using(new EditorGUILayout.VerticalScope ("Box")) {
-							Utility.ResetGUIColor();
-							Target.InspectFrame = EditorGUILayout.Toggle("Style", Target.InspectFrame);
-						}
-
-						if(Target.InspectFrame) {
-							Color[] colors = UltiDraw.GetRainbowColors(Target.GetData().Styles.Length);
-							for(int i=0; i<Target.GetData().Styles.Length; i++) {
-								float height = 25f;
-								EditorGUILayout.BeginHorizontal();
-								if(Utility.GUIButton(Target.GetData().Styles[i], !frame.StyleFlags[i] ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
-									frame.ToggleStyle(i);
-								}
-								Rect c = EditorGUILayout.GetControlRect();
-								Rect r = new Rect(c.x, c.y, frame.StyleValues[i] * c.width, height);
-								EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
-								EditorGUILayout.FloatField(frame.StyleValues[i], GUILayout.Width(50f));
-								EditorGUILayout.EndHorizontal();
-							}
-							EditorGUILayout.BeginHorizontal();
-							if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-								MotionData.Frame previous = frame.GetAnyPreviousStyleKey();
-								Target.LoadFrame(previous == null ? 0f : previous.Timestamp);
-							}
-							EditorGUILayout.BeginVertical(GUILayout.Height(50f));
-							Rect ctrl = EditorGUILayout.GetControlRect();
-							Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
-							EditorGUI.DrawRect(rect, UltiDraw.Black);
-							UltiDraw.Begin();
-							//Sequences
-							for(int i=0; i<Target.GetData().Sequences.Length; i++) {
-								float start = rect.x + (float)(Target.GetData().Sequences[i].Start-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-								float end = rect.x + (float)(Target.GetData().Sequences[i].End-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-								Vector3 a = new Vector3(start, rect.y, 0f);
-								Vector3 b = new Vector3(end, rect.y, 0f);
-								Vector3 c = new Vector3(start, rect.y+rect.height, 0f);
-								Vector3 d = new Vector3(end, rect.y+rect.height, 0f);
-								UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
-								UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
-							}
-							//Styles
-							for(int i=0; i<Target.GetData().Styles.Length; i++) {
-								int x = 0;
-								for(int j=1; j<Target.GetData().GetTotalFrames(); j++) {
-									float val = Target.GetData().Frames[j].StyleValues[i];
-									if(
-										Target.GetData().Frames[x].StyleValues[i]<1f && val==1f ||
-										Target.GetData().Frames[x].StyleValues[i]>0f && val==0f
-										) {
-										float xStart = rect.x + (float)(Mathf.Max(x-1, 0))/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float xEnd = rect.x + (float)j/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float yStart = rect.y + (1f - Target.GetData().Frames[Mathf.Max(x-1, 0)].StyleValues[i]) * rect.height;
-										float yEnd = rect.y + (1f - Target.GetData().Frames[j].StyleValues[i]) * rect.height;
-										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-										x = j;
-									}
-									if(
-										Target.GetData().Frames[x].StyleValues[i]==0f && val>0f || 
-										Target.GetData().Frames[x].StyleValues[i]==1f && val<1f
-										) {
-										float xStart = rect.x + (float)(x)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
-										float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
-										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-										x = j;
-									}
-									if(j==Target.GetData().GetTotalFrames()-1) {
-										float xStart = rect.x + (float)x/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float xEnd = rect.x + (float)(j-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-										float yStart = rect.y + (1f - Target.GetData().Frames[x].StyleValues[i]) * rect.height;
-										float yEnd = rect.y + (1f - Target.GetData().Frames[j-1].StyleValues[i]) * rect.height;
-										UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-										x = j;
-									}
-								}
-							}
-							float pivot = rect.x + (float)(frame.Index-1)/(float)(Target.GetData().GetTotalFrames()-1) * rect.width;
-							UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
-							UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y, 0f), 8f, UltiDraw.Green);
-							UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y + rect.height, 0f), 8f, UltiDraw.Green);
-							UltiDraw.End();
-							EditorGUILayout.EndVertical();
-							if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-								MotionData.Frame next = frame.GetAnyNextStyleKey();
-								Target.LoadFrame(next == null ? Target.GetData().GetTotalTime() : next.Timestamp);
-							}
-							EditorGUILayout.EndHorizontal();
-						}
 
 						Utility.SetGUIColor(UltiDraw.Mustard);
 						using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -701,6 +566,7 @@ public class MotionEditor : MonoBehaviour {
 									GUILayout.FlexibleSpace();
 									EditorGUILayout.EndHorizontal();
 
+									/*
 									for(int s=0; s<Target.GetData().Styles.Length; s++) {
 										EditorGUILayout.BeginHorizontal();
 										GUILayout.FlexibleSpace();
@@ -712,6 +578,7 @@ public class MotionEditor : MonoBehaviour {
 										GUILayout.FlexibleSpace();
 										EditorGUILayout.EndHorizontal();
 									}
+									*/
 									//for(int c=0; c<Target.GetData().Sequences[i].Copies.Length; c++) {
 									//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetData().Sequences[i].Copies[c].Start + " End: " + Target.GetData().Sequences[i].Copies[c].End);
 									//}
@@ -750,35 +617,12 @@ public class MotionEditor : MonoBehaviour {
 								Target.GetData().Scaling = EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling);
 								Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
 								
-								Target.GetData().GroundMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().GroundMask), InternalEditorUtility.layers));
-								Target.GetData().ObjectMask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Object Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().ObjectMask), InternalEditorUtility.layers));
-								
+								Target.GetData().Ground = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().Ground), InternalEditorUtility.layers));
+
 								string[] names = new string[Target.GetData().Source.Bones.Length];
 								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 									names[i] = Target.GetData().Source.Bones[i].Name;
 								}
-								Target.GetData().HeightMapSensor = EditorGUILayout.Popup("Height Map Sensor", Target.GetData().HeightMapSensor, names);
-								Target.GetData().HeightMapSize = EditorGUILayout.Slider("Height Map Size", Target.GetData().HeightMapSize, 0f, 1f);
-								Target.GetData().DepthMapSensor = EditorGUILayout.Popup("Depth Map Sensor", Target.GetData().DepthMapSensor, names);
-								Target.GetData().DepthMapAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Depth Map Axis", Target.GetData().DepthMapAxis);
-								Target.GetData().DepthMapResolution = EditorGUILayout.IntField("Depth Map Resolution", Target.GetData().DepthMapResolution);
-								Target.GetData().DepthMapSize = EditorGUILayout.FloatField("Depth Map Size", Target.GetData().DepthMapSize);
-								Target.GetData().DepthMapDistance = EditorGUILayout.FloatField("Depth Map Distance", Target.GetData().DepthMapDistance);
-								
-								Target.GetData().SetStyleTransition(EditorGUILayout.Slider("Style Transition", Target.GetData().StyleTransition, 0.1f, 1f));
-								for(int i=0; i<Target.GetData().Styles.Length; i++) {
-									EditorGUILayout.BeginHorizontal();
-									Target.GetData().Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Target.GetData().Styles[i]);
-									EditorGUILayout.EndHorizontal();
-								}
-								EditorGUILayout.BeginHorizontal();
-								if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-									Target.GetData().AddStyle("Style");
-								}
-								if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-									Target.GetData().RemoveStyle();
-								}
-								EditorGUILayout.EndHorizontal();
 							}
 
 							Utility.SetGUIColor(UltiDraw.LightGrey);
@@ -807,14 +651,14 @@ public class MotionEditor : MonoBehaviour {
 					for(int i=0; i<Target.GetData().Modules.Length; i++) {
 						Target.GetData().Modules[i].Inspector(Target);
 					}
-					int module = EditorGUILayout.Popup(0, new string[3]{"Add Module...", "Style", "Phase"});
-					switch(module) {
-						case 1:
-						Target.GetData().AddModule(DataModule.TYPE.Style);
-						break;
-						case 2:
-						Target.GetData().AddModule(DataModule.TYPE.Phase);
-						break;
+					string[] modules = new string[(int)DataModule.TYPE.Length+1];
+					modules[0] = "Add Module...";
+					for(int i=1; i<modules.Length; i++) {
+						modules[i] = ((DataModule.TYPE)(i-1)).ToString();
+					}
+					int module = EditorGUILayout.Popup(0, modules);
+					if(module > 0) {
+						Target.GetData().AddModule((DataModule.TYPE)(module-1));
 					}
 				}
 			}

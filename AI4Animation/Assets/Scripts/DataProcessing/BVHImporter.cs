@@ -277,7 +277,7 @@ public class BVHImporter : EditorWindow {
 							motions.Add(Utility.ReadArray(lines[i]));
 						}
 						for(int k=0; k<data.GetTotalFrames(); k++) {
-							data.Frames[k] = new MotionData.Frame(data, k+1, (float)k / data.Framerate);
+							data.Frames[k] = new Frame(data, k+1, (float)k / data.Framerate);
 							int idx = 0;
 							for(int i=0; i<data.Source.Bones.Length; i++) {
 								MotionData.Hierarchy.Bone info = data.Source.Bones[i];
@@ -317,10 +317,7 @@ public class BVHImporter : EditorWindow {
 						}
 
 						//Finalise
-						data.DetectHeightMapSensor();
-						data.DetectDepthMapSensor();
 						data.DetectSymmetry();
-						data.ComputeStyles();
 						data.AddSequence();
 					} else {
 						Debug.Log("File with name " + Files[f].Object.Name + " already exists.");

@@ -6,7 +6,7 @@ using UnityEditor;
 
 public abstract class DataModule : ScriptableObject {
 
-	public enum TYPE {Style, Phase};
+	public enum TYPE {Style, Phase, DepthMap, HeightMap, Length};
 
 	public MotionData Data;
 	public bool Inspect;

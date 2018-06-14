@@ -207,7 +207,7 @@ public class FBXImporter : EditorWindow {
 
 						//Compute Frames
 						for(int i=0; i<data.GetTotalFrames(); i++) {
-							data.Frames[i] = new MotionData.Frame(data, i+1, (float)i / data.Framerate);
+							data.Frames[i] = new Frame(data, i+1, (float)i / data.Framerate);
 							clip.SampleAnimation(Character.gameObject, data.Frames[i].Timestamp);
 							for(int j=0; j<Character.Bones.Length; j++) {
 								data.Frames[i].Local[j] = Character.Bones[j].Transform.GetLocalMatrix();
@@ -216,10 +216,7 @@ public class FBXImporter : EditorWindow {
 						}
 
 						//Finalise
-						data.DetectHeightMapSensor();
-						data.DetectDepthMapSensor();
 						data.DetectSymmetry();
-						data.ComputeStyles();
 						data.AddSequence();
 
 						EditorUtility.SetDirty(data);

@@ -58,8 +58,11 @@ public class PhaseModule : DataModule {
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
+		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
+		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
 		SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", MaximumVelocity));
 		SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
+		TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 0f, Data.GetTotalTime());
 		string[] names = new string[1 + Data.Source.Bones.Length];
 		names[0] = "Select...";
 		for(int i=0; i<names.Length-1; i++) {
@@ -79,9 +82,6 @@ public class PhaseModule : DataModule {
 				}
 			}
 		}
-		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
-		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
-		TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 0f, Data.GetTotalTime());
 		Utility.SetGUIColor(UltiDraw.Grey);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
 			Utility.ResetGUIColor();
@@ -160,7 +160,7 @@ public class PhaseModule : DataModule {
 			}
 		}
 
-		public void SetKey(MotionData.Frame frame, bool value) {
+		public void SetKey(Frame frame, bool value) {
 			if(value) {
 				if(IsKey(frame)) {
 					return;
@@ -178,22 +178,22 @@ public class PhaseModule : DataModule {
 			}
 		}
 
-		public bool IsKey(MotionData.Frame frame) {
+		public bool IsKey(Frame frame) {
 			return Keys[frame.Index-1];
 		}
 
-		public void SetPhase(MotionData.Frame frame, float value) {
+		public void SetPhase(Frame frame, float value) {
 			if(Phase[frame.Index-1] != value) {
 				Phase[frame.Index-1] = value;
 				Interpolate(frame);
 			}
 		}
 
-		public float GetPhase(MotionData.Frame frame) {
+		public float GetPhase(Frame frame) {
 			return Phase[frame.Index-1];
 		}
 
-		public MotionData.Frame GetPreviousKey(MotionData.Frame frame) {
+		public Frame GetPreviousKey(Frame frame) {
 			if(frame != null) {
 				for(int i=frame.Index-1; i>=1; i--) {
 					if(Keys[i-1]) {
@@ -204,7 +204,7 @@ public class PhaseModule : DataModule {
 			return Module.Data.Frames[0];
 		}
 
-		public MotionData.Frame GetNextKey(MotionData.Frame frame) {
+		public Frame GetNextKey(Frame frame) {
 			if(frame != null) {
 				for(int i=frame.Index+1; i<=Module.Data.GetTotalFrames(); i++) {
 					if(Keys[i-1]) {
@@ -221,8 +221,8 @@ public class PhaseModule : DataModule {
 					Phase[i] = 1f;
 				}
 			}
-			MotionData.Frame A = Module.Data.Frames[0];
-			MotionData.Frame B = GetNextKey(A);
+			Frame A = Module.Data.Frames[0];
+			Frame B = GetNextKey(A);
 			while(A != B) {
 				Interpolate(A, B);
 				A = B;
@@ -230,7 +230,7 @@ public class PhaseModule : DataModule {
 			}
 		}
 
-		private void Interpolate(MotionData.Frame frame) {
+		private void Interpolate(Frame frame) {
 			if(IsKey(frame)) {
 				Interpolate(GetPreviousKey(frame), frame);
 				Interpolate(frame, GetNextKey(frame));
@@ -239,7 +239,7 @@ public class PhaseModule : DataModule {
 			}
 		}
 
-		private void Interpolate(MotionData.Frame a, MotionData.Frame b) {
+		private void Interpolate(Frame a, Frame b) {
 			if(a == null || b == null) {
 				Debug.Log("A given frame was null.");
 				return;
@@ -260,9 +260,9 @@ public class PhaseModule : DataModule {
 			}
 
 			if(a.Index == 1) {
-				MotionData.Frame first = Module.Data.Frames[0];
-				MotionData.Frame next1 = GetNextKey(first);
-				MotionData.Frame next2 = GetNextKey(next1);
+				Frame first = Module.Data.Frames[0];
+				Frame next1 = GetNextKey(first);
+				Frame next2 = GetNextKey(next1);
 				if(next2 == Module.Data.Frames[Module.Data.Frames.Length-1]) {
 					float ratio = 1f - next1.Timestamp / Module.Data.GetTotalTime();
 					SetPhase(first, ratio);
@@ -274,9 +274,9 @@ public class PhaseModule : DataModule {
 				}
 			}
 			if(b.Index == Module.Data.GetTotalFrames()) {
-				MotionData.Frame last = Module.Data.Frames[Module.Data.GetTotalFrames()-1];
-				MotionData.Frame previous1 = GetPreviousKey(last);
-				MotionData.Frame previous2 = GetPreviousKey(previous1);
+				Frame last = Module.Data.Frames[Module.Data.GetTotalFrames()-1];
+				Frame previous1 = GetPreviousKey(last);
+				Frame previous2 = GetPreviousKey(previous1);
 				if(previous2 == Module.Data.Frames[0]) {
 					float ratio = 1f - previous1.Timestamp / Module.Data.GetTotalTime();
 					SetPhase(last, ratio);
@@ -291,7 +291,6 @@ public class PhaseModule : DataModule {
 
 		public void Inspector(MotionEditor editor) {
 			UltiDraw.Begin();
-
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -302,7 +301,7 @@ public class PhaseModule : DataModule {
 					EditorGUILayout.LabelField(this == Module.RegularPhaseFunction ? "Regular" : "Inverse");
 				}
 
-				MotionData.Frame frame = Module.Data.GetFrame(editor.GetState().Index);
+				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
 
 				if(IsKey(frame)) {
 					SetPhase(frame, EditorGUILayout.Slider("Phase", GetPhase(frame), 0f, 1f));
@@ -331,6 +330,18 @@ public class PhaseModule : DataModule {
 				Rect ctrl = EditorGUILayout.GetControlRect();
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 				EditorGUI.DrawRect(rect, UltiDraw.Black);
+
+				//Sequences
+				for(int i=0; i<Module.Data.Sequences.Length; i++) {
+					float left = rect.x + (float)(Module.Data.Sequences[i].Start-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
+					float right = rect.x + (float)(Module.Data.Sequences[i].End-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
+					Vector3 a = new Vector3(left, rect.y, 0f);
+					Vector3 b = new Vector3(right, rect.y, 0f);
+					Vector3 c = new Vector3(left, rect.y+rect.height, 0f);
+					Vector3 d = new Vector3(right, rect.y+rect.height, 0f);
+					UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
+					UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
+				}
 
 				float startTime = frame.Timestamp-Module.TimeWindow/2f;
 				float endTime = frame.Timestamp+Module.TimeWindow/2f;
@@ -386,8 +397,8 @@ public class PhaseModule : DataModule {
 
 				//Phase
 				//for(int i=1; i<Module.Data.Frames.Length; i++) {
-				//	MotionData.Frame A = Module.Data.Frames[i-1];
-				//	MotionData.Frame B = Module.Data.Frames[i];
+				//	Frame A = Module.Data.Frames[i-1];
+				//	Frame B = Module.Data.Frames[i];
 				//	prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
 				//	prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
 				//	newPos.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
@@ -397,13 +408,13 @@ public class PhaseModule : DataModule {
 				//	top.x = rect.xMin + (float)(B.Index-start)/elements * rect.width;
 				//}
 				
-				MotionData.Frame A = Module.Data.GetFrame(start);
+				Frame A = Module.Data.GetFrame(start);
 				if(A.Index == 1) {
 					bottom.x = rect.xMin;
 					top.x = rect.xMin;
 					UltiDraw.DrawLine(bottom, top, UltiDraw.Magenta.Transparent(0.5f));
 				}
-				MotionData.Frame B = GetNextKey(A);
+				Frame B = GetNextKey(A);
 				while(A != B) {
 					prevPos.x = rect.xMin + (float)(A.Index-start)/elements * rect.width;
 					prevPos.y = rect.yMax - Mathf.Repeat(Phase[A.Index-1], 1f) * rect.height;
@@ -447,7 +458,6 @@ public class PhaseModule : DataModule {
 				}
 				EditorGUILayout.EndHorizontal();
 			}
-
 			UltiDraw.End();
 		}
 	}
