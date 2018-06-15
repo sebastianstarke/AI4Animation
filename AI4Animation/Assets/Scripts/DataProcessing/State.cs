@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MotionState {
+public class State {
 	public int Index;
 	public float Timestamp;
 	public bool Mirrored;
@@ -18,7 +18,7 @@ public class MotionState {
 	public List<Matrix4x4[]> FutureBoneTransformations;
 	public List<Vector3[]> FutureBoneVelocities;
 
-	public MotionState(Frame frame, bool mirrored) {
+	public State(Frame frame, bool mirrored) {
 		Index = frame.Index;
 		Timestamp = frame.Timestamp;
 		Mirrored = mirrored;

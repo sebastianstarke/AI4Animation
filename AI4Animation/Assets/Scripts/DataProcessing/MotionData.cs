@@ -31,6 +31,14 @@ public class MotionData : ScriptableObject {
 		return Frames.Length;
 	}
 
+	public Frame GetFirstFrame() {
+		return Frames[0];
+	}
+
+	public Frame GetLastFrame() {
+		return Frames[Frames.Length-1];
+	}
+
 	public Frame GetFrame(int index) {
 		if(index < 1 || index > GetTotalFrames()) {
 			Debug.Log("Please specify an index between 1 and " + GetTotalFrames() + ".");

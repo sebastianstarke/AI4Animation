@@ -181,12 +181,9 @@ public class Frame {
 			if(Timestamp + delta < 0f) {
 				float pivot = - Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
-				float ratio = (pivot - Timestamp) / (clamped - Timestamp);
-				if(float.IsNaN(ratio)) {
-					ratio = 1f;
-				}
 				Frame reference = Data.GetFrame(clamped);
-				trajectory.Points[i].SetPosition(Data.GetFrame(0f).GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFrame(0f).GetRootPosition(mirrored)));
+				float ratio = 1f;
+				trajectory.Points[i].SetPosition(Data.GetFirstFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFirstFrame().GetRootPosition(mirrored)));
 				trajectory.Points[i].SetRotation(reference.GetRootRotation(mirrored));
 				trajectory.Points[i].SetVelocity(reference.GetRootVelocity(mirrored));
 				trajectory.Points[i].SetSpeed(reference.GetSpeed(mirrored));
@@ -206,12 +203,9 @@ public class Frame {
 			if(Timestamp + delta > Data.GetTotalTime()) {
 				float pivot = 2f*Data.GetTotalTime() - Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
-				float ratio = (pivot - Timestamp) / (clamped - Timestamp);
-				if(float.IsNaN(ratio)) {
-					ratio = 1f;
-				}
+				float ratio = 1f;
 				Frame reference = Data.GetFrame(clamped);
-				trajectory.Points[6+i].SetPosition(Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFrame(Data.GetTotalTime()).GetRootPosition(mirrored)));
+				trajectory.Points[6+i].SetPosition(Data.GetLastFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetLastFrame().GetRootPosition(mirrored)));
 				trajectory.Points[6+i].SetRotation(reference.GetRootRotation(mirrored));
 				trajectory.Points[6+i].SetVelocity(reference.GetRootVelocity(mirrored));
 				trajectory.Points[6+i].SetSpeed(reference.GetSpeed(mirrored));

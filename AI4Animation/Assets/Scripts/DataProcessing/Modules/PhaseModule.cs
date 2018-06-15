@@ -57,6 +57,10 @@ public class PhaseModule : DataModule {
 		InversePhaseFunction.ComputeVelocities();
 	}
 
+	public float GetPhase(Frame frame, bool mirrored) {
+		return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
+	}
+
 	protected override void DerivedInspector(MotionEditor editor) {
 		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
 		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);

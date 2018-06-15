@@ -307,7 +307,7 @@ public class MotionExporter : EditorWindow {
 				editor.VisualiseVelocities(true);
 				int items = 0;
 				for(int i=0; i<editor.GetFiles().Length; i++) {
-					editor.LoadFile(i);
+					editor.LoadData(i);
 					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 						if(m==1) {
 							editor.SetMirror(false);
@@ -321,7 +321,7 @@ public class MotionExporter : EditorWindow {
 								Generating = 0f;
 								Writing = 0f;
 
-								List<MotionState> states = new List<MotionState>();
+								List<State> states = new List<State>();
 								float start = editor.GetData().GetFrame(intervals[interval].Start).Timestamp;
 								float end = editor.GetData().GetFrame(intervals[interval].End).Timestamp;
 
@@ -339,9 +339,9 @@ public class MotionExporter : EditorWindow {
 
 								for(int state=1; state<states.Count-1; state++) {
 									Writing = (float)(state) / (float)(states.Count-2);
-									MotionState previous = states[state-1];
-									MotionState next = states[state+1];
-									MotionState current = states[state];
+									State previous = states[state-1];
+									State next = states[state+1];
+									State current = states[state];
 									editor.LoadFrame(current);
 
 									//Input

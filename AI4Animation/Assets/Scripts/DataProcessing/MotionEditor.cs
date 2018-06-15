@@ -35,7 +35,7 @@ public class MotionEditor : MonoBehaviour {
 
 	private Actor Actor = null;
 	private Transform Environment = null;
-	private MotionState State = null;
+	private State State = null;
 
 	private int FileID = -1;
 
@@ -114,11 +114,11 @@ public class MotionEditor : MonoBehaviour {
 			FileID = -1;
 			return null;
 		}
-		LoadFile(Mathf.Clamp(FileID, 0, Files.Length-1));
+		LoadData(Mathf.Clamp(FileID, 0, Files.Length-1));
 		return Files[FileID];
 	}
 
-	public MotionState GetState() {
+	public State GetState() {
 		if(State == null) {
 			LoadFrame(Timestamp);
 		}
@@ -190,7 +190,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	public void LoadFile(int id) {
+	public void LoadData(int id) {
 		if(FileID != id) {
 			Save(FileID);
 			FileID = id;
@@ -205,14 +205,14 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void LoadPreviousFile() {
-		LoadFile(Mathf.Max(FileID-1, 0));
+		LoadData(Mathf.Max(FileID-1, 0));
 	}
 
 	public void LoadNextFile() {
-		LoadFile(Mathf.Min(FileID+1, Files.Length-1));
+		LoadData(Mathf.Min(FileID+1, Files.Length-1));
 	}
 
-	public void LoadFrame(MotionState state) {
+	public void LoadFrame(State state) {
 		Timestamp = state.Timestamp;
 		State = state;
 		if(state.Mirrored) {
@@ -247,7 +247,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void LoadFrame(float timestamp) {
-		LoadFrame(new MotionState(GetData().GetFrame(timestamp), ShowMirror));
+		LoadFrame(new State(GetData().GetFrame(timestamp), ShowMirror));
 	}
 
 	public void LoadFrame(int index) {
@@ -437,12 +437,12 @@ public class MotionEditor : MonoBehaviour {
 
 					EditorGUILayout.BeginHorizontal();
 					if(Target.Files.Length == 0) {
-						Target.LoadFile(-1);
+						Target.LoadData(-1);
 						EditorGUILayout.LabelField("No data available.");
 					} else {
-						Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.FileID, Names));
+						Target.LoadData(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.FileID, Names));
 						EditorGUILayout.EndHorizontal();
-						Target.LoadFile(EditorGUILayout.IntSlider(Target.FileID+1, 1, Target.Files.Length)-1);
+						Target.LoadData(EditorGUILayout.IntSlider(Target.FileID+1, 1, Target.Files.Length)-1);
 						EditorGUILayout.BeginHorizontal();
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White)) {
 							Target.LoadPreviousFile();
