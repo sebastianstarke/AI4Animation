@@ -20,6 +20,9 @@ public class BlendingActivation : MonoBehaviour {
 	}
 
 	void Start() {
+		if(NN.GetTensor("BY") == null) {
+			return;
+		}
 		Values = new Queue<float>[NN.GetTensor("BY").GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();

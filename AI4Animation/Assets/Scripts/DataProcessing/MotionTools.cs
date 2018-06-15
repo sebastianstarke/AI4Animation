@@ -267,15 +267,17 @@ public class MotionTools : EditorWindow {
 
 				//Data[i].AddModule(DataModule.TYPE.Style);
 				//Data[i].AddModule(DataModule.TYPE.Phase);
-				//StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
+				StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
+				style.Inspect = false;
 				//style.AddStyle("Idle");
 				//style.AddStyle("Walk");
 				//style.AddStyle("Run");
 				//style.AddStyle("Crouch");
-				//PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
+				PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
+				phase.Inspect = true;
 				//phase.ToggleVariable(Data[i].Source.FindBone("RightToeSite").Index);
-				Data[i].Sequences[0].Start = 62;
-				Data[i].Sequences[0].End = Data[i].GetTotalFrames();
+				//Data[i].Sequences[0].Start = 62;
+				//Data[i].Sequences[0].End = Data[i].GetTotalFrames();
              	EditorUtility.SetDirty(Data[i]);
             }
 		}
