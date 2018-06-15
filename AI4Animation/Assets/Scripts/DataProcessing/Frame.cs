@@ -181,8 +181,8 @@ public class Frame {
 			if(Timestamp + delta < 0f) {
 				float pivot = - Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+				float ratio = pivot == clamped ? 1f : Mathf.Abs(pivot / clamped);
 				Frame reference = Data.GetFrame(clamped);
-				float ratio = 1f;
 				trajectory.Points[i].SetPosition(Data.GetFirstFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFirstFrame().GetRootPosition(mirrored)));
 				trajectory.Points[i].SetRotation(reference.GetRootRotation(mirrored));
 				trajectory.Points[i].SetVelocity(reference.GetRootVelocity(mirrored));
@@ -203,7 +203,7 @@ public class Frame {
 			if(Timestamp + delta > Data.GetTotalTime()) {
 				float pivot = 2f*Data.GetTotalTime() - Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
-				float ratio = 1f;
+				float ratio = pivot == clamped ?1f : Mathf.Abs((Data.GetTotalTime() - pivot) / (Data.GetTotalTime() - clamped));
 				Frame reference = Data.GetFrame(clamped);
 				trajectory.Points[6+i].SetPosition(Data.GetLastFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetLastFrame().GetRootPosition(mirrored)));
 				trajectory.Points[6+i].SetRotation(reference.GetRootRotation(mirrored));
