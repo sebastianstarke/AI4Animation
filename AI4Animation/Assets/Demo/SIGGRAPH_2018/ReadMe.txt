@@ -10,7 +10,7 @@ http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip
 
 To control the character, use the <W / A / D> keys for forward and side motion, 
 <S> for stopping, and <Q / E> for turning. To control different velocity levels, 
-press <Left-Shift> (Canter), <Left-Shift> (Trot) or <Left-Alt> (Walk). Default 
+press <Left-Shift> (Canter), <Left-Ctrl> (Trot) or <Left-Alt> (Walk). Default 
 locomotion is pace. Jumping, sitting, standing and lying can be performed via 
 <Space>, <V>, <R> or <F> respectively.
 
