@@ -1,12 +1,19 @@
 import numpy as np
 import tensorflow as tf
 import PFNNParameter as PFNN
+import Utils as utils
 from PFNNParameter import PFNNParameter
 from AdamWParameter import AdamWParameter
 from AdamW import AdamOptimizer
 import os.path
 
 tf.set_random_seed(23456)  
+
+utils.build_path(['data'])
+utils.build_path(['training'])
+utils.build_path(['training/nn'])
+utils.build_path(['training/weights'])
+utils.build_path(['training/model'])
 
 X = np.float32(np.loadtxt('./data/Input.txt'))
 Y = np.float32(np.loadtxt('./data/Output.txt'))
@@ -27,10 +34,10 @@ for i in range(Ystd.size):
 X = (X - Xmean) / Xstd
 Y = (Y - Ymean) / Ystd
 
-Xmean.tofile('./nn/Xmean.bin')
-Ymean.tofile('./nn/Ymean.bin')
-Xstd.tofile('./nn/Xstd.bin')
-Ystd.tofile('./nn/Ystd.bin')
+Xmean.tofile('training/nn/Xmean.bin')
+Ymean.tofile('training/nn/Ymean.bin')
+Xstd.tofile('training/nn/Xstd.bin')
+Ystd.tofile('training/nn/Ystd.bin')
 
 X = np.concatenate((X, P), axis=1)
 
@@ -167,20 +174,20 @@ for epoch in range(training_epochs):
     print('Epoch:', '%04d' % (epoch + 1), 'testloss =', '{:.9f}'.format(avg_cost_test))
     error_train[epoch] = avg_cost_train
     error_test[epoch]  = avg_cost_test
-    error_train.tofile("./model/error_train.bin")
-    error_test.tofile("./model/error_test.bin")
+    error_train.tofile("training/model/error_train.bin")
+    error_test.tofile("training/model/error_test.bin")
     
     #save model and weights
-    save_path = saver.save(sess, "./model/model.ckpt")
+    save_path = saver.save(sess, "training/model/model.ckpt")
     PFNN.save_network((sess.run(P0.alpha), sess.run(P1.alpha), sess.run(P2.alpha)), 
                       (sess.run(P0.beta), sess.run(P1.beta), sess.run(P2.beta)), 
                       50, 
-                      './nn'
+                      'training/nn'
                       )    
     
     #save weights every 5epoch
     if epoch>0 and epoch%10==0:
-        path_human  = './weights/humanNN%03i' % epoch
+        path_human  = 'training/weights/humanNN%03i' % epoch
         if not os.path.exists(path_human):
             os.makedirs(path_human)
         PFNN.save_network((sess.run(P0.alpha), sess.run(P1.alpha), sess.run(P2.alpha)), 
