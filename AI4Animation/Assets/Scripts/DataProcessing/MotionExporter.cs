@@ -208,9 +208,12 @@ public class MotionExporter : EditorWindow {
 			//for(int j=1; j<=StyleFilters.Length; j++) {
 			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			//}
-			//for(int j=1; j<=editor.GetData().Styles.Length; j++) {
-			//	file.WriteLine(index + " " + editor.GetData().Styles[j-1] + i); index += 1;
-			//}
+			StyleModule style = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
+			if(style != null) {
+				for(int j=1; j<=style.Functions.Length; j++) {
+					file.WriteLine(index + " " + style.Functions[j-1].Name + i); index += 1;
+				}
+			}
 		}
 		for(int i=0; i<editor.GetData().Source.Bones.Length; i++) {
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "PositionX"+(i+1)); index += 1;
