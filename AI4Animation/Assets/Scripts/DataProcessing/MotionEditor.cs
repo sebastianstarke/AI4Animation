@@ -15,8 +15,10 @@ public class MotionEditor : MonoBehaviour {
 	public Transform[] Environments = new Transform[0];
 
 	//public bool ShowMotion = false;
+	public bool ShowMirror = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
+	public bool InspectSettings = false;
 
 	/*
 	private bool AutoFocus = false;
@@ -27,7 +29,6 @@ public class MotionEditor : MonoBehaviour {
 	private float FocusSmoothing = 0.05f;
 	*/
 
-	private bool Mirror = false;
 	private bool Playing = false;
 	private float Timescale = 1f;
 	private float Timestamp = 0f;
@@ -62,14 +63,17 @@ public class MotionEditor : MonoBehaviour {
 	*/
 
 	public void SetMirror(bool value) {
-		if(Mirror != value) {
-			Mirror = value;
+		if(ShowMirror != value) {
+			ShowMirror = value;
 			LoadFrame(Timestamp);
 		}
 	}
 
-	public bool IsMirror() {
-		return Mirror;
+	public void SetScaling(float value) {
+		if(GetData().Scaling != value) {
+			GetData().Scaling = value;
+			LoadFrame(Timestamp);
+		}
 	}
 
 	public Actor GetActor() {
@@ -243,7 +247,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void LoadFrame(float timestamp) {
-		LoadFrame(new MotionState(GetData().GetFrame(timestamp), Mirror));
+		LoadFrame(new MotionState(GetData().GetFrame(timestamp), ShowMirror));
 	}
 
 	public void LoadFrame(int index) {
@@ -489,118 +493,125 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField("Framerate: " + Target.GetData().Framerate.ToString("F1") + "Hz", GUILayout.Width(130f));
 							EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 							Target.Timescale = EditorGUILayout.FloatField(Target.Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
+							if(Utility.GUIButton("M", Target.ShowMirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+								Target.SetMirror(!Target.ShowMirror);
+							}
+							if(Utility.GUIButton("T", Target.ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+								Target.ShowTrajectory = !Target.ShowTrajectory;
+							}
+							if(Utility.GUIButton("V", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+								Target.ShowVelocities = !Target.ShowVelocities;
+							}
+							if(Utility.GUIButton("Settings", Target.InspectSettings ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+								Target.InspectSettings = !Target.InspectSettings;
+							}
 							GUILayout.FlexibleSpace();
 							EditorGUILayout.EndHorizontal();
 						}
 
-						EditorGUILayout.BeginHorizontal();
-						GUILayout.FlexibleSpace();
-						if(Target.Playing) {
-							if(Utility.GUIButton("||", Color.red, Color.black, 20f, 20f)) {
-								Target.StopAnimation();
-							}
-						} else {
-							if(Utility.GUIButton("|>", Color.green, Color.black, 20f, 20f)) {
-								Target.PlayAnimation();
-							}
-						}
-						if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
-							Target.LoadPreviousFrame();
-						}
-						if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
-							Target.LoadNextFrame();
-						}
-						int index = EditorGUILayout.IntSlider(frame.Index, 1, Target.GetData().GetTotalFrames(), GUILayout.Width(440f));
-						if(index != frame.Index) {
-							Target.LoadFrame(index);
-						}
-						EditorGUILayout.LabelField(frame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
-						GUILayout.FlexibleSpace();
-						EditorGUILayout.EndHorizontal();
-
-						EditorGUILayout.BeginHorizontal();
-						//if(Utility.GUIButton("Motion", Target.ShowMotion ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						//	Target.ShowMotion = !Target.ShowMotion;
-						//}
-						if(Utility.GUIButton("Mirror", Target.Mirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.SetMirror(!Target.Mirror);
-						}
-						if(Utility.GUIButton("Trajectory", Target.ShowTrajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowTrajectory = !Target.ShowTrajectory;
-						}
-						if(Utility.GUIButton("Velocities", Target.ShowVelocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-							Target.ShowVelocities = !Target.ShowVelocities;
-						}
-						EditorGUILayout.EndHorizontal();
-
-						Target.GetData().Export = EditorGUILayout.Toggle("Export", Target.GetData().Export);
-						Target.GetData().Scaling = EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling);
-						Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
-						Target.GetData().Ground = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().Ground), InternalEditorUtility.layers));
-						Target.GetData().MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
-						string[] names = new string[Target.GetData().Source.Bones.Length];
-						for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
-							names[i] = Target.GetData().Source.Bones[i].Name;
-						}
-						for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
+						Utility.SetGUIColor(UltiDraw.DarkGrey);
+						using(new EditorGUILayout.VerticalScope ("Box")) {
+							Utility.ResetGUIColor();
 							EditorGUILayout.BeginHorizontal();
-							EditorGUI.BeginDisabledGroup(true);
-							EditorGUILayout.TextField(names[i]);
-							EditorGUI.EndDisabledGroup();
-							Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
+							GUILayout.FlexibleSpace();
+							if(Target.Playing) {
+								if(Utility.GUIButton("||", Color.red, Color.black, 20f, 20f)) {
+									Target.StopAnimation();
+								}
+							} else {
+								if(Utility.GUIButton("|>", Color.green, Color.black, 20f, 20f)) {
+									Target.PlayAnimation();
+								}
+							}
+							if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
+								Target.LoadPreviousFrame();
+							}
+							if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
+								Target.LoadNextFrame();
+							}
+							int index = EditorGUILayout.IntSlider(frame.Index, 1, Target.GetData().GetTotalFrames(), GUILayout.Width(440f));
+							if(index != frame.Index) {
+								Target.LoadFrame(index);
+							}
+							EditorGUILayout.LabelField(frame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
+							GUILayout.FlexibleSpace();
 							EditorGUILayout.EndHorizontal();
 						}
-						if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.GetData().DetectSymmetry();
-						}
-						if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.CreateSkeleton();
-						}
 
-						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Add Export Sequence", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.GetData().AddSequence(1, Target.GetData().GetTotalFrames());
-						}
-						if(Utility.GUIButton("Remove Export Sequence", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.GetData().RemoveSequence();
-						}
-						EditorGUILayout.EndHorizontal();
-						for(int i=0; i<Target.GetData().Sequences.Length; i++) {
+						if(Target.InspectSettings) {
 							Utility.SetGUIColor(UltiDraw.LightGrey);
 							using(new EditorGUILayout.VerticalScope ("Box")) {
 								Utility.ResetGUIColor();
-								
-								EditorGUILayout.BeginHorizontal();
-								GUILayout.FlexibleSpace();
-								if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
-									Target.GetData().Sequences[i].SetStart(Target.GetState().Index);
+								Target.GetData().Export = EditorGUILayout.Toggle("Export", Target.GetData().Export);
+								Target.SetScaling(EditorGUILayout.FloatField("Scaling", Target.GetData().Scaling));
+								Target.GetData().RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetData().RootSmoothing);
+								Target.GetData().Ground = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetData().Ground), InternalEditorUtility.layers));
+								Target.GetData().MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetData().MirrorAxis);
+								string[] names = new string[Target.GetData().Source.Bones.Length];
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
+									names[i] = Target.GetData().Source.Bones[i].Name;
 								}
-								EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
-								Target.GetData().Sequences[i].SetStart(EditorGUILayout.IntField(Target.GetData().Sequences[i].Start, GUILayout.Width(100f)));
-								EditorGUILayout.LabelField("End", GUILayout.Width(50f));
-								Target.GetData().Sequences[i].SetEnd(EditorGUILayout.IntField(Target.GetData().Sequences[i].End, GUILayout.Width(100f)));
-								if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
-									Target.GetData().Sequences[i].SetEnd(Target.GetState().Index);
-								}
-								GUILayout.FlexibleSpace();
-								EditorGUILayout.EndHorizontal();
-
-								/*
-								for(int s=0; s<Target.GetData().Styles.Length; s++) {
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 									EditorGUILayout.BeginHorizontal();
-									GUILayout.FlexibleSpace();
-									EditorGUILayout.LabelField(Target.GetData().Styles[s], GUILayout.Width(50f));
-									EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
-									Target.GetData().Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
-									EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
-									Target.GetData().Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
-									GUILayout.FlexibleSpace();
+									EditorGUI.BeginDisabledGroup(true);
+									EditorGUILayout.TextField(names[i]);
+									EditorGUI.EndDisabledGroup();
+									Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
 									EditorGUILayout.EndHorizontal();
 								}
-								*/
-								//for(int c=0; c<Target.GetData().Sequences[i].Copies.Length; c++) {
-								//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetData().Sequences[i].Copies[c].Start + " End: " + Target.GetData().Sequences[i].Copies[c].End);
-								//}
+								if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().DetectSymmetry();
+								}
+								if(Utility.GUIButton("Create Skeleton", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.CreateSkeleton();
+								}
+
+								EditorGUILayout.BeginHorizontal();
+								if(Utility.GUIButton("Add Export Sequence", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().AddSequence(1, Target.GetData().GetTotalFrames());
+								}
+								if(Utility.GUIButton("Remove Export Sequence", UltiDraw.DarkGrey, UltiDraw.White)) {
+									Target.GetData().RemoveSequence();
+								}
+								EditorGUILayout.EndHorizontal();
+								for(int i=0; i<Target.GetData().Sequences.Length; i++) {
+									Utility.SetGUIColor(UltiDraw.Grey);
+									using(new EditorGUILayout.VerticalScope ("Box")) {
+										Utility.ResetGUIColor();
+										
+										EditorGUILayout.BeginHorizontal();
+										GUILayout.FlexibleSpace();
+										if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
+											Target.GetData().Sequences[i].SetStart(Target.GetState().Index);
+										}
+										EditorGUILayout.LabelField("Start", GUILayout.Width(50f));
+										Target.GetData().Sequences[i].SetStart(EditorGUILayout.IntField(Target.GetData().Sequences[i].Start, GUILayout.Width(100f)));
+										EditorGUILayout.LabelField("End", GUILayout.Width(50f));
+										Target.GetData().Sequences[i].SetEnd(EditorGUILayout.IntField(Target.GetData().Sequences[i].End, GUILayout.Width(100f)));
+										if(Utility.GUIButton("X", Color.cyan, Color.black, 15f, 15f)) {
+											Target.GetData().Sequences[i].SetEnd(Target.GetState().Index);
+										}
+										GUILayout.FlexibleSpace();
+										EditorGUILayout.EndHorizontal();
+
+										/*
+										for(int s=0; s<Target.GetData().Styles.Length; s++) {
+											EditorGUILayout.BeginHorizontal();
+											GUILayout.FlexibleSpace();
+											EditorGUILayout.LabelField(Target.GetData().Styles[s], GUILayout.Width(50f));
+											EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
+											Target.GetData().Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
+											EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
+											Target.GetData().Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetData().Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
+											GUILayout.FlexibleSpace();
+											EditorGUILayout.EndHorizontal();
+										}
+										*/
+										//for(int c=0; c<Target.GetData().Sequences[i].Copies.Length; c++) {
+										//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetData().Sequences[i].Copies[c].Start + " End: " + Target.GetData().Sequences[i].Copies[c].End);
+										//}
+									}
+								}
 							}
 						}
 					}
