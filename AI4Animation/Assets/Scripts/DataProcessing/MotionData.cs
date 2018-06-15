@@ -91,13 +91,17 @@ public class MotionData : ScriptableObject {
 	}
 
 	public void RemoveModule(DataModule.TYPE type) {
-		DataModule module = System.Array.Find(Modules, x => x.Type() == type);
+		DataModule module = GetModule(type);
 		if(!module) {
 			Debug.Log("Module of type " + type.ToString() + " does not exist.");
 		} else {
 			ArrayExtensions.Remove(ref Modules, module);
 			Utility.Destroy(module);
 		}
+	}
+
+	public DataModule GetModule(DataModule.TYPE type) {
+		return System.Array.Find(Modules, x => x.Type() == type);
 	}
 
 	public Vector3 GetAxis(AXIS axis) {

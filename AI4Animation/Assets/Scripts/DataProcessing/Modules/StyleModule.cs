@@ -49,6 +49,14 @@ public class StyleModule : DataModule {
 		}
 	}
 
+	public float[] GetStyle(Frame frame) {
+		float[] style = new float[Functions.Length];
+		for(int i=0; i<style.Length; i++) {
+			style[i] = Functions[i].GetValue(frame);
+		}
+		return style;
+	}
+
 	public Frame GetAnyNextStyleKey(Frame frame) {
 		while(frame.Index < Data.GetTotalFrames()) {
 			frame = frame.GetNextFrame();
