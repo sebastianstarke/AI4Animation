@@ -307,110 +307,112 @@ public class MotionExporter : EditorWindow {
 				editor.VisualiseVelocities(true);
 				int items = 0;
 				for(int i=0; i<editor.GetFiles().Length; i++) {
-					editor.LoadData(i);
-					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
-						if(m==1) {
-							editor.SetMirror(false);
-						}
-						if(m==2) {
-							editor.SetMirror(true);
-						}
-						for(int s=0; s<editor.GetData().Sequences.Length; s++) {
-							MotionData.Sequence.Interval[] intervals = editor.GetData().Sequences[s].GetIntervals();
-							for(int interval=0; interval<intervals.Length; interval++) {
-								Generating = 0f;
-								Writing = 0f;
+					if(editor.Files[i].Export) {
+						editor.LoadData(i);
+						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
+							if(m==1) {
+								editor.SetMirror(false);
+							}
+							if(m==2) {
+								editor.SetMirror(true);
+							}
+							for(int s=0; s<editor.GetData().Sequences.Length; s++) {
+								MotionData.Sequence.Interval[] intervals = editor.GetData().Sequences[s].GetIntervals();
+								for(int interval=0; interval<intervals.Length; interval++) {
+									Generating = 0f;
+									Writing = 0f;
 
-								List<State> states = new List<State>();
-								float start = editor.GetData().GetFrame(intervals[interval].Start).Timestamp;
-								float end = editor.GetData().GetFrame(intervals[interval].End).Timestamp;
+									List<State> states = new List<State>();
+									float start = editor.GetData().GetFrame(intervals[interval].Start).Timestamp;
+									float end = editor.GetData().GetFrame(intervals[interval].End).Timestamp;
 
-								for(float t=start; t<=end; t+=1f/Framerate) {
-									Generating = (t-start) / (end-start-1f/Framerate);
-									editor.LoadFrame(t);
-									states.Add(editor.GetState());
-									//Spin
-									items += 1;
-									if(items == BatchSize) {
-										items = 0;
-										yield return new WaitForSeconds(0f);
-									}
-								}
-
-								for(int state=1; state<states.Count-1; state++) {
-									Writing = (float)(state) / (float)(states.Count-2);
-									State previous = states[state-1];
-									State next = states[state+1];
-									State current = states[state];
-									editor.LoadFrame(current);
-
-									//Input
-									string inputLine = string.Empty;
-									for(int k=0; k<12; k++) {
-										Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-										Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-										Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-										float speed = current.Trajectory.Points[k].GetSpeed();
-										//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
-										float[] style = current.Trajectory.Points[k].Styles;
-										inputLine += FormatValue(position.x);
-										inputLine += FormatValue(position.z);
-										inputLine += FormatValue(direction.x);
-										inputLine += FormatValue(direction.z);
-										inputLine += FormatValue(velocity.x);
-										inputLine += FormatValue(velocity.z);
-										inputLine += FormatValue(speed);
-										inputLine += FormatArray(style);
-									}
-									for(int k=0; k<previous.BoneTransformations.Length; k++) {
-										Vector3 position = previous.BoneTransformations[k].GetPosition().GetRelativePositionTo(previous.Root);
-										Vector3 forward = previous.BoneTransformations[k].GetForward().GetRelativeDirectionTo(previous.Root);
-										Vector3 up = previous.BoneTransformations[k].GetUp().GetRelativeDirectionTo(previous.Root);
-										Vector3 velocity = previous.BoneVelocities[k].GetRelativeDirectionTo(previous.Root);
-										inputLine += FormatVector3(position);
-										inputLine += FormatVector3(forward);
-										inputLine += FormatVector3(up);
-										inputLine += FormatVector3(velocity);
+									for(float t=start; t<=end; t+=1f/Framerate) {
+										Generating = (t-start) / (end-start-1f/Framerate);
+										editor.LoadFrame(t);
+										states.Add(editor.GetState());
+										//Spin
+										items += 1;
+										if(items == BatchSize) {
+											items = 0;
+											yield return new WaitForSeconds(0f);
+										}
 									}
 
-									inputLine = inputLine.Remove(inputLine.Length-1);
-									inputLine = inputLine.Replace(",",".");
-									input.WriteLine(inputLine);
+									for(int state=1; state<states.Count-1; state++) {
+										Writing = (float)(state) / (float)(states.Count-2);
+										State previous = states[state-1];
+										State next = states[state+1];
+										State current = states[state];
+										editor.LoadFrame(current);
 
-									//Output
-									string outputLine = string.Empty;
-									for(int k=6; k<12; k++) {
-										Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(next.Root);
-										Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root);
-										Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(next.Root);
-										outputLine += FormatValue(position.x);
-										outputLine += FormatValue(position.z);
-										outputLine += FormatValue(direction.x);
-										outputLine += FormatValue(direction.z);
-										outputLine += FormatValue(velocity.x);
-										outputLine += FormatValue(velocity.z);
-									}
-									for(int k=0; k<current.BoneTransformations.Length; k++) {
-										Vector3 position = current.BoneTransformations[k].GetPosition().GetRelativePositionTo(current.Root);
-										Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root);
-										Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root);
-										Vector3 velocity = current.BoneVelocities[k].GetRelativeDirectionTo(current.Root);
-										outputLine += FormatVector3(position);
-										outputLine += FormatVector3(forward);
-										outputLine += FormatVector3(up);
-										outputLine += FormatVector3(velocity);
-									}
-									outputLine += FormatVector3(next.RootMotion);
+										//Input
+										string inputLine = string.Empty;
+										for(int k=0; k<12; k++) {
+											Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
+											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
+											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
+											float speed = current.Trajectory.Points[k].GetSpeed();
+											//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
+											float[] style = current.Trajectory.Points[k].Styles;
+											inputLine += FormatValue(position.x);
+											inputLine += FormatValue(position.z);
+											inputLine += FormatValue(direction.x);
+											inputLine += FormatValue(direction.z);
+											inputLine += FormatValue(velocity.x);
+											inputLine += FormatValue(velocity.z);
+											inputLine += FormatValue(speed);
+											inputLine += FormatArray(style);
+										}
+										for(int k=0; k<previous.BoneTransformations.Length; k++) {
+											Vector3 position = previous.BoneTransformations[k].GetPosition().GetRelativePositionTo(previous.Root);
+											Vector3 forward = previous.BoneTransformations[k].GetForward().GetRelativeDirectionTo(previous.Root);
+											Vector3 up = previous.BoneTransformations[k].GetUp().GetRelativeDirectionTo(previous.Root);
+											Vector3 velocity = previous.BoneVelocities[k].GetRelativeDirectionTo(previous.Root);
+											inputLine += FormatVector3(position);
+											inputLine += FormatVector3(forward);
+											inputLine += FormatVector3(up);
+											inputLine += FormatVector3(velocity);
+										}
 
-									outputLine = outputLine.Remove(outputLine.Length-1);
-									outputLine = outputLine.Replace(",",".");
-									output.WriteLine(outputLine);
+										inputLine = inputLine.Remove(inputLine.Length-1);
+										inputLine = inputLine.Replace(",",".");
+										input.WriteLine(inputLine);
 
-									//Spin
-									items += 1;
-									if(items == BatchSize) {
-										items = 0;
-										yield return new WaitForSeconds(0f);
+										//Output
+										string outputLine = string.Empty;
+										for(int k=6; k<12; k++) {
+											Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(next.Root);
+											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root);
+											Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(next.Root);
+											outputLine += FormatValue(position.x);
+											outputLine += FormatValue(position.z);
+											outputLine += FormatValue(direction.x);
+											outputLine += FormatValue(direction.z);
+											outputLine += FormatValue(velocity.x);
+											outputLine += FormatValue(velocity.z);
+										}
+										for(int k=0; k<current.BoneTransformations.Length; k++) {
+											Vector3 position = current.BoneTransformations[k].GetPosition().GetRelativePositionTo(current.Root);
+											Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root);
+											Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root);
+											Vector3 velocity = current.BoneVelocities[k].GetRelativeDirectionTo(current.Root);
+											outputLine += FormatVector3(position);
+											outputLine += FormatVector3(forward);
+											outputLine += FormatVector3(up);
+											outputLine += FormatVector3(velocity);
+										}
+										outputLine += FormatVector3(next.RootMotion);
+
+										outputLine = outputLine.Remove(outputLine.Length-1);
+										outputLine = outputLine.Replace(",",".");
+										output.WriteLine(outputLine);
+
+										//Spin
+										items += 1;
+										if(items == BatchSize) {
+											items = 0;
+											yield return new WaitForSeconds(0f);
+										}
 									}
 								}
 							}

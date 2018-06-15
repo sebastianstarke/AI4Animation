@@ -41,6 +41,10 @@ public class MotionTools : EditorWindow {
 					EditorGUILayout.LabelField("Tools");
 				}
 
+				if(Utility.GUIButton("Load Directory", UltiDraw.DarkGrey, UltiDraw.White)) {
+					LoadDirectory();
+				}
+
 				if(Utility.GUIButton("Verify Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 					VerifyData();
 				}
@@ -77,7 +81,7 @@ public class MotionTools : EditorWindow {
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField("Assets/", GUILayout.Width(45f));
-					LoadDirectory(EditorGUILayout.TextField(Directory));
+					Directory = EditorGUILayout.TextField(Directory);
 					EditorGUILayout.EndHorizontal();
 
 					for(int i=0; i<Data.Length; i++) {
@@ -103,20 +107,17 @@ public class MotionTools : EditorWindow {
 		EditorGUILayout.EndScrollView();
 	}
 
-	private void LoadDirectory(string directory) {
-		if(Directory != directory) {
-			Directory = directory;
-			Data = new MotionData[0];
-			Active = new bool[0];
-			string path = "Assets/"+Directory;
-			if(AssetDatabase.IsValidFolder(path)) {
-				string[] files = AssetDatabase.FindAssets("t:MotionData", new string[1]{path});
-				Data = new MotionData[files.Length];
-				Active = new bool[files.Length];
-				for(int i=0; i<files.Length; i++) {
-					Data[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(MotionData));
-					Active[i] = true;
-				}
+	private void LoadDirectory() {
+		Data = new MotionData[0];
+		Active = new bool[0];
+		string path = "Assets/"+Directory;
+		if(AssetDatabase.IsValidFolder(path)) {
+			string[] files = AssetDatabase.FindAssets("t:MotionData", new string[1]{path});
+			Data = new MotionData[files.Length];
+			Active = new bool[files.Length];
+			for(int i=0; i<files.Length; i++) {
+				Data[i] = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(files[i]), typeof(MotionData));
+				Active[i] = true;
 			}
 		}
 	}
@@ -263,6 +264,18 @@ public class MotionTools : EditorWindow {
 				//Data[i].Sequences[0].SetStart(1);
 				//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
 				//Data[i].RootSmoothing = 10;
+
+				//Data[i].AddModule(DataModule.TYPE.Style);
+				//Data[i].AddModule(DataModule.TYPE.Phase);
+				//StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
+				//style.AddStyle("Idle");
+				//style.AddStyle("Walk");
+				//style.AddStyle("Run");
+				//style.AddStyle("Crouch");
+				//PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
+				//phase.ToggleVariable(Data[i].Source.FindBone("RightToeSite").Index);
+				Data[i].Sequences[0].Start = 62;
+				Data[i].Sequences[0].End = Data[i].GetTotalFrames();
              	EditorUtility.SetDirty(Data[i]);
             }
 		}
