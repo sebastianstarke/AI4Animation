@@ -95,6 +95,10 @@ public class StyleModule : DataModule {
 		return false;
 	}
 
+	public override void Draw() {
+
+	}
+
 	protected override void DerivedInspector(MotionEditor editor) {
 		Frame frame = Data.GetFrame(editor.GetState().Index);
 

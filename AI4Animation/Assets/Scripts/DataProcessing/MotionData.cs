@@ -87,6 +87,9 @@ public class MotionData : ScriptableObject {
 				case DataModule.TYPE.Phase:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<PhaseModule>().Initialise(this));
 				break;
+				case DataModule.TYPE.Contact:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<ContactModule>().Initialise(this));
+				break;
 				case DataModule.TYPE.DepthMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<DepthMapModule>().Initialise(this));
 				break;
@@ -190,6 +193,12 @@ public class MotionData : ScriptableObject {
 	public void SetSymmetry(int source, int target) {
 		if(Symmetry[source] != target) {
 			Symmetry[source] = target;
+		}
+	}
+
+	public void Draw() {
+		for(int i=0; i<Modules.Length; i++) {
+			Modules[i].Draw();
 		}
 	}
 

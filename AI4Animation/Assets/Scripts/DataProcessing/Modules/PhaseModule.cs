@@ -61,6 +61,10 @@ public class PhaseModule : DataModule {
 		return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
 	}
 
+	public override void Draw() {
+
+	}
+
 	protected override void DerivedInspector(MotionEditor editor) {
 		ShowVelocities = EditorGUILayout.Toggle("Show Velocities", ShowVelocities);
 		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
@@ -299,13 +303,13 @@ public class PhaseModule : DataModule {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
+				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
+
 				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
 					EditorGUILayout.LabelField(this == Module.RegularPhaseFunction ? "Regular" : "Inverse");
 				}
-
-				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
 
 				if(IsKey(frame)) {
 					SetPhase(frame, EditorGUILayout.Slider("Phase", GetPhase(frame), 0f, 1f));

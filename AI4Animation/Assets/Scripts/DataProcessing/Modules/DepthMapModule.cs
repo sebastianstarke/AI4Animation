@@ -63,6 +63,10 @@ public class DepthMapModule : DataModule {
 		*/
 	//}
 
+	public override void Draw() {
+
+	}
+
 	protected override void DerivedInspector(MotionEditor editor) {
 		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Names);
 		Axis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Axis", Axis);

@@ -59,6 +59,10 @@ public class HeightMapModule : DataModule {
 		*/
 	//}
 
+	public override void Draw() {
+
+	}
+
 	protected override void DerivedInspector(MotionEditor editor) {
 		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Names);
 		Size = EditorGUILayout.FloatField("Size", Size);
