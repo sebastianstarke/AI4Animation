@@ -198,6 +198,7 @@ public class MotionExporter : EditorWindow {
 
 		StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
 		PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
+		ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
 	
 		int index = 0;
 		for(int i=1; i<=12; i++) {
@@ -231,8 +232,15 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "VelocityY"+(i+1)); index += 1;
 			file.WriteLine(index + " " + editor.GetData().Source.Bones[i].Name + "VelocityZ"+(i+1)); index += 1;
 		}
+
 		if(phaseModule != null) {
 			file.WriteLine(index + " " + "Phase"); index += 1;
+		}
+
+		if(contactModule != null) {
+			for(int i=0; i<contactModule.Functions.Length; i++) {
+				file.WriteLine(index + " " + "Contact" + editor.GetData().Source.Bones[contactModule.Functions[i].Sensor]); index += 1;
+			}
 		}
 
 		yield return new WaitForSeconds(0f);
@@ -266,6 +274,7 @@ public class MotionExporter : EditorWindow {
 
 			//StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
 			PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
+			ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
 
 			int index = 0;
 			for(int i=7; i<=12; i++) {
@@ -298,6 +307,12 @@ public class MotionExporter : EditorWindow {
 				file.Write(index + " " + "PhaseUpdate");
 			}
 
+			if(contactModule != null) {
+				for(int i=0; i<contactModule.Functions.Length; i++) {
+					file.WriteLine(index + " " + "Contact" + editor.GetData().Source.Bones[contactModule.Functions[i].Sensor]); index += 1;
+				}
+			}
+
 			yield return new WaitForSeconds(0f);
 
 			file.Close();
@@ -324,6 +339,7 @@ public class MotionExporter : EditorWindow {
 
 						//StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
 						PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
+						ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
 
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 							if(m==1) {
@@ -393,6 +409,13 @@ public class MotionExporter : EditorWindow {
 											float phase = phaseModule.GetPhase(editor.GetData().GetFrame(current.Index), editor.ShowMirror);
 											inputLine += FormatValue(phase);
 										}
+										if(contactModule != null) {
+											for(int c=0; c<contactModule.Functions.Length; c++) {
+												bool contact = contactModule.Functions[c].HasContact(editor.GetData().GetFrame(current.Index), editor.ShowMirror);
+												float value = contact ? 1f : 0f;
+												inputLine += FormatValue(value);
+											}
+										}
 										inputLine = inputLine.Remove(inputLine.Length-1);
 										inputLine = inputLine.Replace(",",".");
 										input.WriteLine(inputLine);
@@ -422,9 +445,16 @@ public class MotionExporter : EditorWindow {
 										}
 										outputLine += FormatVector3(next.RootMotion);
 										if(phaseModule != null) {
-											float previousPhase = phaseModule.GetPhase(editor.GetData().GetFrame(previous.Index), editor.ShowMirror);
 											float currentPhase = phaseModule.GetPhase(editor.GetData().GetFrame(current.Index), editor.ShowMirror);
-											outputLine += FormatValue(GetPhaseUpdate(previousPhase, currentPhase));
+											float nextPhase = phaseModule.GetPhase(editor.GetData().GetFrame(next.Index), editor.ShowMirror);
+											outputLine += FormatValue(GetPhaseUpdate(currentPhase, nextPhase));
+										}
+										if(contactModule != null) {
+											for(int c=0; c<contactModule.Functions.Length; c++) {
+												bool contact = contactModule.Functions[c].HasContact(editor.GetData().GetFrame(next.Index), editor.ShowMirror);
+												float value = contact ? 1f : 0f;
+												outputLine += FormatValue(value);
+											}
 										}
 										outputLine = outputLine.Remove(outputLine.Length-1);
 										outputLine = outputLine.Replace(",",".");

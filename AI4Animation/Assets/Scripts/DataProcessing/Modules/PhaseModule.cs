@@ -13,7 +13,6 @@ public class PhaseModule : DataModule {
 	public PhaseFunction InversePhaseFunction = null;
 	public bool[] Variables = new bool[0];
 
-	public float TimeWindow = 0f;
 	public bool ShowVelocities = true;
 	public bool ShowCycle = true;
 
@@ -29,7 +28,6 @@ public class PhaseModule : DataModule {
 		RegularPhaseFunction = new PhaseFunction(this);
 		InversePhaseFunction = new PhaseFunction(this);
 		Variables = new bool[Data.Source.Bones.Length];
-		TimeWindow = Data.GetTotalTime();
 		return this;
 	}
 
@@ -70,7 +68,6 @@ public class PhaseModule : DataModule {
 		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
 		SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", MaximumVelocity));
 		SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
-		TimeWindow = EditorGUILayout.Slider("Time Window", TimeWindow, 0f, Data.GetTotalTime());
 		string[] names = new string[1 + Data.Source.Bones.Length];
 		names[0] = "Select...";
 		for(int i=0; i<names.Length-1; i++) {
@@ -336,9 +333,9 @@ public class PhaseModule : DataModule {
 				Utility.SetGUIColor(UltiDraw.LightGrey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
-					Vector2 phaseBar = new Vector2(2f * Mathf.Abs(0.5f - GetPhase(frame)), 1f - 2f * Mathf.Abs(0.5f - GetPhase(frame)));
-					EditorGUILayout.Vector2Field("Phase Bar", phaseBar);
-					EditorGUILayout.FloatField("Length", phaseBar.magnitude);
+					Vector2 phaseBars = new Vector2(2f * Mathf.Abs(0.5f - GetPhase(frame)), 1f - 2f * Mathf.Abs(0.5f - GetPhase(frame)));
+					EditorGUILayout.Vector2Field("Phase Bar", phaseBars);
+					EditorGUILayout.FloatField("Length", phaseBars.magnitude);
 				}
 
 				if(IsKey(frame)) {
@@ -361,20 +358,8 @@ public class PhaseModule : DataModule {
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 				EditorGUI.DrawRect(rect, UltiDraw.Black);
 
-				//Sequences
-				for(int i=0; i<Module.Data.Sequences.Length; i++) {
-					float left = rect.x + (float)(Module.Data.Sequences[i].Start-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
-					float right = rect.x + (float)(Module.Data.Sequences[i].End-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
-					Vector3 a = new Vector3(left, rect.y, 0f);
-					Vector3 b = new Vector3(right, rect.y, 0f);
-					Vector3 c = new Vector3(left, rect.y+rect.height, 0f);
-					Vector3 d = new Vector3(right, rect.y+rect.height, 0f);
-					UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
-					UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
-				}
-
-				float startTime = frame.Timestamp-Module.TimeWindow/2f;
-				float endTime = frame.Timestamp+Module.TimeWindow/2f;
+				float startTime = frame.Timestamp-editor.GetWindow()/2f;
+				float endTime = frame.Timestamp+editor.GetWindow()/2f;
 				if(startTime < 0f) {
 					endTime -= startTime;
 					startTime = 0f;
@@ -393,6 +378,20 @@ public class PhaseModule : DataModule {
 				Vector3 newPos = Vector3.zero;
 				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
 				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
+
+				//Sequences
+				for(int i=0; i<Module.Data.Sequences.Length; i++) {
+					float _start = (float)(Mathf.Clamp(Module.Data.Sequences[i].Start, start, end)-1-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(Module.Data.Sequences[i].End, start, end)-1-start) / (float)elements;
+					float left = rect.x + _start * rect.width;
+					float right = rect.x + _end * rect.width;
+					Vector3 a = new Vector3(left, rect.y, 0f);
+					Vector3 b = new Vector3(right, rect.y, 0f);
+					Vector3 c = new Vector3(left, rect.y+rect.height, 0f);
+					Vector3 d = new Vector3(right, rect.y+rect.height, 0f);
+					UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
+					UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
+				}
 
 				if(Module.ShowVelocities) {
 					//Regular Velocities

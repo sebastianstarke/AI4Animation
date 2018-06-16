@@ -24,6 +24,23 @@ public class ContactModule : DataModule {
 		return this;
 	}
 
+	public void AddContact(int sensor) {
+		if(System.Array.Exists(Functions, x => x.Sensor == sensor)) {
+			Debug.Log("Contact for bone " + sensor + " already exists.");
+			return;
+		}
+		ArrayExtensions.Add(ref Functions, new ContactFunction(this, sensor));
+	}
+
+	public void RemoveContact(int sensor) {
+		int index = System.Array.FindIndex(Functions, x => x.Sensor == sensor);
+		if(index == -1) {
+			Debug.Log("Contact for bone " + sensor + " does not exist");
+		} else {
+			ArrayExtensions.RemoveAt(ref Functions, index);
+		}
+	}
+
 	public void Compute() {
 		for(int i=0; i<Functions.Length; i++) {
 			Functions[i].Compute();
@@ -79,6 +96,14 @@ public class ContactModule : DataModule {
 			InverseContacts = new bool[Module.Data.GetTotalFrames()];
 			Compute();
 		}
+		
+		public ContactFunction(ContactModule module, int sensor) {
+			Module = module;
+			Sensor = sensor;
+			RegularContacts = new bool[Module.Data.GetTotalFrames()];
+			InverseContacts = new bool[Module.Data.GetTotalFrames()];
+			Compute();
+		}
 
 		public void SetSensor(int index) {
 			if(Sensor != index) {
@@ -113,6 +138,10 @@ public class ContactModule : DataModule {
 				Mask = mask;
 				Compute();
 			}
+		}
+
+		public bool HasContact(Frame frame, bool mirrored) {
+			return mirrored ? InverseContacts[frame.Index-1] : RegularContacts[frame.Index-1];
 		}
 
 		public Matrix4x4 GetPivotTransformation(Frame frame, bool mirrored) {
@@ -153,11 +182,26 @@ public class ContactModule : DataModule {
 				Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 				EditorGUI.DrawRect(rect, UltiDraw.Black);
 
-				int start = 1;
-				int end = Module.Data.GetTotalFrames();
+				float startTime = frame.Timestamp-editor.GetWindow()/2f;
+				float endTime = frame.Timestamp+editor.GetWindow()/2f;
+				if(startTime < 0f) {
+					endTime -= startTime;
+					startTime = 0f;
+				}
+				if(endTime > Module.Data.GetTotalTime()) {
+					startTime -= endTime-Module.Data.GetTotalTime();
+					endTime = Module.Data.GetTotalTime();
+				}
+				startTime = Mathf.Max(0f, startTime);
+				endTime = Mathf.Min(Module.Data.GetTotalTime(), endTime);
+				int start = Module.Data.GetFrame(startTime).Index;
+				int end = Module.Data.GetFrame(endTime).Index;
 				int elements = end-start;
-				Vector2 top = new Vector3(0f, rect.yMax - rect.height, 0f);
-				Vector2 bottom = new Vector3(0f, rect.yMax, 0f);
+
+				Vector3 prevPos = Vector3.zero;
+				Vector3 newPos = Vector3.zero;
+				Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
+				Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
 
 				//Contacts
 				for(int i=start; i<=end; i++) {
@@ -166,11 +210,15 @@ public class ContactModule : DataModule {
 
 					top.y = rect.yMax - rect.height;
 					bottom.y = rect.yMax - rect.height/2f;
-					UltiDraw.DrawLine(top, bottom, RegularContacts[i-1] ? UltiDraw.Green : UltiDraw.Red);
+					if(RegularContacts[i-1]) {
+						UltiDraw.DrawLine(top, bottom, UltiDraw.Green);
+					}
 
 					top.y = rect.yMax - rect.height/2f;
 					bottom.y = rect.yMax;
-					UltiDraw.DrawLine(top, bottom, InverseContacts[i-1] ? UltiDraw.Green : UltiDraw.Red);
+					if(InverseContacts[i-1]) {
+						UltiDraw.DrawLine(top, bottom, UltiDraw.Green);
+					}
 				}
 
 				//Sequences
@@ -188,6 +236,8 @@ public class ContactModule : DataModule {
 				//Current Pivot
 				top.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
+				top.y = rect.yMax - rect.height;
+				bottom.y = rect.yMax;
 				UltiDraw.DrawLine(top, bottom, UltiDraw.Yellow);
 				UltiDraw.DrawCircle(top, 3f, UltiDraw.Green);
 				UltiDraw.DrawCircle(bottom, 3f, UltiDraw.Green);

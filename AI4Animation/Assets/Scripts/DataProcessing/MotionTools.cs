@@ -267,17 +267,29 @@ public class MotionTools : EditorWindow {
 
 				//Data[i].AddModule(DataModule.TYPE.Style);
 				//Data[i].AddModule(DataModule.TYPE.Phase);
-				StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
-				style.Inspect = false;
+				//StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
+				//style.Inspect = false;
 				//style.AddStyle("Idle");
 				//style.AddStyle("Walk");
 				//style.AddStyle("Run");
 				//style.AddStyle("Crouch");
-				PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
-				phase.Inspect = true;
+				//PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
+				//phase.Inspect = false;
 				//phase.ToggleVariable(Data[i].Source.FindBone("RightToeSite").Index);
 				//Data[i].Sequences[0].Start = 62;
 				//Data[i].Sequences[0].End = Data[i].GetTotalFrames();
+
+				/*
+				Data[i].AddModule(DataModule.TYPE.Contact);
+				ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
+				contact.AddContact(Data[i].Source.FindBone("RightToeSite").Index);
+				contact.AddContact(Data[i].Source.FindBone("LeftToeSite").Index);
+				contact.Functions[0].SetThreshold(0.0125f);
+				contact.Functions[1].SetThreshold(0.0125f);
+				contact.Functions[0].SetOffset(new Vector3(0f, 0f, -0.15f));
+				contact.Functions[1].SetOffset(new Vector3(0f, 0f, -0.15f));
+				*/
+
              	EditorUtility.SetDirty(Data[i]);
             }
 		}

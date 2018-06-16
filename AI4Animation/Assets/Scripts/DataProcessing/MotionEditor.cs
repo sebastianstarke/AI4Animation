@@ -32,6 +32,7 @@ public class MotionEditor : MonoBehaviour {
 	private bool Playing = false;
 	private float Timescale = 1f;
 	private float Timestamp = 0f;
+	private float Window = 1f;
 
 	private Actor Actor = null;
 	private Transform Environment = null;
@@ -61,6 +62,10 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 	*/
+
+	public float GetWindow() {
+		return GetData() == null ? 0f : Window * GetData().GetTotalTime();
+	}
 
 	public void SetMirror(bool value) {
 		if(ShowMirror != value) {
@@ -537,7 +542,11 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField(frame.Timestamp.ToString("F3") + "s", Utility.GetFontColor(Color.white), GUILayout.Width(50f));
 							GUILayout.FlexibleSpace();
 							EditorGUILayout.EndHorizontal();
-						}
+							EditorGUILayout.BeginHorizontal();
+							GUILayout.FlexibleSpace();
+							Target.Window = EditorGUILayout.Slider(Target.Window, 0f, 1f);
+							GUILayout.FlexibleSpace();
+							EditorGUILayout.EndHorizontal();						}
 					}
 					for(int i=0; i<Target.GetData().Modules.Length; i++) {
 						Target.GetData().Modules[i].Inspector(Target);

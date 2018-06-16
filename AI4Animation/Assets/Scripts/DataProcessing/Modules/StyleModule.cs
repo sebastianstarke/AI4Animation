@@ -139,11 +139,36 @@ public class StyleModule : DataModule {
 		Rect ctrl = EditorGUILayout.GetControlRect();
 		Rect rect = new Rect(ctrl.x, ctrl.y, ctrl.width, 50f);
 		EditorGUI.DrawRect(rect, UltiDraw.Black);
+
 		UltiDraw.Begin();
+
+		float startTime = frame.Timestamp-editor.GetWindow()/2f;
+		float endTime = frame.Timestamp+editor.GetWindow()/2f;
+		if(startTime < 0f) {
+			endTime -= startTime;
+			startTime = 0f;
+		}
+		if(endTime > Data.GetTotalTime()) {
+			startTime -= endTime-Data.GetTotalTime();
+			endTime = Data.GetTotalTime();
+		}
+		startTime = Mathf.Max(0f, startTime);
+		endTime = Mathf.Min(Data.GetTotalTime(), endTime);
+		int start = Data.GetFrame(startTime).Index;
+		int end = Data.GetFrame(endTime).Index;
+		int elements = end-start;
+
+		Vector3 prevPos = Vector3.zero;
+		Vector3 newPos = Vector3.zero;
+		Vector3 bottom = new Vector3(0f, rect.yMax, 0f);
+		Vector3 top = new Vector3(0f, rect.yMax - rect.height, 0f);
+
 		//Sequences
 		for(int i=0; i<Data.Sequences.Length; i++) {
-			float left = rect.x + (float)(Data.Sequences[i].Start-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
-			float right = rect.x + (float)(Data.Sequences[i].End-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+			float _start = (float)(Mathf.Clamp(Data.Sequences[i].Start, start, end)-1-start) / (float)elements;
+			float _end = (float)(Mathf.Clamp(Data.Sequences[i].End, start, end)-1-start) / (float)elements;
+			float left = rect.x + _start * rect.width;
+			float right = rect.x + _end * rect.width;
 			Vector3 a = new Vector3(left, rect.y, 0f);
 			Vector3 b = new Vector3(right, rect.y, 0f);
 			Vector3 c = new Vector3(left, rect.y+rect.height, 0f);
@@ -151,17 +176,20 @@ public class StyleModule : DataModule {
 			UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
 			UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
 		}
+
 		//Styles
 		for(int i=0; i<Functions.Length; i++) {
-			int x = 0;
-			for(int j=1; j<Data.GetTotalFrames(); j++) {
+			int x = start;
+			for(int j=start; j<end; j++) {
 				float val = Functions[i].Values[j];
 				if(
 					Functions[i].Values[x]<1f && val==1f ||
 					Functions[i].Values[x]>0f && val==0f
 					) {
-					float xStart = rect.x + (float)(Mathf.Max(x-1, 0))/(float)(Data.GetTotalFrames()-1) * rect.width;
-					float xEnd = rect.x + (float)j/(float)(Data.GetTotalFrames()-1) * rect.width;
+					float _start = (float)(Mathf.Clamp(x-1, start, end)-1-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(j, start, end)-1-start) / (float)elements;
+					float xStart = rect.x + _start * rect.width;
+					float xEnd = rect.x + _end * rect.width;
 					float yStart = rect.y + (1f - Functions[i].Values[Mathf.Max(x-1, 0)]) * rect.height;
 					float yEnd = rect.y + (1f - Functions[i].Values[j]) * rect.height;
 					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
@@ -171,16 +199,20 @@ public class StyleModule : DataModule {
 					Functions[i].Values[x]==0f && val>0f || 
 					Functions[i].Values[x]==1f && val<1f
 					) {
-					float xStart = rect.x + (float)(x)/(float)(Data.GetTotalFrames()-1) * rect.width;
-					float xEnd = rect.x + (float)(j-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+					float _start = (float)(Mathf.Clamp(x, start, end)-1-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(j-1, start, end)-1-start) / (float)elements;
+					float xStart = rect.x + _start * rect.width;
+					float xEnd = rect.x + _end * rect.width;
 					float yStart = rect.y + (1f - Functions[i].Values[x]) * rect.height;
 					float yEnd = rect.y + (1f - Functions[i].Values[j-1]) * rect.height;
 					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
 					x = j;
 				}
 				if(j==Data.GetTotalFrames()-1) {
-					float xStart = rect.x + (float)x/(float)(Data.GetTotalFrames()-1) * rect.width;
-					float xEnd = rect.x + (float)(j-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
+					float _start = (float)(Mathf.Clamp(x, start, end)-1-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(j-1, start, end)-1-start) / (float)elements;
+					float xStart = rect.x + _start * rect.width;
+					float xEnd = rect.x + _end * rect.width;
 					float yStart = rect.y + (1f - Functions[i].Values[x]) * rect.height;
 					float yEnd = rect.y + (1f - Functions[i].Values[j-1]) * rect.height;
 					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
@@ -188,10 +220,14 @@ public class StyleModule : DataModule {
 				}
 			}
 		}
-		float pivot = rect.x + (float)(frame.Index-1)/(float)(Data.GetTotalFrames()-1) * rect.width;
-		UltiDraw.DrawLine(new Vector3(pivot, rect.y, 0f), new Vector3(pivot, rect.y + rect.height, 0f), UltiDraw.White);
-		UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y, 0f), 8f, UltiDraw.Green);
-		UltiDraw.DrawWireCircle(new Vector3(pivot, rect.y + rect.height, 0f), 8f, UltiDraw.Green);
+
+		//Current Pivot
+		top.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
+		bottom.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
+		UltiDraw.DrawLine(top, bottom, UltiDraw.Yellow);
+		UltiDraw.DrawCircle(top, 3f, UltiDraw.Green);
+		UltiDraw.DrawCircle(bottom, 3f, UltiDraw.Green);
+
 		UltiDraw.End();
 		EditorGUILayout.EndVertical();
 		if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
