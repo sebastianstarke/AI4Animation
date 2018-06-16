@@ -453,7 +453,7 @@ public class MotionExporter : EditorWindow {
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetData().GetFrame(current.Index), editor.ShowMirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetData().GetFrame(next.Index), editor.ShowMirror);
-											outputLine += FormatVector2(GetCirclePhaseUpdate(currentPhase, nextPhase));
+											outputLine += FormatValue(GetLinearPhaseUpdate(currentPhase, nextPhase));
 										}
 										/*
 										if(contactModule != null) {

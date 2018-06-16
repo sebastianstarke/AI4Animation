@@ -8,6 +8,10 @@ namespace DeepLearning {
 
 	public class PMANN : NeuralNetwork {
 
+		public enum VARIANT {Linear, Wave, Bar, Circle2D, Circle1D}
+
+		public VARIANT Variant;
+
 		public int XDim = 0;
 		public int HDim = 0;
 		public int YDim = 0;
@@ -121,9 +125,28 @@ namespace DeepLearning {
 			Renormalise(Y, Ymean, Ystd, Y);
 
 			//Update Phase
-			//Phase[0] = Mathf.Repeat(Phase[0] + GetOutput(PhaseOutputs[0]), 1f);
-			for(int i=0; i<Phase.Length; i++) {
-				Phase[i] += GetOutput(PhaseOutputs[i]);
+			switch(Variant) {
+				case VARIANT.Linear:
+				Phase[0] = Mathf.Repeat(Phase[0] + GetOutput(PhaseOutputs[0]), 1f);
+				break;
+				case VARIANT.Wave:
+				Phase[0] += GetOutput(PhaseOutputs[0]);
+				break;
+				case VARIANT.Bar:
+				for(int i=0; i<Phase.Length; i++) {
+					Phase[i] += GetOutput(PhaseOutputs[i]);
+				}
+				break;
+				case VARIANT.Circle2D:
+				for(int i=0; i<Phase.Length; i++) {
+					Phase[i] += GetOutput(PhaseOutputs[i]);
+				}
+				break;
+				case VARIANT.Circle1D:
+				Vector2 phase = Quaternion.AngleAxis(-GetOutput(PhaseOutputs[0])*360f, Vector3.forward) * new Vector2(Phase[0], Phase[1]);
+				Phase[0] = phase.x;
+				Phase[1] = phase.y;
+				break;
 			}
 		}
 
