@@ -19,7 +19,9 @@ namespace DeepLearning {
 			if(!Parameters.Validate()) {
 				Parameters = null;
 			} else {
+                #if UNITY_EDITOR
 				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
+                #endif
 			}
         }
         public void LoadParameters() {
