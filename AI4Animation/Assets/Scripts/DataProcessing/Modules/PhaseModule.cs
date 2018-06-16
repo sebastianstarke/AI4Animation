@@ -61,7 +61,7 @@ public class PhaseModule : DataModule {
 		return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
 	}
 
-	public override void Draw() {
+	public override void Draw(MotionEditor editor) {
 
 	}
 

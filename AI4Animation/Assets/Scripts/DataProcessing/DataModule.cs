@@ -41,7 +41,7 @@ public abstract class DataModule : ScriptableObject {
 
 	public abstract TYPE Type();
 	public abstract DataModule Initialise(MotionData data);
-	public abstract void Draw();
+	public abstract void Draw(MotionEditor editor);
 	protected abstract void DerivedInspector(MotionEditor editor);
 
 }

@@ -196,12 +196,6 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void Draw() {
-		for(int i=0; i<Modules.Length; i++) {
-			Modules[i].Draw();
-		}
-	}
-
 	[System.Serializable]
 	public class Hierarchy {
 		public Bone[] Bones;

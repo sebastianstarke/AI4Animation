@@ -63,7 +63,7 @@ public class DepthMapModule : DataModule {
 		*/
 	//}
 
-	public override void Draw() {
+	public override void Draw(MotionEditor editor) {
 
 	}
 

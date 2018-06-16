@@ -59,7 +59,7 @@ public class HeightMapModule : DataModule {
 		*/
 	//}
 
-	public override void Draw() {
+	public override void Draw(MotionEditor editor) {
 
 	}
 

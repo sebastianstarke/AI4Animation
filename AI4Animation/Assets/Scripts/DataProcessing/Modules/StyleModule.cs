@@ -95,7 +95,7 @@ public class StyleModule : DataModule {
 		return false;
 	}
 
-	public override void Draw() {
+	public override void Draw(MotionEditor editor) {
 
 	}
 

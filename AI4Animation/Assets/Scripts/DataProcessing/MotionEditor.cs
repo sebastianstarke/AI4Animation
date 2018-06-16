@@ -352,6 +352,10 @@ public class MotionEditor : MonoBehaviour {
 		if(ShowTrajectory) {
 			GetState().Trajectory.Draw();
 		}
+
+		for(int i=0; i<GetData().Modules.Length; i++) {
+			GetData().Modules[i].Draw(this);
+		}
 	}
 
 	void OnRenderObject() {
