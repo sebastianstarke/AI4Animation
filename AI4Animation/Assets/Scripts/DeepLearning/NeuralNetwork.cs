@@ -36,7 +36,7 @@ namespace DeepLearning {
         public abstract float GetOutput(int index);
 
         public Tensor CreateTensor(int rows, int cols, string id) {
-            if(Tensors.Find(x => x.ID == id) != null) {
+            if(Tensors.Exists(x => x.ID == id)) {
                 Debug.Log("Tensor with ID " + id + " already contained.");
                 return null;
             }
@@ -46,7 +46,7 @@ namespace DeepLearning {
         }
 
         public Tensor CreateTensor(Parameters.Matrix matrix) {
-            if(Tensors.Find(x => x.ID == matrix.ID) != null) {
+            if(Tensors.Exists(x => x.ID == matrix.ID)) {
                 Debug.Log("Tensor with ID " + matrix.ID + " already contained.");
                 return null;
             }

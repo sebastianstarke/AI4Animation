@@ -7,11 +7,19 @@ namespace DeepLearning {
         public Matrix[] Matrices = new Matrix[0];
 
         public void Store(string fn, int rows, int cols, string id) {
-            ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols, id));
+            if(System.Array.Exists(Matrices, x => x.ID == id)) {
+                Debug.Log("Matrix with ID " + id + " already contained.");
+            } else {
+                ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols, id));
+            }
         }
 
         public Matrix Load(string id) {
-            return System.Array.Find(Matrices, x => x.ID == id);
+            Matrix matrix = System.Array.Find(Matrices, x => x.ID == id);
+            if(matrix == null) {
+                Debug.Log("Matrix with ID " + id + " not found.");
+            }
+            return matrix;
         }
 
         private Matrix ReadBinary(string fn, int rows, int cols, string id) {
