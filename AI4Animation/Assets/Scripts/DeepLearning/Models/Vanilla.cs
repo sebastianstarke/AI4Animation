@@ -15,42 +15,31 @@ namespace DeepLearning {
 		private Tensor W0, W1, W2, b0, b1, b2;
 		private Tensor X, Y;
 
-		public override void StoreParameters() {
-			Parameters = ScriptableObject.CreateInstance<Parameters>();
-			Parameters.Store(Folder+"/Xmean.bin", XDim, 1);
-			Parameters.Store(Folder+"/Xstd.bin", XDim, 1);
-			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
-			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
-			Parameters.Store(Folder+"/W0_000.bin", HDim, XDim);
-			Parameters.Store(Folder+"/W1_000.bin", HDim, HDim);
-			Parameters.Store(Folder+"/W2_000.bin", YDim, HDim);
-			Parameters.Store(Folder+"/b0_000.bin", HDim, 1);
-			Parameters.Store(Folder+"/b1_000.bin", HDim, 1);
-			Parameters.Store(Folder+"/b2_000.bin", YDim, 1);
-			if(!Parameters.Validate()) {
-				Parameters = null;
-			} else {
-				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
-			}
+		protected override void StoreParametersDerived() {
+			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
+			Parameters.Store(Folder+"/Xstd.bin", XDim, 1, "Xstd");
+			Parameters.Store(Folder+"/Ymean.bin", YDim, 1, "Ymean");
+			Parameters.Store(Folder+"/Ystd.bin", YDim, 1, "Ystd");
+			Parameters.Store(Folder+"/W0_000.bin", HDim, XDim, "W0_000");
+			Parameters.Store(Folder+"/W1_000.bin", HDim, HDim, "W1_000");
+			Parameters.Store(Folder+"/W2_000.bin", YDim, HDim, "W2_000");
+			Parameters.Store(Folder+"/b0_000.bin", HDim, 1, "b0_000");
+			Parameters.Store(Folder+"/b1_000.bin", HDim, 1, "b1_000");
+			Parameters.Store(Folder+"/b2_000.bin", YDim, 1, "b2_000");
 		}
 
-		public override void LoadParameters() {
-			if(Parameters == null) {
-				Debug.Log("Building MLP failed because no parameters are available.");
-				return;
-			}
+		protected override void LoadParametersDerived() {
+			Xmean = CreateTensor(Parameters.Load("Xmean"));
+			Xstd = CreateTensor(Parameters.Load("Xstd"));
+			Ymean = CreateTensor(Parameters.Load("Ymean"));
+			Ystd = CreateTensor(Parameters.Load("Ystd"));
 
-			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
-			Xstd = CreateTensor(Parameters.Load(1), "Xstd");
-			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
-			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
-
-			W0 = CreateTensor(Parameters.Load(4), "W0");
-			W1 = CreateTensor(Parameters.Load(5), "W1");
-			W2 = CreateTensor(Parameters.Load(6), "W2");
-			b0 = CreateTensor(Parameters.Load(7), "b0");
-			b1 = CreateTensor(Parameters.Load(8), "b1");
-			b2 = CreateTensor(Parameters.Load(9), "b2");
+			W0 = CreateTensor(Parameters.Load("W0"));
+			W1 = CreateTensor(Parameters.Load("W1"));
+			W2 = CreateTensor(Parameters.Load("W2"));
+			b0 = CreateTensor(Parameters.Load("b0"));
+			b1 = CreateTensor(Parameters.Load("b1"));
+			b2 = CreateTensor(Parameters.Load("b2"));
 
 			X = CreateTensor(XDim, 1, "X");
 			Y = CreateTensor(YDim, 1, "Y");

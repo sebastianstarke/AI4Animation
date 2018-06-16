@@ -6,11 +6,13 @@ namespace DeepLearning {
     public class Tensor {
 
         public IntPtr Ptr;
+        public string ID;
 
         private bool Deleted;
         
-        public Tensor(int rows, int cols) {
+        public Tensor(int rows, int cols, string id = "") {
             Ptr = Eigen.Create(rows, cols);
+            ID = id;
             Deleted = false;
         }
 

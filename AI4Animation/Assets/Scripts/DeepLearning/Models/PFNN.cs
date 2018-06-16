@@ -26,37 +26,26 @@ namespace DeepLearning {
 			
 		}
 
-		public override void StoreParameters() {
-			Parameters = ScriptableObject.CreateInstance<Parameters>();
-			Parameters.Store(Folder+"/Xmean.bin", XDim, 1);
-			Parameters.Store(Folder+"/Xstd.bin", XDim, 1);
-			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
-			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
+		protected override void StoreParametersDerived() {
+			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
+			Parameters.Store(Folder+"/Xstd.bin", XDim, 1, "Xstd");
+			Parameters.Store(Folder+"/Ymean.bin", YDim, 1, "Ymean");
+			Parameters.Store(Folder+"/Ystd.bin", YDim, 1, "Ystd");
 			for(int i=0; i<50; i++) {
-				Parameters.Store(Folder+"/W0_"+i.ToString("D3")+".bin", HDim, XDim);
-				Parameters.Store(Folder+"/W1_"+i.ToString("D3")+".bin", HDim, HDim);
-				Parameters.Store(Folder+"/W2_"+i.ToString("D3")+".bin", YDim, HDim);
-				Parameters.Store(Folder+"/b0_"+i.ToString("D3")+".bin", HDim, 1);
-				Parameters.Store(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1);
-				Parameters.Store(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
-			}
-			if(!Parameters.Validate()) {
-				Parameters = null;
-			} else {
-				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
+				Parameters.Store(Folder+"/W0_"+i.ToString("D3")+".bin", HDim, XDim, "W0_"+i.ToString("D3"));
+				Parameters.Store(Folder+"/W1_"+i.ToString("D3")+".bin", HDim, HDim, "W1_"+i.ToString("D3"));
+				Parameters.Store(Folder+"/W2_"+i.ToString("D3")+".bin", YDim, HDim, "W2_"+i.ToString("D3"));
+				Parameters.Store(Folder+"/b0_"+i.ToString("D3")+".bin", HDim, 1, "b0_"+i.ToString("D3"));
+				Parameters.Store(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1, "b1_"+i.ToString("D3"));
+				Parameters.Store(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1, "b2_"+i.ToString("D3"));
 			}
 		}
 
-		public override void LoadParameters() {
-			if(Parameters == null) {
-				Debug.Log("Building PFNN failed because no parameters were saved.");
-				return;
-			}
-
-			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
-			Xstd = CreateTensor(Parameters.Load(1), "Xstd");
-			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
-			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
+		protected override void LoadParametersDerived() {
+			Xmean = CreateTensor(Parameters.Load("Xmean"));
+			Xstd = CreateTensor(Parameters.Load("Xstd"));
+			Ymean = CreateTensor(Parameters.Load("Ymean"));
+			Ystd = CreateTensor(Parameters.Load("Ystd"));
 
 			W0 = new Tensor[50];
 			W1 = new Tensor[50];
@@ -65,12 +54,12 @@ namespace DeepLearning {
 			b1 = new Tensor[50];
 			b2 = new Tensor[50];
 			for(int i=0; i<50; i++) {
-				W0[i] = CreateTensor(Parameters.Load(4 + i*6 + 0), "W0"+i);
-				W1[i] = CreateTensor(Parameters.Load(4 + i*6 + 1), "W1"+i);
-				W2[i] = CreateTensor(Parameters.Load(4 + i*6 + 2), "W2"+i);
-				b0[i] = CreateTensor(Parameters.Load(4 + i*6 + 3), "b0"+i);
-				b1[i] = CreateTensor(Parameters.Load(4 + i*6 + 4), "b1"+i);
-				b2[i] = CreateTensor(Parameters.Load(4 + i*6 + 5), "b2"+i);
+				W0[i] = CreateTensor(Parameters.Load("W0_"+i.ToString("D3")));
+				W1[i] = CreateTensor(Parameters.Load("W1_"+i.ToString("D3")));
+				W2[i] = CreateTensor(Parameters.Load("W2_"+i.ToString("D3")));
+				b0[i] = CreateTensor(Parameters.Load("b0_"+i.ToString("D3")));
+				b1[i] = CreateTensor(Parameters.Load("b1_"+i.ToString("D3")));
+				b2[i] = CreateTensor(Parameters.Load("b2_"+i.ToString("D3")));
 			}
 
 			X = CreateTensor(XDim, 1, "X");

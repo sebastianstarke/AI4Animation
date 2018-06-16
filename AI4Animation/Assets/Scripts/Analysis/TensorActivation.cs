@@ -29,7 +29,7 @@ public class TensorActivation : MonoBehaviour {
     }
 
     void Start() {
-        T = new Tensor(1, 1);
+        T = new Tensor(1, 1, "Activation");
     }
 
     void OnEnable() {

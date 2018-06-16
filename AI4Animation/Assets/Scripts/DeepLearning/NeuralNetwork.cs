@@ -9,41 +9,54 @@ namespace DeepLearning {
 	public abstract class NeuralNetwork : MonoBehaviour {
 
 		public string Folder = "Assets/";
-        public Parameters Parameters;
+        public Parameters Parameters = null;
 
         private List<Tensor> Tensors = new List<Tensor>();
-        private List<string> Identifiers = new List<string>();
 
-        public abstract void StoreParameters();
-        public abstract void LoadParameters();
+        public void StoreParameters() {
+            Parameters = ScriptableObject.CreateInstance<Parameters>();
+            StoreParametersDerived();
+			if(!Parameters.Validate()) {
+				Parameters = null;
+			} else {
+				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
+			}
+        }
+        public void LoadParameters() {
+			if(Parameters == null) {
+				Debug.Log("Building PFNN failed because no parameters were saved.");
+			} else {
+                LoadParametersDerived();
+            }
+        }
+        protected abstract void StoreParametersDerived();
+        protected abstract void LoadParametersDerived();
         public abstract void Predict();
         public abstract void SetInput(int index, float value);
         public abstract float GetOutput(int index);
 
         public Tensor CreateTensor(int rows, int cols, string id) {
-            if(Identifiers.Contains(id)) {
+            if(Tensors.Find(x => x.ID == id) != null) {
                 Debug.Log("Tensor with ID " + id + " already contained.");
                 return null;
             }
-            Tensor T = new Tensor(rows, cols);
+            Tensor T = new Tensor(rows, cols, id);
             Tensors.Add(T);
-            Identifiers.Add(id);
             return T;
         }
 
-        public Tensor CreateTensor(Parameters.FloatMatrix matrix, string id) {
-            if(Identifiers.Contains(id)) {
-                Debug.Log("Tensor with ID " + id + " already contained.");
+        public Tensor CreateTensor(Parameters.Matrix matrix) {
+            if(Tensors.Find(x => x.ID == matrix.ID) != null) {
+                Debug.Log("Tensor with ID " + matrix.ID + " already contained.");
                 return null;
             }
-            Tensor T = new Tensor(matrix.Rows, matrix.Cols);
+            Tensor T = new Tensor(matrix.Rows, matrix.Cols, matrix.ID);
             for(int x=0; x<matrix.Rows; x++) {
                 for(int y=0; y<matrix.Cols; y++) {
                     T.SetValue(x, y, matrix.Values[x].Values[y]);
                 }
             }
             Tensors.Add(T);
-            Identifiers.Add(id);
             return T;
         }
 
@@ -54,12 +67,11 @@ namespace DeepLearning {
                 return;
             }
             Tensors.RemoveAt(index);
-            Identifiers.RemoveAt(index);
             T.Delete();
         }
 
         public Tensor GetTensor(string id) {
-            int index = Identifiers.IndexOf(id);
+            int index = Tensors.FindIndex(x => x.ID == id);
             if(index == -1) {
                 return null;
             }
@@ -71,7 +83,7 @@ namespace DeepLearning {
             if(index == -1) {
                 return null;
             }
-            return Identifiers[index];
+            return Tensors[index].ID;
         }
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {

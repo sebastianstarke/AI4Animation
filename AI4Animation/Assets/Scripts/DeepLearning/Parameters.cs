@@ -4,18 +4,18 @@ using UnityEngine;
 namespace DeepLearning {
 
     public class Parameters : ScriptableObject {
-        public FloatMatrix[] Matrices = new FloatMatrix[0];
+        public Matrix[] Matrices = new Matrix[0];
 
-        public void Store(string fn, int rows, int cols) {
-            ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols));
+        public void Store(string fn, int rows, int cols, string id) {
+            ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols, id));
         }
 
-        public FloatMatrix Load(int index) {
-            return Matrices[index];
+        public Matrix Load(string id) {
+            return System.Array.Find(Matrices, x => x.ID == id);
         }
 
-        private FloatMatrix ReadBinary(string fn, int rows, int cols) {
-            FloatMatrix matrix = new FloatMatrix(rows, cols);
+        private Matrix ReadBinary(string fn, int rows, int cols, string id) {
+            Matrix matrix = new Matrix(rows, cols, id);
             try {
                 BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
                 for(int x=0; x<rows; x++) {
@@ -41,25 +41,27 @@ namespace DeepLearning {
         }
 
         [System.Serializable]
-        public class FloatVector {
+        public class Vector {
             public float[] Values;
 
-            public FloatVector(int size) {
+            public Vector(int size) {
                 Values = new float[size];
             }
         }
 
         [System.Serializable]
-        public class FloatMatrix {
-            public FloatVector[] Values;
+        public class Matrix {
+            public Vector[] Values;
             public int Rows, Cols;
+            public string ID;
 
-            public FloatMatrix(int rows, int cols) {
+            public Matrix(int rows, int cols, string id) {
                 Rows = rows;
                 Cols = cols;
-                Values = new FloatVector[rows];
+                ID = id;
+                Values = new Vector[rows];
                 for(int i=0; i<rows; i++) {
-                    Values[i] = new FloatVector(cols);
+                    Values[i] = new Vector(cols);
                 }
             }
         }

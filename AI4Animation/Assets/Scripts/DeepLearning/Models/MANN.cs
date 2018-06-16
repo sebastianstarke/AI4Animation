@@ -24,53 +24,48 @@ namespace DeepLearning {
 		private Tensor[] CW;
 		private Tensor W0, W1, W2, b0, b1, b2;
 
-		public override void StoreParameters() {
-			Parameters = ScriptableObject.CreateInstance<Parameters>();
-			Parameters.Store(Folder+"/Xmean.bin", XDim, 1);
-			Parameters.Store(Folder+"/Xstd.bin", XDim, 1);
-			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
-			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
-			Parameters.Store(Folder+"/wc0_w.bin", HDimBlend, XDimBlend);
-			Parameters.Store(Folder+"/wc0_b.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc1_w.bin", HDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc1_b.bin", HDimBlend, 1);
-			Parameters.Store(Folder+"/wc2_w.bin", YDimBlend, HDimBlend);
-			Parameters.Store(Folder+"/wc2_b.bin", YDimBlend, 1);
+		protected override void StoreParametersDerived() {
+			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
+			Parameters.Store(Folder+"/Xstd.bin", XDim, 1, "Xstd");
+			Parameters.Store(Folder+"/Ymean.bin", YDim, 1, "Ymean");
+			Parameters.Store(Folder+"/Ystd.bin", YDim, 1, "Ystd");
+			Parameters.Store(Folder+"/wc0_w.bin", HDimBlend, XDimBlend, "wc0_w");
+			Parameters.Store(Folder+"/wc0_b.bin", HDimBlend, 1, "wc0_b");
+			Parameters.Store(Folder+"/wc1_w.bin", HDimBlend, HDimBlend, "wc1_w");
+			Parameters.Store(Folder+"/wc1_b.bin", HDimBlend, 1, "wc1_b");
+			Parameters.Store(Folder+"/wc2_w.bin", YDimBlend, HDimBlend, "wc2_w");
+			Parameters.Store(Folder+"/wc2_b.bin", YDimBlend, 1, "wc2_b");
 			for(int i=0; i<YDimBlend; i++) {
-				Parameters.Store(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
-				Parameters.Store(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1);
-				Parameters.Store(Folder+"/cp1_a"+i.ToString("D1")+".bin", HDim, HDim);
-				Parameters.Store(Folder+"/cp1_b"+i.ToString("D1")+".bin", HDim, 1);
-				Parameters.Store(Folder+"/cp2_a"+i.ToString("D1")+".bin", YDim, HDim);
-				Parameters.Store(Folder+"/cp2_b"+i.ToString("D1")+".bin", YDim, 1);
-			}
-			if(!Parameters.Validate()) {
-				Parameters = null;
-			} else {
-				AssetDatabase.CreateAsset(Parameters, Folder);
+				Parameters.Store(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim, "cp0_a"+i.ToString("D1"));
+				Parameters.Store(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1, "cp0_b"+i.ToString("D1"));
+				Parameters.Store(Folder+"/cp1_a"+i.ToString("D1")+".bin", HDim, HDim, "cp1_a"+i.ToString("D1"));
+				Parameters.Store(Folder+"/cp1_b"+i.ToString("D1")+".bin", HDim, 1, "cp1_b"+i.ToString("D1"));
+				Parameters.Store(Folder+"/cp2_a"+i.ToString("D1")+".bin", YDim, HDim, "cp2_a"+i.ToString("D1"));
+				Parameters.Store(Folder+"/cp2_b"+i.ToString("D1")+".bin", YDim, 1, "cp2_b"+i.ToString("D1"));
 			}
 		}
 
-		public override void LoadParameters() {
-			if(Parameters == null) {
-				Debug.Log("Building MANN failed because no parameters are available.");
-				return;
-			}
-			Xmean = CreateTensor(Parameters.Load(0), "Xmean");
-			Xstd = CreateTensor(Parameters.Load(1), "Xstd");
-			Ymean = CreateTensor(Parameters.Load(2), "Ymean");
-			Ystd = CreateTensor(Parameters.Load(3), "Ystd");
+		protected override void LoadParametersDerived() {
+			Xmean = CreateTensor(Parameters.Load("Xmean"));
+			Xstd = CreateTensor(Parameters.Load("Xstd"));
+			Ymean = CreateTensor(Parameters.Load("Ymean"));
+			Ystd = CreateTensor(Parameters.Load("Ystd"));
 
-			BW0 = CreateTensor(Parameters.Load(4), "BW0");
-			Bb0 = CreateTensor(Parameters.Load(5), "Bb0");
-			BW1 = CreateTensor(Parameters.Load(6), "BW1");
-			Bb1 = CreateTensor(Parameters.Load(7), "Bb1");
-			BW2 = CreateTensor(Parameters.Load(8), "BW2");
-			Bb2 = CreateTensor(Parameters.Load(9), "Bb2");
+			BW0 = CreateTensor(Parameters.Load("wc0_w"));
+			Bb0 = CreateTensor(Parameters.Load("wc0_b"));
+			BW1 = CreateTensor(Parameters.Load("wc1_w"));
+			Bb1 = CreateTensor(Parameters.Load("wc1_b"));
+			BW2 = CreateTensor(Parameters.Load("wc2_w"));
+			Bb2 = CreateTensor(Parameters.Load("wc2_b"));
 
-			CW = new Tensor[YDimBlend*6];
-			for(int i=0; i<YDimBlend*6; i++) {
-				CW[i] = CreateTensor(Parameters.Load(10+i), "CW"+i);
+			CW = new Tensor[6*YDimBlend];
+			for(int i=0; i<YDimBlend; i++) {
+				CW[6*i+0] = CreateTensor(Parameters.Load("cp0_a"+i.ToString("D1")));
+				CW[6*i+1] = CreateTensor(Parameters.Load("cp0_b"+i.ToString("D1")));
+				CW[6*i+2] = CreateTensor(Parameters.Load("cp1_a"+i.ToString("D1")));
+				CW[6*i+3] = CreateTensor(Parameters.Load("cp1_b"+i.ToString("D1")));
+				CW[6*i+4] = CreateTensor(Parameters.Load("cp2_a"+i.ToString("D1")));
+				CW[6*i+5] = CreateTensor(Parameters.Load("cp2_b"+i.ToString("D1")));
 			}
 			
 			X = CreateTensor(XDim, 1, "X");
