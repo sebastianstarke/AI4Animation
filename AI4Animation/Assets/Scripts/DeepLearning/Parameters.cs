@@ -31,6 +31,15 @@ namespace DeepLearning {
             return matrix;
         }
 
+        public bool Validate() {
+            for(int i=0; i<Matrices.Length; i++) {
+                if(Matrices[i] == null) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         [System.Serializable]
         public class FloatVector {
             public float[] Values;

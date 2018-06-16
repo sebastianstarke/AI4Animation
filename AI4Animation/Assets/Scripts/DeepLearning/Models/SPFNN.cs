@@ -51,6 +51,9 @@ namespace DeepLearning {
 				Parameters.Store(Folder+"/cp3_a"+i.ToString()+".bin", YDim, YDim);
 				Parameters.Store(Folder+"/cp3_b"+i.ToString()+".bin", YDim, 1);
 			}
+			if(!Parameters.Validate()) {
+				Parameters = null;
+			}
 		}
 
 		public override void LoadParameters() {

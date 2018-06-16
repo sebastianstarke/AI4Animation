@@ -40,6 +40,9 @@ namespace DeepLearning {
 				Parameters.Store(Folder+"/b1_"+i.ToString("D3")+".bin", HDim, 1);
 				Parameters.Store(Folder+"/b2_"+i.ToString("D3")+".bin", YDim, 1);
 			}
+			if(!Parameters.Validate()) {
+				Parameters = null;
+			}
 		}
 
 		public override void LoadParameters() {
