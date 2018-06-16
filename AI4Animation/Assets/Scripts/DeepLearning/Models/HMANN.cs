@@ -28,33 +28,28 @@ namespace DeepLearning {
 
 		public override void StoreParameters() {
 			Parameters = ScriptableObject.CreateInstance<Parameters>();
-
 			Parameters.Store(Folder+"/Xmean.bin", XDim, 1);
 			Parameters.Store(Folder+"/Xstd.bin", XDim, 1);
 			Parameters.Store(Folder+"/Ymean.bin", YDim, 1);
 			Parameters.Store(Folder+"/Ystd.bin", YDim, 1);
-
 			Parameters.Store(Folder+"/wc0_w0.bin", HDimBlend, XDimBlend);
 			Parameters.Store(Folder+"/wc0_b0.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc1_w0.bin", HDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc1_b0.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc2_w0.bin", YDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc2_b0.bin", YDimBlend, 1);
-
 			Parameters.Store(Folder+"/wc0_w1.bin", HDimBlend, XDimBlend);
 			Parameters.Store(Folder+"/wc0_b1.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc1_w1.bin", HDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc1_b1.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc2_w1.bin", YDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc2_b1.bin", YDimBlend, 1);
-
 			Parameters.Store(Folder+"/wc0_w2.bin", HDimBlend, XDimBlend);
 			Parameters.Store(Folder+"/wc0_b2.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc1_w2.bin", HDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc1_b2.bin", HDimBlend, 1);
 			Parameters.Store(Folder+"/wc2_w2.bin", YDimBlend, HDimBlend);
 			Parameters.Store(Folder+"/wc2_b2.bin", YDimBlend, 1);
-
 			for(int i=0; i<YDimBlend; i++) {
 				Parameters.Store(Folder+"/cp0_a"+i.ToString("D1")+".bin", HDim, XDim);
 				Parameters.Store(Folder+"/cp0_b"+i.ToString("D1")+".bin", HDim, 1);
@@ -63,9 +58,10 @@ namespace DeepLearning {
 				Parameters.Store(Folder+"/cp2_a"+i.ToString("D1")+".bin", YDim, HDim);
 				Parameters.Store(Folder+"/cp2_b"+i.ToString("D1")+".bin", YDim, 1);
 			}
-
 			if(!Parameters.Validate()) {
 				Parameters = null;
+			} else {
+				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
 			}
 		}
 

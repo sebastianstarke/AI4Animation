@@ -42,6 +42,8 @@ namespace DeepLearning {
 			}
 			if(!Parameters.Validate()) {
 				Parameters = null;
+			} else {
+				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
 			}
 		}
 

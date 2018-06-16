@@ -29,6 +29,8 @@ namespace DeepLearning {
 			Parameters.Store(Folder+"/b2_000.bin", YDim, 1);
 			if(!Parameters.Validate()) {
 				Parameters = null;
+			} else {
+				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
 			}
 		}
 
