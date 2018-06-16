@@ -64,28 +64,24 @@ namespace DeepLearning {
 			Xstd = CreateTensor(Parameters.Load("Xstd"));
 			Ymean = CreateTensor(Parameters.Load("Ymean"));
 			Ystd = CreateTensor(Parameters.Load("Ystd"));
-
 			BW0_1 = CreateTensor(Parameters.Load("wc0_w0"));
 			Bb0_1 = CreateTensor(Parameters.Load("wc0_b0"));
 			BW1_1 = CreateTensor(Parameters.Load("wc1_w0"));
 			Bb1_1 = CreateTensor(Parameters.Load("wc1_b0"));
 			BW2_1 = CreateTensor(Parameters.Load("wc2_w0"));
 			Bb2_1 = CreateTensor(Parameters.Load("wc2_b0"));
-
 			BW0_2 = CreateTensor(Parameters.Load("wc0_w1"));
 			Bb0_2 = CreateTensor(Parameters.Load("wc0_b1"));
 			BW1_2 = CreateTensor(Parameters.Load("wc1_w1"));
 			Bb1_2 = CreateTensor(Parameters.Load("wc1_b1"));
 			BW2_2 = CreateTensor(Parameters.Load("wc2_w1"));
 			Bb2_2 = CreateTensor(Parameters.Load("wc2_b1"));
-
 			BW0_3 = CreateTensor(Parameters.Load("wc0_w2"));
 			Bb0_3 = CreateTensor(Parameters.Load("wc0_b2"));
 			BW1_3 = CreateTensor(Parameters.Load("wc1_w2"));
 			Bb1_3 = CreateTensor(Parameters.Load("wc1_b2"));
 			BW2_3 = CreateTensor(Parameters.Load("wc2_w2"));
 			Bb2_3 = CreateTensor(Parameters.Load("wc2_b2"));
-
 			CW = new Tensor[6*YDimBlend];
 			for(int i=0; i<YDimBlend; i++) {
 				CW[6*i+0] = CreateTensor(Parameters.Load("cp0_a"+i.ToString("D1")));
@@ -95,10 +91,8 @@ namespace DeepLearning {
 				CW[6*i+4] = CreateTensor(Parameters.Load("cp2_a"+i.ToString("D1")));
 				CW[6*i+5] = CreateTensor(Parameters.Load("cp2_b"+i.ToString("D1")));
 			}
-			
 			X = CreateTensor(XDim, 1, "X");
 			Y = CreateTensor(YDim, 1, "Y");
-
 			BX = CreateTensor(XDimBlend, 1, "BX");
 			BY = CreateTensor(YDimBlend, 1, "BY");
 			W0 = CreateTensor(HDim, XDim, "W0");

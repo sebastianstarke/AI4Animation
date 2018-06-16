@@ -20,12 +20,12 @@ namespace DeepLearning {
 			Parameters.Store(Folder+"/Xstd.bin", XDim, 1, "Xstd");
 			Parameters.Store(Folder+"/Ymean.bin", YDim, 1, "Ymean");
 			Parameters.Store(Folder+"/Ystd.bin", YDim, 1, "Ystd");
-			Parameters.Store(Folder+"/W0_000.bin", HDim, XDim, "W0_000");
-			Parameters.Store(Folder+"/W1_000.bin", HDim, HDim, "W1_000");
-			Parameters.Store(Folder+"/W2_000.bin", YDim, HDim, "W2_000");
-			Parameters.Store(Folder+"/b0_000.bin", HDim, 1, "b0_000");
-			Parameters.Store(Folder+"/b1_000.bin", HDim, 1, "b1_000");
-			Parameters.Store(Folder+"/b2_000.bin", YDim, 1, "b2_000");
+			Parameters.Store(Folder+"/W0_000.bin", HDim, XDim, "W0");
+			Parameters.Store(Folder+"/W1_000.bin", HDim, HDim, "W1");
+			Parameters.Store(Folder+"/W2_000.bin", YDim, HDim, "W2");
+			Parameters.Store(Folder+"/b0_000.bin", HDim, 1, "b0");
+			Parameters.Store(Folder+"/b1_000.bin", HDim, 1, "b1");
+			Parameters.Store(Folder+"/b2_000.bin", YDim, 1, "b2");
 		}
 
 		protected override void LoadParametersDerived() {
@@ -33,14 +33,12 @@ namespace DeepLearning {
 			Xstd = CreateTensor(Parameters.Load("Xstd"));
 			Ymean = CreateTensor(Parameters.Load("Ymean"));
 			Ystd = CreateTensor(Parameters.Load("Ystd"));
-
 			W0 = CreateTensor(Parameters.Load("W0"));
 			W1 = CreateTensor(Parameters.Load("W1"));
 			W2 = CreateTensor(Parameters.Load("W2"));
 			b0 = CreateTensor(Parameters.Load("b0"));
 			b1 = CreateTensor(Parameters.Load("b1"));
 			b2 = CreateTensor(Parameters.Load("b2"));
-
 			X = CreateTensor(XDim, 1, "X");
 			Y = CreateTensor(YDim, 1, "Y");
 		}

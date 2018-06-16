@@ -46,7 +46,6 @@ namespace DeepLearning {
 			Xstd = CreateTensor(Parameters.Load("Xstd"));
 			Ymean = CreateTensor(Parameters.Load("Ymean"));
 			Ystd = CreateTensor(Parameters.Load("Ystd"));
-
 			W0 = new Tensor[50];
 			W1 = new Tensor[50];
 			W2 = new Tensor[50];
@@ -61,10 +60,8 @@ namespace DeepLearning {
 				b1[i] = CreateTensor(Parameters.Load("b1_"+i.ToString("D3")));
 				b2[i] = CreateTensor(Parameters.Load("b2_"+i.ToString("D3")));
 			}
-
 			X = CreateTensor(XDim, 1, "X");
 			Y = CreateTensor(YDim, 1, "Y");
-
 			Phase = 0f;
 			Damping = 0f;
 		}
