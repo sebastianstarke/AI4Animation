@@ -546,7 +546,8 @@ public class MotionEditor : MonoBehaviour {
 							GUILayout.FlexibleSpace();
 							Target.Window = EditorGUILayout.Slider(Target.Window, 0f, 1f);
 							GUILayout.FlexibleSpace();
-							EditorGUILayout.EndHorizontal();						}
+							EditorGUILayout.EndHorizontal();
+						}
 					}
 					for(int i=0; i<Target.GetData().Modules.Length; i++) {
 						Target.GetData().Modules[i].Inspector(Target);
@@ -578,10 +579,12 @@ public class MotionEditor : MonoBehaviour {
 							}
 							for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
 								EditorGUILayout.BeginHorizontal();
+								Target.GetData().Source.Bones[i].Active = EditorGUILayout.Toggle(Target.GetData().Source.Bones[i].Active);
 								EditorGUI.BeginDisabledGroup(true);
 								EditorGUILayout.TextField(names[i]);
 								EditorGUI.EndDisabledGroup();
 								Target.GetData().SetSymmetry(i, EditorGUILayout.Popup(Target.GetData().Symmetry[i], names));
+								Target.GetData().Source.Bones[i].Alignment = EditorGUILayout.Vector3Field("", Target.GetData().Source.Bones[i].Alignment);
 								EditorGUILayout.EndHorizontal();
 							}
 							if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {

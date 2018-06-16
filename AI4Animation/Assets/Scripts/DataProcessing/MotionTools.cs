@@ -281,8 +281,12 @@ public class MotionTools : EditorWindow {
 
 				
 				//Data[i].AddModule(DataModule.TYPE.Contact);
-				ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
-				contact.Inspect = false;
+				//ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
+				//contact.Inspect = false;
+
+				for(int b=0; b<Data[i].Source.Bones.Length; b++) {
+					Data[i].Source.Bones[b].Active = true;
+				}
 
              	EditorUtility.SetDirty(Data[i]);
             }

@@ -218,13 +218,17 @@ public class MotionData : ScriptableObject {
 
 		[System.Serializable]
 		public class Bone {
-			public int Index;
-			public string Name;
-			public string Parent;
+			public int Index = -1;
+			public string Name = "";
+			public string Parent = "";
+			public Vector3 Alignment = Vector3.zero;
+			public bool Active = true;
 			public Bone(int index, string name, string parent) {
 				Index = index;
 				Name = name;
 				Parent = parent;
+				Alignment = Vector3.zero;
+				Active = true;
 			}
 		}
 	}

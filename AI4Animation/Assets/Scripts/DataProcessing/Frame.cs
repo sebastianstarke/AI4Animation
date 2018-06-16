@@ -37,16 +37,25 @@ public class Frame {
 	}
 
 	public Matrix4x4[] GetBoneTransformations(bool mirrored) {
+		List<Matrix4x4> transformations = new List<Matrix4x4>();
+		for(int i=0; i<World.Length; i++) {
+			if(Data.Source.Bones[i].Active) {
+				transformations.Add(GetBoneTransformation(i, mirrored));
+			}
+		}
+		return transformations.ToArray();
+		/*
 		Matrix4x4[] transformations = new Matrix4x4[World.Length];
 		for(int i=0; i<World.Length; i++) {
 			transformations[i] = GetBoneTransformation(i, mirrored);
 		}
 		return transformations;
+		*/
 	}
 
 	public Matrix4x4 GetBoneTransformation(int index, bool mirrored, int smoothing = 0) {
 		if(smoothing  == 0) {
-			return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Data.Scaling * Vector3.one) * (mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index]);
+			return Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Data.Scaling * Vector3.one) * (mirrored ? World[Data.Symmetry[index]].GetMirror(Data.GetAxis(Data.MirrorAxis)) : World[index]) * Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(Data.Source.Bones[index].Alignment), Vector3.one); //Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(mirrored ? Data.Source.Bones[Data.Symmetry[index]].Alignment : Data.Source.Bones[index].Alignment), Vector3.one);
 		} else {
 			Frame[] frames = Data.GetFrames(Mathf.Clamp(Index - smoothing, 1, Data.GetTotalFrames()), Mathf.Clamp(Index + smoothing, 1, Data.GetTotalFrames()));
 			Vector3 P = Vector3.zero;

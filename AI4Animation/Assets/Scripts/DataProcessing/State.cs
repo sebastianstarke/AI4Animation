@@ -13,10 +13,10 @@ public class State {
 	public Vector3[] BoneVelocities;
 	public Trajectory Trajectory;
 
-	public List<Matrix4x4[]> PastBoneTransformations;
-	public List<Vector3[]> PastBoneVelocities;
-	public List<Matrix4x4[]> FutureBoneTransformations;
-	public List<Vector3[]> FutureBoneVelocities;
+	//public List<Matrix4x4[]> PastBoneTransformations;
+	//public List<Vector3[]> PastBoneVelocities;
+	//public List<Matrix4x4[]> FutureBoneTransformations;
+	//public List<Vector3[]> FutureBoneVelocities;
 
 	public State(Frame frame, bool mirrored) {
 		Index = frame.Index;
@@ -28,6 +28,7 @@ public class State {
 		BoneVelocities = frame.GetBoneVelocities(mirrored);
 		Trajectory = frame.GetTrajectory(mirrored);
 
+		/*
 		PastBoneTransformations = new List<Matrix4x4[]>(6);
 		PastBoneVelocities = new List<Vector3[]>(6);
 		for(int i=0; i<6; i++) {
@@ -43,6 +44,7 @@ public class State {
 			FutureBoneTransformations.Add(future.GetBoneTransformations(mirrored));
 			FutureBoneVelocities.Add(future.GetBoneVelocities(mirrored));
 		}
+		*/
 	}
 }
 #endif
