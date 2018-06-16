@@ -49,11 +49,11 @@ public class BlendingActivation : MonoBehaviour {
 		UltiDraw.DrawGUIRectangle(
 			center,
 			new Vector2(W+2f*border/Screen.width*Screen.height, H+2f*border),
-			UltiDraw.Black.Transparent(0.5f));
+			UltiDraw.Black);
 		UltiDraw.DrawGUIRectangle(
 			center,
 			new Vector2(W, H),
-			UltiDraw.White.Transparent(0.5f));
+			UltiDraw.White);
 
 		Color[] colors = UltiDraw.GetRainbowColors(Values.Length);
 		for(int i=0; i<colors.Length; i++) {

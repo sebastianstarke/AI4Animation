@@ -17,8 +17,9 @@ namespace DeepLearning {
 		public int YDimBlend = 0;
 		public int[] ControlNeurons = new int[0];
 
-		public int PhaseInputIndex = 0;
-		public int PhaseOutputIndex = 0;
+		public float[] Phase = new float[0];
+		public int[] PhaseInputs = new int[0];
+		public int[] PhaseOutputs = new int[0];
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor X, Y;
@@ -26,8 +27,6 @@ namespace DeepLearning {
 		private Tensor BW0, BW1, BW2, Bb0, Bb1, Bb2;
 		private Tensor[] CW;
 		private Tensor W0, W1, W2, b0, b1, b2;
-
-		private float Phase;
 
 		protected override void StoreParametersDerived() {
 			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
@@ -80,12 +79,13 @@ namespace DeepLearning {
 			b0 = CreateTensor(HDim, 1, "b0");
 			b1 = CreateTensor(HDim, 1, "b1");
 			b2 = CreateTensor(YDim, 1, "b2");
-			Phase = 0f;
 		}
 
 		public override void Predict() {
 			//Input Phase
-			SetInput(PhaseInputIndex, Phase);
+			for(int i=0; i<Phase.Length; i++) {
+				SetInput(PhaseInputs[i], Phase[i]);
+			}
 
 			//Normalise Input
 			Normalise(X, Xmean, Xstd, Y);
@@ -121,7 +121,10 @@ namespace DeepLearning {
 			Renormalise(Y, Ymean, Ystd, Y);
 
 			//Update Phase
-			Phase = Mathf.Repeat(Phase + GetOutput(PhaseOutputIndex), 1f);
+			//Phase[0] = Mathf.Repeat(Phase[0] + GetOutput(PhaseOutputs[0]), 1f);
+			for(int i=0; i<Phase.Length; i++) {
+				Phase[i] += GetOutput(PhaseOutputs[i]);
+			}
 		}
 
 		public override void SetInput(int index, float value) {

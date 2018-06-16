@@ -279,16 +279,10 @@ public class MotionTools : EditorWindow {
 				//Data[i].Sequences[0].Start = 62;
 				//Data[i].Sequences[0].End = Data[i].GetTotalFrames();
 
-				/*
-				Data[i].AddModule(DataModule.TYPE.Contact);
+				
+				//Data[i].AddModule(DataModule.TYPE.Contact);
 				ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
-				contact.AddContact(Data[i].Source.FindBone("RightToeSite").Index);
-				contact.AddContact(Data[i].Source.FindBone("LeftToeSite").Index);
-				contact.Functions[0].SetThreshold(0.0125f);
-				contact.Functions[1].SetThreshold(0.0125f);
-				contact.Functions[0].SetOffset(new Vector3(0f, 0f, -0.15f));
-				contact.Functions[1].SetOffset(new Vector3(0f, 0f, -0.15f));
-				*/
+				contact.Inspect = false;
 
              	EditorUtility.SetDirty(Data[i]);
             }
