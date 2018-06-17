@@ -7,11 +7,15 @@ namespace DeepLearning {
         public Matrix[] Matrices = new Matrix[0];
 
         public void Store(string fn, int rows, int cols, string id) {
-            if(System.Array.Exists(Matrices, x => x.ID == id)) {
-                Debug.Log("Matrix with ID " + id + " already contained.");
-            } else {
-                ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols, id));
+            for(int i=0; i<Matrices.Length; i++) {
+                if(Matrices[i] != null) {
+                    if(Matrices[i].ID == id) {
+                        Debug.Log("Matrix with ID " + id + " already contained.");
+                        return;
+                    }
+                }
             }
+            ArrayExtensions.Add(ref Matrices, ReadBinary(fn, rows, cols, id));
         }
 
         public Matrix Load(string id) {
@@ -23,8 +27,8 @@ namespace DeepLearning {
         }
 
         private Matrix ReadBinary(string fn, int rows, int cols, string id) {
-            Matrix matrix = new Matrix(rows, cols, id);
-            try {
+            if(File.Exists(fn)) {
+                Matrix matrix = new Matrix(rows, cols, id);
                 BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
                 for(int x=0; x<rows; x++) {
                     for(int y=0; y<cols; y++) {
@@ -32,11 +36,11 @@ namespace DeepLearning {
                     }
                 }
                 reader.Close();
-            } catch (System.Exception e) {
-                Debug.Log(e.Message);
+                return matrix;
+            } else {
+                Debug.Log("File at path " + fn + " does not exist.");
                 return null;
             }
-            return matrix;
         }
 
         public bool Validate() {

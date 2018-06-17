@@ -8,7 +8,8 @@ namespace DeepLearning {
 
 	public abstract class NeuralNetwork : MonoBehaviour {
 
-		public string Folder = "Assets/";
+		public string Folder = "";
+        public string Destination = "";
         public Parameters Parameters = null;
 
         private List<Tensor> Tensors = new List<Tensor>();
@@ -20,7 +21,7 @@ namespace DeepLearning {
 				Parameters = null;
 			} else {
                 #if UNITY_EDITOR
-				AssetDatabase.CreateAsset(Parameters, Folder + "/Parameters.asset");
+				AssetDatabase.CreateAsset(Parameters, Destination + "/Parameters.asset");
                 #endif
 			}
         }
@@ -89,23 +90,43 @@ namespace DeepLearning {
         }
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
-            Eigen.Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
-            return OUT;
+            if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
+                Debug.Log("Incompatible dimensions for normalisation.");
+                return IN;
+            } else {
+                Eigen.Normalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
+                return OUT;
+            }
         }
         
         public Tensor Renormalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
-            Eigen.Renormalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
-            return OUT;
+            if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
+                Debug.Log("Incompatible dimensions for renormalisation.");
+                return IN;
+            } else {
+                Eigen.Renormalise(IN.Ptr, mean.Ptr, std.Ptr, OUT.Ptr);
+                return OUT;
+            }
         }
 
         public Tensor Layer(Tensor IN, Tensor W, Tensor b, Tensor OUT) {
-            Eigen.Layer(IN.Ptr, W.Ptr, b.Ptr, OUT.Ptr);
-            return OUT;
+            if(IN.GetRows() != W.GetCols() || W.GetRows() != b.GetRows() || IN.GetCols() != b.GetCols()) {
+                Debug.Log("Incompatible dimensions for feed-forward.");
+                return IN;
+            } else {
+                Eigen.Layer(IN.Ptr, W.Ptr, b.Ptr, OUT.Ptr);
+                return OUT;
+            }
         }
 
         public Tensor Blend(Tensor T, Tensor W, float w) {
-            Eigen.Blend(T.Ptr, W.Ptr, w);
-            return T;
+            if(T.GetRows() != W.GetRows() || T.GetCols() != W.GetCols()) {
+                Debug.Log("Incompatible dimensions for blending.");
+                return T;
+            } else {
+                Eigen.Blend(T.Ptr, W.Ptr, w);
+                return T;
+            }
         }
 
         public Tensor ELU(Tensor T) {
