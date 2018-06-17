@@ -84,6 +84,7 @@ public class ContactModule : Module {
 		public int Sensor = 0;
 		public float DistanceThreshold = 0.01f;
 		public float VelocityThtreshold = 0.1f;
+		public int FilterWidth = 5;
 		public Vector3 Offset = Vector3.zero;
 		public Vector3 Normal = Vector3.down;
 		public LayerMask Mask = -1;
@@ -123,6 +124,13 @@ public class ContactModule : Module {
 		public void SetVelocityThreshold(float value) {
 			if(VelocityThtreshold != value) {
 				VelocityThtreshold = value;
+				Compute();
+			}
+		}
+
+		public void SetFilterWidth(int value) {
+			if(FilterWidth != value) {
+				FilterWidth = value;
 				Compute();
 			}
 		}
@@ -177,6 +185,35 @@ public class ContactModule : Module {
 									iVelocity.magnitude <= VelocityThtreshold && 
 									Physics.Raycast(iMatrix.GetPosition() - DistanceThreshold * (iMatrix.GetRotation() * Normal), iMatrix.GetRotation() * Normal, 2f*DistanceThreshold, Mask.value);
 			}
+			RegularContacts = kNNFilter(RegularContacts);
+			InverseContacts = kNNFilter(InverseContacts);
+		}
+
+		private bool[] kNNFilter(bool[] contacts) {
+			if(FilterWidth == 0) {
+				return contacts;
+			}
+			bool[] filtered = new bool[contacts.Length];
+			for(int i=0; i<contacts.Length; i++) {
+				int start = Mathf.Clamp(i-FilterWidth, 0, contacts.Length-1);
+				int end = Mathf.Clamp(i+FilterWidth, 0, contacts.Length-1);
+				int off = 0;
+				int on = 0;
+				for(int j=start; j<=end; j++) {
+					off += contacts[j] ? 0 : 1;
+					on += contacts[j] ? 1 : 0;
+				}
+				if(off > on) {
+					filtered[i] = false;
+				}
+				if(on > off) {
+					filtered[i] = true;
+				}
+				if(on == off) {
+					filtered[i] = contacts[i];
+				}
+			}
+			return filtered;
 		}
 
 		public void Inspector(MotionEditor editor) {
@@ -193,6 +230,7 @@ public class ContactModule : Module {
 				SetSensor(EditorGUILayout.Popup("Sensor", Sensor, Module.Names));
 				SetDistanceThreshold(EditorGUILayout.FloatField("Distance Threshold", DistanceThreshold));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThtreshold));
+				SetFilterWidth(EditorGUILayout.IntField("Filter Width", FilterWidth));
 				SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
 				SetNormal(EditorGUILayout.Vector3Field("Normal", Normal));
 				SetMask(InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Mask), InternalEditorUtility.layers)));
