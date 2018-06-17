@@ -56,7 +56,7 @@ public class ContactModule : Module {
 			Quaternion rotation = matrix.GetRotation();
 			UltiDraw.DrawSphere(position, Quaternion.identity, 0.025f, UltiDraw.Cyan.Transparent(0.5f));
 			UltiDraw.DrawArrow(position, position + 0.25f * (rotation * Functions[i].Normal.normalized), 0.8f, 0.02f, 0.1f, UltiDraw.Cyan.Transparent(0.5f));
-			UltiDraw.DrawSphere(position, Quaternion.identity, Functions[i].Threshold, UltiDraw.Mustard.Transparent(0.5f));
+			UltiDraw.DrawSphere(position, Quaternion.identity, Functions[i].DistanceThreshold, UltiDraw.Mustard.Transparent(0.5f));
 		}
 		UltiDraw.End();
 	}
@@ -82,7 +82,8 @@ public class ContactModule : Module {
 	public class ContactFunction {
 		public ContactModule Module = null;
 		public int Sensor = 0;
-		public float Threshold = 0.1f;
+		public float DistanceThreshold = 0.01f;
+		public float VelocityThtreshold = 0.1f;
 		public Vector3 Offset = Vector3.zero;
 		public Vector3 Normal = Vector3.down;
 		public LayerMask Mask = -1;
@@ -112,9 +113,16 @@ public class ContactModule : Module {
 			}
 		}
 
-		public void SetThreshold(float value) {
-			if(Threshold != value) {
-				Threshold = value;
+		public void SetDistanceThreshold(float value) {
+			if(DistanceThreshold != value) {
+				DistanceThreshold = value;
+				Compute();
+			}
+		}
+
+		public void SetVelocityThreshold(float value) {
+			if(VelocityThtreshold != value) {
+				VelocityThtreshold = value;
 				Compute();
 			}
 		}
@@ -150,13 +158,24 @@ public class ContactModule : Module {
 			return matrix;
 		}
 
+		public Vector3 GetPivotVelocity(Frame frame, bool mirrored) {
+			Vector3 velocity = frame.GetBoneVelocity(Sensor, mirrored);
+			return velocity;
+		}
+
 		public void Compute() {
 			for(int i=0; i<Module.Data.GetTotalFrames(); i++) {
 				Matrix4x4 rMatrix = GetPivotTransformation(Module.Data.Frames[i], false);
-				RegularContacts[i] = Physics.Raycast(rMatrix.GetPosition() - Threshold * (rMatrix.GetRotation() * Normal), rMatrix.GetRotation() * Normal, 2f*Threshold, Mask.value);
+				Vector3 rVelocity = GetPivotVelocity(Module.Data.Frames[i], false);
+				RegularContacts[i] = 
+									rVelocity.magnitude <= VelocityThtreshold && 
+									Physics.Raycast(rMatrix.GetPosition() - DistanceThreshold * (rMatrix.GetRotation() * Normal), rMatrix.GetRotation() * Normal, 2f*DistanceThreshold, Mask.value);
 
 				Matrix4x4 iMatrix = GetPivotTransformation(Module.Data.Frames[i], true);
-				InverseContacts[i] = Physics.Raycast(iMatrix.GetPosition() - Threshold * (iMatrix.GetRotation() * Normal), iMatrix.GetRotation() * Normal, 2f*Threshold, Mask.value);
+				Vector3 iVelocity = GetPivotVelocity(Module.Data.Frames[i], true);
+				InverseContacts[i] = 
+									iVelocity.magnitude <= VelocityThtreshold && 
+									Physics.Raycast(iMatrix.GetPosition() - DistanceThreshold * (iMatrix.GetRotation() * Normal), iMatrix.GetRotation() * Normal, 2f*DistanceThreshold, Mask.value);
 			}
 		}
 
@@ -172,7 +191,8 @@ public class ContactModule : Module {
 				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
 
 				SetSensor(EditorGUILayout.Popup("Sensor", Sensor, Module.Names));
-				SetThreshold(EditorGUILayout.FloatField("Threshold", Threshold));
+				SetDistanceThreshold(EditorGUILayout.FloatField("Distance Threshold", DistanceThreshold));
+				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThtreshold));
 				SetOffset(EditorGUILayout.Vector3Field("Offset", Offset));
 				SetNormal(EditorGUILayout.Vector3Field("Normal", Normal));
 				SetMask(InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Mask), InternalEditorUtility.layers)));
