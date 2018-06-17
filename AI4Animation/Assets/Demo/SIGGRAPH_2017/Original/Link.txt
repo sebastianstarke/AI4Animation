@@ -1,2 +1,2 @@
-Download and extract the weights into this folder from:
+Download, extract and load the weights from:
 http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/NN_Original_PFNN.zip
