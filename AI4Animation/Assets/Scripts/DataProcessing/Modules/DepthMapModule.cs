@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public class DepthMapModule : DataModule {
+public class DepthMapModule : Module {
 
 	public int Sensor = 0;
 	public MotionData.AXIS Axis = MotionData.AXIS.ZPositive;
@@ -19,7 +19,7 @@ public class DepthMapModule : DataModule {
 		return TYPE.DepthMap;
 	}
 
-	public override DataModule Initialise(MotionData data) {
+	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
 		MotionData.Hierarchy.Bone bone = Data.Source.FindBoneContains("Head");

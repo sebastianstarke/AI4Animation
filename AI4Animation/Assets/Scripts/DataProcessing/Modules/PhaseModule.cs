@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class PhaseModule : DataModule {
+public class PhaseModule : Module {
 
 	public float MaximumVelocity = 10f;
 	public float VelocityThreshold = 0.1f;
@@ -22,7 +22,7 @@ public class PhaseModule : DataModule {
 		return TYPE.Phase;
 	}
 
-	public override DataModule Initialise(MotionData data) {
+	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
 		RegularPhaseFunction = new PhaseFunction(this);

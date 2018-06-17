@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class StyleModule : DataModule {
+public class StyleModule : Module {
 
 	public float Transition = 0.5f;
 	public StyleFunction[] Functions = new StyleFunction[0];
@@ -13,7 +13,7 @@ public class StyleModule : DataModule {
 		return TYPE.Style;
 	}
 
-	public override DataModule Initialise(MotionData data) {
+	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
 		Transition = 0.5f;

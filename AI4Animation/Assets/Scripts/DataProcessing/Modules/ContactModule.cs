@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public class ContactModule : DataModule {
+public class ContactModule : Module {
 
 	public ContactFunction[] Functions = new ContactFunction[0];
 	public string[] Names = new string[0];
@@ -14,7 +14,7 @@ public class ContactModule : DataModule {
 		return TYPE.Contact;
 	}
 
-	public override DataModule Initialise(MotionData data) {
+	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
 		Names = new string[Data.Source.Bones.Length];

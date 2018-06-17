@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public abstract class DataModule : ScriptableObject {
+public abstract class Module : ScriptableObject {
 
 	public enum TYPE {Style, Phase, Contact, DepthMap, HeightMap, Length};
 
@@ -40,7 +40,7 @@ public abstract class DataModule : ScriptableObject {
 	}
 
 	public abstract TYPE Type();
-	public abstract DataModule Initialise(MotionData data);
+	public abstract Module Initialise(MotionData data);
 	public abstract void Draw(MotionEditor editor);
 	protected abstract void DerivedInspector(MotionEditor editor);
 

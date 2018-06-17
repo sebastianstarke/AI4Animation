@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public class HeightMapModule : DataModule {
+public class HeightMapModule : Module {
 
 	public int Sensor = 0;
 	public float Size = 0.25f;
@@ -16,7 +16,7 @@ public class HeightMapModule : DataModule {
 		return TYPE.HeightMap;
 	}
 
-	public override DataModule Initialise(MotionData data) {
+	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
 		MotionData.Hierarchy.Bone bone = Data.Source.FindBoneContains("Hip");

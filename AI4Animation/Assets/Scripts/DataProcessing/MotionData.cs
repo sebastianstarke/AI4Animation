@@ -11,7 +11,7 @@ public class MotionData : ScriptableObject {
 
 	public Hierarchy Source = null;
 	public Frame[] Frames = new Frame[0];
-	public DataModule[] Modules = new DataModule[0];
+	public Module[] Modules = new Module[0];
 
 	public string Name = string.Empty;
 	public float Framerate = 1f;
@@ -76,24 +76,24 @@ public class MotionData : ScriptableObject {
 		return GetFrames(GetFrame(start).Index, GetFrame(end).Index);
 	}
 
-	public void AddModule(DataModule.TYPE type) {
+	public void AddModule(Module.TYPE type) {
 		if(System.Array.Find(Modules, x => x.Type() == type)) {
 			Debug.Log("Module of type " + type.ToString() + " already exists.");
 		} else {
 			switch(type) {
-				case DataModule.TYPE.Style:
+				case Module.TYPE.Style:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<StyleModule>().Initialise(this));
 				break;
-				case DataModule.TYPE.Phase:
+				case Module.TYPE.Phase:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<PhaseModule>().Initialise(this));
 				break;
-				case DataModule.TYPE.Contact:
+				case Module.TYPE.Contact:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<ContactModule>().Initialise(this));
 				break;
-				case DataModule.TYPE.DepthMap:
+				case Module.TYPE.DepthMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<DepthMapModule>().Initialise(this));
 				break;
-				case DataModule.TYPE.HeightMap:
+				case Module.TYPE.HeightMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<HeightMapModule>().Initialise(this));
 				break;
 			}
@@ -101,8 +101,8 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void RemoveModule(DataModule.TYPE type) {
-		DataModule module = GetModule(type);
+	public void RemoveModule(Module.TYPE type) {
+		Module module = GetModule(type);
 		if(!module) {
 			Debug.Log("Module of type " + type.ToString() + " does not exist.");
 		} else {
@@ -111,7 +111,7 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public DataModule GetModule(DataModule.TYPE type) {
+	public Module GetModule(Module.TYPE type) {
 		return System.Array.Find(Modules, x => x.Type() == type);
 	}
 

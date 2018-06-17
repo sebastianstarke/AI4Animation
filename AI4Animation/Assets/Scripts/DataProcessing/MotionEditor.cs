@@ -552,14 +552,14 @@ public class MotionEditor : MonoBehaviour {
 					for(int i=0; i<Target.GetData().Modules.Length; i++) {
 						Target.GetData().Modules[i].Inspector(Target);
 					}
-					string[] modules = new string[(int)DataModule.TYPE.Length+1];
+					string[] modules = new string[(int)Module.TYPE.Length+1];
 					modules[0] = "Add Module...";
 					for(int i=1; i<modules.Length; i++) {
-						modules[i] = ((DataModule.TYPE)(i-1)).ToString();
+						modules[i] = ((Module.TYPE)(i-1)).ToString();
 					}
 					int module = EditorGUILayout.Popup(0, modules);
 					if(module > 0) {
-						Target.GetData().AddModule((DataModule.TYPE)(module-1));
+						Target.GetData().AddModule((Module.TYPE)(module-1));
 					}
 					if(Utility.GUIButton("Settings", Target.InspectSettings ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 						Target.InspectSettings = !Target.InspectSettings;

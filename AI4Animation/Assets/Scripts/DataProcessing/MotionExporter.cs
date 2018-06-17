@@ -196,9 +196,9 @@ public class MotionExporter : EditorWindow {
 		}
 		StreamWriter file = File.CreateText(filename+".txt");
 
-		StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
-		PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
-		//ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
+		StyleModule styleModule = editor.GetData().GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(Module.TYPE.Style);
+		PhaseModule phaseModule = editor.GetData().GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(Module.TYPE.Phase);
+		//ContactModule contactModule = editor.GetData().GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(Module.TYPE.Contact);
 	
 		int index = 0;
 		for(int i=1; i<=12; i++) {
@@ -274,9 +274,9 @@ public class MotionExporter : EditorWindow {
 			}
 			StreamWriter file = File.CreateText(filename+".txt");
 
-			//StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
-			PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
-			//ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
+			//StyleModule styleModule = editor.GetData().GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(Module.TYPE.Style);
+			PhaseModule phaseModule = editor.GetData().GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(Module.TYPE.Phase);
+			//ContactModule contactModule = editor.GetData().GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(Module.TYPE.Contact);
 
 			int index = 0;
 			for(int i=7; i<=12; i++) {
@@ -341,9 +341,9 @@ public class MotionExporter : EditorWindow {
 					if(editor.Files[i].Export) {
 						editor.LoadData(i);
 
-						//StyleModule styleModule = editor.GetData().GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(DataModule.TYPE.Style);
-						PhaseModule phaseModule = editor.GetData().GetModule(DataModule.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(DataModule.TYPE.Phase);
-						//ContactModule contactModule = editor.GetData().GetModule(DataModule.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(DataModule.TYPE.Contact);
+						//StyleModule styleModule = editor.GetData().GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetData().GetModule(Module.TYPE.Style);
+						PhaseModule phaseModule = editor.GetData().GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetData().GetModule(Module.TYPE.Phase);
+						//ContactModule contactModule = editor.GetData().GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetData().GetModule(Module.TYPE.Contact);
 
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 							if(m==1) {

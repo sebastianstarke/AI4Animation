@@ -174,7 +174,7 @@ public class Frame {
 	}
 
 	public Trajectory GetTrajectory(bool mirrored) {
-		StyleModule styleModule = Data.GetModule(DataModule.TYPE.Style) == null ? null : (StyleModule)Data.GetModule(DataModule.TYPE.Style);
+		StyleModule styleModule = Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)Data.GetModule(Module.TYPE.Style);
 		
 		Trajectory trajectory = new Trajectory(12, styleModule == null ? 0 : styleModule.Functions.Length);
 
