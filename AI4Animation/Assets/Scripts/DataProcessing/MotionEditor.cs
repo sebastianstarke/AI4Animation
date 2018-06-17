@@ -228,7 +228,7 @@ public class MotionEditor : MonoBehaviour {
 
 		GetActor().GetRoot().position = GetState().Root.GetPosition();
 		GetActor().GetRoot().rotation = GetState().Root.GetRotation();
-		for(int i=0; i<GetActor().Bones.Length; i++) {
+		for(int i=0; i<Mathf.Min(GetActor().Bones.Length, GetState().BoneTransformations.Length); i++) {
 			GetActor().Bones[i].Transform.position = GetState().BoneTransformations[i].GetPosition();
 			GetActor().Bones[i].Transform.rotation = GetState().BoneTransformations[i].GetRotation();
 		}
