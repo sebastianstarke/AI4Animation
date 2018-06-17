@@ -26,6 +26,10 @@ namespace DeepLearning {
 		private Tensor[] CW;
 		private Tensor W0, W1, W2, b0, b1, b2;
 
+		void OnValidate() {
+			ArrayExtensions.Resize(ref ControlNeurons, XDimBlend);
+		}
+
 		protected override void StoreParametersDerived() {
 			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
 			Parameters.Store(Folder+"/Xstd.bin", XDim, 1, "Xstd");
