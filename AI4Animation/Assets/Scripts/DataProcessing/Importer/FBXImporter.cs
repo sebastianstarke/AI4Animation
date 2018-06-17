@@ -24,7 +24,7 @@ public class FBXImporter : EditorWindow {
 	public int Page = 1;
 	public const int Items = 25;
 	
-	[MenuItem ("Addons/FBX Importer")]
+	[MenuItem ("Data Processing/FBX Importer")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(FBXImporter));
 		Scroll = Vector3.zero;

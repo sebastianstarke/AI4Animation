@@ -21,7 +21,7 @@ public class BVHImporter : EditorWindow {
 	public int Page = 1;
 	public const int Items = 25;
 
-	[MenuItem ("Addons/BVH Importer")]
+	[MenuItem ("Data Processing/BVH Importer")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(BVHImporter));
 		Scroll = Vector3.zero;

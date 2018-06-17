@@ -18,7 +18,7 @@ public class MotionTools : EditorWindow {
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
 
-	[MenuItem ("Addons/Motion Tools")]
+	[MenuItem ("Data Processing/Motion Tools")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(MotionTools));
 		Scroll = Vector3.zero;

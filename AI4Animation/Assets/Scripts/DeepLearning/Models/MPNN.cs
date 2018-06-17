@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace DeepLearning {
 
-	public class PMANN : NeuralNetwork {
+	public class MPNN : NeuralNetwork {
 
 		public enum VARIANT {Linear, Wave, Bar, Circle2D, Circle1D}
 

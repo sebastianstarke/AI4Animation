@@ -28,7 +28,7 @@ public class MotionExporter : EditorWindow {
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
 
-	[MenuItem ("Addons/Motion Exporter")]
+	[MenuItem ("Data Processing/Motion Exporter")]
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(MotionExporter));
 		Scroll = Vector3.zero;
