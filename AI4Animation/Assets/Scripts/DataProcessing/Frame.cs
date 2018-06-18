@@ -81,11 +81,20 @@ public class Frame {
 	}
 
 	public Vector3[] GetBoneVelocities(bool mirrored) {
+		List<Vector3> velocities = new List<Vector3>();
+		for(int i=0; i<World.Length; i++) {
+			if(Data.Source.Bones[i].Active) {
+				velocities.Add(GetBoneVelocity(i, mirrored));
+			}
+		}
+		return velocities.ToArray();
+		/*
 		Vector3[] velocities = new Vector3[World.Length];
 		for(int i=0; i<World.Length; i++) {
 			velocities[i] = GetBoneVelocity(i, mirrored);
 		}
 		return velocities;
+		*/
 	}
 
 	public Vector3 GetBoneVelocity(int index, bool mirrored) {
