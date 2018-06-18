@@ -587,6 +587,15 @@ public class MotionEditor : MonoBehaviour {
 								Target.GetData().Source.Bones[i].Alignment = EditorGUILayout.Vector3Field("", Target.GetData().Source.Bones[i].Alignment);
 								EditorGUILayout.EndHorizontal();
 							}
+							if(Utility.GUIButton("Copy Hierarchy", UltiDraw.DarkGrey, UltiDraw.White)) {
+								for(int i=0; i<Target.GetData().Source.Bones.Length; i++) {
+									if(Target.GetActor().FindBone(Target.GetData().Source.Bones[i].Name) != null) {
+										Target.GetData().Source.Bones[i].Active = true;
+									} else {
+										Target.GetData().Source.Bones[i].Active = false;
+									}
+								}
+							}
 							if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
 								Target.GetData().DetectSymmetry();
 							}

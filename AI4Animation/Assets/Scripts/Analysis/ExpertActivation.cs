@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using DeepLearning;
 using UnityEngine;
 
-public class BlendingActivation : MonoBehaviour {
+public class ExpertActivation : MonoBehaviour {
+
+	public enum MODE {Function, Bars, Graph}
+
+	public MODE Mode = MODE.Function;
 
 	public int Frames = 100;
 
@@ -38,31 +42,47 @@ public class BlendingActivation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
+		UltiDraw.Begin();
+
 		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
 			Values[i].Enqueue(NN.GetTensor("BY").GetValue(i, 0));
 		}
 
-		UltiDraw.Begin();
-		Vector2 center = new Vector2(X, Y);
-		float border = 0.0025f;
-		UltiDraw.DrawGUIRectangle(
-			center,
-			new Vector2(W+2f*border/Screen.width*Screen.height, H+2f*border),
-			UltiDraw.Black);
-		UltiDraw.DrawGUIRectangle(
-			center,
-			new Vector2(W, H),
-			UltiDraw.White);
+		switch(Mode) {
+			case MODE.Function:
+			Vector2 center = new Vector2(X, Y);
+			float border = 0.0025f;
+			UltiDraw.DrawGUIRectangle(
+				center,
+				new Vector2(W+2f*border/Screen.width*Screen.height, H+2f*border),
+				UltiDraw.Black);
+			UltiDraw.DrawGUIRectangle(
+				center,
+				new Vector2(W, H),
+				UltiDraw.White);
 
-		Color[] colors = UltiDraw.GetRainbowColors(Values.Length);
-		for(int i=0; i<colors.Length; i++) {
-			DrawControlPoint(center.x - W/2f, center.y + H/2f, W, H, Values[i], colors[i]);
+			Color[] colors = UltiDraw.GetRainbowColors(Values.Length);
+			for(int i=0; i<colors.Length; i++) {
+				DrawControlPoint(center.x - W/2f, center.y + H/2f, W, H, Values[i], colors[i]);
+			}
+			//for(int i=0; i<colors.Length; i++) {
+			//	Vector2 start = center - new Vector2(width/2f, -height/2f);
+			//	UltiDraw.DrawGUIRectangle(start + (float)i/(float)(colors.Length-1)*new Vector2(width, 0f), new Vector2(0.025f, 0.025f), colors[i]);
+			//}
+			break;
+			case MODE.Bars:
+
+			break;
+			case MODE.Graph:
+			UltiDraw.DrawGUIRectangle(new Vector2(X, Y), new Vector2(W, H), UltiDraw.Mustard);
+			for(int i=0; i<Values.Length; i++) {
+				float step = (float)i / (float)(Values.Length-1);
+				//UltiDraw.DrawGUICircle(new Vector2())
+			}
+			break;
 		}
-		//for(int i=0; i<colors.Length; i++) {
-		//	Vector2 start = center - new Vector2(width/2f, -height/2f);
-		//	UltiDraw.DrawGUIRectangle(start + (float)i/(float)(colors.Length-1)*new Vector2(width, 0f), new Vector2(0.025f, 0.025f), colors[i]);
-		//}
+
 		UltiDraw.End();
 	}
 

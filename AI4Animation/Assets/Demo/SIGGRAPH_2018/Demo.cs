@@ -131,7 +131,7 @@ namespace SIGGRAPH_2018 {
 		}
 
 		private void ApplyVisualisation() {
-			Character.GetComponent<BlendingActivation>().enabled = ExpertActivation;
+			Character.GetComponent<ExpertActivation>().enabled = ExpertActivation;
 			Character.GetComponent<TensorActivation>().enabled = NetworkWeights;
 			Character.GetComponent<FootfallPattern>().enabled = FootfallPattern;
 			Character.GetComponent<Actor>().DrawSkeleton = Skeleton;
