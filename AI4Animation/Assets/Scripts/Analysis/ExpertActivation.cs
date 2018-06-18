@@ -42,6 +42,9 @@ public class ExpertActivation : MonoBehaviour {
 	}
 
 	void OnRenderObject() {
+		if(!Application.isPlaying) {
+			return;
+		}
 		UltiDraw.Begin();
 
 		float[] values = new float[Values.Length];
@@ -83,7 +86,7 @@ public class ExpertActivation : MonoBehaviour {
 			UltiDraw.DrawGUICircle(pivot, W, UltiDraw.White);
 			Vector2[] anchors = new Vector2[Values.Length];
 			for(int i=0; i<Values.Length; i++) {
-				float step = (float)i / (float)(Values.Length-1);
+				float step = (float)i / (float)Values.Length;
 				anchors[i] = new Vector2((W-size)*Screen.height/Screen.width*Mathf.Cos(step*2f*Mathf.PI), (W-size)*Mathf.Sin(step*2f*Mathf.PI));
 				UltiDraw.DrawGUICircle(pivot + anchors[i], Mathf.Max(0.5f * size, Utility.Normalise(values[i], 0f, 1f, 0.5f, 1f) * size), UltiDraw.Black);
 			}
