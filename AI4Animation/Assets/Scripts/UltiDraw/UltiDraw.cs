@@ -506,13 +506,14 @@ public static class UltiDraw {
 	public static void DrawGUICircle(Vector2 center, float size, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
-		SetProgram(PROGRAM.TRIANGLE_STRIP);
+		SetProgram(PROGRAM.TRIANGLES);
 		GL.Color(color);
 		center.x *= Screen.width;
 		center.y *= Screen.height;
-		for(int i=0; i<CircleWire.Length; i++) {
+		for(int i=0; i<CircleWire.Length-1; i++) {
 			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x + size*CircleWire[i].x*Screen.width, center.y + size*CircleWire[i].y*Screen.width, Camera.nearClipPlane + GUIOffset)));
 			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x, center.y, Camera.nearClipPlane + GUIOffset)));
+			GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x + size*CircleWire[i+1].x*Screen.width, center.y + size*CircleWire[i+1].y*Screen.width, Camera.nearClipPlane + GUIOffset)));
 		}
 	}
 

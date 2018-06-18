@@ -44,9 +44,11 @@ public class ExpertActivation : MonoBehaviour {
 	void OnRenderObject() {
 		UltiDraw.Begin();
 
+		float[] values = new float[Values.Length];
 		for(int i=0; i<Values.Length; i++) {
+			values[i] = NN.GetTensor("BY").GetValue(i, 0);
 			Values[i].Dequeue();
-			Values[i].Enqueue(NN.GetTensor("BY").GetValue(i, 0));
+			Values[i].Enqueue(values[i]);
 		}
 
 		switch(Mode) {
@@ -75,11 +77,31 @@ public class ExpertActivation : MonoBehaviour {
 
 			break;
 			case MODE.Graph:
-			UltiDraw.DrawGUIRectangle(new Vector2(X, Y), new Vector2(W, H), UltiDraw.Mustard);
+			Vector2 pivot = new Vector2(X, Y);
+			float size = W / Values.Length;
+			UltiDraw.DrawGUICircle(pivot, W+size/2f, UltiDraw.Gold);
+			UltiDraw.DrawGUICircle(pivot, W, UltiDraw.White);
+			Vector2[] anchors = new Vector2[Values.Length];
 			for(int i=0; i<Values.Length; i++) {
 				float step = (float)i / (float)(Values.Length-1);
-				//UltiDraw.DrawGUICircle(new Vector2())
+				anchors[i] = new Vector2((W-size)*Screen.height/Screen.width*Mathf.Cos(step*2f*Mathf.PI), (W-size)*Mathf.Sin(step*2f*Mathf.PI));
+				UltiDraw.DrawGUICircle(pivot + anchors[i], Mathf.Max(0.5f * size, Utility.Normalise(values[i], 0f, 1f, 0.5f, 1f) * size), UltiDraw.Black);
 			}
+			Vector2[] positions = new Vector2[Frames];
+			for(int i=0; i<Values.Length; i++) {
+				int _index = 0;
+				foreach(float value in Values[i]) {
+					positions[_index] += value * anchors[i];
+					_index += 1;
+				}
+			}
+			for(int i=1; i<positions.Length; i++) {
+				UltiDraw.DrawGUILine(pivot + positions[i-1], pivot + positions[i], 0.1f * size, UltiDraw.Black.Transparent((float)(i+1)/(float)positions.Length));
+			}
+			for(int i=0; i<Values.Length; i++) {
+				UltiDraw.DrawGUILine(pivot + positions[positions.Length-1], pivot + anchors[i], 0.1f*size, UltiDraw.Black.Transparent(values[i]));
+			}
+			UltiDraw.DrawGUICircle(pivot + positions[positions.Length-1], 0.5f * size, UltiDraw.Purple);
 			break;
 		}
 
