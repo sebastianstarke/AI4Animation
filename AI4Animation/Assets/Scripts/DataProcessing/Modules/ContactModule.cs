@@ -281,8 +281,10 @@ public class ContactModule : Module {
 
 				//Sequences
 				for(int i=0; i<Module.Data.Sequences.Length; i++) {
-					float left = rect.x + (float)(Module.Data.Sequences[i].Start-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
-					float right = rect.x + (float)(Module.Data.Sequences[i].End-1)/(float)(Module.Data.GetTotalFrames()-1) * rect.width;
+					float _start = (float)(Mathf.Clamp(Module.Data.Sequences[i].Start, start, end)-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(Module.Data.Sequences[i].End, start, end)-start) / (float)elements;
+					float left = rect.x + _start * rect.width;
+					float right = rect.x + _end * rect.width;
 					Vector3 a = new Vector3(left, rect.y, 0f);
 					Vector3 b = new Vector3(right, rect.y, 0f);
 					Vector3 c = new Vector3(left, rect.y+rect.height, 0f);
@@ -290,7 +292,6 @@ public class ContactModule : Module {
 					UltiDraw.DrawTriangle(a, c, b, UltiDraw.Yellow.Transparent(0.25f));
 					UltiDraw.DrawTriangle(b, c, d, UltiDraw.Yellow.Transparent(0.25f));
 				}
-
 				//Current Pivot
 				top.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;

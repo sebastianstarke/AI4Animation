@@ -103,6 +103,10 @@ public class PhaseModule : Module {
 					Optimising = true;
 				}
 			}
+			if(Utility.GUIButton("Clear", UltiDraw.DarkGrey, UltiDraw.White)) {
+				RegularPhaseFunction.Clear();
+				InversePhaseFunction.Clear();
+			}
 		}
 		RegularPhaseFunction.Inspector(editor);
 		InversePhaseFunction.Inspector(editor);
@@ -135,6 +139,13 @@ public class PhaseModule : Module {
 				optimiser.Optimise();
 				yield return new WaitForSeconds(0f);
 			}
+		}
+
+		public void Clear() {
+			Phase = new float[Module.Data.GetTotalFrames()];
+			Keys = new bool[Module.Data.GetTotalFrames()];
+			Cycle = new float[Module.Data.GetTotalFrames()];
+			NormalisedCycle = new float[Module.Data.GetTotalFrames()];
 		}
 
 		public void ComputeVelocities() {
@@ -359,8 +370,8 @@ public class PhaseModule : Module {
 
 				//Sequences
 				for(int i=0; i<Module.Data.Sequences.Length; i++) {
-					float _start = (float)(Mathf.Clamp(Module.Data.Sequences[i].Start, start, end)-1-start) / (float)elements;
-					float _end = (float)(Mathf.Clamp(Module.Data.Sequences[i].End, start, end)-1-start) / (float)elements;
+					float _start = (float)(Mathf.Clamp(Module.Data.Sequences[i].Start, start, end)-start) / (float)elements;
+					float _end = (float)(Mathf.Clamp(Module.Data.Sequences[i].End, start, end)-start) / (float)elements;
 					float left = rect.x + _start * rect.width;
 					float right = rect.x + _end * rect.width;
 					Vector3 a = new Vector3(left, rect.y, 0f);
@@ -572,7 +583,7 @@ public class PhaseModule : Module {
 			}
 			Assign();
 		}
-		
+
 		public void Assign() {
 			for(int i=0; i<Function.Module.Data.GetTotalFrames(); i++) {
 				Function.Keys[i] = false;

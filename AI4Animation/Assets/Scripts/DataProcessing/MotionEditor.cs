@@ -302,6 +302,7 @@ public class MotionEditor : MonoBehaviour {
 		public string[] Names = new string[0];
 		public string NameFilter = "";
 		public bool ExportFilter = false;
+		public bool ExcludeFilter = false;
 
 		void Awake() {
 			Target = (MotionEditor)target;
@@ -353,6 +354,14 @@ public class MotionEditor : MonoBehaviour {
 					}
 				}
 			}
+			if(ExcludeFilter) {
+				for(int i=0; i<instances.Count; i++) {
+					if(instances[i].Data.Export) {
+						instances.RemoveAt(i);
+						i--;
+					}
+				}
+			}
 			Instances = instances.ToArray();
 			Names = new string[Instances.Length];
 			for(int i=0; i<Instances.Length; i++) {
@@ -371,6 +380,13 @@ public class MotionEditor : MonoBehaviour {
 		public void SetExportFilter(bool value) {
 			if(ExportFilter != value) {
 				ExportFilter = value;
+				ApplyFilter();
+			}
+		}
+
+		public void SetExcludeFilter(bool value) {
+			if(ExcludeFilter != value) {
+				ExcludeFilter = value;
 				ApplyFilter();
 			}
 		}
@@ -425,6 +441,7 @@ public class MotionEditor : MonoBehaviour {
 
 					SetNameFilter(EditorGUILayout.TextField("Name Filter", NameFilter));
 					SetExportFilter(EditorGUILayout.Toggle("Export Filter", ExportFilter));
+					SetExcludeFilter(EditorGUILayout.Toggle("Exclude Filter", ExcludeFilter));
 
 					if(Instances.Length == 0) {
 						LoadFile(-1);

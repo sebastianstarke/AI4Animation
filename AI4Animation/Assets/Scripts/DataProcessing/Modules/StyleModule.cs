@@ -171,8 +171,8 @@ public class StyleModule : Module {
 
 		//Sequences
 		for(int i=0; i<Data.Sequences.Length; i++) {
-			float _start = (float)(Mathf.Clamp(Data.Sequences[i].Start, start, end)-1-start) / (float)elements;
-			float _end = (float)(Mathf.Clamp(Data.Sequences[i].End, start, end)-1-start) / (float)elements;
+			float _start = (float)(Mathf.Clamp(Data.Sequences[i].Start, start, end)-start) / (float)elements;
+			float _end = (float)(Mathf.Clamp(Data.Sequences[i].End, start, end)-start) / (float)elements;
 			float left = rect.x + _start * rect.width;
 			float right = rect.x + _end * rect.width;
 			Vector3 a = new Vector3(left, rect.y, 0f);
