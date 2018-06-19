@@ -50,6 +50,11 @@ public class ExpertActivation : MonoBehaviour {
 		float[] values = new float[Values.Length];
 		for(int i=0; i<Values.Length; i++) {
 			values[i] = NN.GetTensor("BY").GetValue(i, 0);
+		}
+
+		//Utility.SoftMax(ref values);
+		
+		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
 			Values[i].Enqueue(values[i]);
 		}
@@ -81,14 +86,14 @@ public class ExpertActivation : MonoBehaviour {
 			break;
 			case MODE.Graph:
 			Vector2 pivot = new Vector2(X, Y);
-			float size = W / Values.Length;
-			UltiDraw.DrawGUICircle(pivot, W+size/2f, UltiDraw.Gold);
+			float radius = 0.2f * W;
+			UltiDraw.DrawGUICircle(pivot, W*1.05f, UltiDraw.Gold);
 			UltiDraw.DrawGUICircle(pivot, W, UltiDraw.White);
 			Vector2[] anchors = new Vector2[Values.Length];
 			for(int i=0; i<Values.Length; i++) {
 				float step = (float)i / (float)Values.Length;
-				anchors[i] = new Vector2((W-size)*Screen.height/Screen.width*Mathf.Cos(step*2f*Mathf.PI), (W-size)*Mathf.Sin(step*2f*Mathf.PI));
-				UltiDraw.DrawGUICircle(pivot + anchors[i], Mathf.Max(0.5f * size, Utility.Normalise(values[i], 0f, 1f, 0.5f, 1f) * size), UltiDraw.Black);
+				anchors[i] = new Vector2((W - radius/2f)*Screen.height/Screen.width*Mathf.Cos(step*2f*Mathf.PI), (W - radius/2f)*Mathf.Sin(step*2f*Mathf.PI));
+				UltiDraw.DrawGUICircle(pivot + anchors[i], Mathf.Max(0.5f * radius, Utility.Normalise(values[i], 0f, 1f, 0.5f, 1f) * radius), UltiDraw.Black);
 			}
 			Vector2[] positions = new Vector2[Frames];
 			for(int i=0; i<Values.Length; i++) {
@@ -99,12 +104,12 @@ public class ExpertActivation : MonoBehaviour {
 				}
 			}
 			for(int i=1; i<positions.Length; i++) {
-				UltiDraw.DrawGUILine(pivot + positions[i-1], pivot + positions[i], 0.1f * size, UltiDraw.Black.Transparent((float)(i+1)/(float)positions.Length));
+				UltiDraw.DrawGUILine(pivot + positions[i-1], pivot + positions[i], 0.1f * radius, UltiDraw.Black.Transparent((float)(i+1)/(float)positions.Length));
 			}
 			for(int i=0; i<Values.Length; i++) {
-				UltiDraw.DrawGUILine(pivot + positions[positions.Length-1], pivot + anchors[i], 0.1f*size, UltiDraw.Black.Transparent(values[i]));
+				UltiDraw.DrawGUILine(pivot + positions[positions.Length-1], pivot + anchors[i], 0.1f*radius, UltiDraw.Black.Transparent(values[i]));
 			}
-			UltiDraw.DrawGUICircle(pivot + positions[positions.Length-1], 0.5f * size, UltiDraw.Purple);
+			UltiDraw.DrawGUICircle(pivot + positions[positions.Length-1], 0.5f * radius, UltiDraw.Purple);
 			break;
 		}
 

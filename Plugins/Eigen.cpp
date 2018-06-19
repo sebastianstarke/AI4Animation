@@ -5,7 +5,7 @@
 # endif
 
 //#include "stdafx.h" //Use when compiling from Visual Studio
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 
 using namespace Eigen;
 extern "C" {
@@ -116,6 +116,32 @@ extern "C" {
 		}
 		for (int i = 0; i<rows; i++) {
 			(*T)(i, 0) /= frac;
+		}
+	}
+
+	EXPORT_API void LogSoftMax(MatrixXf* T) {
+		float frac = 0.0f;
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = std::exp((*T)(i, 0));
+			frac += (*T)(i, 0);
+		}
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = std::log((*T)(i, 0) / frac);
+		}
+	}
+
+	EXPORT_API void SoftSign(MatrixXf* T) {
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) /= 1 + std::abs((*T)(i, 0));
+		}
+	}
+
+	EXPORT_API void Exp(MatrixXf* T) {
+		int rows = (*T).rows();
+		for (int i = 0; i<rows; i++) {
+			(*T)(i, 0) = std::exp((*T)(i, 0));
 		}
 	}
 

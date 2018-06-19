@@ -155,7 +155,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			Utility.SoftMax(ref Trajectory.Points[i].Styles);
+			Utility.Normalise(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}

@@ -305,6 +305,7 @@ public class MotionEditor : MonoBehaviour {
 
 		void Awake() {
 			Target = (MotionEditor)target;
+			Target.Initialise();
 			ApplyFilter();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
@@ -333,6 +334,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		
 		private void ApplyFilter() {
+			Target.StopAnimation();
 			List<File> instances = new List<File>();
 			if(NameFilter == string.Empty) {
 				instances.AddRange(Target.Files);
@@ -376,15 +378,29 @@ public class MotionEditor : MonoBehaviour {
 		public void LoadFile(int index) {
 			if(Index != index) {
 				Index = index;
-				if(Index >= 0) {
-					Target.LoadFile(Target.Files[Instances[Index].Index]);
-				} else {
-					Target.LoadFile(null);
-				}
+				Target.LoadFile(Index >= 0 ? Target.Files[Instances[Index].Index] : null);
+			}
+		}
+
+		public void Import() {
+			Target.Import();
+			ApplyFilter();
+		}
+
+		public int GetIndex() {
+			if(Target.GetFile() == null) {
+				return -1;
+			}
+			if(Instances.Length == Target.Files.Length) {
+				return Target.GetFile().Index;
+			} else {
+				return System.Array.FindIndex(Instances, x => x == Target.GetFile());
 			}
 		}
 
 		public void Inspector() {
+			Index = GetIndex();
+
 			Utility.SetGUIColor(UltiDraw.DarkGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -396,7 +412,7 @@ public class MotionEditor : MonoBehaviour {
 					EditorGUILayout.BeginHorizontal();
 					Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
 					if(Utility.GUIButton("Import", UltiDraw.DarkGrey, UltiDraw.White)) {
-						Target.Import();
+						Import();
 					}
 					EditorGUILayout.EndHorizontal();
 
@@ -428,7 +444,6 @@ public class MotionEditor : MonoBehaviour {
 				}
 
 				if(Target.GetFile() != null) {
-					//Target.GetFile().Data.Inspector(Target);
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();

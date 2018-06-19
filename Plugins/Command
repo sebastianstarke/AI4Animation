@@ -1,1 +1,1 @@
-g++ -Wall -I ../../Eigen -fPIC -shared -O2 -o ../AI4Animation/Assets/Plugins/libEigen.so Eigen.cpp
+g++ -Wall -I Eigen -fPIC -shared -O2 -o ../AI4Animation/Assets/Plugins/libEigen.so Eigen.cpp

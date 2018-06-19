@@ -267,7 +267,7 @@ namespace SIGGRAPH_2018 {
 				for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 					Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Utility.Normalise(weight, 0f, 1f, Controller.Styles[j].Transition, 1f));
 				}
-				Utility.SoftMax(ref Trajectory.Points[i].Styles);
+				Utility.Normalise(ref Trajectory.Points[i].Styles);
 				Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 			}
 		}

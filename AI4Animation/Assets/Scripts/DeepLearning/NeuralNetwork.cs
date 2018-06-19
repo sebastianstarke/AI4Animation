@@ -149,6 +149,21 @@ namespace DeepLearning {
             return T;
         }
 
+        public Tensor LogSoftMax(Tensor T) {
+            Eigen.LogSoftMax(T.Ptr);
+            return T;
+        }
+
+        public Tensor SoftSign(Tensor T) {
+            Eigen.SoftSign(T.Ptr);
+            return T;
+        }
+
+        public Tensor Exp(Tensor T) {
+            Eigen.Exp(T.Ptr);
+            return T;
+        }
+
 	}
 
 	#if UNITY_EDITOR

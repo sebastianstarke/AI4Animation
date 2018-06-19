@@ -450,6 +450,30 @@ public static class Utility {
 		return sum;
 	}
 
+	public static int AbsSum(this int[] values) {
+		int sum = 0;
+		for(int i=0; i<values.Length; i++) {
+			sum += System.Math.Abs(values[i]);
+		}
+		return sum;
+	}
+
+	public static float AbsSum(this float[] values) {
+		float sum = 0f;
+		for(int i=0; i<values.Length; i++) {
+			sum += System.Math.Abs(values[i]);
+		}
+		return sum;
+	}
+
+	public static double AbsSum(this double[] values) {
+		double sum = 0.0;
+		for(int i=0; i<values.Length; i++) {
+			sum += System.Math.Abs(values[i]);
+		}
+		return sum;
+	}
+
 	public static int Min(this int[] values) {
 		if(values.Length == 0) {
 			return 0;
@@ -603,7 +627,8 @@ public static class Utility {
 		return System.Math.Sqrt(variance);
 	}
 
-	public static void SoftMax(ref float[] values) {
+	public static void Normalise(ref float[] values) {
+		/*
 		float min = values.Min();
 		float max = values.Max();
 		for(int i=0; i<values.Length; i++) {
@@ -617,6 +642,27 @@ public static class Utility {
         	for(int i=0; i<values.Length; i++) {
             	values[i] /= frac;
         	}
+		}
+		*/
+		float sum = 0f;
+		for(int i=0; i<values.Length; i++) {
+			sum += Mathf.Abs(values[i]);
+		}
+		if(sum != 0f) {
+			for(int i=0; i<values.Length; i++) {
+				values[i] = Mathf.Abs(values[i]) / sum;
+			}
+		}
+	}
+
+	public static void SoftMax(ref float[] values) {
+		float frac = 0f;
+		for(int i=0; i<values.Length; i++) {
+			values[i] = Mathf.Exp(values[i]);
+			frac += values[i];
+		}
+		for(int i=0; i<values.Length; i++) {
+			values[i] /= frac;
 		}
 	}
 

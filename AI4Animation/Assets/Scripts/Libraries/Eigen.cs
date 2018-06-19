@@ -58,4 +58,10 @@ public static class Eigen {
     public static extern void TanH(IntPtr T);
     [DllImport("Eigen")]
     public static extern void SoftMax(IntPtr T);
+    [DllImport("Eigen")]
+    public static extern void LogSoftMax(IntPtr T);
+    [DllImport("Eigen")]
+    public static extern void SoftSign(IntPtr T);
+    [DllImport("Eigen")]
+    public static extern void Exp(IntPtr T);
 }
