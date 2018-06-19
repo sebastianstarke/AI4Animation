@@ -356,8 +356,7 @@ public class MotionEditor : MonoBehaviour {
 			for(int i=0; i<Instances.Length; i++) {
 				Names[i] = Instances[i].Data.Name;
 			}
-			Index = 0;
-			Target.LoadFile(Instances.Length > 0 ? Instances[Index] : null);
+			LoadFile(Instances.Length > 0 ? 0 : -1);
 		}
 
 		public void SetNameFilter(string filter) {
@@ -374,11 +373,18 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 
-		public void Inspector() {
-			if(Target.GetFile() != null) {
-				Index = Target.GetFile().Index;
+		public void LoadFile(int index) {
+			if(Index != index) {
+				Index = index;
+				if(Index >= 0) {
+					Target.LoadFile(Target.Files[Instances[Index].Index]);
+				} else {
+					Target.LoadFile(null);
+				}
 			}
-			
+		}
+
+		public void Inspector() {
 			Utility.SetGUIColor(UltiDraw.DarkGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -405,21 +411,17 @@ public class MotionEditor : MonoBehaviour {
 					SetExportFilter(EditorGUILayout.Toggle("Export Filter", ExportFilter));
 
 					if(Instances.Length == 0) {
-						Target.LoadFile(null);
+						LoadFile(-1);
 						EditorGUILayout.LabelField("No data available.");
 					} else {
-						Index = EditorGUILayout.Popup("Data " + "(" + Instances.Length + ")", Index, Names);
-						Target.LoadFile(Target.Files[Instances[Index].Index]);
+						LoadFile(EditorGUILayout.Popup("Data " + "(" + Instances.Length + ")", Index, Names));
 						EditorGUILayout.BeginHorizontal();
-						Index = EditorGUILayout.IntSlider(Index+1, 1, Instances.Length)-1;
-						Target.LoadFile(Target.Files[Instances[Index].Index]);
+						LoadFile(EditorGUILayout.IntSlider(Index+1, 1, Instances.Length)-1);
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Index = Mathf.Max(Index-1, 0);
-							Target.LoadFile(Target.Files[Instances[Index].Index]);
+							LoadFile(Mathf.Max(Index-1, 0));
 						}
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Index = Mathf.Min(Index+1, Instances.Length-1);
-							Target.LoadFile(Target.Files[Instances[Index].Index]);
+							LoadFile(Mathf.Min(Index+1, Instances.Length-1));
 						}
 						EditorGUILayout.EndHorizontal();
 					}

@@ -85,6 +85,10 @@ public class MotionExporter : EditorWindow {
                         this.StartCoroutine(ExportData());
                     }
 
+					if(Utility.GUIButton("Export JSON", UltiDraw.DarkGrey, UltiDraw.White)) {
+						this.StartCoroutine(ExportJSON());
+					}
+
                     EditorGUILayout.BeginHorizontal();
                     if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
                         for(int i=0; i<Export.Length; i++) {
@@ -181,79 +185,92 @@ public class MotionExporter : EditorWindow {
 		return File.CreateText(filename+".txt");
 	}
 
-	private IEnumerator ExportInputLabels() {
-		MotionEditor editor = Editors[0];
-
+	private IEnumerator ExportJSON() {
 		Exporting = true;
-		
-		string name = "InputLabels";
-		string filename = string.Empty;
-		string folder = Application.dataPath + "/../../Export/";
-		if(!File.Exists(folder+name+".txt")) {
-			filename = folder+name;
-		} else {
-			int i = 1;
-			while(File.Exists(folder+name+" ("+i+").txt")) {
-				i += 1;
-			}
-			filename = folder+name+" ("+i+")";
-		}
-		StreamWriter file = File.CreateText(filename+".txt");
 
-		StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
-		PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
-		//ContactModule contactModule = editor.GetFile().Data.GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetFile().Data.GetModule(Module.TYPE.Contact);
-	
-		int index = 0;
-		for(int i=1; i<=12; i++) {
-			file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectorySpeed"+i); index += 1;
-			//for(int j=1; j<=StyleFilters.Length; j++) {
-			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
-			//}
-			if(styleModule != null) {
-				for(int j=1; j<=styleModule.Functions.Length; j++) {
-					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
+		for(int e=0; e<Editors.Length; e++) {
+			if(Export[e]) {
+				MotionEditor editor = Editors[e];
+
+				for(int i=0; i<editor.GetFiles().Length; i++) {
+					if(editor.Files[i].Data.Export) {
+						StreamWriter file = CreateFile(editor.Files[i].Data.Name);
+						file.Write(JsonUtility.ToJson(editor.Files[i].Data));
+						file.Close();
+					}
 				}
 			}
 		}
-		for(int i=0; i<editor.GetFile().Data.Source.Bones.Length; i++) {
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionX"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionY"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionZ"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardX"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardY"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardZ"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpX"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpY"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpZ"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityX"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityY"+(i+1)); index += 1;
-			file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityZ"+(i+1)); index += 1;
-		}
-
-		if(phaseModule != null) {
-			file.WriteLine(index + " " + "Phase"); index += 1;
-		}
-
-		/*
-		if(contactModule != null) {
-			for(int i=0; i<contactModule.Functions.Length; i++) {
-				file.WriteLine(index + " " + "Contact" + editor.GetFile().Data.Source.Bones[contactModule.Functions[i].Sensor].Name); index += 1;
-			}
-		}
-		*/
-
-		yield return new WaitForSeconds(0f);
-
-		file.Close();
 
 		Exporting = false;
+		yield return new WaitForSeconds(0f);
+	}
+
+	private IEnumerator ExportInputLabels() {
+		MotionEditor editor = Editors[0];
+
+		if(editor == null) {
+			Debug.Log("No editor found.");
+		} else {
+			Exporting = true;
+			
+			StreamWriter file = CreateFile("InputLabels");
+
+			StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
+			PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
+			//ContactModule contactModule = editor.GetFile().Data.GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetFile().Data.GetModule(Module.TYPE.Contact);
+		
+			int index = 0;
+			for(int i=1; i<=12; i++) {
+				file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+				file.WriteLine(index + " " + "TrajectorySpeed"+i); index += 1;
+				//for(int j=1; j<=StyleFilters.Length; j++) {
+				//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
+				//}
+				if(styleModule != null) {
+					for(int j=1; j<=styleModule.Functions.Length; j++) {
+						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
+					}
+				}
+			}
+			for(int i=0; i<editor.GetFile().Data.Source.Bones.Length; i++) {
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "PositionZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "ForwardZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "UpZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityX"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityY"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetFile().Data.Source.Bones[i].Name + "VelocityZ"+(i+1)); index += 1;
+			}
+
+			if(phaseModule != null) {
+				file.WriteLine(index + " " + "Phase"); index += 1;
+			}
+
+			/*
+			if(contactModule != null) {
+				for(int i=0; i<contactModule.Functions.Length; i++) {
+					file.WriteLine(index + " " + "Contact" + editor.GetFile().Data.Source.Bones[contactModule.Functions[i].Sensor].Name); index += 1;
+				}
+			}
+			*/
+
+			yield return new WaitForSeconds(0f);
+
+			file.Close();
+
+			Exporting = false;
+		}
 	}
 
 	private IEnumerator ExportOutputLabels() {
@@ -264,19 +281,7 @@ public class MotionExporter : EditorWindow {
 		} else {
 			Exporting = true;
 
-			string name = "OutputLabels";
-			string filename = string.Empty;
-			string folder = Application.dataPath + "/../../Export/";
-			if(!File.Exists(folder+name+".txt")) {
-				filename = folder+name;
-			} else {
-				int i = 1;
-				while(File.Exists(folder+name+" ("+i+").txt")) {
-					i += 1;
-				}
-				filename = folder+name+" ("+i+")";
-			}
-			StreamWriter file = File.CreateText(filename+".txt");
+			StreamWriter file = CreateFile("OutputLabels");
 
 			//StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 			PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
