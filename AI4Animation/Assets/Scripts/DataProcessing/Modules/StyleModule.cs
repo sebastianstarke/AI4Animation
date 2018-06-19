@@ -35,6 +35,10 @@ public class StyleModule : Module {
 	}
 
 	public void AddStyle(string name) {
+		if(System.Array.Exists(Functions, x => x.Name == name)) {
+			Debug.Log("Style with name " + name + " already exists.");
+			return;
+		}
 		ArrayExtensions.Add(ref Functions, new StyleFunction(this, name));
 	}
 
@@ -46,6 +50,8 @@ public class StyleModule : Module {
 		int index = System.Array.FindIndex(Functions, x => x.Name == name);
 		if(index >= 0) {
 			ArrayExtensions.RemoveAt(ref Functions, index);
+		} else {
+			Debug.Log("Style with name " + name + " does not exist.");
 		}
 	}
 
@@ -239,7 +245,7 @@ public class StyleModule : Module {
 
 	[System.Serializable]
 	public class StyleFunction {
-		StyleModule Module;
+		public StyleModule Module;
 		public string Name;
 		public float[] Values;
 		public bool[] Flags;

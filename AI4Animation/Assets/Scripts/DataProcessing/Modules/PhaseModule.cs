@@ -315,28 +315,6 @@ public class PhaseModule : Module {
 					SetPhase(frame, EditorGUILayout.Slider("Phase", GetPhase(frame), 0f, 1f));
 					EditorGUI.EndDisabledGroup();
 				}
-			
-				Utility.SetGUIColor(UltiDraw.LightGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					Vector2 phaseVector = Quaternion.AngleAxis(-GetPhase(frame)*360f, Vector3.forward) * Vector2.up;
-					EditorGUILayout.Vector2Field("Phase Vector", phaseVector);
-					EditorGUILayout.FloatField("Length", phaseVector.magnitude);
-				}
-
-				Utility.SetGUIColor(UltiDraw.LightGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					EditorGUILayout.FloatField("Phase Wave", Mathf.Sin(GetPhase(frame)*2f*Mathf.PI));
-				}
-
-				Utility.SetGUIColor(UltiDraw.LightGrey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-					Vector2 phaseBars = new Vector2(2f * Mathf.Abs(0.5f - GetPhase(frame)), 1f - 2f * Mathf.Abs(0.5f - GetPhase(frame)));
-					EditorGUILayout.Vector2Field("Phase Bar", phaseBars);
-					EditorGUILayout.FloatField("Length", phaseBars.magnitude);
-				}
 
 				if(IsKey(frame)) {
 					if(Utility.GUIButton("Unset Key", UltiDraw.Grey, UltiDraw.White)) {

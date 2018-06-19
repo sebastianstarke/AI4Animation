@@ -13,95 +13,25 @@ public class MotionEditor : MonoBehaviour {
 	public string Folder = string.Empty;
 	public File[] Files = new File[0];
 
-	public string NameFilter = "";
-	public bool ExportFilter = false;
-
 	//public bool ShowMotion = false;
 	public bool ShowMirror = false;
 	public bool ShowVelocities = false;
 	public bool ShowTrajectory = false;
 	public bool InspectSettings = false;
 
-	/*
-	private bool AutoFocus = false;
-	private float FocusHeight = 1f;
-	private float FocusOffset = 0f;
-	private float FocusDistance = 2.5f;
-	private float FocusAngle = 0f;
-	private float FocusSmoothing = 0.05f;
-	*/
-
 	private bool Playing = false;
 	private float Timescale = 1f;
 	private float Timestamp = 0f;
 	private float Window = 1f;
 
-	private MotionData[] Instances = new MotionData[0];
 	private Actor Actor = null;
 	private Transform Environment = null;
 	private State State = null;
 
-	private int ID = -1;
-
-	//public void VisualiseMotion(bool value) {
-	//	ShowMotion = value;
-	//}
-	public void VisualiseVelocities(bool value) {
-		ShowVelocities = value;
-	}
-	public void VisualiseTrajectory(bool value) {
-		ShowTrajectory = value;
-	}
-
-	/*
-	public void SetAutoFocus(bool value) {
-		if(AutoFocus != value) {
-			AutoFocus = value;
-			if(!AutoFocus) {
-				Vector3 position =  SceneView.lastActiveSceneView.camera.transform.position;
-				Quaternion rotation = Quaternion.Euler(0f, SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y, 0f);
-				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, 0f);
-			}
-		}
-	}
-	*/
+	private File Instance = null;
 
 	public float GetWindow() {
 		return GetFile() == null ? 0f : Window * GetFile().Data.GetTotalTime();
-	}
-
-	public void SetNameFilter(string filter) {
-		if(NameFilter != filter) {
-			NameFilter = filter;
-			ApplyFilter();
-		}
-	}
-
-	public void SetExportFilter(bool value) {
-		if(ExportFilter != value) {
-			ExportFilter = value;
-			ApplyFilter();
-		}
-	}
-
-	private void ApplyFilter() {
-		/*
-		List<MotionData> data = new List<MotionData>();
-		if(NameFilter == string.Empty) {
-			data.AddRange(Files);
-		} else {
-			
-			List<File> instances = new List<File>();
-			for(int i=0; i<Files.Length; i++) {
-				if(Files[i].Object.Name.ToLowerInvariant().Contains(Filter.ToLowerInvariant())) {
-					instances.Add(Files[i]);
-				}
-			}
-			Instances = instances.ToArray();
-			
-		}
-		Instances = data.ToArray();
-		*/
 	}
 
 	public void SetMirror(bool value) {
@@ -144,11 +74,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public File GetFile() {
-		if(ID >= 0 && ID < Files.Length) {
-			return Files[ID];
-		} else {
-			return null;
-		}
+		return Instance;
 	}
 
 	public State GetState() {
@@ -158,11 +84,12 @@ public class MotionEditor : MonoBehaviour {
 		return State;
 	}
 
-	public void Load() {
+	public void Import() {
 		string[] assets = AssetDatabase.FindAssets("t:MotionData", new string[1]{Folder});
 		List<File> files = new List<File>();
 		for(int i=0; i<assets.Length; i++) {
 			File file = new File();
+			file.Index = i;
 			file.Data = (MotionData)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(assets[i]), typeof(MotionData));
 			files.Add(file);
 		}
@@ -182,16 +109,13 @@ public class MotionEditor : MonoBehaviour {
 		}
 		//Finalise
 		for(int i=0; i<Files.Length; i++) {
-			Files[i].Environment.gameObject.SetActive(i == ID);
+			Files[i].Environment.gameObject.SetActive(false);
 			Files[i].Environment.SetSiblingIndex(i);
 		}
-		//Initialise
-		if(GetFile() != null) {
-			LoadFrame(0f);
-		}
+		Initialise();
 	}
 
-	public void Cleanup() {
+	public void Initialise() {
 		for(int i=0; i<Files.Length; i++) {
 			if(Files[i].Data == null) {
 				Utility.Destroy(Files[i].Environment.gameObject);
@@ -199,14 +123,9 @@ public class MotionEditor : MonoBehaviour {
 				i--;
 			}
 		}
-	}
-
-	public void SaveAll() {
-		for(int i=0; i<Files.Length; i++) {
-			EditorUtility.SetDirty(Files[i].Data);
+		if(Files.Length > 0) {
+			LoadFile(Files[0]);
 		}
-		AssetDatabase.SaveAssets();
-		AssetDatabase.Refresh();
 	}
 	
 	public void Save(File file) {
@@ -217,26 +136,18 @@ public class MotionEditor : MonoBehaviour {
 		}
 	}
 
-	public void LoadFile(int id) {
-		if(ID != id) {
-			if(ID >= 0) {
-				Files[ID].Environment.gameObject.SetActive(false);
-				Save(Files[ID]);
+	public void LoadFile(File file) {
+		if(Instance != file) {
+			if(Instance != null) {
+				Instance.Environment.gameObject.SetActive(false);
+				Save(Instance);
 			}
-			ID = id;
-			if(ID >= 0) {
-				Files[ID].Environment.gameObject.SetActive(true);
+			Instance = file;
+			if(Instance != null) {
+				Instance.Environment.gameObject.SetActive(true);
 				LoadFrame(0f);
 			}
 		}
-	}
-
-	public void LoadPreviousFile() {
-		LoadFile(Mathf.Max(ID-1, 0));
-	}
-
-	public void LoadNextFile() {
-		LoadFile(Mathf.Min(ID+1, Files.Length-1));
 	}
 
 	public void LoadFrame(State state) {
@@ -254,23 +165,6 @@ public class MotionEditor : MonoBehaviour {
 			GetActor().Bones[i].Transform.position = GetState().BoneTransformations[i].GetPosition();
 			GetActor().Bones[i].Transform.rotation = GetState().BoneTransformations[i].GetRotation();
 		}
-
-		/*
-		if(AutoFocus) {
-			if(SceneView.lastActiveSceneView != null) {
-				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
-				Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-				Vector3 position = GetState().Root.GetPosition();
-				position.y += FocusHeight;
-				Quaternion rotation = GetState().Root.GetRotation();
-				rotation.x = 0f;
-				rotation.z = 0f;
-				rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
-				position += FocusOffset * (rotation * Vector3.right);
-				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
-			}
-		}
-		*/
 	}
 
 	public void LoadFrame(float timestamp) {
@@ -316,17 +210,6 @@ public class MotionEditor : MonoBehaviour {
 			LoadFrame(Timestamp);
 			yield return new WaitForSeconds(0f);
 		}
-
-		/*
-		while(Data != null) {
-			int next = Data.GetFrame(Timestamp).Index+1;
-			if(next > Data.GetTotalFrames()) {
-				next = 1;
-			}
-			LoadFrame(next);
-			yield return new WaitForSeconds(0f);
-		}
-		*/
 	}
 
 	public Actor CreateSkeleton() {
@@ -401,6 +284,7 @@ public class MotionEditor : MonoBehaviour {
 
 	[System.Serializable]
 	public class File {
+		public int Index;
 		public MotionData Data;
 		public Transform Environment;
 	}
@@ -410,22 +294,25 @@ public class MotionEditor : MonoBehaviour {
 
 		public MotionEditor Target;
 
-		private string[] Names = new string[0];
-
 		private float RefreshRate = 30f;
 		private System.DateTime Timestamp;
 
+		public int Index = 0;
+		public File[] Instances = new File[0];
+		public string[] Names = new string[0];
+		public string NameFilter = "";
+		public bool ExportFilter = false;
+
 		void Awake() {
 			Target = (MotionEditor)target;
-			Target.Cleanup();
-			GenerateNames();
+			ApplyFilter();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
 
 		void OnDestroy() {
 			if(!Application.isPlaying && Target != null) {
-				Target.Save(Target.Files[Target.ID]);
+				Target.Save(Target.GetFile());
 			}
 			EditorApplication.update -= EditorUpdate;
 		}
@@ -445,14 +332,52 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 		
-		public void GenerateNames() {
-			Names = new string[Target.Files.Length];
-			for(int i=0; i<Target.Files.Length; i++) {
-				Names[i] = Target.Files[i].Data.Name;
+		private void ApplyFilter() {
+			List<File> instances = new List<File>();
+			if(NameFilter == string.Empty) {
+				instances.AddRange(Target.Files);
+			} else {
+				for(int i=0; i<Target.Files.Length; i++) {
+					if(Target.Files[i].Data.Name.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant())) {
+						instances.Add(Target.Files[i]);
+					}
+				}
+			}
+			if(ExportFilter) {
+				for(int i=0; i<instances.Count; i++) {
+					if(!instances[i].Data.Export) {
+						instances.RemoveAt(i);
+						i--;
+					}
+				}
+			}
+			Instances = instances.ToArray();
+			Names = new string[Instances.Length];
+			for(int i=0; i<Instances.Length; i++) {
+				Names[i] = Instances[i].Data.Name;
+			}
+			Index = 0;
+			Target.LoadFile(Instances.Length > 0 ? Instances[Index] : null);
+		}
+
+		public void SetNameFilter(string filter) {
+			if(NameFilter != filter) {
+				NameFilter = filter;
+				ApplyFilter();
+			}
+		}
+
+		public void SetExportFilter(bool value) {
+			if(ExportFilter != value) {
+				ExportFilter = value;
+				ApplyFilter();
 			}
 		}
 
 		public void Inspector() {
+			if(Target.GetFile() != null) {
+				Index = Target.GetFile().Index;
+			}
 			
 			Utility.SetGUIColor(UltiDraw.DarkGrey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -461,20 +386,14 @@ public class MotionEditor : MonoBehaviour {
 				Utility.SetGUIColor(UltiDraw.LightGrey);
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					Utility.ResetGUIColor();
-					
-					EditorGUILayout.IntField("ID", Target.ID);
-					EditorGUILayout.IntField("Files", Target.Files.Length);
 
 					EditorGUILayout.BeginHorizontal();
 					Target.Folder = EditorGUILayout.TextField("Folder", "Assets/" + Target.Folder.Substring(Mathf.Min(7, Target.Folder.Length)));
-					if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
-						Target.Load();
-						GenerateNames();
+					if(Utility.GUIButton("Import", UltiDraw.DarkGrey, UltiDraw.White)) {
+						Target.Import();
 					}
 					EditorGUILayout.EndHorizontal();
 
-					Target.SetNameFilter(EditorGUILayout.TextField("Name Filter", Target.NameFilter));
-					Target.SetExportFilter(EditorGUILayout.Toggle("Export Filter", Target.ExportFilter));
 
 					Utility.SetGUIColor(Target.GetActor() == null ? UltiDraw.DarkRed : UltiDraw.White);
 					Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.GetActor(), typeof(Actor), true);
@@ -482,44 +401,29 @@ public class MotionEditor : MonoBehaviour {
 
 					EditorGUILayout.ObjectField("Environment", Target.GetEnvironment(), typeof(Transform), true);
 
-					EditorGUILayout.BeginHorizontal();
-					if(Target.Files.Length == 0) {
-						Target.LoadFile(-1);
+					SetNameFilter(EditorGUILayout.TextField("Name Filter", NameFilter));
+					SetExportFilter(EditorGUILayout.Toggle("Export Filter", ExportFilter));
+
+					if(Instances.Length == 0) {
+						Target.LoadFile(null);
 						EditorGUILayout.LabelField("No data available.");
 					} else {
-						Target.LoadFile(EditorGUILayout.Popup("Data " + "(" + Target.Files.Length + ")", Target.ID, Names));
-						Target.LoadFile(EditorGUILayout.IntSlider(Target.ID+1, 1, Target.Files.Length)-1);
+						Index = EditorGUILayout.Popup("Data " + "(" + Instances.Length + ")", Index, Names);
+						Target.LoadFile(Target.Files[Instances[Index].Index]);
+						EditorGUILayout.BeginHorizontal();
+						Index = EditorGUILayout.IntSlider(Index+1, 1, Instances.Length)-1;
+						Target.LoadFile(Target.Files[Instances[Index].Index]);
 						if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.LoadPreviousFile();
+							Index = Mathf.Max(Index-1, 0);
+							Target.LoadFile(Target.Files[Instances[Index].Index]);
 						}
 						if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White)) {
-							Target.LoadNextFile();
+							Index = Mathf.Min(Index+1, Instances.Length-1);
+							Target.LoadFile(Target.Files[Instances[Index].Index]);
 						}
+						EditorGUILayout.EndHorizontal();
 					}
-					EditorGUILayout.EndHorizontal();
 				}
-
-				/*
-				Utility.SetGUIColor(UltiDraw.Grey);
-				using(new EditorGUILayout.VerticalScope ("Box")) {
-					Utility.ResetGUIColor();
-
-					Utility.SetGUIColor(UltiDraw.Cyan);
-					using(new EditorGUILayout.VerticalScope ("Box")) {
-						Utility.ResetGUIColor();
-						EditorGUILayout.LabelField("Camera");
-					}
-
-					if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-						Target.SetAutoFocus(!Target.AutoFocus);
-					}
-					Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
-					Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
-					Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
-					Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
-					Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
-				}
-				*/
 
 				if(Target.GetFile() != null) {
 					//Target.GetFile().Data.Inspector(Target);
@@ -533,6 +437,7 @@ public class MotionEditor : MonoBehaviour {
 							Utility.ResetGUIColor();
 							EditorGUILayout.BeginHorizontal();
 							GUILayout.FlexibleSpace();
+							EditorGUILayout.LabelField(Target.GetFile().Data.Name, GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Frames: " + Target.GetFile().Data.GetTotalFrames(), GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Time: " + Target.GetFile().Data.GetTotalTime().ToString("F3") + "s", GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Framerate: " + Target.GetFile().Data.Framerate.ToString("F1") + "Hz", GUILayout.Width(130f));
@@ -666,23 +571,6 @@ public class MotionEditor : MonoBehaviour {
 									}
 									GUILayout.FlexibleSpace();
 									EditorGUILayout.EndHorizontal();
-
-									/*
-									for(int s=0; s<Target.GetFile().Data.Styles.Length; s++) {
-										EditorGUILayout.BeginHorizontal();
-										GUILayout.FlexibleSpace();
-										EditorGUILayout.LabelField(Target.GetFile().Data.Styles[s], GUILayout.Width(50f));
-										EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
-										Target.GetFile().Data.Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetFile().Data.Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
-										EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
-										Target.GetFile().Data.Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetFile().Data.Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
-										GUILayout.FlexibleSpace();
-										EditorGUILayout.EndHorizontal();
-									}
-									*/
-									//for(int c=0; c<Target.GetFile().Data.Sequences[i].Copies.Length; c++) {
-									//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetFile().Data.Sequences[i].Copies[c].Start + " End: " + Target.GetFile().Data.Sequences[i].Copies[c].End);
-									//}
 								}
 							}
 						}
@@ -695,3 +583,81 @@ public class MotionEditor : MonoBehaviour {
 
 }
 #endif
+
+
+	/*
+	private bool AutoFocus = false;
+	private float FocusHeight = 1f;
+	private float FocusOffset = 0f;
+	private float FocusDistance = 2.5f;
+	private float FocusAngle = 0f;
+	private float FocusSmoothing = 0.05f;
+	*/
+
+	/*
+	public void SetAutoFocus(bool value) {
+		if(AutoFocus != value) {
+			AutoFocus = value;
+			if(!AutoFocus) {
+				Vector3 position =  SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion rotation = Quaternion.Euler(0f, SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y, 0f);
+				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, 0f);
+			}
+		}
+	}
+
+
+		
+		if(AutoFocus) {
+			if(SceneView.lastActiveSceneView != null) {
+				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+				Vector3 position = GetState().Root.GetPosition();
+				position.y += FocusHeight;
+				Quaternion rotation = GetState().Root.GetRotation();
+				rotation.x = 0f;
+				rotation.z = 0f;
+				rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+				position += FocusOffset * (rotation * Vector3.right);
+				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
+			}
+		}
+		
+				
+				Utility.SetGUIColor(UltiDraw.Grey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+
+					Utility.SetGUIColor(UltiDraw.Cyan);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.LabelField("Camera");
+					}
+
+					if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+						Target.SetAutoFocus(!Target.AutoFocus);
+					}
+					Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+					Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
+					Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+					Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+					Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+				}
+
+									
+									for(int s=0; s<Target.GetFile().Data.Styles.Length; s++) {
+										EditorGUILayout.BeginHorizontal();
+										GUILayout.FlexibleSpace();
+										EditorGUILayout.LabelField(Target.GetFile().Data.Styles[s], GUILayout.Width(50f));
+										EditorGUILayout.LabelField("Style Copies", GUILayout.Width(100f));
+										Target.GetFile().Data.Sequences[i].SetStyleCopies(s, EditorGUILayout.IntField(Target.GetFile().Data.Sequences[i].StyleCopies[s], GUILayout.Width(100f)));
+										EditorGUILayout.LabelField("Transition Copies", GUILayout.Width(100f));
+										Target.GetFile().Data.Sequences[i].SetTransitionCopies(s, EditorGUILayout.IntField(Target.GetFile().Data.Sequences[i].TransitionCopies[s], GUILayout.Width(100f)));
+										GUILayout.FlexibleSpace();
+										EditorGUILayout.EndHorizontal();
+									}
+									
+									//for(int c=0; c<Target.GetFile().Data.Sequences[i].Copies.Length; c++) {
+									//	EditorGUILayout.LabelField("Copy " + (c+1) + " - " + "Start: " + Target.GetFile().Data.Sequences[i].Copies[c].Start + " End: " + Target.GetFile().Data.Sequences[i].Copies[c].End);
+									//}
+	*/

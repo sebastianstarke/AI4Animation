@@ -33,6 +33,10 @@ public class MotionExporter : EditorWindow {
 		Window = EditorWindow.GetWindow(typeof(MotionExporter));
 		Scroll = Vector3.zero;
 	}
+
+	void Awake() {
+		Load();
+	}
 	
 	public void OnInspectorUpdate() {
 		Repaint();
@@ -334,12 +338,10 @@ public class MotionExporter : EditorWindow {
 		for(int e=0; e<Editors.Length; e++) {
 			if(Export[e]) {
 				MotionEditor editor = Editors[e];
-				editor.VisualiseTrajectory(true);
-				editor.VisualiseVelocities(true);
 				int items = 0;
 				for(int i=0; i<editor.GetFiles().Length; i++) {
 					if(editor.Files[i].Data.Export) {
-						editor.LoadFile(i);
+						editor.LoadFile(editor.Files[i]);
 
 						//StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 						PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);

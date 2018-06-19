@@ -265,22 +265,32 @@ public class MotionTools : EditorWindow {
 				//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
 				//Data[i].RootSmoothing = 10;
 
-				//Data[i].AddModule(DataModule.TYPE.Style);
-				//Data[i].AddModule(DataModule.TYPE.Phase);
-				//StyleModule style = (StyleModule)Data[i].GetModule(DataModule.TYPE.Style);
+				//Data[i].AddModule(Module.TYPE.Style);
+				//Data[i].AddModule(Module.TYPE.Phase);
+				//StyleModule style = (StyleModule)Data[i].GetModule(Module.TYPE.Style);
 				//style.Inspect = false;
 				//style.AddStyle("Idle");
 				//style.AddStyle("Walk");
 				//style.AddStyle("Run");
 				//style.AddStyle("Crouch");
-				//PhaseModule phase = (PhaseModule)Data[i].GetModule(DataModule.TYPE.Phase);
+				//PhaseModule phase = (PhaseModule)Data[i].GetModule(Module.TYPE.Phase);
 				//phase.Inspect = false;
 				//phase.ToggleVariable(Data[i].Source.FindBone("RightToeSite").Index);
 				//Data[i].Sequences[0].Start = 62;
 				//Data[i].Sequences[0].End = Data[i].GetTotalFrames();
 
+				StyleModule style = (StyleModule)Data[i].GetModule(Module.TYPE.Style);
+				//style.AddStyle("Jump");
+				//style.Inspect = true;
+				for(int j=0; j<style.Functions.Length; j++) {
+					style.Functions[j].Module = style;
+				}
+
+				ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
+				//contact.Inspect = false;
 				
-				//Data[i].AddModule(DataModule.TYPE.Contact);
+				//Data[i].AddModule(Module.TYPE.Contact);
+				/*
 				ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
 				contact.Inspect = true;
 				for(int j=0; j<contact.Functions.Length; j++) {
@@ -288,6 +298,7 @@ public class MotionTools : EditorWindow {
 					contact.Functions[j].SetVelocityThreshold(1f);
 					contact.Functions[j].SetFilterWidth(10);
 				}
+				*/
 
 				//for(int b=0; b<Data[i].Source.Bones.Length; b++) {
 				//	Data[i].Source.Bones[b].Active = true;

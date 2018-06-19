@@ -155,7 +155,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			//Utility.SoftMax(ref Trajectory.Points[i].Styles);
+			Utility.SoftMax(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}
@@ -238,8 +238,8 @@ public class BioAnimation : MonoBehaviour {
 		//Update Root
 		Vector3 translationalOffset = Vector3.zero;
 		float rotationalOffset = 0f;
-		//float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
-		float rest = 1f;
+		float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+		//float rest = 1f;
 		Vector3 rootMotion = new Vector3(NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 0), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 1), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 2));
 		rootMotion /= Framerate;
 		translationalOffset = rest * new Vector3(rootMotion.x, 0f, rootMotion.z);
