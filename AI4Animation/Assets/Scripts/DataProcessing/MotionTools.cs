@@ -53,10 +53,6 @@ public class MotionTools : EditorWindow {
 				}
 
 				/*
-				if(Utility.GUIButton("Verify Data", UltiDraw.DarkGrey, UltiDraw.White)) {
-					VerifyData();
-				}
-
 				if(Utility.GUIButton("Examine Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 					ExamineData();
 				}
@@ -69,10 +65,6 @@ public class MotionTools : EditorWindow {
 				if(Utility.GUIButton("Batch Process", UltiDraw.DarkGrey, UltiDraw.White)) {
 					BatchProcess();
 				}
-
-				//if(Utility.GUIButton("Print Velocity Profiles", UltiDraw.DarkGrey, UltiDraw.White)) {
-				//	PrintVelocityProfiles();
-				//}
 
 				EditorGUILayout.BeginHorizontal();
 				if(Utility.GUIButton("Enable All", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -109,46 +101,8 @@ public class MotionTools : EditorWindow {
 		EditorGUILayout.EndScrollView();
 	}
 
-	private void VerifyData() {
-		/*
-		int errors = 0;
-
-		//Default Values
-		MotionData.AXIS mirrorAxis = Data[0].MirrorAxis;
-		LayerMask groundMask = Data[0].GroundMask;
-		LayerMask objectMask = Data[0].ObjectMask;
-		//
-
-		for(int i=0; i<Data.Length; i++) {
-			if(Active[i]) {
-				for(int f=0; f<Data[i].GetTotalFrames(); f++) {
-					float style = 0f;
-					for(int s=0; s<Data[i].Frames[f].StyleValues.Length; s++) {
-						style += Data[i].Frames[f].StyleValues[s];
-					}
-					if(style != 1f) {
-						Debug.Log("One-hot failed in file " + Data[i].name + " at frame " + (f+1) + "!");
-						errors += 1;
-					}
-				}
-
-				if(Data[i].MirrorAxis != mirrorAxis) {
-					errors += 1;
-				}
-				if(Data[i].GroundMask != groundMask) {
-					errors += 1;
-				}
-				if(Data[i].ObjectMask != objectMask) {
-					errors += 1;
-				}
-			}
-		}
-		Debug.Log("Errors: " + errors);
-		*/
-	}
-
+	/*
 	private void ExamineData() {
-		/*
 		int sequences = 0;
 		int frames = 0;
 		int[] styles = new int[Data[0].Styles.Length];
@@ -184,9 +138,10 @@ public class MotionTools : EditorWindow {
 		for(int i=0; i<styles.Length; i++) {
 			Debug.Log(Data[0].Styles[i] + " -> " + (float)styles[i] / (float)frames + "%" + " (" + styles[i] + " frames; " + (float)styles[i]/(float)Data[0].Framerate + "s)");
 		}
-		*/
 	}
+	*/
 
+	/*
 	private void SearchStyle() {
 		/*
 		int style = System.Array.FindIndex(Data[0].Styles, x => x == "Sit");
@@ -199,8 +154,8 @@ public class MotionTools : EditorWindow {
 				}
 			}
 		}
-		*/
 	}
+	*/
 
 	private void BatchProcess() {
         for(int i=0; i<Editors.Length; i++) {
@@ -254,51 +209,11 @@ public class MotionTools : EditorWindow {
 					//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
 					//Data[i].RootSmoothing = 10;
 
-					//Data[i].AddModule(Module.TYPE.Style);
-					//Data[i].AddModule(Module.TYPE.Phase);
-					//StyleModule style = (StyleModule)Data[i].GetModule(Module.TYPE.Style);
-					//style.Inspect = false;
-					//style.AddStyle("Idle");
-					//style.AddStyle("Walk");
-					//style.AddStyle("Run");
-					//style.AddStyle("Crouch");
-					//PhaseModule phase = (PhaseModule)Data[i].GetModule(Module.TYPE.Phase);
-					//phase.Inspect = false;
-					//phase.ToggleVariable(Data[i].Source.FindBone("RightToeSite").Index);
-					//Data[i].Sequences[0].Start = 62;
-					//Data[i].Sequences[0].End = Data[i].GetTotalFrames();
-
-					//StyleModule style = (StyleModule)Data[i].GetModule(Module.TYPE.Style);
-					//style.AddStyle("Jump");
-					//style.Inspect = true;
-					//for(int j=0; j<style.Functions.Length; j++) {
-				//		style.Functions[j].Module = style;
-				//	}
-
-				//	ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
-					//contact.Inspect = false;
-					
-					//Data[i].AddModule(Module.TYPE.Contact);
-					/*
-					ContactModule contact = (ContactModule)Data[i].GetModule(ContactModule.TYPE.Contact);
-					contact.Inspect = true;
-					for(int j=0; j<contact.Functions.Length; j++) {
-						contact.Functions[j].SetDistanceThreshold(0.025f);
-						contact.Functions[j].SetVelocityThreshold(1f);
-						contact.Functions[j].SetFilterWidth(10);
-					}
-					*/
-
-					//for(int b=0; b<Data[i].Source.Bones.Length; b++) {
-					//	Data[i].Source.Bones[b].Active = true;
-					//}
-
-					//data.Export = false;
-
-					//data.AddModule(Module.TYPE.Style);
-					//data.AddModule(Module.TYPE.Phase);
-					PhaseModule phaseModule = (PhaseModule)data.GetModule(Module.TYPE.Phase);
-					phaseModule.ToggleVariable(5);
+					//PhaseModule phaseModule = (PhaseModule)data.GetModule(Module.TYPE.Phase);
+					//phaseModule.ToggleVariable(5);
+					StyleModule styleModule = (StyleModule)data.GetModule(Module.TYPE.Style);
+					styleModule.RemoveStyle("ArmedPassive");
+					styleModule.RemoveStyle("ArmedActive");
 					EditorUtility.SetDirty(data);
 				}
             }
