@@ -251,7 +251,8 @@ public class MotionExporter : EditorWindow {
 		}
 
 		if(phaseModule != null) {
-			file.WriteLine(index + " " + "Phase"); index += 1;
+			file.WriteLine(index + " " + "PhaseX"); index += 1;
+			file.WriteLine(index + " " + "PhaseY"); index += 1;
 		}
 
 		/*
