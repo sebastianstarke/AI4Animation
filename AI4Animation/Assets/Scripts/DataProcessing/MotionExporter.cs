@@ -253,6 +253,7 @@ public class MotionExporter : EditorWindow {
 		if(phaseModule != null) {
 			file.WriteLine(index + " " + "PhaseX"); index += 1;
 			file.WriteLine(index + " " + "PhaseY"); index += 1;
+			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
 		}
 
 		/*
@@ -414,8 +415,10 @@ public class MotionExporter : EditorWindow {
 											inputLine += FormatVector3(velocity);
 										}
 										if(phaseModule != null) {
-											float phase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-											inputLine += FormatVector2(GetCirclePhase(phase));
+											float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
+											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+											inputLine += FormatVector2(GetCirclePhase(currentPhase));
+											inputLine += FormatValue(GetLinearPhaseUpdate(previousPhase, currentPhase));
 										}
 										/*
 										if(contactModule != null) {

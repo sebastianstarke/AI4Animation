@@ -212,8 +212,7 @@ public class MotionTools : EditorWindow {
 					//PhaseModule phaseModule = (PhaseModule)data.GetModule(Module.TYPE.Phase);
 					//phaseModule.ToggleVariable(5);
 					StyleModule styleModule = (StyleModule)data.GetModule(Module.TYPE.Style);
-					styleModule.RemoveStyle("ArmedPassive");
-					styleModule.RemoveStyle("ArmedActive");
+					System.Array.Find(styleModule.Functions, x => x.Name == "Run").Name = "Jog";
 					EditorUtility.SetDirty(data);
 				}
             }
