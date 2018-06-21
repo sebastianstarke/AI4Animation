@@ -88,7 +88,7 @@ public class Controller {
 
 		public bool Query() {
 			if(Keys.Length == 0) {
-				return false;
+				return true;
 			}
 
 			bool active = false;

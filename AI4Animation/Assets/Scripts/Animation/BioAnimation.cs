@@ -50,6 +50,9 @@ public class BioAnimation : MonoBehaviour {
 	private const int RootPointIndex = 60;
 	private const int PointDensity = 10;
 
+	//GUI
+	private GUIStyle FontStyle;
+
 	void Reset() {
 		Controller = new Controller();
 	}
@@ -86,6 +89,10 @@ public class BioAnimation : MonoBehaviour {
 
 	void Start() {
 		Utility.SetFPS(60);
+		FontStyle = new GUIStyle();
+		FontStyle.font = (Font)Resources.Load("Fonts/Coolvetica");
+		FontStyle.normal.textColor = Color.white;
+		FontStyle.alignment = TextAnchor.MiddleCenter;
 	}
 
 	public Trajectory GetTrajectory() {
@@ -118,7 +125,7 @@ public class BioAnimation : MonoBehaviour {
 		//Update Target Direction / Velocity / Correction
 		TargetDirection = Vector3.Lerp(TargetDirection, Quaternion.AngleAxis(turn * 60f, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection(), control ? TargetGain : TargetDecay);
 		TargetVelocity = Vector3.Lerp(TargetVelocity, bias * (Quaternion.LookRotation(TargetDirection, Vector3.up) * move).normalized, control ? TargetGain : TargetDecay);
-		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, 0.25f * Mathf.Max(move.normalized.magnitude, Mathf.Abs(turn)), control ? TargetGain : TargetDecay);
+		TrajectoryCorrection = Utility.Interpolate(TrajectoryCorrection, Mathf.Max(move.normalized.magnitude, Mathf.Abs(turn)), control ? TargetGain : TargetDecay);
 
 		//Predict Future Trajectory
 		Vector3[] trajectory_positions_blend = new Vector3[Trajectory.Points.Length];
@@ -155,7 +162,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			Utility.Normalise(ref Trajectory.Points[i].Styles);
+			//Utility.Normalise(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}
@@ -238,8 +245,8 @@ public class BioAnimation : MonoBehaviour {
 		//Update Root
 		Vector3 translationalOffset = Vector3.zero;
 		float rotationalOffset = 0f;
-		float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
-		//float rest = 1f;
+		//float rest = Mathf.Pow(1f - Trajectory.Points[RootPointIndex].Styles[0], 0.25f);
+		float rest = 1f;
 		Vector3 rootMotion = new Vector3(NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 0), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 1), NN.GetOutput(TrajectoryDimOut*6 + JointDimOut*Actor.Bones.Length + 2));
 		rootMotion /= Framerate;
 		translationalOffset = rest * new Vector3(rootMotion.x, 0f, rootMotion.z);
@@ -392,7 +399,21 @@ public class BioAnimation : MonoBehaviour {
 		if(NN.Parameters == null) {
 			return;
 		}
-		
+		FontStyle.fontSize = Mathf.RoundToInt(0.0125f * Screen.width);
+
+		float[] style = Trajectory.Points[RootPointIndex].Styles;
+		//Color[] colors = UltiDraw.GetRainbowColors(style.Length);
+		Rect center = Utility.GetGUIRect(0.25f, 0.05f, 0.5f + 0.5f / style.Length, 0.15f);
+		GUI.Box(center, "");
+		for(int i=0; i<style.Length; i++) {
+			GUI.Box(Utility.GetGUIRect(
+				0.25f + (float)i / (float)(style.Length-1) * 0.5f - 0.5f / style.Length / 2f, 
+				0.05f, 
+				0.5f / style.Length, 
+				0.15f * style[i]), 
+				"");
+		}
+
 	}
 
 	void OnRenderObject() {

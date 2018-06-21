@@ -21,6 +21,7 @@ public class MotionTools : EditorWindow {
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(MotionTools));
 		Scroll = Vector3.zero;
+		((MotionTools)Window).Load();
 	}
 
 	public void Load() {
@@ -209,10 +210,16 @@ public class MotionTools : EditorWindow {
 					//Data[i].Sequences[0].SetEnd(Data[i].GetTotalFrames());
 					//Data[i].RootSmoothing = 10;
 
-					//PhaseModule phaseModule = (PhaseModule)data.GetModule(Module.TYPE.Phase);
-					//phaseModule.ToggleVariable(5);
-					StyleModule styleModule = (StyleModule)data.GetModule(Module.TYPE.Style);
-					System.Array.Find(styleModule.Functions, x => x.Name == "Run").Name = "Jog";
+					//StyleModule styleModule = (StyleModule)data.GetModule(Module.TYPE.Style);
+					//styleModule.AddStyle("Move");
+					//System.Array.Find(styleModule.Functions, x => x.Name == "Move").ToggleStyle(data.GetFirstFrame());
+
+					//Editors[i].LoadFile(Editors[i].Files[j]);
+
+					//Editors[i].CopyHierarchy();
+
+					data.Export = true;
+
 					EditorUtility.SetDirty(data);
 				}
             }

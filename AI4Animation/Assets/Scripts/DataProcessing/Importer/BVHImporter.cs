@@ -316,9 +316,22 @@ public class BVHImporter : EditorWindow {
 							*/
 						}
 
+						if(data.GetTotalFrames() == 1) {
+							Frame reference = data.GetFirstFrame();
+							ArrayExtensions.Resize(ref data.Frames, Mathf.RoundToInt(data.Framerate));
+							for(int k=0; k<data.GetTotalFrames(); k++) {
+								data.Frames[k] = new Frame(data, k+1, (float)k / data.Framerate);
+								data.Frames[k].Local = (Matrix4x4[])reference.Local.Clone();
+								data.Frames[k].World = (Matrix4x4[])reference.World.Clone();
+							}
+						}
+
 						//Finalise
 						data.DetectSymmetry();
 						data.AddSequence();
+
+						//Save
+						EditorUtility.SetDirty(data);
 					} else {
 						Debug.Log("File with name " + Files[f].Object.Name + " already exists.");
 					}
@@ -326,6 +339,8 @@ public class BVHImporter : EditorWindow {
 					yield return new WaitForSeconds(0f);
 				}
 			}
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 			Importing = false;
 		}
 		yield return new WaitForSeconds(0f);

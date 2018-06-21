@@ -123,7 +123,7 @@ public class MotionEditor : MonoBehaviour {
 				i--;
 			}
 		}
-		if(Files.Length > 0) {
+		if(GetFile() == null && Files.Length > 0) {
 			LoadFile(Files[0]);
 		}
 	}
@@ -201,7 +201,7 @@ public class MotionEditor : MonoBehaviour {
 
 	private IEnumerator Play() {
 		System.DateTime timestamp = Utility.GetTimestamp();
-		while(GetFile().Data != null) {
+		while(GetFile() != null) {
 			Timestamp += Timescale * (float)Utility.GetElapsedTime(timestamp);
 			if(Timestamp > GetFile().Data.GetTotalTime()) {
 				Timestamp = Mathf.Repeat(Timestamp, GetFile().Data.GetTotalTime());
@@ -213,7 +213,7 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public Actor CreateSkeleton() {
-		if(GetFile().Data == null) {
+		if(GetFile() == null) {
 			return null;
 		}
 		Actor actor = new GameObject("Skeleton").AddComponent<Actor>();
@@ -234,6 +234,16 @@ public class MotionEditor : MonoBehaviour {
 		return actor;
 	}
 
+	public void CopyHierarchy()  {
+		for(int i=0; i<GetFile().Data.Source.Bones.Length; i++) {
+			if(GetActor().FindBone(GetFile().Data.Source.Bones[i].Name) != null) {
+				GetFile().Data.Source.Bones[i].Active = true;
+			} else {
+				GetFile().Data.Source.Bones[i].Active = false;
+			}
+		}
+	}
+
 	public void Draw() {
 		if(GetFile() == null) {
 			return;
@@ -247,10 +257,10 @@ public class MotionEditor : MonoBehaviour {
 		//		GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)i/5f).Transparent(0.75f), GetState().FutureBoneTransformations[i]);
 		//	}
 		//}
-
+	
 		if(ShowVelocities) {
 			UltiDraw.Begin();
-			for(int i=0; i<GetActor().Bones.Length; i++) {
+			for(int i=0; i<GetState().BoneVelocities.Length; i++) {
 				UltiDraw.DrawArrow(
 					GetActor().Bones[i].Transform.position,
 					GetActor().Bones[i].Transform.position + GetState().BoneVelocities[i],
@@ -367,7 +377,7 @@ public class MotionEditor : MonoBehaviour {
 			for(int i=0; i<Instances.Length; i++) {
 				Names[i] = Instances[i].Data.Name;
 			}
-			LoadFile(Instances.Length > 0 ? 0 : -1);
+			LoadFile(GetIndex());
 		}
 
 		public void SetNameFilter(string filter) {
@@ -563,13 +573,7 @@ public class MotionEditor : MonoBehaviour {
 								EditorGUILayout.EndHorizontal();
 							}
 							if(Utility.GUIButton("Copy Hierarchy", UltiDraw.DarkGrey, UltiDraw.White)) {
-								for(int i=0; i<Target.GetFile().Data.Source.Bones.Length; i++) {
-									if(Target.GetActor().FindBone(Target.GetFile().Data.Source.Bones[i].Name) != null) {
-										Target.GetFile().Data.Source.Bones[i].Active = true;
-									} else {
-										Target.GetFile().Data.Source.Bones[i].Active = false;
-									}
-								}
+								Target.CopyHierarchy();
 							}
 							if(Utility.GUIButton("Detect Symmetry", UltiDraw.DarkGrey, UltiDraw.White)) {
 								Target.GetFile().Data.DetectSymmetry();

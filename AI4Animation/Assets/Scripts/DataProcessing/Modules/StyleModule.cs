@@ -117,23 +117,19 @@ public class StyleModule : Module {
 			RemoveStyle();
 		}
 		EditorGUILayout.EndHorizontal();
-		for(int i=0; i<Functions.Length; i++) {
-			EditorGUILayout.BeginHorizontal();
-			Functions[i].Name = EditorGUILayout.TextField("Style " + (i+1), Functions[i].Name);
-			EditorGUILayout.EndHorizontal();
-		}
 
 		Color[] colors = UltiDraw.GetRainbowColors(Functions.Length);
 		for(int i=0; i<Functions.Length; i++) {
 			float height = 25f;
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton(Functions[i].Name, !Functions[i].GetFlag(frame) ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
+			if(Utility.GUIButton(!Functions[i].GetFlag(frame) ? "Off" : "On", !Functions[i].GetFlag(frame) ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
 				Functions[i].ToggleStyle(frame);
 			}
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
 			EditorGUILayout.FloatField(Functions[i].GetValue(frame), GUILayout.Width(50f));
+			Functions[i].Name = EditorGUILayout.TextField(Functions[i].Name);
 			EditorGUILayout.EndHorizontal();
 		}
 		EditorGUILayout.BeginHorizontal();
