@@ -229,12 +229,7 @@ public class MotionExporter : EditorWindow {
 			if(styleModule != null) {
 				//for(int j=1; j<=styleModule.Functions.Length; j++) {
 				for(int j=1; j<=4; j++) {
-					if(phaseModule == null) {
-						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
-					} else {
-						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X" + i); index += 1;
-						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y" + i); index += 1;
-					}
+					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
 				}
 			}
 		}
@@ -259,6 +254,10 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "PhaseX"); index += 1;
 			file.WriteLine(index + " " + "PhaseY"); index += 1;
 			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+			for(int j=1; j<=4; j++) {
+				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X"); index += 1;
+				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y"); index += 1;
+			}
 		}
 
 		/*
@@ -403,9 +402,6 @@ public class MotionExporter : EditorWindow {
 											//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
 											float[] style = current.Trajectory.Points[k].Styles;
 											ArrayExtensions.Shrink(ref style);
-											if(phaseModule != null) {
-												style = PhaseStyle(style, phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror));
-											}
 											inputLine += FormatValue(position.x);
 											inputLine += FormatValue(position.z);
 											inputLine += FormatValue(direction.x);
@@ -428,8 +424,13 @@ public class MotionExporter : EditorWindow {
 										if(phaseModule != null) {
 											float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-											inputLine += FormatVector2(GetCirclePhase(currentPhase));
-											inputLine += FormatValue(GetLinearPhaseUpdate(previousPhase, currentPhase));
+											inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
+											inputLine += FormatValue(Utility.GetLinearPhaseUpdate(previousPhase, currentPhase));
+
+											float[] style = current.Trajectory.Points[6].Styles;
+											ArrayExtensions.Shrink(ref style);
+											style = Utility.StylePhase(style, phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror));
+											inputLine += FormatArray(style);
 										}
 										/*
 										if(contactModule != null) {
@@ -471,7 +472,7 @@ public class MotionExporter : EditorWindow {
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(next.Index), editor.ShowMirror);
-											outputLine += FormatValue(GetLinearPhaseUpdate(currentPhase, nextPhase));
+											outputLine += FormatValue(Utility.GetLinearPhaseUpdate(currentPhase, nextPhase));
 										}
 										/*
 										if(contactModule != null) {
@@ -506,38 +507,6 @@ public class MotionExporter : EditorWindow {
         Exporting = false;
 	}
 
-	private float GetLinearPhase(float value) {
-		return value;
-	}
-
-	private float GetLinearPhaseUpdate(float from, float to) {
-		return Mathf.Repeat(((GetLinearPhase(to)-GetLinearPhase(from)) + 1f), 1f);
-	}
-
-	private float GetWavePhase(float value) {
-		return Mathf.Sin(value*2f*Mathf.PI);
-	}
-
-	private float GetWavePhaseUpdate(float from, float to) {
-		return GetWavePhase(to) - GetWavePhase(from);
-	}
-
-	private Vector2 GetBarPhase(float value) {
-		return new Vector2(2f * Mathf.Abs(0.5f - value), 1f - 2f * Mathf.Abs(0.5f - value));
-	}
-
-	private Vector2 GetBarPhaseUpdate(float from, float to) {
-		return GetBarPhase(to) - GetBarPhase(from);
-	}
-
-	private Vector2 GetCirclePhase(float value) {
-		return Quaternion.AngleAxis(-value*360f, Vector3.forward) * Vector2.up;
-	}
-
-	private Vector2 GetCirclePhaseUpdate(float from, float to) {
-		return GetCirclePhase(to) - GetCirclePhase(from);
-	}
-
 	/*
 	private float[] FilterStyle(float[] style) {
 		if(StyleFilters.Length == 0) {
@@ -554,16 +523,6 @@ public class MotionExporter : EditorWindow {
 		}
 	}
 	*/
-
-	private float[] PhaseStyle(float[] style, float phase) {
-		float[] phaseStyle = new float[2*style.Length];
-		for(int i=0; i<style.Length; i++) {
-			Vector2 direction = style[i] * (Quaternion.AngleAxis(phase*360f, Vector3.forward) * Vector2.up);
-			phaseStyle[2*i+0] = direction.x;
-			phaseStyle[2*i+1] = direction.y;
-		}
-		return phaseStyle;
-	}
 
 	private string FormatString(string value) {
 		return value + Separator;

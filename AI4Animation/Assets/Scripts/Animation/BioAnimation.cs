@@ -162,7 +162,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			//Utility.Normalise(ref Trajectory.Points[i].Styles);
+			Utility.Normalise(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}
@@ -187,18 +187,8 @@ public class BioAnimation : MonoBehaviour {
 			NN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			NN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
 			NN.SetInput(start + i*TrajectoryDimIn + 6, speed);
-			float[] style = PhaseStyle(GetSample(i).Styles, ((MPNN)NN).GetPhase());
-			if(i==6) {
-				string output = string.Empty;
-				for(int j=0; j<style.Length; j++) {
-					output += style[j] + " ";
-				}
-				//Debug.Log(output);
-			}
 			for(int j=0; j<Controller.Styles.Length; j++) {
-				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - 2*Controller.Styles.Length) + 2*j + 0, style[2*j + 0]);
-				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - 2*Controller.Styles.Length) + 2*j + 1, style[2*j + 1]);
-				//NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
+				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
 		}
 		start += TrajectoryDimIn*PointSamples;
@@ -227,6 +217,21 @@ public class BioAnimation : MonoBehaviour {
 			NN.SetInput(start + i*JointDimIn + 11, vel.z);
 		}
 		start += JointDimIn*Actor.Bones.Length;
+
+		//Input Phase
+		float phaseValue = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhase() : GetComponent<MPNN>().GetPhase();
+		float phaseUpdate = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhaseUpdate() : GetComponent<MPNN>().GetPhaseUpdate();
+		Vector2 phase = Utility.GetCirclePhase(phaseValue);
+		NN.SetInput(start + 0, phase.x);
+		NN.SetInput(start + 1, phase.y);
+		NN.SetInput(start + 2, phaseUpdate);
+		/*
+		float[] style = GetSample(6).Styles;
+		float[] stylePhase = Utility.StylePhase(style, phaseValue);
+		for(int i=0; i<stylePhase.Length; i++) {
+			NN.SetInput(start + i + 3, stylePhase[i]);
+		}
+		*/
 
 		/*
 		//Input Height Map
@@ -405,16 +410,6 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
-	private float[] PhaseStyle(float[] style, float phase) {
-		float[] phaseStyle = new float[2*style.Length];
-		for(int i=0; i<style.Length; i++) {
-			Vector2 direction = style[i] * (Quaternion.AngleAxis(phase*360f, Vector3.forward) * Vector2.up);
-			phaseStyle[2*i+0] = direction.x;
-			phaseStyle[2*i+1] = direction.y;
-		}
-		return phaseStyle;
-	}
-
 	void OnGUI() {
 		if(NN.Parameters == null) {
 			return;
@@ -472,7 +467,8 @@ public class BioAnimation : MonoBehaviour {
 				float x = (float)i/(float)(Controller.Styles.Length-1);
 				x = Utility.Normalise(x, 0f, 1f, 0.35f, 0.65f);
 				float y = 0.85f;
-				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.075f, UltiDraw.DarkGrey, ((MPNN)NN).GetPhase() * 360f, GetSample(6).Styles[i], colors[i]);
+				float phase = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhase() : GetComponent<MPNN>().GetPhase();
+				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.075f, UltiDraw.DarkGrey, phase * 360f, GetSample(6).Styles[i], colors[i]);
 			}
 			UltiDraw.End();
 

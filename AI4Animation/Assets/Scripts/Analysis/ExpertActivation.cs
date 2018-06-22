@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ExpertActivation : MonoBehaviour {
 
+	public string ID = "BY";
+
 	public enum MODE {Function, Bars, Graph}
 
 	public MODE Mode = MODE.Function;
@@ -24,10 +26,10 @@ public class ExpertActivation : MonoBehaviour {
 	}
 
 	void Start() {
-		if(NN.GetTensor("BY") == null) {
+		if(NN.GetTensor(ID) == null) {
 			return;
 		}
-		Values = new Queue<float>[NN.GetTensor("BY").GetRows()];
+		Values = new Queue<float>[NN.GetTensor(ID).GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {
@@ -45,11 +47,16 @@ public class ExpertActivation : MonoBehaviour {
 		if(!Application.isPlaying) {
 			return;
 		}
+
+		if(NN.GetTensor(ID) == null) {
+			return;
+		}
+
 		UltiDraw.Begin();
 
 		float[] values = new float[Values.Length];
 		for(int i=0; i<Values.Length; i++) {
-			values[i] = NN.GetTensor("BY").GetValue(i, 0);
+			values[i] = NN.GetTensor(ID).GetValue(i, 0);
 		}
 
 		//Utility.SoftMax(ref values);

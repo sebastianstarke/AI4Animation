@@ -694,4 +694,46 @@ public static class Utility {
 		return new Vector3(GaussianValue(mean, sigma), GaussianValue(mean, sigma), GaussianValue(mean, sigma));
 	}
 	
+	public static float GetLinearPhase(float value) {
+		return value;
+	}
+
+	public static float GetLinearPhaseUpdate(float from, float to) {
+		return Mathf.Repeat(((GetLinearPhase(to)-GetLinearPhase(from)) + 1f), 1f);
+	}
+
+	public static float GetWavePhase(float value) {
+		return Mathf.Sin(value*2f*Mathf.PI);
+	}
+
+	public static float GetWavePhaseUpdate(float from, float to) {
+		return GetWavePhase(to) - GetWavePhase(from);
+	}
+
+	public static Vector2 GetBarPhase(float value) {
+		return new Vector2(2f * Mathf.Abs(0.5f - value), 1f - 2f * Mathf.Abs(0.5f - value));
+	}
+
+	public static Vector2 GetBarPhaseUpdate(float from, float to) {
+		return GetBarPhase(to) - GetBarPhase(from);
+	}
+
+	public static Vector2 GetCirclePhase(float value) {
+		return Quaternion.AngleAxis(-value*360f, Vector3.forward) * Vector2.up;
+	}
+
+	public static Vector2 GetCirclePhaseUpdate(float from, float to) {
+		return GetCirclePhase(to) - GetCirclePhase(from);
+	}
+
+	public static float[] StylePhase(float[] style, float phase) {
+		float[] phaseStyle = new float[2*style.Length];
+		for(int i=0; i<style.Length; i++) {
+			Vector2 direction = style[i] * GetCirclePhase(phase);
+			phaseStyle[2*i+0] = direction.x;
+			phaseStyle[2*i+1] = direction.y;
+		}
+		return phaseStyle;
+	}
+
 }
