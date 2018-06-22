@@ -517,15 +517,10 @@ public static class UltiDraw {
 		}
 	}
 
-	public static void DrawGUIHorizontalBar(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float fillAmount, Color fillColor) {
-		fillAmount = Mathf.Clamp(fillAmount, 0f, 1f);
-		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
-		DrawGUIRectangle(new Vector2(center.x - size.x/2f + fillAmount * size.x/2f, center.y), new Vector2(fillAmount * size.x, size.y), fillColor);
-	}
-
-	public static void DrawGUIHorizontalPivot(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float pivot, float pivotWidth, Color pivotColor) {
-		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
-		DrawGUIRectangle(new Vector2(center.x - size.x/2f + Normalise(pivot * size.x, 0f, size.x, pivotWidth/2f, size.x - pivotWidth/2f), center.y), new Vector2(pivotWidth, size.y), pivotColor);
+	public static void DrawGUITexture(Vector2 center, float size, Texture texture, Color color) {
+		Vector2 area = size * Screen.width * new Vector2(texture.width, texture.height) / texture.width;
+		Vector2 pos = new Vector2(center.x*Screen.width - area.x/2f, center.y*Screen.height - area.y/2f);
+		GUI.DrawTexture(new Rect(pos.x, pos.y, area.x, area.y), texture, ScaleMode.StretchToFill, true, 1f, color, 0f, 100f);
 	}
 
 	//------------------------------------------------------------------------------------------
@@ -621,10 +616,27 @@ public static class UltiDraw {
 		}
 	}
 
-	public static void DrawGUITexture(Vector2 center, float size, Texture texture, Color color) {
-		Vector2 area = size * Screen.width * new Vector2(texture.width, texture.height) / texture.width;
-		Vector2 pos = new Vector2(center.x*Screen.width - area.x/2f, center.y*Screen.height - area.y/2f);
-		GUI.DrawTexture(new Rect(pos.x, pos.y, area.x, area.y), texture, ScaleMode.StretchToFill, true, 1f, color, 0f, 100f);
+	public static void DrawGUIHorizontalBar(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float fillAmount, Color fillColor) {
+		fillAmount = Mathf.Clamp(fillAmount, 0f, 1f);
+		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangle(new Vector2(center.x - size.x/2f + fillAmount * size.x/2f, center.y), new Vector2(fillAmount * size.x, size.y), fillColor);
+	}
+
+	public static void DrawGUIHorizontalPivot(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float pivot, float pivotWidth, Color pivotColor) {
+		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangle(new Vector2(center.x - size.x/2f + Normalise(pivot * size.x, 0f, size.x, pivotWidth/2f, size.x - pivotWidth/2f), center.y), new Vector2(pivotWidth, size.y), pivotColor);
+	}
+
+	public static void DrawGUICircularPivot(Vector2 center, float size, Color backgroundColor, float degrees, float length, Color pivotColor) {
+		degrees = Mathf.Repeat(degrees, 360f);
+		DrawGUICircle(center, size, backgroundColor);
+		Vector2 end = length * size * (Quaternion.AngleAxis(-degrees, Vector3.forward) * Vector2.up);
+		end.x = end.x / Screen.width * Screen.height;
+		DrawGUILine(center, center + end, 0.0025f, pivotColor);
+		//Vector2 a = rotation * new Vector2(-0.005f, 0f);
+		//Vector2 b = rotation *new Vector3(0.005f, 0f);
+		//Vector3 c = rotation * new Vector3(0f, 0.075f);
+		//UltiDraw.DrawGUITriangle(length * new Vector2(center.x + b.x/Screen.width*Screen.height, center.y + b.y), length * new Vector2(center.x + a.x/Screen.width*Screen.height, center.y + a.y), length * new Vector2(center.x + c.x/Screen.width*Screen.height, center.x + c.y), arrowColor);
 	}
 
 	//------------------------------------------------------------------------------------------

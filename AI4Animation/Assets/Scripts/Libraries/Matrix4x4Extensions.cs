@@ -40,15 +40,15 @@ public static class Matrix4x4Extensions {
 	}
 
 	public static Vector3 GetRight(this Matrix4x4 matrix) {
-		return new Vector3(matrix[0,0], matrix[1,0], matrix[2,0]);
+		return new Vector3(matrix[0,0], matrix[1,0], matrix[2,0]).normalized;
 	}
 
 	public static Vector3 GetUp(this Matrix4x4 matrix) {
-		return new Vector3(matrix[0,1], matrix[1,1], matrix[2,1]);
+		return new Vector3(matrix[0,1], matrix[1,1], matrix[2,1]).normalized;
 	}
 
 	public static Vector3 GetForward(this Matrix4x4 matrix) {
-		return new Vector3(matrix[0,2], matrix[1,2], matrix[2,2]);
+		return new Vector3(matrix[0,2], matrix[1,2], matrix[2,2]).normalized;
 	}
 
 	public static Matrix4x4 GetRelativeTransformationFrom(this Matrix4x4 matrix, Matrix4x4 from) {

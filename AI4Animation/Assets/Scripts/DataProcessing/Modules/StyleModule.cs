@@ -122,7 +122,7 @@ public class StyleModule : Module {
 		for(int i=0; i<Functions.Length; i++) {
 			float height = 25f;
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton(!Functions[i].GetFlag(frame) ? "Off" : "On", !Functions[i].GetFlag(frame) ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
+			if(Utility.GUIButton(Functions[i].Name, !Functions[i].GetFlag(frame) ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
 				Functions[i].ToggleStyle(frame);
 			}
 			Rect c = EditorGUILayout.GetControlRect();

@@ -187,8 +187,18 @@ public class BioAnimation : MonoBehaviour {
 			NN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			NN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
 			NN.SetInput(start + i*TrajectoryDimIn + 6, speed);
+			float[] style = PhaseStyle(GetSample(i).Styles, ((MPNN)NN).GetPhase());
+			if(i==6) {
+				string output = string.Empty;
+				for(int j=0; j<style.Length; j++) {
+					output += style[j] + " ";
+				}
+				//Debug.Log(output);
+			}
 			for(int j=0; j<Controller.Styles.Length; j++) {
-				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
+				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - 2*Controller.Styles.Length) + 2*j + 0, style[2*j + 0]);
+				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - 2*Controller.Styles.Length) + 2*j + 1, style[2*j + 1]);
+				//NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
 			}
 		}
 		start += TrajectoryDimIn*PointSamples;
@@ -395,12 +405,23 @@ public class BioAnimation : MonoBehaviour {
 		}
 	}
 
+	private float[] PhaseStyle(float[] style, float phase) {
+		float[] phaseStyle = new float[2*style.Length];
+		for(int i=0; i<style.Length; i++) {
+			Vector2 direction = style[i] * (Quaternion.AngleAxis(phase*360f, Vector3.forward) * Vector2.up);
+			phaseStyle[2*i+0] = direction.x;
+			phaseStyle[2*i+1] = direction.y;
+		}
+		return phaseStyle;
+	}
+
 	void OnGUI() {
 		if(NN.Parameters == null) {
 			return;
 		}
 		FontStyle.fontSize = Mathf.RoundToInt(0.0125f * Screen.width);
 
+		/*
 		float[] style = Trajectory.Points[RootPointIndex].Styles;
 		//Color[] colors = UltiDraw.GetRainbowColors(style.Length);
 		Rect center = Utility.GetGUIRect(0.25f, 0.05f, 0.5f + 0.5f / style.Length, 0.15f);
@@ -413,7 +434,7 @@ public class BioAnimation : MonoBehaviour {
 				0.15f * style[i]), 
 				"");
 		}
-
+		*/
 	}
 
 	void OnRenderObject() {
@@ -444,6 +465,16 @@ public class BioAnimation : MonoBehaviour {
 				}
 				UltiDraw.End();
 			}
+
+			UltiDraw.Begin();
+			Color[] colors = UltiDraw.GetRainbowColors(Controller.Styles.Length);
+			for(int i=0; i<Controller.Styles.Length; i++) {
+				float x = (float)i/(float)(Controller.Styles.Length-1);
+				x = Utility.Normalise(x, 0f, 1f, 0.35f, 0.65f);
+				float y = 0.85f;
+				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.075f, UltiDraw.DarkGrey, ((MPNN)NN).GetPhase() * 360f, GetSample(6).Styles[i], colors[i]);
+			}
+			UltiDraw.End();
 
 			//HeightMap.Draw();
 		}

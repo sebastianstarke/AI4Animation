@@ -227,8 +227,14 @@ public class MotionExporter : EditorWindow {
 			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			//}
 			if(styleModule != null) {
-				for(int j=1; j<=styleModule.Functions.Length; j++) {
-					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
+				//for(int j=1; j<=styleModule.Functions.Length; j++) {
+				for(int j=1; j<=4; j++) {
+					if(phaseModule == null) {
+						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
+					} else {
+						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X" + i); index += 1;
+						file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y" + i); index += 1;
+					}
 				}
 			}
 		}
@@ -391,11 +397,15 @@ public class MotionExporter : EditorWindow {
 										string inputLine = string.Empty;
 										for(int k=0; k<12; k++) {
 											Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root).normalized;
+											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 											float speed = current.Trajectory.Points[k].GetSpeed();
 											//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
 											float[] style = current.Trajectory.Points[k].Styles;
+											ArrayExtensions.Shrink(ref style);
+											if(phaseModule != null) {
+												style = PhaseStyle(style, phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror));
+											}
 											inputLine += FormatValue(position.x);
 											inputLine += FormatValue(position.z);
 											inputLine += FormatValue(direction.x);
@@ -407,8 +417,8 @@ public class MotionExporter : EditorWindow {
 										}
 										for(int k=0; k<previous.BoneTransformations.Length; k++) {
 											Vector3 position = previous.BoneTransformations[k].GetPosition().GetRelativePositionTo(previous.Root);
-											Vector3 forward = previous.BoneTransformations[k].GetForward().GetRelativeDirectionTo(previous.Root).normalized;
-											Vector3 up = previous.BoneTransformations[k].GetUp().GetRelativeDirectionTo(previous.Root).normalized;
+											Vector3 forward = previous.BoneTransformations[k].GetForward().GetRelativeDirectionTo(previous.Root);
+											Vector3 up = previous.BoneTransformations[k].GetUp().GetRelativeDirectionTo(previous.Root);
 											Vector3 velocity = previous.BoneVelocities[k].GetRelativeDirectionTo(previous.Root);
 											inputLine += FormatVector3(position);
 											inputLine += FormatVector3(forward);
@@ -438,7 +448,7 @@ public class MotionExporter : EditorWindow {
 										string outputLine = string.Empty;
 										for(int k=6; k<12; k++) {
 											Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(next.Root);
-											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root).normalized;
+											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root);
 											Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(next.Root);
 											outputLine += FormatValue(position.x);
 											outputLine += FormatValue(position.z);
@@ -449,8 +459,8 @@ public class MotionExporter : EditorWindow {
 										}
 										for(int k=0; k<current.BoneTransformations.Length; k++) {
 											Vector3 position = current.BoneTransformations[k].GetPosition().GetRelativePositionTo(current.Root);
-											Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root).normalized;
-											Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root).normalized;
+											Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root);
+											Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.BoneVelocities[k].GetRelativeDirectionTo(current.Root);
 											outputLine += FormatVector3(position);
 											outputLine += FormatVector3(forward);
@@ -544,6 +554,16 @@ public class MotionExporter : EditorWindow {
 		}
 	}
 	*/
+
+	private float[] PhaseStyle(float[] style, float phase) {
+		float[] phaseStyle = new float[2*style.Length];
+		for(int i=0; i<style.Length; i++) {
+			Vector2 direction = style[i] * (Quaternion.AngleAxis(phase*360f, Vector3.forward) * Vector2.up);
+			phaseStyle[2*i+0] = direction.x;
+			phaseStyle[2*i+1] = direction.y;
+		}
+		return phaseStyle;
+	}
 
 	private string FormatString(string value) {
 		return value + Separator;
