@@ -253,7 +253,8 @@ public class MotionExporter : EditorWindow {
 		if(phaseModule != null) {
 			file.WriteLine(index + " " + "PhaseX"); index += 1;
 			file.WriteLine(index + " " + "PhaseY"); index += 1;
-			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+			file.WriteLine(index + " " + "PhaseUpdateX"); index += 1;
+			file.WriteLine(index + " " + "PhaseUpdateY"); index += 1;
 			for(int j=1; j<=4; j++) {
 				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X"); index += 1;
 				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y"); index += 1;
@@ -425,8 +426,7 @@ public class MotionExporter : EditorWindow {
 											float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
-											inputLine += FormatValue(Utility.GetLinearPhaseUpdate(previousPhase, currentPhase));
-
+											inputLine += FormatVector2(Utility.GetCirclePhaseUpdate(previousPhase, currentPhase));
 											float[] style = current.Trajectory.Points[6].Styles;
 											ArrayExtensions.Shrink(ref style);
 											style = Utility.StylePhase(style, phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror));

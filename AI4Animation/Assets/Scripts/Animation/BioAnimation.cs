@@ -221,18 +221,19 @@ public class BioAnimation : MonoBehaviour {
 		//Input Phase
 		float phaseValue = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhase() : GetComponent<MPNN>().GetPhase();
 		float phaseUpdate = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhaseUpdate() : GetComponent<MPNN>().GetPhaseUpdate();
-		Vector2 phase = Utility.GetCirclePhase(phaseValue);
-		NN.SetInput(start + 0, phase.x);
-		NN.SetInput(start + 1, phase.y);
-		NN.SetInput(start + 2, phaseUpdate);
-		/*
+		Vector2 phaseVector = Utility.GetCirclePhase(phaseValue);
+		Vector2 phaseVectorUpdate = Utility.GetCirclePhaseUpdate(phaseValue-phaseUpdate, phaseValue);
+		NN.SetInput(start + 0, phaseVector.x);
+		NN.SetInput(start + 1, phaseVector.y);
+		NN.SetInput(start + 2, phaseVectorUpdate.x);
+		NN.SetInput(start + 3, phaseVectorUpdate.y);
+		
 		float[] style = GetSample(6).Styles;
 		float[] stylePhase = Utility.StylePhase(style, phaseValue);
 		for(int i=0; i<stylePhase.Length; i++) {
-			NN.SetInput(start + i + 3, stylePhase[i]);
+			NN.SetInput(start + i + 4, stylePhase[i]);
 		}
-		*/
-
+		
 		/*
 		//Input Height Map
 		HeightMap.Sense(Actor.Bones[0].Transform.GetWorldMatrix(), LayerMask.GetMask("Ground", "Object"));

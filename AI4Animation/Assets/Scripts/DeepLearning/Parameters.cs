@@ -26,6 +26,10 @@ namespace DeepLearning {
             return matrix;
         }
 
+        public void Clear() {
+            ArrayExtensions.Resize(ref Matrices, 0);
+        }
+
         private Matrix ReadBinary(string fn, int rows, int cols, string id) {
             if(File.Exists(fn)) {
                 Matrix matrix = new Matrix(rows, cols, id);
