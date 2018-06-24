@@ -211,14 +211,17 @@ public class MotionTools : EditorWindow {
 					//Data[i].RootSmoothing = 10;
 
 					//StyleModule styleModule = (StyleModule)data.GetModule(Module.TYPE.Style);
-					//styleModule.AddStyle("Move");
+					//styleModule.RemoveStyle("Move");
 					//System.Array.Find(styleModule.Functions, x => x.Name == "Move").ToggleStyle(data.GetFirstFrame());
 
-					//Editors[i].LoadFile(Editors[i].Files[j]);
 
-					//Editors[i].CopyHierarchy();
+					Editors[i].LoadFile(Editors[i].Files[j]);
 
-					data.Export = true;
+					data.Scaling = 7.5f;
+
+					Editors[i].CopyHierarchy();
+
+					//data.Export = true;
 
 					EditorUtility.SetDirty(data);
 				}

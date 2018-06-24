@@ -162,7 +162,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Utility.Interpolate(Trajectory.Points[i].Styles[j], style[j], Controller.Styles[j].Transition);
 			}
-			Utility.Normalise(ref Trajectory.Points[i].Styles);
+			//Utility.Normalise(ref Trajectory.Points[i].Styles);
 			Trajectory.Points[i].SetSpeed(Utility.Interpolate(Trajectory.Points[i].GetSpeed(), TargetVelocity.magnitude, control ? TargetGain : TargetDecay));
 		}
 	}
@@ -178,7 +178,7 @@ public class BioAnimation : MonoBehaviour {
 			Vector3 pos = GetSample(i).GetPosition().GetRelativePositionTo(currentRoot);
 			Vector3 dir = GetSample(i).GetDirection().GetRelativeDirectionTo(currentRoot);
 			Vector3 vel = GetSample(i).GetVelocity().GetRelativeDirectionTo(currentRoot);
-			float speed = GetSample(i).GetSpeed();
+			//float speed = GetSample(i).GetSpeed();
 			//Debug.Log("Trajectory " + i + " starts at " + (start + i*TrajectoryDimIn));
 			NN.SetInput(start + i*TrajectoryDimIn + 0, pos.x);
 			NN.SetInput(start + i*TrajectoryDimIn + 1, pos.z);
@@ -186,10 +186,10 @@ public class BioAnimation : MonoBehaviour {
 			NN.SetInput(start + i*TrajectoryDimIn + 3, dir.z);
 			NN.SetInput(start + i*TrajectoryDimIn + 4, vel.x);
 			NN.SetInput(start + i*TrajectoryDimIn + 5, vel.z);
-			NN.SetInput(start + i*TrajectoryDimIn + 6, speed);
-			for(int j=0; j<Controller.Styles.Length; j++) {
-				NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
-			}
+			//NN.SetInput(start + i*TrajectoryDimIn + 6, speed);
+			//for(int j=0; j<Controller.Styles.Length; j++) {
+			//	NN.SetInput(start + i*TrajectoryDimIn + (TrajectoryDimIn - Controller.Styles.Length) + j, GetSample(i).Styles[j]);
+			//}
 		}
 		start += TrajectoryDimIn*PointSamples;
 
@@ -220,18 +220,19 @@ public class BioAnimation : MonoBehaviour {
 
 		//Input Phase
 		float phaseValue = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhase() : GetComponent<MPNN>().GetPhase();
-		float phaseUpdate = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhaseUpdate() : GetComponent<MPNN>().GetPhaseUpdate();
-		Vector2 phaseVector = Utility.GetCirclePhase(phaseValue);
-		Vector2 phaseVectorUpdate = Utility.GetCirclePhaseUpdate(phaseValue-phaseUpdate, phaseValue);
-		NN.SetInput(start + 0, phaseVector.x);
-		NN.SetInput(start + 1, phaseVector.y);
-		NN.SetInput(start + 2, phaseVectorUpdate.x);
-		NN.SetInput(start + 3, phaseVectorUpdate.y);
-		
+		//float phaseUpdate = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhaseUpdate() : GetComponent<MPNN>().GetPhaseUpdate();
+		//Vector2 phaseVector = Utility.GetCirclePhase(phaseValue);
+		//Vector2 phaseVectorUpdate = Utility.GetCirclePhaseUpdate(phaseValue-phaseUpdate, phaseValue);
+		//NN.SetInput(start + 0, phaseVector.x);
+		//NN.SetInput(start + 1, phaseVector.y);
+		//NN.SetInput(start + 2, phaseVectorUpdate.x);
+		//NN.SetInput(start + 3, phaseVectorUpdate.y);
+		//start += 4;
+
 		float[] style = GetSample(6).Styles;
 		float[] stylePhase = Utility.StylePhase(style, phaseValue);
 		for(int i=0; i<stylePhase.Length; i++) {
-			NN.SetInput(start + i + 4, stylePhase[i]);
+			NN.SetInput(start + i, stylePhase[i]);
 		}
 		
 		/*
@@ -466,10 +467,10 @@ public class BioAnimation : MonoBehaviour {
 			Color[] colors = UltiDraw.GetRainbowColors(Controller.Styles.Length);
 			for(int i=0; i<Controller.Styles.Length; i++) {
 				float x = (float)i/(float)(Controller.Styles.Length-1);
-				x = Utility.Normalise(x, 0f, 1f, 0.35f, 0.65f);
+				x = Utility.Normalise(x, 0f, 1f, 0.3f, 0.7f);
 				float y = 0.85f;
 				float phase = GetComponent<PMANN>() != null ? GetComponent<PMANN>().GetPhase() : GetComponent<MPNN>().GetPhase();
-				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.075f, UltiDraw.DarkGrey, phase * 360f, GetSample(6).Styles[i], colors[i]);
+				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.04f, UltiDraw.DarkGrey, phase * 360f, GetSample(6).Styles[i], colors[i]);
 			}
 			UltiDraw.End();
 
