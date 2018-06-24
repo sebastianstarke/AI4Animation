@@ -110,7 +110,7 @@ namespace DeepLearning {
 		}
 
 		public float GetPhase() {
-			return Phase;
+			return Phase / (2f*Mathf.PI);
 		}
 
 	}
