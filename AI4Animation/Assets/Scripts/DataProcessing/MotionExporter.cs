@@ -226,12 +226,12 @@ public class MotionExporter : EditorWindow {
 			//for(int j=1; j<=StyleFilters.Length; j++) {
 			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
 			//}
-			if(styleModule != null) {
-				for(int j=1; j<=styleModule.Functions.Length; j++) {
+			//if(styleModule != null) {
+			//	for(int j=1; j<=styleModule.Functions.Length; j++) {
 				//for(int j=1; j<=4; j++) {
-					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
-				}
-			}
+			//		file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
+			//	}
+			//}
 		}
 		for(int i=0; i<editor.GetFile().Data.Source.Bones.Length; i++) {
 			if(editor.GetFile().Data.Source.Bones[i].Active) {
@@ -255,13 +255,13 @@ public class MotionExporter : EditorWindow {
 			//file.WriteLine(index + " " + "PhaseY"); index += 1;
 			//file.WriteLine(index + " " + "PhaseUpdateX"); index += 1;
 			//file.WriteLine(index + " " + "PhaseUpdateY"); index += 1;
-			//for(int j=1; j<=4; j++) {
+			for(int j=1; j<=4; j++) {
 			//for(int j=1; j<=styleModule.Functions.Length; j++) {
-				//file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X"); index += 1;
-				//file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y"); index += 1;
-			//	file.WriteLine(index + " " + styleModule.Functions[j-1].Name); index += 1;
-			//}
-			file.WriteLine(index + " " + "Phase"); index += 1;
+				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X"); index += 1;
+				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y"); index += 1;
+				//file.WriteLine(index + " " + styleModule.Functions[j-1].Name); index += 1;
+			}
+			//file.WriteLine(index + " " + "Phase"); index += 1;
 		}
 
 		/*
@@ -323,7 +323,8 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
 			if(phaseModule != null) {
-				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+				file.WriteLine(index + " " + "PhaseX"); index += 1;
+				file.WriteLine(index + " " + "PhaseY"); index += 1;
 			}
 
 			/*
@@ -404,7 +405,7 @@ public class MotionExporter : EditorWindow {
 											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 											//float speed = current.Trajectory.Points[k].GetSpeed();
 											//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
-											float[] style = current.Trajectory.Points[k].Styles;
+											//float[] style = current.Trajectory.Points[k].Styles;
 											//ArrayExtensions.Shrink(ref style);
 											inputLine += FormatValue(position.x);
 											inputLine += FormatValue(position.z);
@@ -413,7 +414,7 @@ public class MotionExporter : EditorWindow {
 											inputLine += FormatValue(velocity.x);
 											inputLine += FormatValue(velocity.z);
 											//inputLine += FormatValue(speed);
-											inputLine += FormatArray(style);
+											//inputLine += FormatArray(style);
 										}
 										for(int k=0; k<previous.BoneTransformations.Length; k++) {
 											Vector3 position = previous.BoneTransformations[k].GetPosition().GetRelativePositionTo(previous.Root);
@@ -430,11 +431,11 @@ public class MotionExporter : EditorWindow {
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
 											//inputLine += FormatVector2(Utility.GetCirclePhaseUpdate(previousPhase, currentPhase));
-											//float[] style = current.Trajectory.Points[6].Styles;
-											//ArrayExtensions.Shrink(ref style);
-											//style = Utility.StylePhase(style, currentPhase, editor.ShowMirror));
-											//inputLine += FormatArray(style);
-											inputLine += FormatValue(currentPhase);
+											float[] style = current.Trajectory.Points[6].Styles;
+											ArrayExtensions.Shrink(ref style);
+											style = Utility.StylePhase(style, currentPhase);
+											inputLine += FormatArray(style);
+											//inputLine += FormatValue(currentPhase);
 										}
 										/*
 										if(contactModule != null) {
@@ -474,9 +475,9 @@ public class MotionExporter : EditorWindow {
 										}
 										outputLine += FormatVector3(next.RootMotion);
 										if(phaseModule != null) {
-											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+											//float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(next.Index), editor.ShowMirror);
-											outputLine += FormatValue(Utility.GetLinearPhaseUpdate(currentPhase, nextPhase));
+											outputLine += FormatVector2(Utility.GetCirclePhase(nextPhase));
 										}
 										/*
 										if(contactModule != null) {

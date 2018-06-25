@@ -19,6 +19,13 @@ public class MotionEditor : MonoBehaviour {
 	public bool ShowTrajectory = false;
 	public bool InspectSettings = false;
 
+	private bool AutoFocus = false;
+	private float FocusHeight = 1f;
+	private float FocusOffset = 0f;
+	private float FocusDistance = 2.5f;
+	private float FocusAngle = 0f;
+	private float FocusSmoothing = 0.05f;
+
 	private bool Playing = false;
 	private float Timescale = 1f;
 	private float Timestamp = 0f;
@@ -45,6 +52,17 @@ public class MotionEditor : MonoBehaviour {
 		if(GetFile().Data.Scaling != value) {
 			GetFile().Data.Scaling = value;
 			LoadFrame(Timestamp);
+		}
+	}
+
+	public void SetAutoFocus(bool value) {
+		if(AutoFocus != value) {
+			AutoFocus = value;
+			if(!AutoFocus) {
+				Vector3 position =  SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion rotation = Quaternion.Euler(0f, SceneView.lastActiveSceneView.camera.transform.rotation.eulerAngles.y, 0f);
+				SceneView.lastActiveSceneView.LookAtDirect(position, rotation, 0f);
+			}
 		}
 	}
 
@@ -164,6 +182,21 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<Mathf.Min(GetActor().Bones.Length, GetState().BoneTransformations.Length); i++) {
 			GetActor().Bones[i].Transform.position = GetState().BoneTransformations[i].GetPosition();
 			GetActor().Bones[i].Transform.rotation = GetState().BoneTransformations[i].GetRotation();
+		}
+
+		if(AutoFocus) {
+			if(SceneView.lastActiveSceneView != null) {
+				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
+				Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
+				Vector3 position = GetState().Root.GetPosition();
+				position.y += FocusHeight;
+				Quaternion rotation = GetState().Root.GetRotation();
+				rotation.x = 0f;
+				rotation.z = 0f;
+				rotation = Quaternion.Euler(0f, ShowMirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+				position += FocusOffset * (rotation * Vector3.right);
+				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
+			}
 		}
 	}
 
@@ -572,6 +605,27 @@ public class MotionEditor : MonoBehaviour {
 								Target.GetFile().Data.Source.Bones[i].Alignment = EditorGUILayout.Vector3Field("", Target.GetFile().Data.Source.Bones[i].Alignment);
 								EditorGUILayout.EndHorizontal();
 							}
+
+							Utility.SetGUIColor(UltiDraw.Grey);
+							using(new EditorGUILayout.VerticalScope ("Box")) {
+								Utility.ResetGUIColor();
+
+								Utility.SetGUIColor(UltiDraw.Cyan);
+								using(new EditorGUILayout.VerticalScope ("Box")) {
+									Utility.ResetGUIColor();
+									EditorGUILayout.LabelField("Camera");
+								}
+
+								if(Utility.GUIButton("Auto Focus", Target.AutoFocus ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+									Target.SetAutoFocus(!Target.AutoFocus);
+								}
+								Target.FocusHeight = EditorGUILayout.FloatField("Focus Height", Target.FocusHeight);
+								Target.FocusOffset = EditorGUILayout.FloatField("Focus Offset", Target.FocusOffset);
+								Target.FocusDistance = EditorGUILayout.FloatField("Focus Distance", Target.FocusDistance);
+								Target.FocusAngle = EditorGUILayout.Slider("Focus Angle", Target.FocusAngle, 0f, 360f);
+								Target.FocusSmoothing = EditorGUILayout.Slider("Focus Smoothing", Target.FocusSmoothing, 0f, 1f);
+							}
+
 							if(Utility.GUIButton("Copy Hierarchy", UltiDraw.DarkGrey, UltiDraw.White)) {
 								Target.CopyHierarchy();
 							}
