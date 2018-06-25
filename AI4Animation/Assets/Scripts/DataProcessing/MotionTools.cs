@@ -202,6 +202,7 @@ public class MotionTools : EditorWindow {
 						Data[i].Sequences[s].SetTransitionCopies("Lie", 5);
 					}
 					*/
+
 					//string path = AssetDatabase.GetAssetPath(Data[i]);
 					//path = path.Substring(0, path.LastIndexOf(".")) + ".unity";
 					//SceneAsset scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(path);
@@ -214,12 +215,18 @@ public class MotionTools : EditorWindow {
 					//styleModule.RemoveStyle("Move");
 					//System.Array.Find(styleModule.Functions, x => x.Name == "Move").ToggleStyle(data.GetFirstFrame());
 
-
 					Editors[i].LoadFile(Editors[i].Files[j]);
 
 					data.Scaling = 7.5f;
 
 					Editors[i].CopyHierarchy();
+
+					//ContactModule contact = (ContactModule)data.GetModule(Module.TYPE.Contact);
+					//for(int f=0; f<contact.Functions.Length; f++) {
+					//	contact.Functions[f].SetFilterWidth(5);
+					//	contact.Functions[f].SetDistanceThreshold(0.025f);
+					//	contact.Functions[f].SetVelocityThreshold(1f);
+					//}
 
 					//data.Export = true;
 
