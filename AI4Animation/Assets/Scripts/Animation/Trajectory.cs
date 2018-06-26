@@ -90,6 +90,7 @@ public class Trajectory {
 		[SerializeField] private Vector3 LeftSample;
 		[SerializeField] private Vector3 RightSample;
 		[SerializeField] private float Slope;
+		public float Phase;
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
@@ -156,6 +157,14 @@ public class Trajectory {
 
 		public float GetSpeed() {
 			return Speed;
+		}
+
+		public void SetPhase(float value) {
+			Phase = value;
+		}
+
+		public float GetPhase() {
+			return Phase;
 		}
 
 		public void SetLeftsample(Vector3 position) {
@@ -287,6 +296,11 @@ public class Trajectory {
 		//Positions
 		for(int i=0; i<Points.Length; i+=step) {
 			UltiDraw.DrawCircle(Points[i].GetPosition(), 0.025f, UltiDraw.Black);
+		}
+
+		//Phase
+		for(int i=0; i<Points.Length; i+=step) {
+			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, UltiDraw.IndianRed);
 		}
 		
 		UltiDraw.End();

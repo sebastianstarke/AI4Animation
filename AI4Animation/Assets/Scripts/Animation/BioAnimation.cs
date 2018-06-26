@@ -231,10 +231,14 @@ public class BioAnimation : MonoBehaviour {
 		//start += 4;
 
 		if(name.Contains("MPNN")) {
-			float[] style = GetSample(6).Styles;
-			style = Utility.StylePhase(style, GetPhase());
-			for(int i=0; i<style.Length; i++) {
-				NN.SetInput(start + i, style[i]);
+			float phase = GetPhase();
+			for(int i=0; i<12; i++) {
+				float[] style = GetSample(i).Styles;
+				style = Utility.StylePhase(style, phase);
+				for(int j=0; j<style.Length; j++) {
+					NN.SetInput(start + j, style[j]);
+				}
+				start += style.Length;
 			}
 		}
 		
@@ -260,6 +264,7 @@ public class BioAnimation : MonoBehaviour {
 			for(int j=0; j<Trajectory.Points[i].Styles.Length; j++) {
 				Trajectory.Points[i].Styles[j] = Trajectory.Points[i+1].Styles[j];
 			}
+			Trajectory.Points[i].Phase = Trajectory.Points[i+1].Phase;
 		}
 
 		//Update Root
@@ -275,6 +280,7 @@ public class BioAnimation : MonoBehaviour {
 		Trajectory.Points[RootPointIndex].SetPosition(translationalOffset.GetRelativePositionFrom(currentRoot));
 		Trajectory.Points[RootPointIndex].SetDirection(Quaternion.AngleAxis(rotationalOffset, Vector3.up) * Trajectory.Points[RootPointIndex].GetDirection());
 		Trajectory.Points[RootPointIndex].SetVelocity(translationalOffset.GetRelativeDirectionFrom(currentRoot) * Framerate);
+		Trajectory.Points[RootPointIndex].Phase = GetPhase();
 		Matrix4x4 nextRoot = Trajectory.Points[RootPointIndex].GetTransformation();
 		nextRoot[1,3] = 0f; //For flat terrain
 

@@ -255,11 +255,13 @@ public class MotionExporter : EditorWindow {
 			//file.WriteLine(index + " " + "PhaseY"); index += 1;
 			//file.WriteLine(index + " " + "PhaseUpdateX"); index += 1;
 			//file.WriteLine(index + " " + "PhaseUpdateY"); index += 1;
-			for(int j=1; j<=4; j++) {
-			//for(int j=1; j<=styleModule.Functions.Length; j++) {
-				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X"); index += 1;
-				file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y"); index += 1;
-				//file.WriteLine(index + " " + styleModule.Functions[j-1].Name); index += 1;
+			//for(int j=1; j<=4; j++) {
+			for(int i=1; i<=12; i++) {
+				for(int j=1; j<=styleModule.Functions.Length; j++) {
+					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X" + i); index += 1;
+					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y" + i); index += 1;
+					//file.WriteLine(index + " " + styleModule.Functions[j-1].Name); index += 1;
+				}
 			}
 			//file.WriteLine(index + " " + "Phase"); index += 1;
 		}
@@ -323,8 +325,9 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
 			if(phaseModule != null) {
-				file.WriteLine(index + " " + "PhaseX"); index += 1;
-				file.WriteLine(index + " " + "PhaseY"); index += 1;
+				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
+			//	file.WriteLine(index + " " + "PhaseX"); index += 1;
+			//	file.WriteLine(index + " " + "PhaseY"); index += 1;
 			}
 
 			/*
@@ -427,15 +430,19 @@ public class MotionExporter : EditorWindow {
 											inputLine += FormatVector3(velocity);
 										}
 										if(phaseModule != null) {
-											//float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
-											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-											//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
-											//inputLine += FormatVector2(Utility.GetCirclePhaseUpdate(previousPhase, currentPhase));
-											float[] style = current.Trajectory.Points[6].Styles;
-											ArrayExtensions.Shrink(ref style);
-											style = Utility.StylePhase(style, currentPhase);
-											inputLine += FormatArray(style);
-											//inputLine += FormatValue(currentPhase);
+											for(int k=0; k<12; k++) {
+												//float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
+												float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+												float[] style = Utility.StylePhase(current.Trajectory.Points[k].Styles, currentPhase);
+												inputLine += FormatArray(style);
+												//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
+												//inputLine += FormatVector2(Utility.GetCirclePhaseUpdate(previousPhase, currentPhase));
+												//float[] style = current.Trajectory.Points[6].Styles;
+												//ArrayExtensions.Shrink(ref style);
+												//style = Utility.StylePhase(style, currentPhase);
+												//inputLine += FormatArray(style);
+												//inputLine += FormatValue(currentPhase);
+											}
 										}
 										/*
 										if(contactModule != null) {
@@ -475,9 +482,10 @@ public class MotionExporter : EditorWindow {
 										}
 										outputLine += FormatVector3(next.RootMotion);
 										if(phaseModule != null) {
-											//float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(next.Index), editor.ShowMirror);
-											outputLine += FormatVector2(Utility.GetCirclePhase(nextPhase));
+											//outputLine += FormatVector2(Utility.GetCirclePhase(nextPhase));
+											outputLine += FormatValue(Utility.GetLinearPhaseUpdate(currentPhase, nextPhase));
 										}
 										/*
 										if(contactModule != null) {
