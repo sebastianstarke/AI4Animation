@@ -30,8 +30,6 @@ public class BioAnimation : MonoBehaviour {
 	private NeuralNetwork NN;
 	private Trajectory Trajectory;
 
-	//private HeightMap HeightMap;
-
 	private Vector3 TargetDirection;
 	private Vector3 TargetVelocity;
 
@@ -67,7 +65,6 @@ public class BioAnimation : MonoBehaviour {
 		Ups = new Vector3[Actor.Bones.Length];
 		Velocities = new Vector3[Actor.Bones.Length];
 		Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
-		//HeightMap = new HeightMap(0.25f);
 		if(Controller.Styles.Length > 0) {
 			for(int i=0; i<Trajectory.Points.Length; i++) {
 				Trajectory.Points[i].Styles[0] = 1f;
@@ -100,10 +97,6 @@ public class BioAnimation : MonoBehaviour {
 	}
 
 	void Update() {
-		if(NN.Parameters == null) {
-			return;
-		}
-
 		if(TrajectoryControl) {
 			PredictTrajectory();
 		}
@@ -241,16 +234,6 @@ public class BioAnimation : MonoBehaviour {
 				start += style.Length;
 			}
 		}
-		
-		/*
-		//Input Height Map
-		HeightMap.Sense(Actor.Bones[0].Transform.GetWorldMatrix(), LayerMask.GetMask("Ground", "Object"));
-		float[] distances = HeightMap.GetDistances();
-		for(int i=0; i<HeightMap.Points.Length; i++) {
-			NN.SetInput(start + i, distances[i]);
-		}
-		start += HeightMap.Points.Length;
-		*/
 
 		//Predict
 		NN.Predict();
@@ -496,8 +479,6 @@ public class BioAnimation : MonoBehaviour {
 				UltiDraw.DrawGUICircularPivot(new Vector2(x, y), 0.04f, UltiDraw.DarkGrey, phase * 360f, GetSample(6).Styles[i], colors[i]);
 			}
 			UltiDraw.End();
-
-			//HeightMap.Draw();
 		}
 	}
 
@@ -520,15 +501,6 @@ public class BioAnimation : MonoBehaviour {
 		public override void OnInspectorGUI() {
 			Undo.RecordObject(Target, Target.name);
 
-			Inspector();
-			Target.Controller.Inspector();
-
-			if(GUI.changed) {
-				EditorUtility.SetDirty(Target);
-			}
-		}
-
-		private void Inspector() {
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
@@ -552,7 +524,14 @@ public class BioAnimation : MonoBehaviour {
 					}
 				}
 			}
+
+			Target.Controller.Inspector();
+
+			if(GUI.changed) {
+				EditorUtility.SetDirty(Target);
+			}
 		}
+
 	}
 	#endif
 }
