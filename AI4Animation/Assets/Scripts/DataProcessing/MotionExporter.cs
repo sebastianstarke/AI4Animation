@@ -212,26 +212,18 @@ public class MotionExporter : EditorWindow {
 
 		StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 		PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
-		//ContactModule contactModule = editor.GetFile().Data.GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetFile().Data.GetModule(Module.TYPE.Contact);
 	
 		int index = 0;
 		for(int i=1; i<=12; i++) {
-			file.WriteLine(index + " " + "TrajectoryPositionX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryPositionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryDirectionX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
-			file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
-			//file.WriteLine(index + " " + "TrajectorySpeed"+i); index += 1;
-			//for(int j=1; j<=StyleFilters.Length; j++) {
-			//	file.WriteLine(index + " " + StyleFilters[j-1].Name + i); index += 1;
-			//}
-			//if(styleModule != null) {
-			//	for(int j=1; j<=styleModule.Functions.Length; j++) {
-				//for(int j=1; j<=4; j++) {
-			//		file.WriteLine(index + " " + styleModule.Functions[j-1].Name + i); index += 1;
-			//	}
-			//}
+			file.WriteLine(index + " " + "TrajectoryPositionX" + i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryPositionZ" + i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryDirectionX" + i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryDirectionZ" + i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
+			file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
+			for(int j=0; j<styleModule.Functions.Length; j++) {
+				file.WriteLine(index + " " + styleModule.Functions[j].Name + i); index += 1;
+			}
 		}
 		for(int i=0; i<editor.GetFile().Data.Source.Bones.Length; i++) {
 			if(editor.GetFile().Data.Source.Bones[i].Active) {
@@ -251,28 +243,13 @@ public class MotionExporter : EditorWindow {
 		}
 
 		if(phaseModule != null) {
-			//file.WriteLine(index + " " + "PhaseX"); index += 1;
-			//file.WriteLine(index + " " + "PhaseY"); index += 1;
-			//file.WriteLine(index + " " + "PhaseUpdateX"); index += 1;
-			//file.WriteLine(index + " " + "PhaseUpdateY"); index += 1;
-			//for(int j=1; j<=4; j++) {
-			for(int i=1; i<=12; i++) {
-				for(int j=1; j<=styleModule.Functions.Length; j++) {
-					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "X" + i); index += 1;
-					file.WriteLine(index + " " + styleModule.Functions[j-1].Name + "Y" + i); index += 1;
-					//file.WriteLine(index + " " + styleModule.Functions[j-1].Name); index += 1;
-				}
-			}
-			//file.WriteLine(index + " " + "Phase"); index += 1;
-		}
-
-		/*
-		if(contactModule != null) {
-			for(int i=0; i<contactModule.Functions.Length; i++) {
-				file.WriteLine(index + " " + "Contact" + editor.GetFile().Data.Source.Bones[contactModule.Functions[i].Sensor].Name); index += 1;
+			file.WriteLine(index + " " + "PhaseX"); index += 1;
+			file.WriteLine(index + " " + "PhaseY"); index += 1;
+			for(int i=1; i<=styleModule.Functions.Length; i++) {
+				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "X"); index += 1;
+				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "Y"); index += 1;
 			}
 		}
-		*/
 
 		yield return new WaitForSeconds(0f);
 
@@ -291,9 +268,8 @@ public class MotionExporter : EditorWindow {
 
 			StreamWriter file = CreateFile("OutputLabels");
 
-			//StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
+			StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 			PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
-			//ContactModule contactModule = editor.GetFile().Data.GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetFile().Data.GetModule(Module.TYPE.Contact);
 
 			int index = 0;
 			for(int i=7; i<=12; i++) {
@@ -303,6 +279,9 @@ public class MotionExporter : EditorWindow {
 				file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
 				file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
 				file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
+				for(int j=0; j<styleModule.Functions.Length; j++) {
+					file.WriteLine(index + " " + styleModule.Functions[j].Name + i); index += 1;
+				}
 			}
 			for(int i=0; i<editor.GetFile().Data.Source.Bones.Length; i++) {
 				if(editor.GetFile().Data.Source.Bones[i].Active) {
@@ -326,17 +305,7 @@ public class MotionExporter : EditorWindow {
 
 			if(phaseModule != null) {
 				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
-			//	file.WriteLine(index + " " + "PhaseX"); index += 1;
-			//	file.WriteLine(index + " " + "PhaseY"); index += 1;
 			}
-
-			/*
-			if(contactModule != null) {
-				for(int i=0; i<contactModule.Functions.Length; i++) {
-					file.WriteLine(index + " " + "Contact" + editor.GetFile().Data.Source.Bones[contactModule.Functions[i].Sensor].Name); index += 1;
-				}
-			}
-			*/
 
 			yield return new WaitForSeconds(0f);
 
@@ -360,9 +329,8 @@ public class MotionExporter : EditorWindow {
 					if(editor.Files[i].Data.Export) {
 						editor.LoadFile(editor.Files[i]);
 
-						//StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
+						StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 						PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
-						//ContactModule contactModule = editor.GetFile().Data.GetModule(Module.TYPE.Contact) == null ? null : (ContactModule)editor.GetFile().Data.GetModule(Module.TYPE.Contact);
 
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 							if(m==1) {
@@ -393,11 +361,10 @@ public class MotionExporter : EditorWindow {
 										}
 									}
 
-									for(int state=1; state<states.Count-1; state++) {
+									for(int state=0; state<states.Count-1; state++) {
 										Writing = (float)(state) / (float)(states.Count-2);
-										State previous = states[state-1];
-										State next = states[state+1];
 										State current = states[state];
+										State next = states[state+1];
 										editor.LoadFrame(current);
 
 										//Input
@@ -406,54 +373,31 @@ public class MotionExporter : EditorWindow {
 											Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-											//float speed = current.Trajectory.Points[k].GetSpeed();
-											//float[] style = FilterStyle(current.Trajectory.Points[k].Styles);
-											//float[] style = current.Trajectory.Points[k].Styles;
-											//ArrayExtensions.Shrink(ref style);
+											float[] style = current.Trajectory.Points[k].Styles;
 											inputLine += FormatValue(position.x);
 											inputLine += FormatValue(position.z);
 											inputLine += FormatValue(direction.x);
 											inputLine += FormatValue(direction.z);
 											inputLine += FormatValue(velocity.x);
 											inputLine += FormatValue(velocity.z);
-											//inputLine += FormatValue(speed);
-											//inputLine += FormatArray(style);
+											inputLine += FormatArray(style);
 										}
-										for(int k=0; k<previous.BoneTransformations.Length; k++) {
-											Vector3 position = previous.BoneTransformations[k].GetPosition().GetRelativePositionTo(previous.Root);
-											Vector3 forward = previous.BoneTransformations[k].GetForward().GetRelativeDirectionTo(previous.Root);
-											Vector3 up = previous.BoneTransformations[k].GetUp().GetRelativeDirectionTo(previous.Root);
-											Vector3 velocity = previous.BoneVelocities[k].GetRelativeDirectionTo(previous.Root);
+										for(int k=0; k<current.BoneTransformations.Length; k++) {
+											Vector3 position = current.BoneTransformations[k].GetPosition().GetRelativePositionTo(current.Root);
+											Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root);
+											Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root);
+											Vector3 velocity = current.BoneVelocities[k].GetRelativeDirectionTo(current.Root);
 											inputLine += FormatVector3(position);
 											inputLine += FormatVector3(forward);
 											inputLine += FormatVector3(up);
 											inputLine += FormatVector3(velocity);
 										}
 										if(phaseModule != null) {
-											for(int k=0; k<12; k++) {
-												//float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
-												float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-												//float phase = current.Trajectory.Points[k].Phase;
-												float[] style = Utility.StylePhase(current.Trajectory.Points[k].Styles, currentPhase);
-												inputLine += FormatArray(style);
-												//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
-												//inputLine += FormatVector2(Utility.GetCirclePhaseUpdate(previousPhase, currentPhase));
-												//float[] style = current.Trajectory.Points[6].Styles;
-												//ArrayExtensions.Shrink(ref style);
-												//style = Utility.StylePhase(style, currentPhase);
-												//inputLine += FormatArray(style);
-												//inputLine += FormatValue(currentPhase);
-											}
+											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+											inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
+											inputLine += FormatArray(Utility.StylePhase(current.Trajectory.Points[6].Styles, currentPhase));
 										}
-										/*
-										if(contactModule != null) {
-											for(int c=0; c<contactModule.Functions.Length; c++) {
-												bool contact = contactModule.Functions[c].HasContact(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-												float value = contact ? 1f : 0f;
-												inputLine += FormatValue(value);
-											}
-										}
-										*/
+
 										inputLine = inputLine.Remove(inputLine.Length-1);
 										inputLine = inputLine.Replace(",",".");
 										input.WriteLine(inputLine);
@@ -464,18 +408,20 @@ public class MotionExporter : EditorWindow {
 											Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(next.Root);
 											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root);
 											Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(next.Root);
+											float[] style = next.Trajectory.Points[k].Styles;
 											outputLine += FormatValue(position.x);
 											outputLine += FormatValue(position.z);
 											outputLine += FormatValue(direction.x);
 											outputLine += FormatValue(direction.z);
 											outputLine += FormatValue(velocity.x);
 											outputLine += FormatValue(velocity.z);
+											outputLine += FormatArray(style);
 										}
-										for(int k=0; k<current.BoneTransformations.Length; k++) {
-											Vector3 position = current.BoneTransformations[k].GetPosition().GetRelativePositionTo(current.Root);
-											Vector3 forward = current.BoneTransformations[k].GetForward().GetRelativeDirectionTo(current.Root);
-											Vector3 up = current.BoneTransformations[k].GetUp().GetRelativeDirectionTo(current.Root);
-											Vector3 velocity = current.BoneVelocities[k].GetRelativeDirectionTo(current.Root);
+										for(int k=0; k<next.BoneTransformations.Length; k++) {
+											Vector3 position = next.BoneTransformations[k].GetPosition().GetRelativePositionTo(next.Root);
+											Vector3 forward = next.BoneTransformations[k].GetForward().GetRelativeDirectionTo(next.Root);
+											Vector3 up = next.BoneTransformations[k].GetUp().GetRelativeDirectionTo(next.Root);
+											Vector3 velocity = next.BoneVelocities[k].GetRelativeDirectionTo(next.Root);
 											outputLine += FormatVector3(position);
 											outputLine += FormatVector3(forward);
 											outputLine += FormatVector3(up);
@@ -485,18 +431,9 @@ public class MotionExporter : EditorWindow {
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(next.Index), editor.ShowMirror);
-											//outputLine += FormatVector2(Utility.GetCirclePhase(nextPhase));
 											outputLine += FormatValue(Utility.GetLinearPhaseUpdate(currentPhase, nextPhase));
 										}
-										/*
-										if(contactModule != null) {
-											for(int c=0; c<contactModule.Functions.Length; c++) {
-												bool contact = contactModule.Functions[c].HasContact(editor.GetFile().Data.GetFrame(next.Index), editor.ShowMirror);
-												float value = contact ? 1f : 0f;
-												outputLine += FormatValue(value);
-											}
-										}
-										*/
+
 										outputLine = outputLine.Remove(outputLine.Length-1);
 										outputLine = outputLine.Replace(",",".");
 										output.WriteLine(outputLine);
