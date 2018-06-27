@@ -433,6 +433,7 @@ public class MotionExporter : EditorWindow {
 											for(int k=0; k<12; k++) {
 												//float previousPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(previous.Index), editor.ShowMirror);
 												float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
+												//float phase = current.Trajectory.Points[k].Phase;
 												float[] style = Utility.StylePhase(current.Trajectory.Points[k].Styles, currentPhase);
 												inputLine += FormatArray(style);
 												//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
