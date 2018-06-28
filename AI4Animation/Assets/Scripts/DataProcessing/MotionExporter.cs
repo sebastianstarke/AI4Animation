@@ -243,8 +243,8 @@ public class MotionExporter : EditorWindow {
 		}
 
 		if(phaseModule != null) {
-			file.WriteLine(index + " " + "PhaseX"); index += 1;
-			file.WriteLine(index + " " + "PhaseY"); index += 1;
+			//file.WriteLine(index + " " + "PhaseX"); index += 1;
+			//file.WriteLine(index + " " + "PhaseY"); index += 1;
 			for(int i=1; i<=styleModule.Functions.Length; i++) {
 				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "X"); index += 1;
 				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "Y"); index += 1;
@@ -394,7 +394,7 @@ public class MotionExporter : EditorWindow {
 										}
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetFile().Data.GetFrame(current.Index), editor.ShowMirror);
-											inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
+											//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
 											inputLine += FormatArray(Utility.StylePhase(current.Trajectory.Points[6].Styles, currentPhase));
 										}
 

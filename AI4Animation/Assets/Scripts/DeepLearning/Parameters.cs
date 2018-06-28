@@ -39,7 +39,7 @@ namespace DeepLearning {
                     for(int y=0; y<cols; y++) {
                         try {
                             matrix.Values[x].Values[y] = reader.ReadSingle();
-                        } catch(IOException e) {
+                        } catch {
                             errors += 1;
                         }
                     }

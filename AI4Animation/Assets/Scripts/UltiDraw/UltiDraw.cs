@@ -453,6 +453,28 @@ public static class UltiDraw {
 		GL.Vertex(Camera.ScreenToWorldPoint(p2-ortho));
     }
 
+    public static void DrawGUILine(Vector2 start, Vector2 end, float startThickness, float endThickness, Color color) {
+		if(Camera != Camera.main) {return;}
+		if(Return()) {return;}
+		SetProgram(PROGRAM.QUADS);
+		GL.Color(color);
+		start.x *= Screen.width;
+		start.y *= Screen.height;
+		end.x *= Screen.width;
+		end.y *= Screen.height;
+		startThickness *= Screen.width;
+		endThickness *= Screen.width;
+		Vector3 p1 = new Vector3(start.x, start.y, Camera.nearClipPlane + GUIOffset);
+		Vector3 p2 = new Vector3(end.x, end.y, Camera.nearClipPlane + GUIOffset);
+		Vector3 dir = end-start;
+		Vector3 orthoStart = startThickness/2f * (Quaternion.AngleAxis(90f, Vector3.forward) * dir).normalized;
+		Vector3 orthoEnd = endThickness/2f * (Quaternion.AngleAxis(90f, Vector3.forward) * dir).normalized;
+        GL.Vertex(Camera.ScreenToWorldPoint(p1-orthoStart));
+		GL.Vertex(Camera.ScreenToWorldPoint(p1+orthoStart));
+		GL.Vertex(Camera.ScreenToWorldPoint(p2+orthoEnd));
+		GL.Vertex(Camera.ScreenToWorldPoint(p2-orthoEnd));
+    }
+
 	public static void DrawGUIRectangle(Vector2 center, Vector2 size, Color color) {
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
@@ -632,11 +654,7 @@ public static class UltiDraw {
 		DrawGUICircle(center, size, backgroundColor);
 		Vector2 end = length * size * (Quaternion.AngleAxis(-degrees, Vector3.forward) * Vector2.up);
 		end.x = end.x / Screen.width * Screen.height;
-		DrawGUILine(center, center + end, 0.0025f, pivotColor);
-		//Vector2 a = rotation * new Vector2(-0.005f, 0f);
-		//Vector2 b = rotation *new Vector3(0.005f, 0f);
-		//Vector3 c = rotation * new Vector3(0f, 0.075f);
-		//UltiDraw.DrawGUITriangle(length * new Vector2(center.x + b.x/Screen.width*Screen.height, center.y + b.y), length * new Vector2(center.x + a.x/Screen.width*Screen.height, center.y + a.y), length * new Vector2(center.x + c.x/Screen.width*Screen.height, center.x + c.y), arrowColor);
+		DrawGUILine(center, center + end, length*size/5f, 0f, pivotColor);
 	}
 
 	//------------------------------------------------------------------------------------------
