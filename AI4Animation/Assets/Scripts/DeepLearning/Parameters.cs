@@ -34,13 +34,23 @@ namespace DeepLearning {
             if(File.Exists(fn)) {
                 Matrix matrix = new Matrix(rows, cols, id);
                 BinaryReader reader = new BinaryReader(File.Open(fn, FileMode.Open));
+                int errors = 0;
                 for(int x=0; x<rows; x++) {
                     for(int y=0; y<cols; y++) {
-                        matrix.Values[x].Values[y] = reader.ReadSingle();
+                        try {
+                            matrix.Values[x].Values[y] = reader.ReadSingle();
+                        } catch(IOException e) {
+                            errors += 1;
+                        }
                     }
                 }
                 reader.Close();
-                return matrix;
+                if(errors > 0) {
+                    Debug.Log("There were " + errors + " errors reading file at path " + fn + ".");
+                    return null;
+                } else {
+                    return matrix;
+                }
             } else {
                 Debug.Log("File at path " + fn + " does not exist.");
                 return null;
