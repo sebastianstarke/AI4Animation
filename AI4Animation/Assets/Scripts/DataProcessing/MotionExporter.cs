@@ -329,7 +329,7 @@ public class MotionExporter : EditorWindow {
 					if(editor.Files[i].Data.Export) {
 						editor.LoadFile(editor.Files[i]);
 
-						StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
+						//StyleModule styleModule = editor.GetFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetFile().Data.GetModule(Module.TYPE.Style);
 						PhaseModule phaseModule = editor.GetFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetFile().Data.GetModule(Module.TYPE.Phase);
 
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
