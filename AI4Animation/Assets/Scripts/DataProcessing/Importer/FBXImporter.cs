@@ -20,8 +20,6 @@ public class FBXImporter : EditorWindow {
 
 	public int Framerate = 60;
 	public Actor Character = null;
-	public Actor Retarget = null;
-	public int[] Mapping = new int[0];
 
 	public int Page = 1;
 	public const int Items = 25;
@@ -80,30 +78,7 @@ public class FBXImporter : EditorWindow {
 					}
 
 					Framerate = EditorGUILayout.IntField("Framerate", Framerate);
-					SetCharacter((Actor)EditorGUILayout.ObjectField("Character", Character, typeof(Actor), true));
-					Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Retarget, typeof(Actor), true);
-					if(Retarget != null) {
-						if(Character.Bones.Length != Retarget.Bones.Length) {
-							EditorGUILayout.LabelField("Number of bones does not match.");
-						} else {
-							string[] source = new string[Character.Bones.Length];
-							for(int i=0; i<Character.Bones.Length; i++) {
-								source[i] = Character.Bones[i].GetName();
-							}
-							string[] target = new string[Retarget.Bones.Length];
-							for(int i=0; i<Retarget.Bones.Length; i++) {
-								target[i] = Retarget.Bones[i].GetName();
-							}
-							for(int i=0; i<Character.Bones.Length; i++) {
-								EditorGUILayout.BeginHorizontal();
-								EditorGUI.BeginDisabledGroup(true);
-								EditorGUILayout.TextField(target[i]);
-								EditorGUI.EndDisabledGroup();
-								Mapping[i] = EditorGUILayout.Popup(Mapping[i], source);
-								EditorGUILayout.EndHorizontal();
-							}
-						}
-					}
+					Character = (Actor)EditorGUILayout.ObjectField("Character", Character, typeof(Actor), true);
 
 					if(Utility.GUIButton("Load Directory", UltiDraw.DarkGrey, UltiDraw.White)) {
 						LoadDirectory();
@@ -196,16 +171,6 @@ public class FBXImporter : EditorWindow {
 			Instances = instances.ToArray();
 		}
 	}
-
-	private void SetCharacter(Actor actor) {
-		if(Character != actor) {
-			Character = actor;
-			Mapping = new int[Character.Bones.Length];
-			for(int i=0; i<Character.Bones.Length; i++) {
-				Mapping[i] = i;
-			}
-		}
-	}
 	
 	private IEnumerator ImportMotionData() {
 		string destination = "Assets/" + Destination;
@@ -231,7 +196,7 @@ public class FBXImporter : EditorWindow {
 						//Create Source Data
 						data.Source = new MotionData.Hierarchy();
 						for(int i=0; i<Character.Bones.Length; i++) {
-							data.Source.AddBone(Character.Bones[Mapping[i]].GetName(), Character.Bones[Mapping[i]].GetParent() == null ? "None" : Character.Bones[Mapping[i]].GetParent().GetName());
+							data.Source.AddBone(Character.Bones[i].GetName(), Character.Bones[i].GetParent() == null ? "None" : Character.Bones[i].GetParent().GetName());
 						}
 
 						//Set Frames
@@ -245,8 +210,8 @@ public class FBXImporter : EditorWindow {
 							data.Frames[i] = new Frame(data, i+1, (float)i / data.Framerate);
 							clip.SampleAnimation(Character.gameObject, data.Frames[i].Timestamp);
 							for(int j=0; j<Character.Bones.Length; j++) {
-								data.Frames[i].Local[j] = Character.Bones[Mapping[j]].Transform.GetLocalMatrix();
-								data.Frames[i].World[j] = Character.Bones[Mapping[j]].Transform.GetWorldMatrix();
+								data.Frames[i].Local[j] = Character.Bones[j].Transform.GetLocalMatrix();
+								data.Frames[i].World[j] = Character.Bones[j].Transform.GetWorldMatrix();
 							}
 						}
 
