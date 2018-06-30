@@ -91,6 +91,20 @@ namespace DeepLearning {
 			Phase = Mathf.Repeat(Phase + (1f-Damping)*GetOutput(PhaseIndex)*2f*Mathf.PI, 2f*Mathf.PI);
 		}
 
+		public void Sample(float phase) {
+			//Normalise Input
+			Normalise(X, Xmean, Xstd, Y);
+
+			//Process PFNN
+			int index = (int)((phase / (2f*M_PI)) * 50f);
+			ELU(Layer(Y, W0[index], b0[index], Y));
+			ELU(Layer(Y, W1[index], b1[index], Y));
+			Layer(Y, W2[index], b2[index], Y);
+
+			//Renormalise Output
+			Renormalise(Y, Ymean, Ystd, Y);
+		}
+
 		/*
 		private Matrix Linear(ref Matrix y0, ref Matrix y1, float mu) {
 			return (1.0f-mu) * y0 + (mu) * y1;
