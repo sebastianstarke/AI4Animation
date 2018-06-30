@@ -53,6 +53,10 @@ public class Actor : MonoBehaviour {
 		return Array.Find(Bones, x => x.GetName() == name);
 	}
 
+	public Bone FindBoneContains(string name) {
+		return Array.Find(Bones, x => x.GetName().Contains(name));
+	}
+
 	public void ExtractSkeleton() {
 		ArrayExtensions.Clear(ref Bones);
 		Action<Transform, Bone> recursion = null;
