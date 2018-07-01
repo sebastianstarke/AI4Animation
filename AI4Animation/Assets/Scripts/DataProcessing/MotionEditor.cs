@@ -31,11 +31,10 @@ public class MotionEditor : MonoBehaviour {
 	private float Timestamp = 0f;
 	private float Window = 1f;
 
+	private File Instance = null;
 	private Actor Actor = null;
 	private Transform Environment = null;
 	private State State = null;
-
-	private File Instance = null;
 
 	public float GetWindow() {
 		return GetFile() == null ? 0f : Window * GetFile().Data.GetTotalTime();

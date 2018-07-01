@@ -4,28 +4,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Actor))]
+[RequireComponent(typeof(Animator))]
 public class AnimatorImporter : MonoBehaviour {
 
-	public Actor Actor;
 	public Actor Retarget;
-	public Animator Animator;
 	public AnimationClip Animation;
 	public float Speed = 1f;
 	public int Framerate = 60;
-	public string Name = string.Empty;
 	public string Destination = string.Empty;
 
 	public Matrix4x4[] Mapping = new Matrix4x4[0];
 	
+	private Actor Actor;
+	private Animator Animator;
 	private bool Baking = false;
 	private List<Sample> Samples = new List<Sample>();
 	
+	void Awake() {
+		Actor = GetComponent<Actor>();
+		Animator = GetComponent<Animator>();
+	}
+		
 	public IEnumerator Bake() {
 		if(Application.isPlaying) {
 			string destination = "Assets/" + Destination;
+			string name = Animation.name.Substring(Animation.name.IndexOf("|")+1);
 			if(!AssetDatabase.IsValidFolder(destination)) {
 				Debug.Log("Folder " + "'" + destination + "'" + " is not valid.");
-			} else if(AssetDatabase.LoadAssetAtPath(destination+"/"+Name+".asset", typeof(MotionData)) == null) {
+			} else if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
 				//Start Bake
 				Baking = true;
 				AnimatorOverrideController aoc = new AnimatorOverrideController(Animator.runtimeAnimatorController);
@@ -34,7 +41,7 @@ public class AnimatorImporter : MonoBehaviour {
 					anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, Animation));
 				aoc.ApplyOverrides(anims);
 				Animator.runtimeAnimatorController = aoc;
-				Animator.SetFloat("Speed", Speed);
+				Animator.speed = Speed;
 
 				//Bake
 				transform.position = Vector3.zero;
@@ -53,7 +60,7 @@ public class AnimatorImporter : MonoBehaviour {
 				MotionData data = ScriptableObject.CreateInstance<MotionData>();
 
 				//Assign Name
-				data.Name = Name;
+				data.Name = name;
 
 				AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
 
@@ -88,10 +95,10 @@ public class AnimatorImporter : MonoBehaviour {
 				AssetDatabase.Refresh();
 
 				//Stop Bake
-				Animator.SetFloat("Speed", 0f);
+				Animator.speed = 0f;
 				Baking = false;
 			} else {
-				Debug.Log("File with name " + Name + " already exists.");
+				Debug.Log("File with name " + name + " already exists.");
 			}
 		}
 	}
@@ -99,7 +106,7 @@ public class AnimatorImporter : MonoBehaviour {
 	public void Abort() {
 		if(Baking) {
 			StopAllCoroutines();
-			Animator.SetFloat("Speed", 0f);
+			Animator.speed = 0f;
 			Baking = false;
 		}
 	}
@@ -108,7 +115,7 @@ public class AnimatorImporter : MonoBehaviour {
 		if(!Application.isPlaying || Animator == null || Animation == null || Actor == null) {
 			return 0f;
 		}
-		float timestamp = Animator.GetCurrentAnimatorStateInfo(0).normalizedTime * Animator.GetCurrentAnimatorStateInfo(0).length * Animator.GetCurrentAnimatorStateInfo(0).speedMultiplier;
+		float timestamp = Animator.GetCurrentAnimatorStateInfo(0).normalizedTime * Animator.GetCurrentAnimatorStateInfo(0).length * Speed;
 		return float.IsNaN(timestamp) ? 0f : timestamp;
 	}
 
@@ -174,11 +181,8 @@ public class AnimatorImporter : MonoBehaviour {
 			Undo.RecordObject(Target, Target.name);
 			
 			EditorGUI.BeginDisabledGroup(Target.Baking);
-			Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true);
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
-			Target.Animator = (Animator)EditorGUILayout.ObjectField("Animator", Target.Animator, typeof(Animator), true);
 			Target.Animation = (AnimationClip)EditorGUILayout.ObjectField("Animation", Target.Animation, typeof(AnimationClip), true);
-			Target.Name = EditorGUILayout.TextField("Name", Target.Name);
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Destination");
 			EditorGUILayout.LabelField("Assets/", GUILayout.Width(50));
