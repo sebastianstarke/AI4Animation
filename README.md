@@ -1,10 +1,6 @@
 AI4Animation
 ======================================================
 
-Copyright Information
-------------
-This code implementation is only for research or education purposes, and (especially the learned data) not freely available for commercial use or redistribution. The intellectual property and code implementation belongs to the University of Edinburgh. Licensing is possible if you want to apply this research for commercial use. For scientific use, please reference this repository together with the relevant publications below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
-
 Description
 ------------
 This project explores the opportunities of deep learning and artificial intelligence for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a> and in collaboration with <a href="https://github.com/ShikamaruZhang">He Zhang</a> and <a href ="https://research.adobe.com/person/jun-saito">Jun Saito</a>. The development is done using Unity3D / Tensorflow, and the implementations are made available during my Ph.D. progress.
@@ -63,3 +59,7 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 Motion Capture
 ------------
 In progress.
+
+Copyright Information
+------------
+This code implementation is only for research or education purposes, and (especially the learned data) not freely available for commercial use or redistribution. The intellectual property and code implementation belongs to the University of Edinburgh. Licensing is possible if you want to apply this research for commercial use. For scientific use, please reference this repository together with the relevant publications below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
