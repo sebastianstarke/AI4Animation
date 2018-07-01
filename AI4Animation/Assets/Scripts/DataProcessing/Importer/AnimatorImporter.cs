@@ -7,12 +7,15 @@ using UnityEngine;
 public class AnimatorImporter : MonoBehaviour {
 
 	public Actor Actor;
+	public Actor Retarget;
 	public Animator Animator;
 	public AnimationClip Animation;
 	public float Speed = 1f;
 	public int Framerate = 60;
 	public string Name = string.Empty;
 	public string Destination = string.Empty;
+
+	public Quaternion[] Mapping = new Quaternion[0];
 	
 	private bool Baking = false;
 	private List<Sample> Samples = new List<Sample>();
@@ -102,11 +105,12 @@ public class AnimatorImporter : MonoBehaviour {
 
 					//Compute Frames
 					List<Sample> frames = Resample();
-					Debug.Log(frames.Count);
 					for(int i=0; i<frames.Count; i++) {
 						data.Frames[i] = new Frame(data, i+1, frames[i].Timestamp);
-						data.Frames[i].Local = frames[i].LocalPosture;
-						data.Frames[i].World = frames[i].WorldPosture;
+						for(int j=0; j<Actor.Bones.Length; j++) {
+							data.Frames[i].Local[j] = Matrix4x4.TRS(frames[i].LocalPosture[j].GetPosition(), frames[i].LocalPosture[j].GetRotation() * Mapping[j], Vector3.one);
+							data.Frames[i].World[j] = Matrix4x4.TRS(frames[i].WorldPosture[j].GetPosition(), frames[i].WorldPosture[j].GetRotation() * Mapping[j], Vector3.one);
+						}
 					}
 
 					//Finalise
@@ -120,6 +124,13 @@ public class AnimatorImporter : MonoBehaviour {
 					Debug.Log("File with name " + Animation.name + " already exists.");
 				}
 			}
+		}
+	}
+
+	public void ComputeMapping() {
+		Mapping = new Quaternion[Actor.Bones.Length];
+		for(int i=0; i<Actor.Bones.Length; i++) {
+			Mapping[i] = Retarget.Bones[i].Transform.rotation.GetRelativeRotationTo(Actor.Bones[i].Transform.GetWorldMatrix());
 		}
 	}
 
@@ -171,6 +182,7 @@ public class AnimatorImporter : MonoBehaviour {
 			
 			EditorGUI.BeginDisabledGroup(Target.Baking);
 			Target.Actor = (Actor)EditorGUILayout.ObjectField("Actor", Target.Actor, typeof(Actor), true);
+			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
 			Target.Animator = (Animator)EditorGUILayout.ObjectField("Animator", Target.Animator, typeof(Animator), true);
 			Target.Animation = (AnimationClip)EditorGUILayout.ObjectField("Animation", Target.Animation, typeof(AnimationClip), true);
 			Target.Name = EditorGUILayout.TextField("Name", Target.Name);
@@ -195,6 +207,9 @@ public class AnimatorImporter : MonoBehaviour {
 				if(Utility.GUIButton("Stop", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.StopBake();
 				}
+			}
+			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
+				Target.ComputeMapping();
 			}
 			if(Utility.GUIButton("Save", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Target.SaveBake();
