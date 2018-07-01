@@ -95,6 +95,22 @@ public class Actor : MonoBehaviour {
 		recursion(GetRoot(), null);
 	}
 
+	public Matrix4x4[] GetLocalPosture() {
+		Matrix4x4[] posture = new Matrix4x4[Bones.Length];
+		for(int i=0; i<posture.Length; i++) {
+			posture[i] = i == 0 ? Bones[i].Transform.GetWorldMatrix() : Bones[i].Transform.GetLocalMatrix();
+		}
+		return posture;
+	}
+
+	public Matrix4x4[] GetWorldPosture() {
+		Matrix4x4[] posture = new Matrix4x4[Bones.Length];
+		for(int i=0; i<posture.Length; i++) {
+			posture[i] = Bones[i].Transform.GetWorldMatrix();
+		}
+		return posture;
+	}
+
 	public void Draw() {
 		Draw(BoneColor, JointColor, 1f);
 	}

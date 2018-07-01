@@ -197,6 +197,10 @@ public static class Utility {
 		return Quaternion.Slerp(from,to,amount);
 	}
 
+	public static Matrix4x4 Interpolate(Matrix4x4 from, Matrix4x4 to, float amount) {
+		return Matrix4x4.TRS(Interpolate(from.GetPosition(), to.GetPosition(), amount), Interpolate(from.GetRotation(), to.GetRotation(), amount), Vector3.one);
+	}
+
 	public static float GetSignedAngle(Vector3 A, Vector3 B, Vector3 axis) {
 		return Mathf.Atan2(
 			Vector3.Dot(axis, Vector3.Cross(A, B)),
