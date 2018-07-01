@@ -134,7 +134,6 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Initialise() {
-		Instance = null;
 		for(int i=0; i<Files.Length; i++) {
 			if(Files[i].Data == null) {
 				Utility.Destroy(Files[i].Environment.gameObject);
