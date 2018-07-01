@@ -21,11 +21,20 @@ public class AnimatorImporter : MonoBehaviour {
 	private bool Baking = false;
 	private List<Sample> Samples = new List<Sample>();
 	
-	void Awake() {
-		Actor = GetComponent<Actor>();
-		Animator = GetComponent<Animator>();
+	public Actor GetActor() {
+		if(Actor == null) {
+			Actor = GetComponent<Actor>();
+		}
+		return Actor;
 	}
-		
+
+	public Animator GetAnimator() {
+		if(Animator == null) {
+			Animator = GetComponent<Animator>();
+		}
+		return Animator;
+	}
+
 	public IEnumerator Bake() {
 		if(Application.isPlaying) {
 			string destination = "Assets/" + Destination;
@@ -35,26 +44,26 @@ public class AnimatorImporter : MonoBehaviour {
 			} else if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
 				//Start Bake
 				Baking = true;
-				AnimatorOverrideController aoc = new AnimatorOverrideController(Animator.runtimeAnimatorController);
+				AnimatorOverrideController aoc = new AnimatorOverrideController(GetAnimator().runtimeAnimatorController);
 				var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
 				foreach (var a in aoc.animationClips)
 					anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, Animation));
 				aoc.ApplyOverrides(anims);
-				Animator.runtimeAnimatorController = aoc;
-				Animator.speed = Speed;
+				GetAnimator().runtimeAnimatorController = aoc;
+				GetAnimator().speed = Speed;
 
 				//Bake
 				transform.position = Vector3.zero;
 				transform.rotation = Quaternion.identity;
-				Animator.Play("Animation", 0, 0f);
+				GetAnimator().Play("Animation", 0, 0f);
 				yield return new WaitForEndOfFrame();
 
 				Samples = new List<Sample>();
-				while(Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
-					Samples.Add(new Sample(GetTimestamp(), Actor.GetWorldPosture(), Actor.GetLocalPosture()));
+				while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
+					Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
 					yield return new WaitForEndOfFrame();
 				}
-				Samples.Add(new Sample(GetTimestamp(), Actor.GetWorldPosture(), Actor.GetLocalPosture()));
+				Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
 
 				//Save Bake
 				MotionData data = ScriptableObject.CreateInstance<MotionData>();
@@ -66,8 +75,8 @@ public class AnimatorImporter : MonoBehaviour {
 
 				//Create Source Data
 				data.Source = new MotionData.Hierarchy();
-				for(int i=0; i<Actor.Bones.Length; i++) {
-					data.Source.AddBone(Actor.Bones[i].GetName(), Actor.Bones[i].GetParent() == null ? "None" : Actor.Bones[i].GetParent().GetName());
+				for(int i=0; i<GetActor().Bones.Length; i++) {
+					data.Source.AddBone(GetActor().Bones[i].GetName(), GetActor().Bones[i].GetParent() == null ? "None" : GetActor().Bones[i].GetParent().GetName());
 				}
 
 				//Set Frames
@@ -80,7 +89,7 @@ public class AnimatorImporter : MonoBehaviour {
 				List<Sample> frames = Resample();
 				for(int i=0; i<frames.Count; i++) {
 					data.Frames[i] = new Frame(data, i+1, frames[i].Timestamp);
-					for(int j=0; j<Actor.Bones.Length; j++) {
+					for(int j=0; j<GetActor().Bones.Length; j++) {
 						data.Frames[i].Local[j] = frames[i].LocalPosture[j] * Mapping[j];
 						data.Frames[i].World[j] = frames[i].WorldPosture[j] * Mapping[j];
 					}
@@ -95,7 +104,7 @@ public class AnimatorImporter : MonoBehaviour {
 				AssetDatabase.Refresh();
 
 				//Stop Bake
-				Animator.speed = 0f;
+				GetAnimator().speed = 0f;
 				Baking = false;
 			} else {
 				Debug.Log("File with name " + name + " already exists.");
@@ -106,7 +115,7 @@ public class AnimatorImporter : MonoBehaviour {
 	public void Abort() {
 		if(Baking) {
 			StopAllCoroutines();
-			Animator.speed = 0f;
+			GetAnimator().speed = 0f;
 			Baking = false;
 		}
 	}
@@ -115,7 +124,7 @@ public class AnimatorImporter : MonoBehaviour {
 		if(!Application.isPlaying || Animator == null || Animation == null || Actor == null) {
 			return 0f;
 		}
-		float timestamp = Animator.GetCurrentAnimatorStateInfo(0).normalizedTime * Animator.GetCurrentAnimatorStateInfo(0).length * Speed;
+		float timestamp = GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime * GetAnimator().GetCurrentAnimatorStateInfo(0).length * Speed;
 		return float.IsNaN(timestamp) ? 0f : timestamp;
 	}
 
@@ -128,9 +137,9 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	public void ComputeMapping() {
-		Mapping = new Matrix4x4[Actor.Bones.Length];
-		for(int i=0; i<Actor.Bones.Length; i++) {
-			Mapping[i] = Retarget.Bones[i].Transform.GetWorldMatrix().GetRelativeTransformationTo(Actor.Bones[i].Transform.GetWorldMatrix());
+		Mapping = new Matrix4x4[GetActor().Bones.Length];
+		for(int i=0; i<GetActor().Bones.Length; i++) {
+			Mapping[i] = Retarget.Bones[i].Transform.GetWorldMatrix().GetRelativeTransformationTo(GetActor().Bones[i].Transform.GetWorldMatrix());
 		}
 	}
 
@@ -146,9 +155,9 @@ public class AnimatorImporter : MonoBehaviour {
 			Sample a = Samples[Mathf.Clamp(index-1, 0, samples.Count)];
 			Sample b = Samples[index];
 			float weight = a.Timestamp == b.Timestamp ? 0f : (timestamps[i] - a.Timestamp) / (b.Timestamp - a.Timestamp);
-			Matrix4x4[] local = new Matrix4x4[Actor.Bones.Length];
-			Matrix4x4[] world = new Matrix4x4[Actor.Bones.Length];
-			for(int j=0; j<Actor.Bones.Length; j++) {
+			Matrix4x4[] local = new Matrix4x4[GetActor().Bones.Length];
+			Matrix4x4[] world = new Matrix4x4[GetActor().Bones.Length];
+			for(int j=0; j<GetActor().Bones.Length; j++) {
 				local[j] = Utility.Interpolate(a.LocalPosture[j], b.LocalPosture[j], weight);
 				world[j] = Utility.Interpolate(a.WorldPosture[j], b.WorldPosture[j], weight);
 			}
