@@ -134,6 +134,11 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Initialise() {
+		if(Instance != null) {
+			if(Instance.Data == null || Instance.Environment == null) {
+				Instance = null;
+			}
+		}
 		for(int i=0; i<Files.Length; i++) {
 			if(Files[i].Data == null) {
 				Utility.Destroy(Files[i].Environment.gameObject);
@@ -350,7 +355,7 @@ public class MotionEditor : MonoBehaviour {
 		void Awake() {
 			Target = (MotionEditor)target;
 			Target.Initialise();
-			ApplyFilter();
+			Filter();
 			Timestamp = Utility.GetTimestamp();
 			EditorApplication.update += EditorUpdate;
 		}
@@ -377,8 +382,7 @@ public class MotionEditor : MonoBehaviour {
 			}
 		}
 		
-		private void ApplyFilter() {
-			Target.StopAnimation();
+		private void Filter() {
 			List<File> instances = new List<File>();
 			if(NameFilter == string.Empty) {
 				instances.AddRange(Target.Files);
@@ -416,21 +420,21 @@ public class MotionEditor : MonoBehaviour {
 		public void SetNameFilter(string filter) {
 			if(NameFilter != filter) {
 				NameFilter = filter;
-				ApplyFilter();
+				Filter();
 			}
 		}
 
 		public void SetExportFilter(bool value) {
 			if(ExportFilter != value) {
 				ExportFilter = value;
-				ApplyFilter();
+				Filter();
 			}
 		}
 
 		public void SetExcludeFilter(bool value) {
 			if(ExcludeFilter != value) {
 				ExcludeFilter = value;
-				ApplyFilter();
+				Filter();
 			}
 		}
 
@@ -443,7 +447,7 @@ public class MotionEditor : MonoBehaviour {
 
 		public void Import() {
 			Target.Import();
-			ApplyFilter();
+			Filter();
 		}
 
 		public int GetIndex() {
