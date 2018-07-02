@@ -8,16 +8,16 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimatorImporter : MonoBehaviour {
 
-	public Actor Retarget;
-	public AnimationClip Animation;
+	public AnimationClip[] Animations = new AnimationClip[0];
+	public Actor Retarget = null;
 	public float Speed = 1f;
 	public int Framerate = 60;
 	public string Destination = string.Empty;
 
 	public Matrix4x4[] Mapping = new Matrix4x4[0];
 	
-	private Actor Actor;
-	private Animator Animator;
+	private Actor Actor = null;
+	private Animator Animator = null;
 	private bool Baking = false;
 	private List<Sample> Samples = new List<Sample>();
 	
@@ -37,78 +37,83 @@ public class AnimatorImporter : MonoBehaviour {
 
 	public IEnumerator Bake() {
 		if(Application.isPlaying) {
+			Baking = true;
 			string destination = "Assets/" + Destination;
-			string name = Animation.name.Substring(Animation.name.IndexOf("|")+1);
 			if(!AssetDatabase.IsValidFolder(destination)) {
 				Debug.Log("Folder " + "'" + destination + "'" + " is not valid.");
-			} else if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
-				//Start Bake
-				Baking = true;
-				AnimatorOverrideController aoc = new AnimatorOverrideController(GetAnimator().runtimeAnimatorController);
-				var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
-				foreach (var a in aoc.animationClips)
-					anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, Animation));
-				aoc.ApplyOverrides(anims);
-				GetAnimator().runtimeAnimatorController = aoc;
-				GetAnimator().speed = Speed;
+			} else {
+				for(int k=0; k<Animations.Length; k++) {
+					string name = Animations[k].name.Substring(Animations[k].name.IndexOf("|")+1);
+					if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
+						//Initialise
+						AnimatorOverrideController aoc = new AnimatorOverrideController(GetAnimator().runtimeAnimatorController);
+						var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+						foreach (var a in aoc.animationClips)
+							anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, Animations[k]));
+						aoc.ApplyOverrides(anims);
+						GetAnimator().runtimeAnimatorController = aoc;
 
-				//Bake
-				transform.position = Vector3.zero;
-				transform.rotation = Quaternion.identity;
-				GetAnimator().Play("Animation", 0, 0f);
-				yield return new WaitForEndOfFrame();
+						//Start Bake
+						transform.position = Vector3.zero;
+						transform.rotation = Quaternion.identity;
+						GetAnimator().speed = Speed;
+						GetAnimator().Play("Animation", 0, 0f);
+						yield return new WaitForEndOfFrame();
 
-				Samples = new List<Sample>();
-				while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
-					Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
-					yield return new WaitForEndOfFrame();
-				}
-				Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
+						Samples = new List<Sample>();
+						while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
+							Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
+							yield return new WaitForEndOfFrame();
+						}
+						Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
 
-				//Save Bake
-				MotionData data = ScriptableObject.CreateInstance<MotionData>();
+						//Save Bake
+						MotionData data = ScriptableObject.CreateInstance<MotionData>();
 
-				//Assign Name
-				data.Name = name;
+						//Assign Name
+						data.Name = name;
 
-				AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
+						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
 
-				//Create Source Data
-				data.Source = new MotionData.Hierarchy();
-				for(int i=0; i<GetActor().Bones.Length; i++) {
-					data.Source.AddBone(GetActor().Bones[i].GetName(), GetActor().Bones[i].GetParent() == null ? "None" : GetActor().Bones[i].GetParent().GetName());
-				}
+						//Create Source Data
+						data.Source = new MotionData.Hierarchy();
+						for(int i=0; i<GetActor().Bones.Length; i++) {
+							data.Source.AddBone(GetActor().Bones[i].GetName(), GetActor().Bones[i].GetParent() == null ? "None" : GetActor().Bones[i].GetParent().GetName());
+						}
 
-				//Set Frames
-				ArrayExtensions.Resize(ref data.Frames, Mathf.RoundToInt((float)Framerate * GetRecordedTime()));
+						//Set Frames
+						ArrayExtensions.Resize(ref data.Frames, Mathf.RoundToInt((float)Framerate * GetRecordedTime()));
 
-				//Set Framerate
-				data.Framerate = (float)Framerate;
+						//Set Framerate
+						data.Framerate = (float)Framerate;
 
-				//Compute Frames
-				List<Sample> frames = Resample();
-				for(int i=0; i<frames.Count; i++) {
-					data.Frames[i] = new Frame(data, i+1, frames[i].Timestamp);
-					for(int j=0; j<GetActor().Bones.Length; j++) {
-						data.Frames[i].Local[j] = frames[i].LocalPosture[j] * Mapping[j];
-						data.Frames[i].World[j] = frames[i].WorldPosture[j] * Mapping[j];
+						//Compute Frames
+						List<Sample> frames = Resample();
+						for(int i=0; i<frames.Count; i++) {
+							data.Frames[i] = new Frame(data, i+1, frames[i].Timestamp);
+							for(int j=0; j<GetActor().Bones.Length; j++) {
+								data.Frames[i].Local[j] = frames[i].LocalPosture[j] * Mapping[j];
+								data.Frames[i].World[j] = frames[i].WorldPosture[j] * Mapping[j];
+							}
+						}
+
+						//Finalise
+						data.DetectSymmetry();
+						data.AddSequence();
+
+						EditorUtility.SetDirty(data);
+
+						//Stop Bake
+						GetAnimator().speed = 0f;
+						yield return new WaitForEndOfFrame();
+					} else {
+						Debug.Log("File with name " + name + " already exists.");
 					}
 				}
-
-				//Finalise
-				data.DetectSymmetry();
-				data.AddSequence();
-
-				EditorUtility.SetDirty(data);
 				AssetDatabase.SaveAssets();
 				AssetDatabase.Refresh();
-
-				//Stop Bake
-				GetAnimator().speed = 0f;
-				Baking = false;
-			} else {
-				Debug.Log("File with name " + name + " already exists.");
 			}
+			Baking = false;
 		}
 	}
 
@@ -121,7 +126,7 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	public float GetTimestamp() {
-		if(!Application.isPlaying || Animator == null || Animation == null || Actor == null) {
+		if(!Application.isPlaying || Animator == null || Actor == null) {
 			return 0f;
 		}
 		float timestamp = GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime * GetAnimator().GetCurrentAnimatorStateInfo(0).length * Speed;
@@ -155,6 +160,7 @@ public class AnimatorImporter : MonoBehaviour {
 			Sample a = Samples[Mathf.Clamp(index-1, 0, samples.Count)];
 			Sample b = Samples[index];
 			float weight = a.Timestamp == b.Timestamp ? 0f : (timestamps[i] - a.Timestamp) / (b.Timestamp - a.Timestamp);
+			//Debug.Log("Timestamp: " + timestamps[i] + " Weight:" + weight + " Previous: " + a.Timestamp + " Next: " + b.Timestamp);
 			Matrix4x4[] local = new Matrix4x4[GetActor().Bones.Length];
 			Matrix4x4[] world = new Matrix4x4[GetActor().Bones.Length];
 			for(int j=0; j<GetActor().Bones.Length; j++) {
@@ -190,8 +196,18 @@ public class AnimatorImporter : MonoBehaviour {
 			Undo.RecordObject(Target, Target.name);
 			
 			EditorGUI.BeginDisabledGroup(Target.Baking);
+			EditorGUILayout.BeginHorizontal();
+			if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
+				ArrayExtensions.Expand(ref Target.Animations);
+			}
+			if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
+				ArrayExtensions.Shrink(ref Target.Animations);
+			}
+			EditorGUILayout.EndHorizontal();
+			for(int i=0; i<Target.Animations.Length; i++) {
+				Target.Animations[i] = (AnimationClip)EditorGUILayout.ObjectField("Animation" + (i+1), Target.Animations[i], typeof(AnimationClip), true);
+			}
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
-			Target.Animation = (AnimationClip)EditorGUILayout.ObjectField("Animation", Target.Animation, typeof(AnimationClip), true);
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Destination");
 			EditorGUILayout.LabelField("Assets/", GUILayout.Width(50));
@@ -201,8 +217,10 @@ public class AnimatorImporter : MonoBehaviour {
 			Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
 			EditorGUI.EndDisabledGroup();
 
+			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Recorded Samples: " + Target.Samples.Count);
 			EditorGUILayout.LabelField("Recorded Time: " + Target.GetRecordedTime());
+			EditorGUILayout.EndHorizontal();
 
 			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
 				Target.ComputeMapping();
