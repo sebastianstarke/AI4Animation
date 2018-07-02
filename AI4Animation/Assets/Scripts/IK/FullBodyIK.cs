@@ -66,7 +66,7 @@ public class FullBodyIK : MonoBehaviour {
 					);
 				}
 			}
-			bone.rotation = Utility.AverageQuaternions(rotations.ToArray());
+			bone.rotation = Utility.QuaternionAverage(rotations.ToArray());
 			
 
 			for(int i=0; i<EndEffectors.Length; i++) {
@@ -80,7 +80,7 @@ public class FullBodyIK : MonoBehaviour {
 					);
 				}
 			}
-			bone.rotation = Utility.AverageQuaternions(rotations.ToArray());
+			bone.rotation = Utility.QuaternionAverage(rotations.ToArray());
 
 			for(int i=0; i<bone.childCount; i++) {
 				Optimise(bone.GetChild(i));

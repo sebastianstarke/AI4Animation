@@ -670,7 +670,7 @@ public static class Utility {
 		}
 	}
 
-	public static Quaternion AverageQuaternions(Quaternion[] quaternions) {
+	public static Quaternion QuaternionAverage(Quaternion[] quaternions) {
 		Vector3 forward = Vector3.zero;
 		Vector3 upwards = Vector3.zero;
 		for(int i=0; i<quaternions.Length; i++) {

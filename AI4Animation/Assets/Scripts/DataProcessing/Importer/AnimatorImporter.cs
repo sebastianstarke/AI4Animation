@@ -14,6 +14,7 @@ public class AnimatorImporter : MonoBehaviour {
 	public int Framerate = 60;
 	public string Destination = string.Empty;
 
+	public Refinement[] Refinements = new Refinement[0];
 	public Matrix4x4[] Mapping = new Matrix4x4[0];
 	
 	private Actor Actor = null;
@@ -33,6 +34,16 @@ public class AnimatorImporter : MonoBehaviour {
 			Animator = GetComponent<Animator>();
 		}
 		return Animator;
+	}
+
+	void LateUpdate() {
+		for(int i=0; i<Refinements.Length; i++) {
+			Quaternion[] rotations = new Quaternion[Refinements[i].ReferenceBones.Length];
+			for(int j=0; j<Refinements[i].ReferenceBones.Length; j++) {
+				rotations[j] = GetActor().Bones[Refinements[i].ReferenceBones[j]].Transform.rotation;
+			}
+			GetActor().Bones[Refinements[i].TargetBone].Transform.OverrideRotation(Utility.QuaternionAverage(rotations));
+		}
 	}
 
 	public IEnumerator Bake() {
@@ -134,11 +145,11 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	public float GetRecordedTime() {
-		if(Samples.Count == 0) {
-			return 0f;
-		} else {
-			return Samples[Samples.Count-1].Timestamp;
-		}
+		return Samples.Count == 0 ? 0f : Samples[Samples.Count-1].Timestamp;
+	}
+
+	public float GetRecordingFPS() {
+		return Samples.Count == 0 ? 0f : Samples.Count / GetRecordedTime();
 	}
 
 	public void ComputeMapping() {
@@ -172,6 +183,12 @@ public class AnimatorImporter : MonoBehaviour {
 		return samples;
 	}
 
+	[System.Serializable]	
+	public class Refinement {
+		public int TargetBone = 0;
+		public int[] ReferenceBones = new int[0];
+	}
+
 	public class Sample {
 		public float Timestamp;
 		public Matrix4x4[] WorldPosture;
@@ -196,17 +213,57 @@ public class AnimatorImporter : MonoBehaviour {
 			Undo.RecordObject(Target, Target.name);
 			
 			EditorGUI.BeginDisabledGroup(Target.Baking);
+
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton("Add", UltiDraw.DarkGrey, UltiDraw.White)) {
+			if(Utility.GUIButton("Add Animation", UltiDraw.DarkGrey, UltiDraw.White)) {
 				ArrayExtensions.Expand(ref Target.Animations);
 			}
-			if(Utility.GUIButton("Remove", UltiDraw.DarkGrey, UltiDraw.White)) {
+			if(Utility.GUIButton("Remove Animation", UltiDraw.DarkGrey, UltiDraw.White)) {
 				ArrayExtensions.Shrink(ref Target.Animations);
 			}
 			EditorGUILayout.EndHorizontal();
 			for(int i=0; i<Target.Animations.Length; i++) {
-				Target.Animations[i] = (AnimationClip)EditorGUILayout.ObjectField("Animation" + (i+1), Target.Animations[i], typeof(AnimationClip), true);
+				Object o = (Object)EditorGUILayout.ObjectField("Animation " + (i+1), Target.Animations[i], typeof(Object), true);
+				Target.Animations[i] = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(o), typeof(AnimationClip));
 			}
+
+			EditorGUILayout.BeginHorizontal();
+			if(Utility.GUIButton("Add Refinement", UltiDraw.DarkGrey, UltiDraw.White)) {
+				ArrayExtensions.Add(ref Target.Refinements, new Refinement());
+			}
+			if(Utility.GUIButton("Remove Refinement", UltiDraw.DarkGrey, UltiDraw.White)) {
+				ArrayExtensions.Shrink(ref Target.Refinements);
+			}
+			EditorGUILayout.EndHorizontal();
+			for(int i=0; i<Target.Refinements.Length; i++) {
+				Utility.SetGUIColor(UltiDraw.Grey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					EditorGUILayout.BeginHorizontal();
+					Target.Refinements[i].TargetBone = Mathf.Clamp(EditorGUILayout.IntField("Refinement " + (i+1) + " Target Bone", Target.Refinements[i].TargetBone), 0, Target.GetActor().Bones.Length-1);
+					EditorGUILayout.LabelField(Target.GetActor().Bones[Target.Refinements[i].TargetBone].GetName());
+					EditorGUILayout.EndHorizontal();
+					EditorGUILayout.BeginHorizontal();
+					if(Utility.GUIButton("Add Reference", UltiDraw.DarkGrey, UltiDraw.White)) {
+						ArrayExtensions.Expand(ref Target.Refinements[i].ReferenceBones);
+					}
+					if(Utility.GUIButton("Remove Referece", UltiDraw.DarkGrey, UltiDraw.White)) {
+						ArrayExtensions.Shrink(ref Target.Refinements[i].ReferenceBones);
+					}
+					EditorGUILayout.EndHorizontal();
+					for(int j=0; j<Target.Refinements[i].ReferenceBones.Length; j++) {
+						EditorGUILayout.BeginHorizontal();
+						Target.Refinements[i].ReferenceBones[j] = Mathf.Clamp(EditorGUILayout.IntField("Reference " + (j+1), Target.Refinements[i].ReferenceBones[j]), 0, Target.GetActor().Bones.Length-1);
+						EditorGUILayout.LabelField(Target.GetActor().Bones[Target.Refinements[i].ReferenceBones[j]].GetName());
+						EditorGUILayout.EndHorizontal();
+					}
+				}
+			}
+
+			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
+				Target.ComputeMapping();
+			}
+
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Destination");
@@ -215,16 +272,12 @@ public class AnimatorImporter : MonoBehaviour {
 			EditorGUILayout.EndHorizontal();
 			Target.Speed = EditorGUILayout.FloatField("Speed", Target.Speed);
 			Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
+
 			EditorGUI.EndDisabledGroup();
 
-			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Recorded Samples: " + Target.Samples.Count);
 			EditorGUILayout.LabelField("Recorded Time: " + Target.GetRecordedTime());
-			EditorGUILayout.EndHorizontal();
-
-			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
-				Target.ComputeMapping();
-			}
+			EditorGUILayout.LabelField("Recording FPS: " + Target.GetRecordingFPS());
 
 			if(!Target.Baking) {
 				if(Utility.GUIButton("Bake", UltiDraw.DarkGrey, UltiDraw.White)) {

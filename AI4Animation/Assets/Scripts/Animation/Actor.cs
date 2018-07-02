@@ -313,7 +313,7 @@ public class Actor : MonoBehaviour {
 					EditorGUILayout.LabelField("|", GUILayout.Width(20f));
 				}
 				EditorGUILayout.LabelField("-", GUILayout.Width(20f));
-				EditorGUILayout.LabelField(transform.name, GUILayout.Width(100f), GUILayout.Height(20f));
+				EditorGUILayout.LabelField(transform.name + " " + (bone == null ? string.Empty : "(" + bone.Index.ToString() + ")"), GUILayout.Width(100f), GUILayout.Height(20f));
 				GUILayout.FlexibleSpace();
 
 				/*

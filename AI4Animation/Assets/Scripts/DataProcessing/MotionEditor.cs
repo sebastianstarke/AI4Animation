@@ -91,6 +91,11 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public File GetFile() {
+		if(Instance != null) {
+			if(Instance.Data == null || Instance.Environment == null) {
+				Instance = null;
+			}
+		}
 		return Instance;
 	}
 
@@ -133,11 +138,6 @@ public class MotionEditor : MonoBehaviour {
 	}
 
 	public void Initialise() {
-		if(Instance != null) {
-			if(Instance.Data == null || Instance.Environment == null) {
-				Instance = null;
-			}
-		}
 		for(int i=0; i<Files.Length; i++) {
 			if(Files[i].Data == null) {
 				Utility.Destroy(Files[i].Environment.gameObject);
