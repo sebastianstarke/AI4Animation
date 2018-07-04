@@ -13,11 +13,6 @@ public class State {
 	public Vector3[] BoneVelocities;
 	public Trajectory Trajectory;
 
-	//public List<Matrix4x4[]> PastBoneTransformations;
-	//public List<Vector3[]> PastBoneVelocities;
-	//public List<Matrix4x4[]> FutureBoneTransformations;
-	//public List<Vector3[]> FutureBoneVelocities;
-
 	public State(Frame frame, bool mirrored) {
 		Index = frame.Index;
 		Timestamp = frame.Timestamp;
@@ -27,24 +22,6 @@ public class State {
 		BoneTransformations = frame.GetBoneTransformations(mirrored);
 		BoneVelocities = frame.GetBoneVelocities(mirrored);
 		Trajectory = frame.GetTrajectory(mirrored);
-
-		/*
-		PastBoneTransformations = new List<Matrix4x4[]>(6);
-		PastBoneVelocities = new List<Vector3[]>(6);
-		for(int i=0; i<6; i++) {
-			Frame previous = frame.Data.GetFrame(Mathf.Clamp(frame.Timestamp - 1f + (float)i/6f, 0f, frame.Data.GetTotalTime()));
-			PastBoneTransformations.Add(previous.GetBoneTransformations(mirrored));
-			PastBoneVelocities.Add(previous.GetBoneVelocities(mirrored));
-		}
-
-		FutureBoneTransformations = new List<Matrix4x4[]>(5);
-		FutureBoneVelocities = new List<Vector3[]>(5);
-		for(int i=1; i<=5; i++) {
-			Frame future = frame.Data.GetFrame(Mathf.Clamp(frame.Timestamp + (float)i/5f, 0f, frame.Data.GetTotalTime()));
-			FutureBoneTransformations.Add(future.GetBoneTransformations(mirrored));
-			FutureBoneVelocities.Add(future.GetBoneVelocities(mirrored));
-		}
-		*/
 	}
 }
 #endif
