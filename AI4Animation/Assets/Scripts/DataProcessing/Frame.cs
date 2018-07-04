@@ -44,13 +44,6 @@ public class Frame {
 			}
 		}
 		return transformations.ToArray();
-		/*
-		Matrix4x4[] transformations = new Matrix4x4[World.Length];
-		for(int i=0; i<World.Length; i++) {
-			transformations[i] = GetBoneTransformation(i, mirrored);
-		}
-		return transformations;
-		*/
 	}
 
 	public Matrix4x4 GetBoneTransformation(int index, bool mirrored, int smoothing = 0) {
@@ -88,13 +81,6 @@ public class Frame {
 			}
 		}
 		return velocities.ToArray();
-		/*
-		Vector3[] velocities = new Vector3[World.Length];
-		for(int i=0; i<World.Length; i++) {
-			velocities[i] = GetBoneVelocity(i, mirrored);
-		}
-		return velocities;
-		*/
 	}
 
 	public Vector3 GetBoneVelocity(int index, bool mirrored) {
