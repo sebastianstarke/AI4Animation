@@ -17,10 +17,6 @@ public class Controller {
 
 	public Style[] Styles = new Style[0];
 
-	public Controller() {
-
-	}
-	
 	public float[] GetStyle() {
 		float[] style = new float[Styles.Length];
 		for(int i=0; i<Styles.Length; i++) {
