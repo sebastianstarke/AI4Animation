@@ -117,7 +117,6 @@ public class Actor : MonoBehaviour {
 
 	public void Draw(Color boneColor, Color jointColor, float alpha) {
 		UltiDraw.Begin();
-
 		if(DrawRoot) {
 			UltiDraw.DrawTranslateGizmo(GetRoot().position, GetRoot().rotation, 0.1f);
 			UltiDraw.DrawSphere(GetRoot().position, GetRoot().rotation, 0.025f, UltiDraw.Black);
@@ -164,13 +163,11 @@ public class Actor : MonoBehaviour {
 				recursion(Bones[0]);
 			}
 		}
-
 		UltiDraw.End();
 	}
 
 	public void DrawSimple(Color color) {
 		UltiDraw.Begin();
-
 		if(DrawSkeleton) {
 			Action<Bone> recursion = null;
 			recursion = new Action<Bone>((bone) => {
@@ -186,14 +183,12 @@ public class Actor : MonoBehaviour {
 				recursion(Bones[0]);
 			}
 		}
-
 		UltiDraw.End();
 	}
 
 
 	public void DrawSimple(Color color, Matrix4x4[] transformations) {
 		UltiDraw.Begin();
-
 		if(DrawSkeleton) {
 			Action<Bone> recursion = null;
 			recursion = new Action<Bone>((bone) => {
@@ -209,7 +204,6 @@ public class Actor : MonoBehaviour {
 				recursion(Bones[0]);
 			}
 		}
-
 		UltiDraw.End();
 	}
 
