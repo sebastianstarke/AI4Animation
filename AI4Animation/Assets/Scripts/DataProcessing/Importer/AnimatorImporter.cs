@@ -37,12 +37,16 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		Quaternion[] refined = new Quaternion[Refinements.Length];
 		for(int i=0; i<Refinements.Length; i++) {
 			Quaternion[] rotations = new Quaternion[Refinements[i].ReferenceBones.Length];
 			for(int j=0; j<Refinements[i].ReferenceBones.Length; j++) {
 				rotations[j] = GetActor().Bones[Refinements[i].ReferenceBones[j]].Transform.rotation;
 			}
-			GetActor().Bones[Refinements[i].TargetBone].Transform.OverrideRotation(Utility.QuaternionAverage(rotations));
+			refined[i] = Utility.QuaternionAverage(rotations);
+		}
+		for(int i=0; i<Refinements.Length; i++) {
+			GetActor().Bones[Refinements[i].TargetBone].Transform.OverrideRotation(refined[i]);
 		}
 	}
 
