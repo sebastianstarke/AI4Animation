@@ -171,7 +171,6 @@ public class AnimatorImporter : MonoBehaviour {
 			Sample a = Samples[Mathf.Clamp(index-1, 0, samples.Count)];
 			Sample b = Samples[index];
 			float weight = a.Timestamp == b.Timestamp ? 0f : (timestamps[i] - a.Timestamp) / (b.Timestamp - a.Timestamp);
-			//Debug.Log("Timestamp: " + timestamps[i] + " Weight:" + weight + " Previous: " + a.Timestamp + " Next: " + b.Timestamp);
 			Matrix4x4[] local = new Matrix4x4[GetActor().Bones.Length];
 			Matrix4x4[] world = new Matrix4x4[GetActor().Bones.Length];
 			for(int j=0; j<GetActor().Bones.Length; j++) {
