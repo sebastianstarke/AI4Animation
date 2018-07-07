@@ -240,23 +240,4 @@ public class FBXImporter : EditorWindow {
 	}
 
 }
-
-/*
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class FBXImporter : MonoBehaviour {
-
-	public float Time;
-	public GameObject Character;
-	public GameObject File;
-
-	void Update() {
-	//	AnimationClip clip = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(File), typeof(AnimationClip));
-	//	clip.SampleAnimation(Character, Time);
-	//	clip.
-	}
-}
-*/
 #endif
