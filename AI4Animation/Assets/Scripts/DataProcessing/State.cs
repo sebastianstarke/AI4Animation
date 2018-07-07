@@ -8,7 +8,6 @@ public class State {
 	public float Timestamp;
 	public bool Mirrored;
 	public Matrix4x4 Root;
-	public Vector3 RootMotion;
 	public Matrix4x4[] BoneTransformations;
 	public Vector3[] BoneVelocities;
 	public Trajectory Trajectory;
@@ -18,7 +17,6 @@ public class State {
 		Timestamp = frame.Timestamp;
 		Mirrored = mirrored;
 		Root = frame.GetRootTransformation(mirrored);
-		RootMotion = frame.GetRootMotion(mirrored);
 		BoneTransformations = frame.GetBoneTransformations(mirrored);
 		BoneVelocities = frame.GetBoneVelocities(mirrored);
 		Trajectory = frame.GetTrajectory(mirrored);

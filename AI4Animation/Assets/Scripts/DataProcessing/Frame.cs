@@ -139,6 +139,7 @@ public class Frame {
 		}
 	}
 
+	/*
 	public Vector3 GetRootMotion(bool mirrored) {
 		if(Index == 1) {
 			return GetNextFrame().GetRootMotion(mirrored);
@@ -151,6 +152,7 @@ public class Frame {
 			return new Vector3(translationalMotion.x, angularMotion, translationalMotion.z);
 		}
 	}
+	*/
 
 	public float GetSpeed(bool mirrored) {
 		float length = 0f;
