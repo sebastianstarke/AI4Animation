@@ -276,10 +276,6 @@ public class AnimatorImporter : MonoBehaviour {
 				}
 			}
 
-			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
-				Target.ComputeMapping();
-			}
-
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.LabelField("Destination");
@@ -288,6 +284,13 @@ public class AnimatorImporter : MonoBehaviour {
 			EditorGUILayout.EndHorizontal();
 			Target.Speed = EditorGUILayout.FloatField("Speed", Target.Speed);
 			Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
+
+			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
+				Target.ComputeMapping();
+			}
+			for(int i=0; i<Target.Mapping.Length; i++) {
+				EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Mapping[i].GetRotation().eulerAngles);
+			}
 
 			EditorGUI.EndDisabledGroup();
 
