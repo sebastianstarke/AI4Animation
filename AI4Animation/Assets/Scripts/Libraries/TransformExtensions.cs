@@ -12,4 +12,28 @@ public static class TransformExtensions {
 		return Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
 	}
 
+	public static void OverridePosition(this Transform transform, Vector3 position) {
+		Transform[] childs = new Transform[transform.childCount];
+		for(int i=0; i<childs.Length; i++) {
+			childs[i] = transform.GetChild(i);
+		}
+		transform.DetachChildren();
+		transform.position = position;
+		for(int i=0; i<childs.Length; i++) {
+			childs[i].SetParent(transform);
+		}
+	}
+
+	public static void OverrideRotation(this Transform transform, Quaternion rotation) {
+		Transform[] childs = new Transform[transform.childCount];
+		for(int i=0; i<childs.Length; i++) {
+			childs[i] = transform.GetChild(i);
+		}
+		transform.DetachChildren();
+		transform.rotation = rotation;
+		for(int i=0; i<childs.Length; i++) {
+			childs[i].SetParent(transform);
+		}
+	}
+
 }

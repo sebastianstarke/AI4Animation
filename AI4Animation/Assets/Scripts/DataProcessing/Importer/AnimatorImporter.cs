@@ -36,19 +36,28 @@ public class AnimatorImporter : MonoBehaviour {
 		return Animator;
 	}
 
-	void LateUpdate() {
-		if(Baking) {
-			Quaternion[] refined = new Quaternion[Refinements.Length];
-			for(int i=0; i<Refinements.Length; i++) {
-				Quaternion[] rotations = new Quaternion[Refinements[i].ReferenceBones.Length];
-				for(int j=0; j<Refinements[i].ReferenceBones.Length; j++) {
-					rotations[j] = GetActor().Bones[Refinements[i].ReferenceBones[j]].Transform.rotation;
-				}
-				refined[i] = Utility.QuaternionAverage(rotations);
+	private void PostProcess() {
+		//Mapping
+		Matrix4x4[] posture = GetActor().GetWorldPosture();
+		for(int i=0; i<posture.Length; i++) {
+			posture[i] *= Mapping[i];
+		}
+		for(int i=0; i<Retarget.Bones.Length; i++) {
+			Retarget.Bones[i].Transform.position = posture[i].GetPosition();
+			Retarget.Bones[i].Transform.rotation = posture[i].GetRotation();
+		}
+
+		//Refinements
+		Quaternion[] refined = new Quaternion[Refinements.Length];
+		for(int i=0; i<Refinements.Length; i++) {
+			Quaternion[] rotations = new Quaternion[Refinements[i].ReferenceBones.Length];
+			for(int j=0; j<Refinements[i].ReferenceBones.Length; j++) {
+				rotations[j] = Retarget.Bones[Refinements[i].ReferenceBones[j]].Transform.rotation;
 			}
-			for(int i=0; i<Refinements.Length; i++) {
-				GetActor().Bones[Refinements[i].TargetBone].Transform.OverrideRotation(refined[i]);
-			}
+			refined[i] = Utility.QuaternionAverage(rotations);
+		}
+		for(int i=0; i<Refinements.Length; i++) {
+			Retarget.Bones[Refinements[i].TargetBone].Transform.OverrideRotation(refined[i]);
 		}
 	}
 
@@ -79,10 +88,12 @@ public class AnimatorImporter : MonoBehaviour {
 
 						Samples = new List<Sample>();
 						while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
-							Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
+							PostProcess();
+							Samples.Add(new Sample(GetTimestamp(), Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
 							yield return new WaitForEndOfFrame();
 						}
-						Samples.Add(new Sample(GetTimestamp(), GetActor().GetWorldPosture(), GetActor().GetLocalPosture()));
+						PostProcess();
+						Samples.Add(new Sample(GetTimestamp(),Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
 
 						//Save Bake
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();
@@ -94,8 +105,8 @@ public class AnimatorImporter : MonoBehaviour {
 
 						//Create Source Data
 						data.Source = new MotionData.Hierarchy();
-						for(int i=0; i<GetActor().Bones.Length; i++) {
-							data.Source.AddBone(GetActor().Bones[i].GetName(), GetActor().Bones[i].GetParent() == null ? "None" : GetActor().Bones[i].GetParent().GetName());
+						for(int i=0; i<Retarget.Bones.Length; i++) {
+							data.Source.AddBone(Retarget.Bones[i].GetName(), Retarget.Bones[i].GetParent() == null ? "None" : Retarget.Bones[i].GetParent().GetName());
 						}
 
 						//Set Frames
@@ -108,9 +119,9 @@ public class AnimatorImporter : MonoBehaviour {
 						List<Sample> frames = Resample();
 						for(int i=0; i<frames.Count; i++) {
 							data.Frames[i] = new Frame(data, i+1, frames[i].Timestamp);
-							for(int j=0; j<GetActor().Bones.Length; j++) {
-								data.Frames[i].Local[j] = frames[i].LocalPosture[j] * Mapping[j];
-								data.Frames[i].World[j] = frames[i].WorldPosture[j] * Mapping[j];
+							for(int j=0; j<Retarget.Bones.Length; j++) {
+								data.Frames[i].Local[j] = frames[i].LocalPosture[j];
+								data.Frames[i].World[j] = frames[i].WorldPosture[j];
 							}
 						}
 
@@ -177,9 +188,9 @@ public class AnimatorImporter : MonoBehaviour {
 			Sample a = Samples[Mathf.Clamp(index-1, 0, samples.Count)];
 			Sample b = Samples[index];
 			float weight = a.Timestamp == b.Timestamp ? 0f : (timestamps[i] - a.Timestamp) / (b.Timestamp - a.Timestamp);
-			Matrix4x4[] local = new Matrix4x4[GetActor().Bones.Length];
-			Matrix4x4[] world = new Matrix4x4[GetActor().Bones.Length];
-			for(int j=0; j<GetActor().Bones.Length; j++) {
+			Matrix4x4[] local = new Matrix4x4[Retarget.Bones.Length];
+			Matrix4x4[] world = new Matrix4x4[Retarget.Bones.Length];
+			for(int j=0; j<Retarget.Bones.Length; j++) {
 				local[j] = Utility.Interpolate(a.LocalPosture[j], b.LocalPosture[j], weight);
 				world[j] = Utility.Interpolate(a.WorldPosture[j], b.WorldPosture[j], weight);
 			}
@@ -246,7 +257,7 @@ public class AnimatorImporter : MonoBehaviour {
 					Utility.ResetGUIColor();
 					EditorGUILayout.BeginHorizontal();
 					Target.Refinements[i].TargetBone = Mathf.Clamp(EditorGUILayout.IntField("Refinement " + (i+1) + " Target Bone", Target.Refinements[i].TargetBone), 0, Target.GetActor().Bones.Length-1);
-					EditorGUILayout.LabelField(Target.GetActor().Bones[Target.Refinements[i].TargetBone].GetName());
+					EditorGUILayout.LabelField(Target.Retarget.Bones[Target.Refinements[i].TargetBone].GetName());
 					EditorGUILayout.EndHorizontal();
 					EditorGUILayout.BeginHorizontal();
 					if(Utility.GUIButton("Add Reference", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -259,7 +270,7 @@ public class AnimatorImporter : MonoBehaviour {
 					for(int j=0; j<Target.Refinements[i].ReferenceBones.Length; j++) {
 						EditorGUILayout.BeginHorizontal();
 						Target.Refinements[i].ReferenceBones[j] = Mathf.Clamp(EditorGUILayout.IntField("Reference " + (j+1), Target.Refinements[i].ReferenceBones[j]), 0, Target.GetActor().Bones.Length-1);
-						EditorGUILayout.LabelField(Target.GetActor().Bones[Target.Refinements[i].ReferenceBones[j]].GetName());
+						EditorGUILayout.LabelField(Target.Retarget.Bones[Target.Refinements[i].ReferenceBones[j]].GetName());
 						EditorGUILayout.EndHorizontal();
 					}
 				}
