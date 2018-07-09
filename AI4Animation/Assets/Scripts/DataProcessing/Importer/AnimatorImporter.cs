@@ -298,13 +298,6 @@ public class AnimatorImporter : MonoBehaviour {
 			Target.Speed = EditorGUILayout.FloatField("Speed", Target.Speed);
 			Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
 
-			//Utility.SetGUIColor(UltiDraw.Grey);
-			//using(new EditorGUILayout.VerticalScope ("Box")) {
-			//	Utility.ResetGUIColor();
-			//	for(int i=0; i<Target.Mapping.Length; i++) {
-			//		EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Mapping[i].GetRotation().eulerAngles);
-			//	}
-			//}
 			Utility.SetGUIColor(UltiDraw.Grey);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
