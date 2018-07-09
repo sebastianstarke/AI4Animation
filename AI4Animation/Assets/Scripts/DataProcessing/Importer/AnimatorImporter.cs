@@ -8,14 +8,15 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimatorImporter : MonoBehaviour {
 
-	public AnimationClip[] Animations = new AnimationClip[0];
+	public Object[] Animations = new Object[0];
 	public Actor Retarget = null;
 	public float Speed = 1f;
 	public int Framerate = 60;
 	public string Destination = string.Empty;
 
 	public Refinement[] Refinements = new Refinement[0];
-	public Matrix4x4[] Mapping = new Matrix4x4[0];
+	public Quaternion[] Mapping = new Quaternion[0];
+	public Vector3[] Corrections = new Vector3[0];
 	
 	private Actor Actor = null;
 	private Animator Animator = null;
@@ -40,11 +41,11 @@ public class AnimatorImporter : MonoBehaviour {
 		//Mapping
 		Matrix4x4[] posture = GetActor().GetWorldPosture();
 		for(int i=0; i<posture.Length; i++) {
-			posture[i] *= Mapping[i];
+			posture[i] *= Matrix4x4.TRS(Vector3.zero, Mapping[i], Vector3.one);
 		}
 		for(int i=0; i<Retarget.Bones.Length; i++) {
 			Retarget.Bones[i].Transform.position = posture[i].GetPosition();
-			Retarget.Bones[i].Transform.rotation = posture[i].GetRotation();
+			Retarget.Bones[i].Transform.rotation = posture[i].GetRotation() * Quaternion.Euler(Corrections[i]);
 		}
 
 		//Refinements
@@ -61,27 +62,34 @@ public class AnimatorImporter : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator Play() {
+		yield return new WaitForEndOfFrame();
+	}
+
 	public IEnumerator Bake() {
 		if(Application.isPlaying) {
 			Baking = true;
-			string destination = "Assets/" + Destination;
+			string destination = Destination;
 			if(!AssetDatabase.IsValidFolder(destination)) {
 				Debug.Log("Folder " + "'" + destination + "'" + " is not valid.");
 			} else {
 				for(int k=0; k<Animations.Length; k++) {
-					string name = Animations[k].name.Substring(Animations[k].name.IndexOf("|")+1);
+					string name = Animations[k].name;
 					if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
+						GetActor().transform.position = Vector3.zero;
+						GetActor().transform.rotation = Quaternion.identity;
+						Retarget.transform.position = Vector3.zero;
+						Retarget.transform.rotation = Quaternion.identity;
+
 						//Initialise
 						AnimatorOverrideController aoc = new AnimatorOverrideController(GetAnimator().runtimeAnimatorController);
 						var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
 						foreach (var a in aoc.animationClips)
-							anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, Animations[k]));
+							anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(a, (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(Animations[k]), typeof(AnimationClip))));
 						aoc.ApplyOverrides(anims);
 						GetAnimator().runtimeAnimatorController = aoc;
 
 						//Start Bake
-						transform.position = Vector3.zero;
-						transform.rotation = Quaternion.identity;
 						GetAnimator().speed = Speed;
 						GetAnimator().Play("Animation", 0, 0f);
 						yield return new WaitForEndOfFrame();
@@ -169,10 +177,13 @@ public class AnimatorImporter : MonoBehaviour {
 		return Samples.Count == 0 ? 0f : Samples.Count / GetRecordedTime();
 	}
 
-	public void ComputeMapping() {
-		Mapping = new Matrix4x4[GetActor().Bones.Length];
-		for(int i=0; i<GetActor().Bones.Length; i++) {
-			Mapping[i] = Retarget.Bones[i].Transform.GetWorldMatrix().GetRelativeTransformationTo(GetActor().Bones[i].Transform.GetWorldMatrix());
+	public void Setup() {
+		if(!Application.isPlaying && transform.hasChanged) {
+			Mapping = new Quaternion[GetActor().Bones.Length];
+			for(int i=0; i<GetActor().Bones.Length; i++) {
+				Mapping[i] = Retarget.Bones[i].Transform.rotation.GetRelativeRotationTo(GetActor().Bones[i].Transform.GetWorldMatrix());
+			}
+			ArrayExtensions.Resize(ref Corrections, GetActor().Bones.Length);
 		}
 	}
 
@@ -228,6 +239,8 @@ public class AnimatorImporter : MonoBehaviour {
 		public override void OnInspectorGUI() {
 			Undo.RecordObject(Target, Target.name);
 			
+			Target.Setup();
+
 			EditorGUI.BeginDisabledGroup(Target.Baking);
 
 			EditorGUILayout.BeginHorizontal();
@@ -240,7 +253,11 @@ public class AnimatorImporter : MonoBehaviour {
 			EditorGUILayout.EndHorizontal();
 			for(int i=0; i<Target.Animations.Length; i++) {
 				Object o = (Object)EditorGUILayout.ObjectField("Animation " + (i+1), Target.Animations[i], typeof(Object), true);
-				Target.Animations[i] = (AnimationClip)AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(o), typeof(AnimationClip));
+				if(AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(o), typeof(AnimationClip)) != null) {
+					Target.Animations[i] = o;
+				} else { 
+					Target.Animations[i] = null;
+				}
 			}
 
 			EditorGUILayout.BeginHorizontal();
@@ -277,32 +294,35 @@ public class AnimatorImporter : MonoBehaviour {
 			}
 
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
-			EditorGUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField("Destination");
-			EditorGUILayout.LabelField("Assets/", GUILayout.Width(50));
-			Target.Destination = EditorGUILayout.TextField(Target.Destination);
-			EditorGUILayout.EndHorizontal();
+			Target.Destination = EditorGUILayout.TextField("Destination", Target.Destination);
 			Target.Speed = EditorGUILayout.FloatField("Speed", Target.Speed);
 			Target.Framerate = EditorGUILayout.IntField("Framerate", Target.Framerate);
 
-			if(Utility.GUIButton("Compute Mapping", UltiDraw.DarkGrey, UltiDraw.White)) {
-				Target.ComputeMapping();
-			}
-			for(int i=0; i<Target.Mapping.Length; i++) {
-				EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Mapping[i].GetRotation().eulerAngles);
+			//Utility.SetGUIColor(UltiDraw.Grey);
+			//using(new EditorGUILayout.VerticalScope ("Box")) {
+			//	Utility.ResetGUIColor();
+			//	for(int i=0; i<Target.Mapping.Length; i++) {
+			//		EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Mapping[i].GetRotation().eulerAngles);
+			//	}
+			//}
+			Utility.SetGUIColor(UltiDraw.Grey);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				for(int i=0; i<Target.Mapping.Length; i++) {
+					Target.Corrections[i] = EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Corrections[i]);
+				}
 			}
 
 			EditorGUI.EndDisabledGroup();
-
-			EditorGUILayout.LabelField("Recorded Samples: " + Target.Samples.Count);
-			EditorGUILayout.LabelField("Recorded Time: " + Target.GetRecordedTime());
-			EditorGUILayout.LabelField("Recording FPS: " + Target.GetRecordingFPS());
 
 			if(!Target.Baking) {
 				if(Utility.GUIButton("Bake", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.StartCoroutine(Target.Bake());
 				}
 			} else {
+				EditorGUILayout.LabelField("Recorded Samples: " + Target.Samples.Count);
+				EditorGUILayout.LabelField("Recorded Time: " + Target.GetRecordedTime());
+				EditorGUILayout.LabelField("Recording FPS: " + Target.GetRecordingFPS());
 				if(Utility.GUIButton("Stop", UltiDraw.DarkGrey, UltiDraw.White)) {
 					Target.Abort();
 				}
