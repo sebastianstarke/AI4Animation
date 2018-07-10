@@ -189,7 +189,15 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	public float GetRecordingFPS() {
-		return Samples.Count == 0 ? 0f : Samples.Count / GetRecordedTime();
+		int samples = 0;
+		float fps = 0f;
+		for(int i=Samples.Count-1; i>Mathf.Max(Samples.Count-Framerate-1, 0); i--) {
+			if(i > 0) {
+				samples += 1;
+				fps += 1f / (Samples[i].Timestamp - Samples[i-1].Timestamp);
+			}
+		}
+		return samples == 0 ? 0f : (fps / samples);
 	}
 
 	public void Setup() {
@@ -268,10 +276,12 @@ public class AnimatorImporter : MonoBehaviour {
 			EditorGUILayout.EndHorizontal();
 			for(int i=0; i<Target.Animations.Length; i++) {
 				Object o = (Object)EditorGUILayout.ObjectField("Animation " + (i+1), Target.Animations[i], typeof(Object), true);
-				if(AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(o), typeof(AnimationClip)) != null) {
-					Target.Animations[i] = o;
-				} else { 
-					Target.Animations[i] = null;
+				if(Target.Animations[i] != o) {
+					if(AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(o), typeof(AnimationClip)) != null) {
+						Target.Animations[i] = o;
+					} else { 
+						Target.Animations[i] = null;
+					}
 				}
 			}
 
