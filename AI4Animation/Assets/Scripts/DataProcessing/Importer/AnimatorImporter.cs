@@ -22,6 +22,8 @@ public class AnimatorImporter : MonoBehaviour {
 	private Animator Animator = null;
 	private bool Baking = false;
 	private List<Sample> Samples = new List<Sample>();
+
+	private Object Current = null;
 	
 	public Actor GetActor() {
 		if(Actor == null) {
@@ -68,6 +70,7 @@ public class AnimatorImporter : MonoBehaviour {
 
 	public IEnumerator Bake() {
 		if(Application.isPlaying) {
+			Current = null;
 			Baking = true;
 			string destination = Destination;
 			if(!AssetDatabase.IsValidFolder(destination)) {
@@ -76,6 +79,8 @@ public class AnimatorImporter : MonoBehaviour {
 				for(int k=0; k<Animations.Length; k++) {
 					string name = Animations[k].name;
 					if(AssetDatabase.LoadAssetAtPath(destination+"/"+name+".asset", typeof(MotionData)) == null) {
+						Current = Animations[k];
+
 						GetActor().transform.position = Vector3.zero;
 						GetActor().transform.rotation = Quaternion.identity;
 						Retarget.transform.position = Vector3.zero;
@@ -146,9 +151,11 @@ public class AnimatorImporter : MonoBehaviour {
 						Debug.Log("File with name " + name + " already exists.");
 					}
 				}
+				yield return new WaitForEndOfFrame();
 				AssetDatabase.SaveAssets();
 				AssetDatabase.Refresh();
 			}
+			Current = null;
 			Baking = false;
 		}
 	}
@@ -157,8 +164,16 @@ public class AnimatorImporter : MonoBehaviour {
 		if(Baking) {
 			StopAllCoroutines();
 			GetAnimator().speed = 0f;
+			Current = null;
 			Baking = false;
 		}
+	}
+
+	public float GetNormalizedTimestamp() {
+		if(!Application.isPlaying || Animator == null || Actor == null) {
+			return 0f;
+		}
+		return GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime;
 	}
 
 	public float GetTimestamp() {
@@ -313,6 +328,8 @@ public class AnimatorImporter : MonoBehaviour {
 					Target.StartCoroutine(Target.Bake());
 				}
 			} else {
+				EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Target.GetNormalizedTimestamp() * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Cyan.Transparent(0.75f));
+				EditorGUILayout.LabelField("Animation: " + Target.Current.name);
 				EditorGUILayout.LabelField("Recorded Samples: " + Target.Samples.Count);
 				EditorGUILayout.LabelField("Recorded Time: " + Target.GetRecordedTime());
 				EditorGUILayout.LabelField("Recording FPS: " + Target.GetRecordingFPS());
