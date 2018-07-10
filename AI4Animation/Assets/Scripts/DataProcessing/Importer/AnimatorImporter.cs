@@ -47,7 +47,10 @@ public class AnimatorImporter : MonoBehaviour {
 		}
 		for(int i=0; i<Retarget.Bones.Length; i++) {
 			Retarget.Bones[i].Transform.position = posture[i].GetPosition();
-			Retarget.Bones[i].Transform.rotation = posture[i].GetRotation() * Quaternion.Euler(Corrections[i]);
+			Retarget.Bones[i].Transform.rotation = posture[i].GetRotation();
+		}
+		for(int i=0; i<Retarget.Bones.Length; i++) {
+			Retarget.Bones[i].Transform.rotation *= Quaternion.Euler(Corrections[i]);
 		}
 
 		//Refinements
@@ -101,10 +104,12 @@ public class AnimatorImporter : MonoBehaviour {
 
 						Samples = new List<Sample>();
 						while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
+							GetAnimator().speed = Speed;
 							PostProcess();
 							Samples.Add(new Sample(GetTimestamp(), Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
 							yield return new WaitForEndOfFrame();
 						}
+						GetAnimator().speed = Speed;
 						PostProcess();
 						Samples.Add(new Sample(GetTimestamp(),Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
 
@@ -201,12 +206,18 @@ public class AnimatorImporter : MonoBehaviour {
 	}
 
 	public void Setup() {
-		if(!Application.isPlaying && transform.hasChanged) {
-			Mapping = new Quaternion[GetActor().Bones.Length];
-			for(int i=0; i<GetActor().Bones.Length; i++) {
-				Mapping[i] = Retarget.Bones[i].Transform.rotation.GetRelativeRotationTo(GetActor().Bones[i].Transform.GetWorldMatrix());
+		if(Retarget != null) {
+			if(!Application.isPlaying && transform.hasChanged) {
+				Mapping = new Quaternion[GetActor().Bones.Length];
+				for(int i=0; i<GetActor().Bones.Length; i++) {
+					Mapping[i] = Retarget.Bones[i].Transform.rotation.GetRelativeRotationTo(GetActor().Bones[i].Transform.GetWorldMatrix());
+				}
+				ArrayExtensions.Resize(ref Corrections, GetActor().Bones.Length);
 			}
-			ArrayExtensions.Resize(ref Corrections, GetActor().Bones.Length);
+		} else {
+			ArrayExtensions.Resize(ref Mapping, 0);
+			ArrayExtensions.Resize(ref Corrections, 0);
+			ArrayExtensions.Resize(ref Refinements, 0);
 		}
 	}
 
@@ -318,6 +329,8 @@ public class AnimatorImporter : MonoBehaviour {
 				}
 			}
 
+			EditorGUI.EndDisabledGroup();
+
 			Target.Retarget = (Actor)EditorGUILayout.ObjectField("Retarget", Target.Retarget, typeof(Actor), true);
 			Target.Destination = EditorGUILayout.TextField("Destination", Target.Destination);
 			Target.Speed = EditorGUILayout.FloatField("Speed", Target.Speed);
@@ -327,11 +340,11 @@ public class AnimatorImporter : MonoBehaviour {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 				for(int i=0; i<Target.Mapping.Length; i++) {
+					Utility.SetGUIColor(Target.Corrections[i].magnitude != 0f ? UltiDraw.Cyan : UltiDraw.Grey);
 					Target.Corrections[i] = EditorGUILayout.Vector3Field(Target.GetActor().Bones[i].GetName() + " <-> " + Target.Retarget.Bones[i].GetName(), Target.Corrections[i]);
+					Utility.ResetGUIColor();
 				}
 			}
-
-			EditorGUI.EndDisabledGroup();
 
 			if(!Target.Baking) {
 				if(Utility.GUIButton("Bake", UltiDraw.DarkGrey, UltiDraw.White)) {

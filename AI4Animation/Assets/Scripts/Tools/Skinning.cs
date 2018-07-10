@@ -15,11 +15,10 @@ public class Skinning : MonoBehaviour {
 
 	public void Process() {
 		Utility.Destroy(GetComponent<MeshSkinnerDebugWeights>());
-		Utility.Destroy(FindSkeleton());
-		Utility.Destroy(FindSkinnedVersion());
 		GameObject skeleton = Instantiate(NewSkeleton);
 		skeleton.name = "Instance";
 		new MeshSkinner(gameObject, skeleton).work(BendRange, BendFactor).debug().finish();
+		Utility.Destroy(FindSkeleton());
 		skeleton.name = "Skeleton";
 		Cleanup(skeleton.transform);
 		GetComponent<MeshSkinnerDebugWeights>().enabled = false;
@@ -28,15 +27,6 @@ public class Skinning : MonoBehaviour {
 	private GameObject FindSkeleton() {
 		for(int i=0; i<transform.childCount; i++) {
 			if(transform.GetChild(i).name.Contains("Skeleton")) {
-				return transform.GetChild(i).gameObject;
-			}
-		}
-		return null;
-	}
-
-	private GameObject FindSkinnedVersion() {
-		for(int i=0; i<transform.childCount; i++) {
-			if(transform.GetChild(i).name.Contains("SkinnedVersion")) {
 				return transform.GetChild(i).gameObject;
 			}
 		}
