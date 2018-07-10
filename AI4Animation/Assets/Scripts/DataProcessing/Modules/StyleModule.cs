@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class StyleModule : Module {
 
-	public float Transition = 0.5f;
+	public bool[] Keys = new bool[0];
 	public StyleFunction[] Functions = new StyleFunction[0];
 
 	public override TYPE Type() {
@@ -16,22 +16,9 @@ public class StyleModule : Module {
 	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
-		Transition = 0.5f;
 		Functions = new StyleFunction[0];
+		Keys = new bool[data.GetTotalFrames()];
 		return this;
-	}
-
-	public void SetTransition(float value) {
-		if(Transition != value) {
-			Transition = value;
-			for(int i=0; i<Functions.Length; i++) {
-				for(int j=1; j<=Data.GetTotalFrames(); j++) {
-					if(Functions[i].IsStyleKey(Data.GetFrame(j))) {
-						Functions[i].ApplyStyleKeyValues(Data.GetFrame(j));;
-					}
-				}
-			}
-		}
 	}
 
 	public void AddStyle(string name) {
@@ -63,42 +50,35 @@ public class StyleModule : Module {
 		return style;
 	}
 
-	public Frame GetAnyNextStyleKey(Frame frame) {
-		while(frame.Index < Data.GetTotalFrames()) {
-			frame = frame.GetNextFrame();
-			if(IsAnyStyleKey(frame)) {
-				return frame;
-			}
+	public void ToggleKey(Frame frame) {
+		Keys[frame.Index-1] = !Keys[frame.Index-1];
+		for(int i=0; i<Functions.Length; i++) {
+			Functions[i].Compute(frame);
 		}
-		return null;
 	}
 
-	public Frame GetAnyPreviousStyleKey(Frame frame) {
+	public bool IsKey(Frame frame) {
+		return Keys[frame.Index-1];
+	}
+
+	public Frame GetPreviousKey(Frame frame) {
 		while(frame.Index > 1) {
 			frame = frame.GetPreviousFrame();
-			if(IsAnyStyleKey(frame)) {
+			if(IsKey(frame)) {
 				return frame;
 			}
 		}
 		return null;
 	}
 
-	public bool IsAnyStyleKey(Frame frame) {
-		for(int i=0; i<Functions.Length; i++) {
-			if(Functions[i].IsStyleKey(frame)) {
-				return true;
+	public Frame GetNextKey(Frame frame) {
+		while(frame.Index < Data.GetTotalFrames()) {
+			frame = frame.GetNextFrame();
+			if(IsKey(frame)) {
+				return frame;
 			}
 		}
-		return false;
-	}
-
-	public bool IsAnyTransition(Frame frame) {
-		for(int i=0; i<Functions.Length; i++) {
-			if(Functions[i].IsTransition(frame)) {
-				return true;
-			}
-		}
-		return false;
+		return null;
 	}
 
 	public override void Draw(MotionEditor editor) {
@@ -108,22 +88,15 @@ public class StyleModule : Module {
 	protected override void DerivedInspector(MotionEditor editor) {
 		Frame frame = Data.GetFrame(editor.GetState().Index);
 
-		EditorGUILayout.BeginHorizontal();
-		SetTransition(EditorGUILayout.Slider("Transition", Transition, 0.1f, 1f));
-		if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-			AddStyle("Style");
+		if(Utility.GUIButton("Key", IsKey(frame) ? UltiDraw.Cyan : UltiDraw.DarkGrey, IsKey(frame) ? UltiDraw.Black : UltiDraw.White)) {
+			ToggleKey(frame);
 		}
-		if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-			RemoveStyle();
-		}
-		EditorGUILayout.EndHorizontal();
-
 		Color[] colors = UltiDraw.GetRainbowColors(Functions.Length);
 		for(int i=0; i<Functions.Length; i++) {
 			float height = 25f;
 			EditorGUILayout.BeginHorizontal();
-			if(Utility.GUIButton(Functions[i].Name, !Functions[i].GetFlag(frame) ? colors[i].Transparent(0.25f) : colors[i], UltiDraw.White, 200f, height)) {
-				Functions[i].ToggleStyle(frame);
+			if(Utility.GUIButton(Functions[i].Name, colors[i].Transparent(Utility.Normalise(Functions[i].GetValue(frame), 0f, 1f, 0.25f, 1f)), UltiDraw.White, 200f, height)) {
+				Functions[i].Toggle(frame);
 			}
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
@@ -133,8 +106,18 @@ public class StyleModule : Module {
 			EditorGUILayout.EndHorizontal();
 		}
 		EditorGUILayout.BeginHorizontal();
+		if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+			AddStyle("Style");
+			EditorGUIUtility.ExitGUI();
+		}
+		if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+			RemoveStyle();
+			EditorGUIUtility.ExitGUI();
+		}
+		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.BeginHorizontal();
 		if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-			Frame previous = GetAnyPreviousStyleKey(frame);
+			Frame previous = GetPreviousKey(frame);
 			editor.LoadFrame(previous == null ? 0f : previous.Timestamp);
 		}
 		EditorGUILayout.BeginVertical(GUILayout.Height(50f));
@@ -181,45 +164,26 @@ public class StyleModule : Module {
 
 		//Styles
 		for(int i=0; i<Functions.Length; i++) {
-			int x = start;
-			for(int j=start; j<end; j++) {
-				float val = Functions[i].Values[j];
-				if(
-					Functions[i].Values[x]<1f && val==1f ||
-					Functions[i].Values[x]>0f && val==0f
-					) {
-					float _start = (float)(Mathf.Clamp(x-1, start, end)-1-start) / (float)elements;
-					float _end = (float)(Mathf.Clamp(j, start, end)-1-start) / (float)elements;
-					float xStart = rect.x + _start * rect.width;
-					float xEnd = rect.x + _end * rect.width;
-					float yStart = rect.y + (1f - Functions[i].Values[Mathf.Max(x-1, 0)]) * rect.height;
-					float yEnd = rect.y + (1f - Functions[i].Values[j]) * rect.height;
-					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-					x = j;
-				}
-				if(
-					Functions[i].Values[x]==0f && val>0f || 
-					Functions[i].Values[x]==1f && val<1f
-					) {
-					float _start = (float)(Mathf.Clamp(x, start, end)-1-start) / (float)elements;
-					float _end = (float)(Mathf.Clamp(j-1, start, end)-1-start) / (float)elements;
-					float xStart = rect.x + _start * rect.width;
-					float xEnd = rect.x + _end * rect.width;
-					float yStart = rect.y + (1f - Functions[i].Values[x]) * rect.height;
-					float yEnd = rect.y + (1f - Functions[i].Values[j-1]) * rect.height;
-					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-					x = j;
-				}
-				if(j==Data.GetTotalFrames()-1) {
-					float _start = (float)(Mathf.Clamp(x, start, end)-1-start) / (float)elements;
-					float _end = (float)(Mathf.Clamp(j-1, start, end)-1-start) / (float)elements;
-					float xStart = rect.x + _start * rect.width;
-					float xEnd = rect.x + _end * rect.width;
-					float yStart = rect.y + (1f - Functions[i].Values[x]) * rect.height;
-					float yEnd = rect.y + (1f - Functions[i].Values[j-1]) * rect.height;
-					UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
-					x = j;
-				}
+			Frame current = Data.GetFirstFrame();
+			while(current != Data.GetLastFrame()) {
+				Frame next = GetNextKey(current);
+				float _start = (float)(Mathf.Clamp(current.Index-1, start, end)-1-start) / (float)elements;
+				float _end = (float)(Mathf.Clamp(next.Index-1, start, end)-1-start) / (float)elements;
+				float xStart = rect.x + _start * rect.width;
+				float xEnd = rect.x + _end * rect.width;
+				float yStart = rect.y + (1f - Functions[i].Values[Mathf.Clamp(current.Index, start, end)-1]) * rect.height;
+				float yEnd = rect.y + (1f - Functions[i].Values[Mathf.Clamp(next.Index, start, end)-1]) * rect.height;
+				UltiDraw.DrawLine(new Vector3(xStart, yStart, 0f), new Vector3(xEnd, yEnd, 0f), colors[i]);
+				current = next;
+			}
+		}
+
+		//Keys
+		for(int i=0; i<Keys.Length; i++) {
+			if(Keys[i]) {
+				top.x = rect.xMin + (float)(i-start)/elements * rect.width;
+				bottom.x = rect.xMin + (float)(i-start)/elements * rect.width;
+				UltiDraw.DrawLine(top, bottom, UltiDraw.White);
 			}
 		}
 
@@ -233,7 +197,7 @@ public class StyleModule : Module {
 		UltiDraw.End();
 		EditorGUILayout.EndVertical();
 		if(Utility.GUIButton(">", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
-			Frame next = GetAnyNextStyleKey(frame);
+			Frame next = GetNextKey(frame);
 			editor.LoadFrame(next == null ? Data.GetTotalTime() : next.Timestamp);
 		}
 		EditorGUILayout.EndHorizontal();
@@ -250,99 +214,56 @@ public class StyleModule : Module {
 			Module = module;
 			Name = name;
 			Values = new float[Module.Data.GetTotalFrames()];
-			Flags = new bool[Module.Data.GetTotalFrames()]; 
+			Flags = new bool[Module.Data.GetTotalFrames()];
 		}
 
 		public float GetValue(Frame frame) {
 			return Values[frame.Index-1];
 		}
 
-		public bool GetFlag(Frame frame) {
-			return Flags[frame.Index-1];
-		}
-
-		public void ToggleStyle(Frame frame) {
-			Frame next = GetNextStyleKey(frame);
-			Frame start = frame;
-			Frame end = next == null ? Module.Data.GetFrame(Module.Data.GetTotalFrames()) : next.GetPreviousFrame();
-			bool value = !GetFlag(frame);
-			for(int i=start.Index; i<=end.Index; i++) {
-				Flags[i-1] = value;
+		public void Toggle(Frame frame) {
+			if(Module.IsKey(frame)) {
+				Values[frame.Index-1] = GetValue(frame) == 1f ? 0f : 1f;
+				Compute(frame);
 			}
-			ApplyStyleKeyValues(frame);
 		}
 
-		public void ApplyStyleKeyValues(Frame frame) {
-			//Previous Frames
-			Frame previousKey = GetPreviousStyleKey(frame);
-			previousKey = previousKey == null ? Module.Data.GetFrame(1) : previousKey;
-			Frame pivot = Module.Data.GetFrame(Mathf.Max(previousKey.Index, Module.Data.GetFrame(Mathf.Max(frame.Timestamp - Module.Transition, previousKey.Timestamp)).Index));
-			if(pivot == frame) {
-				Values[frame.Index-1] = GetFlag(frame) ? 1f : 0f;
-			} else {
-				for(int i=previousKey.Index; i<=pivot.Index; i++) {
-					Values[i-1] = GetFlag(previousKey) ? 1f : 0f;
+		public void Compute(Frame frame) {
+			Frame current = frame;
+			Frame previous = Module.GetPreviousKey(current);
+			previous = previous == null ? Module.Data.GetFrame(1) : previous;
+			Frame next = Module.GetNextKey(current);
+			next = next == null ? Module.Data.GetFrame(Module.Data.GetTotalFrames()) : next;
+
+			if(Module.IsKey(frame)) {
+				//Current Frame
+				Values[current.Index-1] = GetValue(current);
+				//Previous Frames
+				if(previous != frame) {
+					float valA = GetValue(previous);
+					float valB = GetValue(current);
+					for(int i=previous.Index; i<current.Index; i++) {
+						float weight = (float)(i-previous.Index) / (float)(frame.Index - previous.Index);
+						Values[i-1] = (1f-weight) * valA + weight * valB;
+					}
 				}
-				float valA = GetFlag(pivot) ? 1f : 0f;
-				float valB = GetFlag(frame) ? 1f : 0f;
-				for(int i=pivot.Index; i<=frame.Index; i++) {
-					float weight = (float)(i-pivot.Index) / (float)(frame.Index - pivot.Index);
+				//Next Frames
+				if(next != frame) {
+					float valA = GetValue(current);
+					float valB = GetValue(next);
+					for(int i=current.Index+1; i<=next.Index; i++) {
+						float weight = (float)(i-current.Index) / (float)(next.Index - current.Index);
+						Values[i-1] = (1f-weight) * valA + weight * valB;
+					}
+				}
+			} else {
+				float valA = GetValue(previous);
+				float valB = GetValue(next);
+				for(int i=previous.Index; i<=next.Index; i++) {
+					float weight = (float)(i-previous.Index) / (float)(next.Index - previous.Index);
 					Values[i-1] = (1f-weight) * valA + weight * valB;
 				}
 			}
-			//Next Frames
-			Frame nextKey = GetNextStyleKey(frame);
-			nextKey = nextKey == null ? Module.Data.GetFrame(Module.Data.GetTotalFrames()) : nextKey;
-			for(int i=frame.Index; i<=nextKey.Index; i++) {
-				Values[i-1] = GetFlag(frame) ? 1f : 0f;
-			}
-			previousKey = GetFlag(frame) ? frame : previousKey;
-			pivot = Module.Data.GetFrame(Mathf.Max(previousKey.Index, Module.Data.GetFrame(Mathf.Max(nextKey.Timestamp - Module.Transition, frame.Timestamp)).Index));
-			if(pivot == nextKey) {
-				Values[frame.Index-1] = GetFlag(frame) ? 1f : 0f;
-			} else {
-				float valA = GetFlag(pivot) ? 1f : 0f;
-				float valB = GetFlag(frame) ? 1f : 0f;
-				for(int i=pivot.Index; i<=nextKey.Index; i++) {
-					float weight = (float)(i-pivot.Index) / (float)(nextKey.Index - pivot.Index);
-					Values[i-1] = (1f-weight) * valA + weight * valB;
-				}
-			}
-		}
-
-		public Frame GetNextStyleKey(Frame frame) {
-			while(frame.Index < Module.Data.GetTotalFrames()) {
-				frame = frame.GetNextFrame();
-				if(IsStyleKey(frame)) {
-					return frame;
-				}
-			}
-			return null;
-		}
-
-		public Frame GetPreviousStyleKey(Frame frame) {
-			while(frame.Index > 1) {
-				frame = frame.GetPreviousFrame();
-				if(IsStyleKey(frame)) {
-					return frame;
-				}
-			}
-			return null;
-		}
-
-		public bool IsStyleKey(Frame frame) {
-			Frame previous = frame.GetPreviousFrame();;
-			if(!GetFlag(frame) && GetFlag(previous)) {
-				return true;
-			}
-			if(GetFlag(frame) && !GetFlag(previous)) {
-				return true;
-			}
-			return false;
-		}
-
-		public bool IsTransition(Frame frame) {
-			return Values[frame.Index-1] > 0f & Values[frame.Index-1] < 1f;
 		}
 	}
 
