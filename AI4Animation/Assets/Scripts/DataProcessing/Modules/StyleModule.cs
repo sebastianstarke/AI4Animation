@@ -55,10 +55,6 @@ public class StyleModule : Module {
 		ArrayExtensions.Add(ref Functions, new StyleFunction(this, name));
 	}
 
-	public void RemoveStyle() {
-		ArrayExtensions.Shrink(ref Functions);
-	}
-
 	public void RemoveStyle(string name) {
 		int index = System.Array.FindIndex(Functions, x => x.Name == name);
 		if(index >= 0) {
@@ -139,18 +135,15 @@ public class StyleModule : Module {
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
 			EditorGUILayout.FloatField(Functions[i].GetValue(frame), GUILayout.Width(50f));
 			Functions[i].Name = EditorGUILayout.TextField(Functions[i].Name);
+			if(Utility.GUIButton("X", UltiDraw.DarkRed, UltiDraw.White, 20f, 20f)) {
+				RemoveStyle(Functions[i].Name);
+			}
 			EditorGUILayout.EndHorizontal();
 		}
-		EditorGUILayout.BeginHorizontal();
 		if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
 			AddStyle("Style");
 			EditorGUIUtility.ExitGUI();
 		}
-		if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-			RemoveStyle();
-			EditorGUIUtility.ExitGUI();
-		}
-		EditorGUILayout.EndHorizontal();
 		EditorGUILayout.BeginHorizontal();
 		if(Utility.GUIButton("<", UltiDraw.DarkGrey, UltiDraw.White, 25f, 50f)) {
 			Frame previous = GetPreviousKey(frame);
