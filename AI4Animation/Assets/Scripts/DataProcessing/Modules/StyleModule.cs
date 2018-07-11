@@ -9,6 +9,30 @@ public class StyleModule : Module {
 	public bool[] Keys = new bool[0];
 	public StyleFunction[] Functions = new StyleFunction[0];
 
+	public void Repair() {
+		if(Keys.Length != Data.GetTotalFrames()) {
+			Keys = new bool[Data.GetTotalFrames()];
+			Keys[0] = true;
+			Keys[Keys.Length-1] = true;
+			for(int i=1; i<Keys.Length-1; i++) {
+				for(int j=0; j<Functions.Length; j++) {
+					if(Functions[j].Values[i] == 0f && Functions[j].Values[i+1] != 0f) {
+						Keys[i] = true;
+					}
+					if(Functions[j].Values[i] == 1f && Functions[j].Values[i+1] != 1f) {
+						Keys[i] = true;
+					}
+					if(Functions[j].Values[i] != 0f && Functions[j].Values[i+1] == 0f) {
+						Keys[i+1] = true;
+					}
+					if(Functions[j].Values[i] != 1f && Functions[j].Values[i+1] == 1f) {
+						Keys[i+1] = true;
+					}
+				}
+			}
+		}
+	}
+
 	public override TYPE Type() {
 		return TYPE.Style;
 	}
@@ -86,6 +110,8 @@ public class StyleModule : Module {
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
+		Repair();
+
 		Frame frame = Data.GetFrame(editor.GetState().Index);
 
 		if(Utility.GUIButton("Key", IsKey(frame) ? UltiDraw.Cyan : UltiDraw.DarkGrey, IsKey(frame) ? UltiDraw.Black : UltiDraw.White)) {
@@ -167,8 +193,8 @@ public class StyleModule : Module {
 			Frame current = Data.GetFirstFrame();
 			while(current != Data.GetLastFrame()) {
 				Frame next = GetNextKey(current);
-				float _start = (float)(Mathf.Clamp(current.Index-1, start, end)-1-start) / (float)elements;
-				float _end = (float)(Mathf.Clamp(next.Index-1, start, end)-1-start) / (float)elements;
+				float _start = (float)(Mathf.Clamp(current.Index, start, end)-start) / (float)elements;
+				float _end = (float)(Mathf.Clamp(next.Index, start, end)-start) / (float)elements;
 				float xStart = rect.x + _start * rect.width;
 				float xEnd = rect.x + _end * rect.width;
 				float yStart = rect.y + (1f - Functions[i].Values[Mathf.Clamp(current.Index, start, end)-1]) * rect.height;
@@ -181,8 +207,8 @@ public class StyleModule : Module {
 		//Keys
 		for(int i=0; i<Keys.Length; i++) {
 			if(Keys[i]) {
-				top.x = rect.xMin + (float)(i-start)/elements * rect.width;
-				bottom.x = rect.xMin + (float)(i-start)/elements * rect.width;
+				top.x = rect.xMin + (float)(i+1-start)/elements * rect.width;
+				bottom.x = rect.xMin + (float)(i+1-start)/elements * rect.width;
 				UltiDraw.DrawLine(top, bottom, UltiDraw.White);
 			}
 		}
