@@ -16,6 +16,7 @@ public class MotionExporter : EditorWindow {
 	public int BatchSize = 10;
 
 	public bool Mirror = true;
+	public string[] Styles = new string[0];
 
 	public MotionEditor[] Editors = new MotionEditor[0];
 	public bool[] Export = new bool[0];
@@ -31,23 +32,17 @@ public class MotionExporter : EditorWindow {
 	static void Init() {
 		Window = EditorWindow.GetWindow(typeof(MotionExporter));
 		Scroll = Vector3.zero;
-		((MotionExporter)Window).Load();
 	}
 	
 	public void OnInspectorUpdate() {
 		Repaint();
 	}
 
-	public void Load() {
-		Editors = GameObject.FindObjectsOfType<MotionEditor>();
-		Export = new bool[Editors.Length];
-		for(int i=0; i<Export.Length; i++) {
-			Export[i] = true;
-		}
-	}
-
 	void OnGUI() {
 		Scroll = EditorGUILayout.BeginScrollView(Scroll);
+
+		Editors = GameObject.FindObjectsOfType<MotionEditor>();
+		ArrayExtensions.Resize(ref Export, Editors.Length);
 
 		Utility.SetGUIColor(UltiDraw.Black);
 		using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -64,9 +59,6 @@ public class MotionExporter : EditorWindow {
 				}
 
                 if(!Exporting) {
-					if(Utility.GUIButton("Load", UltiDraw.DarkGrey, UltiDraw.White)) {
-						Load();
-					}
 					EditorGUILayout.BeginHorizontal();
                     if(Utility.GUIButton("Export Input Labels", UltiDraw.DarkGrey, UltiDraw.White)) {
                         this.StartCoroutine(ExportInputLabels());
@@ -161,7 +153,6 @@ public class MotionExporter : EditorWindow {
 		
 		StreamWriter file = CreateFile("InputLabels");
 
-		StyleModule styleModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style);
 		PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
 	
 		int index = 0;
@@ -172,8 +163,8 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryDirectionZ" + i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
-			for(int j=0; j<styleModule.Functions.Length; j++) {
-				file.WriteLine(index + " " + styleModule.Functions[j].Name + i); index += 1;
+			for(int j=0; j<Styles.Length; j++) {
+				file.WriteLine(index + " " + Styles[j] + i); index += 1;
 			}
 		}
 		for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
@@ -194,11 +185,9 @@ public class MotionExporter : EditorWindow {
 		}
 
 		if(phaseModule != null) {
-			//file.WriteLine(index + " " + "PhaseX"); index += 1;
-			//file.WriteLine(index + " " + "PhaseY"); index += 1;
-			for(int i=1; i<=styleModule.Functions.Length; i++) {
-				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "X"); index += 1;
-				file.WriteLine(index + " " + styleModule.Functions[i-1].Name + "Y"); index += 1;
+			for(int i=1; i<=Styles.Length; i++) {
+				file.WriteLine(index + " " + Styles[i-1] + "X"); index += 1;
+				file.WriteLine(index + " " + Styles[i-1] + "Y"); index += 1;
 			}
 		}
 
@@ -219,7 +208,6 @@ public class MotionExporter : EditorWindow {
 
 			StreamWriter file = CreateFile("OutputLabels");
 
-			StyleModule styleModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style);
 			PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
 
 			int index = 0;
@@ -230,8 +218,8 @@ public class MotionExporter : EditorWindow {
 				file.WriteLine(index + " " + "TrajectoryDirectionZ"+i); index += 1;
 				file.WriteLine(index + " " + "TrajectoryVelocityX"+i); index += 1;
 				file.WriteLine(index + " " + "TrajectoryVelocityZ"+i); index += 1;
-				for(int j=0; j<styleModule.Functions.Length; j++) {
-					file.WriteLine(index + " " + styleModule.Functions[j].Name + i); index += 1;
+				for(int j=0; j<Styles.Length; j++) {
+					file.WriteLine(index + " " + Styles[j] + i); index += 1;
 				}
 			}
 			for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
@@ -250,9 +238,6 @@ public class MotionExporter : EditorWindow {
 					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"+(i+1)); index += 1;
 				}
 			}
-			//file.WriteLine(index + " " + "RootMotionX"); index += 1;
-			//file.WriteLine(index + " " + "RootMotionY"); index += 1;
-			//file.WriteLine(index + " " + "RootMotionZ"); index += 1;
 
 			if(phaseModule != null) {
 				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
@@ -280,7 +265,6 @@ public class MotionExporter : EditorWindow {
 					if(editor.Files[i].Data.Export) {
 						editor.LoadFile(editor.Files[i]);
 
-						//StyleModule styleModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style);
 						PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
 
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
@@ -345,7 +329,6 @@ public class MotionExporter : EditorWindow {
 										}
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(current.Index), editor.Mirror);
-											//inputLine += FormatVector2(Utility.GetCirclePhase(currentPhase));
 											inputLine += FormatArray(Utility.StylePhase(current.Trajectory.Points[6].Styles, currentPhase));
 										}
 
@@ -378,7 +361,6 @@ public class MotionExporter : EditorWindow {
 											outputLine += FormatVector3(up);
 											outputLine += FormatVector3(velocity);
 										}
-										//outputLine += FormatVector3(next.RootMotion);
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(current.Index), editor.Mirror);
 											float nextPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(next.Index), editor.Mirror);
@@ -474,17 +456,6 @@ public class MotionExporter : EditorWindow {
 			WorldPosture = editor.GetActor().GetWorldPosture();
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
 			Trajectory = editor.GetCurrentFrame().GetTrajectory(editor.Mirror);
-		}
-	}
-
-	[System.Serializable]
-	public class StyleFilter {
-		public string Name;
-		public int[] Indices;
-
-		public StyleFilter(string name, int[] indices) {
-			Name = name;
-			Indices = indices;
 		}
 	}
 
