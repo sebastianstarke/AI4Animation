@@ -4,8 +4,8 @@ public class Trajectory {
 
 	public bool Inspect = false;
 	public Point[] Points = new Point[0];
+	public string[] Styles = new string[0];
 
-	private string[] Styles = new string[0];
 	private static float Width = 0.5f;
 
 	public Trajectory(int size, string[] styles) {
@@ -79,13 +79,13 @@ public class Trajectory {
 	}
 
 	public class Point {
-		[SerializeField] private int Index;
-		[SerializeField] private Matrix4x4 Transformation;
-		[SerializeField] private Vector3 Velocity;
-		[SerializeField] private float Speed;
-		[SerializeField] private Vector3 LeftSample;
-		[SerializeField] private Vector3 RightSample;
-		[SerializeField] private float Slope;
+		private int Index;
+		private Matrix4x4 Transformation;
+		private Vector3 Velocity;
+		private float Speed;
+		private Vector3 LeftSample;
+		private Vector3 RightSample;
+		private float Slope;
 		public float Phase;
 		public float[] Styles = new float[0];
 

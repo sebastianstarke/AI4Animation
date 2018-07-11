@@ -319,7 +319,7 @@ public class MotionExporter : EditorWindow {
 											Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-											float[] style = current.Trajectory.Points[k].Styles;
+											float[] style = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
 											inputLine += FormatValue(position.x);
 											inputLine += FormatValue(position.z);
 											inputLine += FormatValue(direction.x);
@@ -340,7 +340,7 @@ public class MotionExporter : EditorWindow {
 										}
 										if(phaseModule != null) {
 											float currentPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(current.Index), editor.Mirror);
-											inputLine += FormatArray(Utility.StylePhase(current.Trajectory.Points[6].Styles, currentPhase));
+											inputLine += FormatArray(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), currentPhase));
 										}
 
 										inputLine = inputLine.Remove(inputLine.Length-1);
@@ -353,7 +353,7 @@ public class MotionExporter : EditorWindow {
 											Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-											float[] style = next.Trajectory.Points[k].Styles;
+											float[] style = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
 											outputLine += FormatValue(position.x);
 											outputLine += FormatValue(position.z);
 											outputLine += FormatValue(direction.x);
@@ -402,6 +402,22 @@ public class MotionExporter : EditorWindow {
 
         Exporting = false;
 		yield return new WaitForSeconds(0f);
+	}
+
+	private float[] FilterStyle(float[] style, string[] from, string[] to) {
+		if(style.Length != from.Length) {
+			Debug.Log("Failed filtering style.");
+			return style;
+		}
+		float[] filtered = new float[to.Length];
+		for(int i=0; i<to.Length; i++) {
+			for(int j=0; j<from.Length; j++) {
+				if(from[j] == to[i]) {
+					filtered[i] = style[j];
+				}
+			}
+		}
+		return filtered;
 	}
 
 	private string FormatString(string value) {
@@ -465,16 +481,6 @@ public class MotionExporter : EditorWindow {
 			WorldPosture = editor.GetActor().GetWorldPosture();
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
 			Trajectory = editor.GetCurrentFrame().GetTrajectory(editor.Mirror);
-		}
-
-		private float[] FilterStyle(StyleModule module, Frame frame, string[] names) {
-			float[] style = new float[names.Length];
-			/*
-			for(int i=0; i<style.Length; i++) {
-				style[i] = module.GetStyle(frame, names[i]);
-			}
-			*/
-			return style;
 		}
 	}
 
