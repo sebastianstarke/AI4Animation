@@ -19,7 +19,7 @@ public class MotionData : ScriptableObject {
 	public AXIS MirrorAxis = AXIS.XPositive;
 	public int[] Symmetry = new int[0];
 	public LayerMask Ground = -1;
-	public bool Export = true;
+	public bool Export = false;
 	public Sequence[] Sequences = new Sequence[0];
 
 	public float GetTotalTime() {

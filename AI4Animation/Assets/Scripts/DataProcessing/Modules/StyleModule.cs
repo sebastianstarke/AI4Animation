@@ -141,7 +141,7 @@ public class StyleModule : Module {
 			EditorGUILayout.EndHorizontal();
 		}
 		if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
-			AddStyle("Style");
+			AddStyle("Style " + (Functions.Length+1));
 			EditorGUIUtility.ExitGUI();
 		}
 		EditorGUILayout.BeginHorizontal();

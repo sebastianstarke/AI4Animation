@@ -215,11 +215,11 @@ public class MotionTools : EditorWindow {
 					//styleModule.RemoveStyle("Move");
 					//System.Array.Find(styleModule.Functions, x => x.Name == "Move").ToggleStyle(data.GetFirstFrame());
 
-					Editors[i].LoadFile(Editors[i].Files[j]);
+					//Editors[i].LoadFile(Editors[i].Files[j]);
 
-					data.Scaling = 7.5f;
+					//data.Scaling = 7.5f;
 
-					Editors[i].CopyHierarchy();
+					//Editors[i].CopyHierarchy();
 
 					//ContactModule contact = (ContactModule)data.GetModule(Module.TYPE.Contact);
 					//for(int f=0; f<contact.Functions.Length; f++) {
