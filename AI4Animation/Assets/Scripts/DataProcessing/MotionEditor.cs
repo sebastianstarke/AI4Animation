@@ -113,15 +113,15 @@ public class MotionEditor : MonoBehaviour {
 		}
 		Files = files.ToArray();
 		for(int i=0; i<GetEnvironment().childCount; i++) {
-			if(!System.Array.Exists(Files, x => x.Data.Name == GetEnvironment().GetChild(i).name)) {
+			if(!System.Array.Exists(Files, x => x.Data.name == GetEnvironment().GetChild(i).name)) {
 				Utility.Destroy(GetEnvironment().GetChild(i).gameObject);
 				i--;
 			}
 		}
 		for(int i=0; i<Files.Length; i++) {
-			Files[i].Environment = GetEnvironment().Find(Files[i].Data.Name);
+			Files[i].Environment = GetEnvironment().Find(Files[i].Data.name);
 			if(Files[i].Environment == null) {
-				Files[i].Environment = new GameObject(Files[i].Data.Name).transform;
+				Files[i].Environment = new GameObject(Files[i].Data.name).transform;
 				Files[i].Environment.SetParent(GetEnvironment());
 			}
 		}
@@ -385,7 +385,7 @@ public class MotionEditor : MonoBehaviour {
 				instances.AddRange(Target.Files);
 			} else {
 				for(int i=0; i<Target.Files.Length; i++) {
-					if(Target.Files[i].Data.Name.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant())) {
+					if(Target.Files[i].Data.name.ToLowerInvariant().Contains(NameFilter.ToLowerInvariant())) {
 						instances.Add(Target.Files[i]);
 					}
 				}
@@ -409,7 +409,7 @@ public class MotionEditor : MonoBehaviour {
 			Instances = instances.ToArray();
 			Names = new string[Instances.Length];
 			for(int i=0; i<Instances.Length; i++) {
-				Names[i] = Instances[i].Data.Name;
+				Names[i] = Instances[i].Data.name;
 			}
 			LoadFile(GetIndex());
 		}
@@ -515,7 +515,7 @@ public class MotionEditor : MonoBehaviour {
 							Utility.ResetGUIColor();
 							EditorGUILayout.BeginHorizontal();
 							GUILayout.FlexibleSpace();
-							EditorGUILayout.LabelField(Target.GetCurrentFile().Data.Name, GUILayout.Width(100f));
+							EditorGUILayout.LabelField(Target.GetCurrentFile().Data.name, GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Frames: " + Target.GetCurrentFile().Data.GetTotalFrames(), GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Time: " + Target.GetCurrentFile().Data.GetTotalTime().ToString("F3") + "s", GUILayout.Width(100f));
 							EditorGUILayout.LabelField("Framerate: " + Target.GetCurrentFile().Data.Framerate.ToString("F1") + "Hz", GUILayout.Width(130f));

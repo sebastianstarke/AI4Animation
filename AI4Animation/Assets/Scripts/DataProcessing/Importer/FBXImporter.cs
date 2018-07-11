@@ -189,9 +189,9 @@ public class FBXImporter : EditorWindow {
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();
 
 						//Assign Name
-						data.Name = Files[f].Object.name;
+						data.name = Files[f].Object.name;
 
-						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
+						AssetDatabase.CreateAsset(data , destination+"/"+data.name+".asset");
 
 						//Create Source Data
 						data.Source = new MotionData.Hierarchy();

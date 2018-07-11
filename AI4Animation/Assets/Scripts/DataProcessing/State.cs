@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class State {
 	public int Index;
 	public float Timestamp;
@@ -22,4 +23,6 @@ public class State {
 		Trajectory = frame.GetTrajectory(mirrored);
 	}
 }
+*/
+
 #endif

@@ -13,7 +13,6 @@ public class MotionData : ScriptableObject {
 	public Frame[] Frames = new Frame[0];
 	public Module[] Modules = new Module[0];
 
-	public string Name = string.Empty;
 	public float Framerate = 1f;
 	public float Scaling = 1f;
 	public int RootSmoothing = 0;

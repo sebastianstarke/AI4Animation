@@ -175,8 +175,8 @@ public class BVHImporter : EditorWindow {
 				if(Files[f].Import) {
 					if(AssetDatabase.LoadAssetAtPath(destination+"/"+Files[f].Object.Name+".asset", typeof(MotionData)) == null) {
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();
-						data.Name = Files[f].Object.Name;
-						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
+						data.name = Files[f].Object.Name;
+						AssetDatabase.CreateAsset(data , destination+"/"+data.name+".asset");
 
 						string[] lines = System.IO.File.ReadAllLines(Files[f].Object.FullName);
 						char[] whitespace = new char[] {' '};

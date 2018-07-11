@@ -117,9 +117,9 @@ public class AnimatorImporter : MonoBehaviour {
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();
 
 						//Assign Name
-						data.Name = name;
+						data.name = name;
 
-						AssetDatabase.CreateAsset(data , destination+"/"+data.Name+".asset");
+						AssetDatabase.CreateAsset(data , destination+"/"+data.name+".asset");
 
 						//Create Source Data
 						data.Source = new MotionData.Hierarchy();
