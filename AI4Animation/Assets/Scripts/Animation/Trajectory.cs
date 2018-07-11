@@ -1,42 +1,39 @@
 ﻿using UnityEngine;
 
-[System.Serializable]
 public class Trajectory {
 
 	public bool Inspect = false;
-
 	public Point[] Points = new Point[0];
 
-	private int Styles = 0;
-
+	private string[] Styles = new string[0];
 	private static float Width = 0.5f;
 
-	public Trajectory(int size, int styles) {
+	public Trajectory(int size, string[] styles) {
 		Inspect = false;
 		Points = new Point[size];
 		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point(i, styles);
+			Points[i] = new Point(i, styles.Length);
 			Points[i].SetTransformation(Matrix4x4.identity);
 		}
 	}
 
-	public Trajectory(int size, int styles, Vector3 seedPosition, Vector3 seedDirection) {
+	public Trajectory(int size, string[] styles, Vector3 seedPosition, Vector3 seedDirection) {
 		Inspect = false;
 		Points = new Point[size];
 		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point(i, styles);
+			Points[i] = new Point(i, styles.Length);
 			Points[i].SetTransformation(Matrix4x4.TRS(seedPosition, Quaternion.LookRotation(seedDirection, Vector3.up), Vector3.one));
 		}
 	}
 
-	public Trajectory(int size, int styles, Vector3[] positions, Vector3[] directions) {
+	public Trajectory(int size, string[] styles, Vector3[] positions, Vector3[] directions) {
 		Inspect = false;
 		Points = new Point[size];
 		Styles = styles;
 		for(int i=0; i<Points.Length; i++) {
-			Points[i] = new Point(i, styles);
+			Points[i] = new Point(i, styles.Length);
 			Points[i].SetTransformation(Matrix4x4.TRS(positions[i], Quaternion.LookRotation(directions[i], Vector3.up), Vector3.one));
 		}
 	}
@@ -81,7 +78,6 @@ public class Trajectory {
 		}
 	}
 
-	[System.Serializable]
 	public class Point {
 		[SerializeField] private int Index;
 		[SerializeField] private Matrix4x4 Transformation;
@@ -212,7 +208,7 @@ public class Trajectory {
 	public void Draw(int step=1) {
 		UltiDraw.Begin();
 
-		Color[] colors = UltiDraw.GetRainbowColors(Styles);
+		Color[] colors = UltiDraw.GetRainbowColors(Styles.Length);
 
 		//Connections
 		for(int i=0; i<Points.Length-step; i+=step) {
@@ -251,7 +247,7 @@ public class Trajectory {
 		}
 
 		//Styles
-		if(Styles > 0) {
+		if(Styles.Length > 0) {
 			for(int i=0; i<Points.Length; i+=step) {
 				float r = 0f;
 				float g = 0f;

@@ -174,7 +174,7 @@ public class Frame {
 		StyleModule styleModule = Data.GetModule(Module.TYPE.Style) == null ? null : (StyleModule)Data.GetModule(Module.TYPE.Style);
 		PhaseModule phaseModule = Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)Data.GetModule(Module.TYPE.Phase);
 		
-		Trajectory trajectory = new Trajectory(12, styleModule == null ? 0 : styleModule.Functions.Length);
+		Trajectory trajectory = new Trajectory(12, styleModule == null ? new string[0] : styleModule.GetNames());
 
 		//Current
 		trajectory.Points[6].SetTransformation(GetRootTransformation(mirrored));

@@ -77,7 +77,7 @@ namespace SIGGRAPH_2018 {
 			Forwards = new Vector3[Actor.Bones.Length];
 			Ups = new Vector3[Actor.Bones.Length];
 			Velocities = new Vector3[Actor.Bones.Length];
-			Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
+			Trajectory = new Trajectory(Points, Controller.GetNames(), transform.position, TargetDirection);
 			if(Controller.Styles.Length > 0) {
 				for(int i=0; i<Trajectory.Points.Length; i++) {
 					Trajectory.Points[i].Styles[0] = 1f;
@@ -131,7 +131,7 @@ namespace SIGGRAPH_2018 {
 			Forwards = new Vector3[Actor.Bones.Length];
 			Ups = new Vector3[Actor.Bones.Length];
 			Velocities = new Vector3[Actor.Bones.Length];
-			Trajectory = new Trajectory(Points, Controller.Styles.Length, transform.position, TargetDirection);
+			Trajectory = new Trajectory(Points, Controller.GetNames(), transform.position, TargetDirection);
 			if(Controller.Styles.Length > 0) {
 				for(int i=0; i<Trajectory.Points.Length; i++) {
 					Trajectory.Points[i].Styles[0] = 1f;

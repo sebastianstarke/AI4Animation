@@ -76,6 +76,14 @@ public class StyleModule : Module {
 		return style;
 	}
 
+	public string[] GetNames() {
+		string[] names = new string[Functions.Length];
+		for(int i=0; i<names.Length; i++) {
+			names[i] = Functions[i].Name;
+		}
+		return names;
+	}
+
 	public void ToggleKey(Frame frame) {
 		Keys[frame.Index-1] = !Keys[frame.Index-1];
 		for(int i=0; i<Functions.Length; i++) {

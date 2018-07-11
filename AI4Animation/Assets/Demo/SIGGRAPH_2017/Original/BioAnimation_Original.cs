@@ -52,7 +52,7 @@ namespace SIGGRAPH_2017 {
 			Forwards = new Vector3[Actor.Bones.Length];
 			Ups = new Vector3[Actor.Bones.Length];
 			Velocities = new Vector3[Actor.Bones.Length];
-			Trajectory = new Trajectory(111, Controller.Styles.Length, transform.position, TargetDirection);
+			Trajectory = new Trajectory(111, Controller.GetNames(), transform.position, TargetDirection);
 			Trajectory.Postprocess();
 			if(Controller.Styles.Length > 0) {
 				for(int i=0; i<Trajectory.Points.Length; i++) {

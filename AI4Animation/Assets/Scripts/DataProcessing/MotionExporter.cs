@@ -100,6 +100,17 @@ public class MotionExporter : EditorWindow {
 				Framerate = EditorGUILayout.IntField("Framerate", Framerate);
 				BatchSize = Mathf.Max(1, EditorGUILayout.IntField("Batch Size", BatchSize));
 				Mirror = EditorGUILayout.Toggle("Mirror", Mirror);
+				for(int i=0; i<Styles.Length; i++) {
+					Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Styles[i]);
+				}
+				EditorGUILayout.BeginHorizontal();
+				if(Utility.GUIButton("Add Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+					ArrayExtensions.Expand(ref Styles);
+				}
+				if(Utility.GUIButton("Remove Style", UltiDraw.DarkGrey, UltiDraw.White)) {
+					ArrayExtensions.Shrink(ref Styles);
+				}
+				EditorGUILayout.EndHorizontal();
 
 				using(new EditorGUILayout.VerticalScope ("Box")) {
 					for(int i=0; i<Editors.Length; i++) {
@@ -287,7 +298,7 @@ public class MotionExporter : EditorWindow {
 									for(float t=start; t<=end; t+=1f/Framerate) {
 										Generating = (t-start) / (end-start-1f/Framerate);
 										editor.LoadFrame(t);
-										states.Add(new State(editor));
+										states.Add(new State(this, editor));
 										//Spin
 										items += 1;
 										if(items == BatchSize) {
@@ -440,22 +451,30 @@ public class MotionExporter : EditorWindow {
 	public class State {
 		public int Index;
 		public float Timestamp;
-		public float Phase;
 		public Matrix4x4 Root;
 		public Matrix4x4[] LocalPosture;
 		public Matrix4x4[] WorldPosture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
 
-		public State(MotionEditor editor) {
+		public State(MotionExporter exporter, MotionEditor editor) {
 			Index = editor.GetCurrentFrame().Index;
 			Timestamp = editor.GetCurrentFrame().Timestamp;
-			Phase = ((PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase)).GetPhase(editor.GetCurrentFrame(), editor.Mirror);
 			Root = editor.GetActor().GetRoot().GetWorldMatrix();
 			LocalPosture = editor.GetActor().GetLocalPosture();
 			WorldPosture = editor.GetActor().GetWorldPosture();
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
 			Trajectory = editor.GetCurrentFrame().GetTrajectory(editor.Mirror);
+		}
+
+		private float[] FilterStyle(StyleModule module, Frame frame, string[] names) {
+			float[] style = new float[names.Length];
+			/*
+			for(int i=0; i<style.Length; i++) {
+				style[i] = module.GetStyle(frame, names[i]);
+			}
+			*/
+			return style;
 		}
 	}
 

@@ -25,6 +25,14 @@ public class Controller {
 		return style;
 	}
 
+	public string[] GetNames() {
+		string[] names = new string[Styles.Length];
+		for(int i=0; i<names.Length; i++) {
+			names[i] = Styles[i].Name;
+		}
+		return names;
+	}
+
 	public Vector3 QueryMove() {
 		Vector3 move = Vector3.zero;
 		if(Input.GetKey(Forward)) {
