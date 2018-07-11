@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿/*
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -460,7 +461,6 @@ public class MotionExporter : EditorWindow {
 		yield return new WaitForSeconds(0f);
 	}
 
-	/*
 	private float[] FilterStyle(float[] style) {
 		if(StyleFilters.Length == 0) {
 			return style;
@@ -475,7 +475,6 @@ public class MotionExporter : EditorWindow {
 			return filter;
 		}
 	}
-	*/
 
 	private string FormatString(string value) {
 		return value + Separator;
@@ -534,3 +533,4 @@ public class MotionExporter : EditorWindow {
 
 }
 #endif
+*/

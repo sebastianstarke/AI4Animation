@@ -311,7 +311,7 @@ public class PhaseModule : Module {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
+				Frame frame = editor.GetCurrentFrame();
 
 				Utility.SetGUIColor(UltiDraw.Orange);
 				using(new EditorGUILayout.VerticalScope ("Box")) {

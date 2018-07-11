@@ -48,10 +48,10 @@ public class ContactModule : Module {
 	}
 	
 	public override void Draw(MotionEditor editor) {
-		Frame frame = Data.GetFrame(editor.GetState().Index);
+		Frame frame = editor.GetCurrentFrame();
 		UltiDraw.Begin();
 		for(int i=0; i<Functions.Length; i++) {
-			Matrix4x4 matrix = Functions[i].GetPivotTransformation(frame, editor.ShowMirror);
+			Matrix4x4 matrix = Functions[i].GetPivotTransformation(frame, editor.Mirror);
 			Vector3 position = matrix.GetPosition();
 			Quaternion rotation = matrix.GetRotation();
 			UltiDraw.DrawSphere(position, Quaternion.identity, 0.025f, UltiDraw.Cyan.Transparent(0.5f));
@@ -225,7 +225,7 @@ public class ContactModule : Module {
 			using(new EditorGUILayout.VerticalScope ("Box")) {
 				Utility.ResetGUIColor();
 
-				Frame frame = Module.Data.GetFrame(editor.GetState().Index);
+				Frame frame = editor.GetCurrentFrame();
 
 				SetSensor(EditorGUILayout.Popup("Sensor", Sensor, Module.Names));
 				SetDistanceThreshold(EditorGUILayout.FloatField("Distance Threshold", DistanceThreshold));

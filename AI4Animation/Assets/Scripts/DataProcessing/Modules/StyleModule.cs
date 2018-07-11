@@ -42,6 +42,8 @@ public class StyleModule : Module {
 		Inspect = true;
 		Functions = new StyleFunction[0];
 		Keys = new bool[data.GetTotalFrames()];
+		Keys[0] = true;
+		Keys[Keys.Length-1] = true;
 		return this;
 	}
 
@@ -112,7 +114,7 @@ public class StyleModule : Module {
 	protected override void DerivedInspector(MotionEditor editor) {
 		Repair();
 
-		Frame frame = Data.GetFrame(editor.GetState().Index);
+		Frame frame = editor.GetCurrentFrame();
 
 		if(Utility.GUIButton("Key", IsKey(frame) ? UltiDraw.Cyan : UltiDraw.DarkGrey, IsKey(frame) ? UltiDraw.Black : UltiDraw.White)) {
 			ToggleKey(frame);
