@@ -163,8 +163,6 @@ public class MotionExporter : EditorWindow {
 		Exporting = true;
 		
 		StreamWriter file = CreateFile("InputLabels");
-
-		PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
 	
 		int index = 0;
 		for(int i=1; i<=12; i++) {
@@ -195,11 +193,9 @@ public class MotionExporter : EditorWindow {
 			}
 		}
 
-		if(phaseModule != null) {
-			for(int i=1; i<=Styles.Length; i++) {
-				file.WriteLine(index + " " + Styles[i-1] + "X"); index += 1;
-				file.WriteLine(index + " " + Styles[i-1] + "Y"); index += 1;
-			}
+		for(int i=1; i<=Styles.Length; i++) {
+			file.WriteLine(index + " " + Styles[i-1] + "X"); index += 1;
+			file.WriteLine(index + " " + Styles[i-1] + "Y"); index += 1;
 		}
 
 		yield return new WaitForSeconds(0f);
@@ -218,8 +214,6 @@ public class MotionExporter : EditorWindow {
 			Exporting = true;
 
 			StreamWriter file = CreateFile("OutputLabels");
-
-			PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
 
 			int index = 0;
 			for(int i=7; i<=12; i++) {
@@ -250,9 +244,7 @@ public class MotionExporter : EditorWindow {
 				}
 			}
 
-			if(phaseModule != null) {
-				file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
-			}
+			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
 
 			yield return new WaitForSeconds(0f);
 
