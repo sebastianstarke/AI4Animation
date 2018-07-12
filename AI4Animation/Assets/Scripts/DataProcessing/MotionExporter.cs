@@ -276,8 +276,6 @@ public class MotionExporter : EditorWindow {
 					if(editor.Files[i].Data.Export) {
 						editor.LoadFile(editor.Files[i]);
 
-						PhaseModule phaseModule = editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase) == null ? null : (PhaseModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Phase);
-
 						for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 							if(m==1) {
 								editor.SetMirror(false);
@@ -311,7 +309,6 @@ public class MotionExporter : EditorWindow {
 										Writing = (float)(state) / (float)(states.Count-2);
 										State current = states[state];
 										State next = states[state+1];
-										editor.LoadFrame(current.Index);
 
 										//Input
 										string inputLine = string.Empty;
@@ -328,20 +325,17 @@ public class MotionExporter : EditorWindow {
 											inputLine += FormatValue(velocity.z);
 											inputLine += FormatArray(style);
 										}
-										for(int k=0; k<current.WorldPosture.Length; k++) {
-											Vector3 position = current.WorldPosture[k].GetPosition().GetRelativePositionTo(current.Root);
-											Vector3 forward = current.WorldPosture[k].GetForward().GetRelativeDirectionTo(current.Root);
-											Vector3 up = current.WorldPosture[k].GetUp().GetRelativeDirectionTo(current.Root);
+										for(int k=0; k<current.Posture.Length; k++) {
+											Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
+											Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
+											Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
 											inputLine += FormatVector3(position);
 											inputLine += FormatVector3(forward);
 											inputLine += FormatVector3(up);
 											inputLine += FormatVector3(velocity);
 										}
-										if(phaseModule != null) {
-											float currentPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(current.Index), editor.Mirror);
-											inputLine += FormatArray(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), currentPhase));
-										}
+										inputLine += FormatArray(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
 
 										inputLine = inputLine.Remove(inputLine.Length-1);
 										inputLine = inputLine.Replace(",",".");
@@ -362,21 +356,17 @@ public class MotionExporter : EditorWindow {
 											outputLine += FormatValue(velocity.z);
 											outputLine += FormatArray(style);
 										}
-										for(int k=0; k<next.WorldPosture.Length; k++) {
-											Vector3 position = next.WorldPosture[k].GetPosition().GetRelativePositionTo(current.Root);
-											Vector3 forward = next.WorldPosture[k].GetForward().GetRelativeDirectionTo(current.Root);
-											Vector3 up = next.WorldPosture[k].GetUp().GetRelativeDirectionTo(current.Root);
+										for(int k=0; k<next.Posture.Length; k++) {
+											Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
+											Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
+											Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
 											outputLine += FormatVector3(position);
 											outputLine += FormatVector3(forward);
 											outputLine += FormatVector3(up);
 											outputLine += FormatVector3(velocity);
 										}
-										if(phaseModule != null) {
-											float currentPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(current.Index), editor.Mirror);
-											float nextPhase = phaseModule.GetPhase(editor.GetCurrentFile().Data.GetFrame(next.Index), editor.Mirror);
-											outputLine += FormatValue(Utility.GetLinearPhaseUpdate(currentPhase, nextPhase));
-										}
+										outputLine += FormatValue(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
 
 										outputLine = outputLine.Remove(outputLine.Length-1);
 										outputLine = outputLine.Replace(",",".");
@@ -465,20 +455,14 @@ public class MotionExporter : EditorWindow {
 	}
 
 	public class State {
-		public int Index;
-		public float Timestamp;
 		public Matrix4x4 Root;
-		public Matrix4x4[] LocalPosture;
-		public Matrix4x4[] WorldPosture;
+		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
 
 		public State(MotionExporter exporter, MotionEditor editor) {
-			Index = editor.GetCurrentFrame().Index;
-			Timestamp = editor.GetCurrentFrame().Timestamp;
-			Root = editor.GetActor().GetRoot().GetWorldMatrix();
-			LocalPosture = editor.GetActor().GetLocalPosture();
-			WorldPosture = editor.GetActor().GetWorldPosture();
+			Root = editor.GetCurrentFrame().GetRootTransformation(editor.Mirror);
+			Posture = editor.GetCurrentFrame().GetBoneTransformations(editor.Mirror);
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
 			Trajectory = editor.GetCurrentFrame().GetTrajectory(editor.Mirror);
 		}
