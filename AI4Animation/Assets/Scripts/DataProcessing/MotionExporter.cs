@@ -317,25 +317,25 @@ public class MotionExporter : EditorWindow {
 											Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 											float[] style = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-											inputLine += FormatValue(position.x);
-											inputLine += FormatValue(position.z);
-											inputLine += FormatValue(direction.x);
-											inputLine += FormatValue(direction.z);
-											inputLine += FormatValue(velocity.x);
-											inputLine += FormatValue(velocity.z);
-											inputLine += FormatArray(style);
+											inputLine += Format(position.x);
+											inputLine += Format(position.z);
+											inputLine += Format(direction.x);
+											inputLine += Format(direction.z);
+											inputLine += Format(velocity.x);
+											inputLine += Format(velocity.z);
+											inputLine += Format(style);
 										}
 										for(int k=0; k<current.Posture.Length; k++) {
 											Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 											Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 											Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
-											inputLine += FormatVector3(position);
-											inputLine += FormatVector3(forward);
-											inputLine += FormatVector3(up);
-											inputLine += FormatVector3(velocity);
+											inputLine += Format(position);
+											inputLine += Format(forward);
+											inputLine += Format(up);
+											inputLine += Format(velocity);
 										}
-										inputLine += FormatArray(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
+										inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
 
 										inputLine = inputLine.Remove(inputLine.Length-1);
 										inputLine = inputLine.Replace(",",".");
@@ -348,25 +348,25 @@ public class MotionExporter : EditorWindow {
 											Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 											float[] style = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
-											outputLine += FormatValue(position.x);
-											outputLine += FormatValue(position.z);
-											outputLine += FormatValue(direction.x);
-											outputLine += FormatValue(direction.z);
-											outputLine += FormatValue(velocity.x);
-											outputLine += FormatValue(velocity.z);
-											outputLine += FormatArray(style);
+											outputLine += Format(position.x);
+											outputLine += Format(position.z);
+											outputLine += Format(direction.x);
+											outputLine += Format(direction.z);
+											outputLine += Format(velocity.x);
+											outputLine += Format(velocity.z);
+											outputLine += Format(style);
 										}
 										for(int k=0; k<next.Posture.Length; k++) {
 											Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 											Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 											Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 											Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
-											outputLine += FormatVector3(position);
-											outputLine += FormatVector3(forward);
-											outputLine += FormatVector3(up);
-											outputLine += FormatVector3(velocity);
+											outputLine += Format(position);
+											outputLine += Format(forward);
+											outputLine += Format(up);
+											outputLine += Format(velocity);
 										}
-										outputLine += FormatValue(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
+										outputLine += Format(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
 
 										outputLine = outputLine.Remove(outputLine.Length-1);
 										outputLine = outputLine.Replace(",",".");
@@ -402,7 +402,7 @@ public class MotionExporter : EditorWindow {
 		float[] filtered = new float[to.Length];
 		for(int i=0; i<to.Length; i++) {
 			for(int j=0; j<from.Length; j++) {
-				if(from[j] == to[i]) {
+				if(to[i] == from[j]) {
 					filtered[i] = style[j];
 				}
 			}
@@ -410,15 +410,15 @@ public class MotionExporter : EditorWindow {
 		return filtered;
 	}
 
-	private string FormatString(string value) {
+	private string Format(string value) {
 		return value + Separator;
 	}
 
-	private string FormatValue(float value) {
+	private string Format(float value) {
 		return value.ToString(Accuracy) + Separator;
 	}
 
-	private string FormatArray(float[] array) {
+	private string Format(float[] array) {
 		string format = string.Empty;
 		for(int i=0; i<array.Length; i++) {
 			format += array[i].ToString(Accuracy) + Separator;
@@ -426,7 +426,7 @@ public class MotionExporter : EditorWindow {
 		return format;
 	}
 
-	private string FormatArray(bool[] array) {
+	private string Format(bool[] array) {
 		string format = string.Empty;
 		for(int i=0; i<array.Length; i++) {
 			float value = array[i] ? 1f : 0f;
@@ -435,23 +435,16 @@ public class MotionExporter : EditorWindow {
 		return format;
 	}
 
-	private string FormatVector2(Vector2 vector) {
+	private string Format(Vector2 vector) {
 		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator;
 	}
 
-	private string FormatVector3(Vector3 vector) {
+	private string Format(Vector3 vector) {
 		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator + vector.z.ToString(Accuracy) + Separator;
 	}
 
-	private string FormatQuaternion(Quaternion quaternion, bool imaginary, bool real) {
-		string output = string.Empty;
-		if(imaginary) {
-			output += quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator;
-		}
-		if(real) {
-			output += quaternion.w + Separator;
-		}
-		return output;
+	private string Format(Quaternion quaternion) {
+		return quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator + quaternion.w + Separator;
 	}
 
 	public class State {
