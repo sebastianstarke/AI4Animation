@@ -131,7 +131,7 @@ public class Actor : MonoBehaviour {
 						UltiDraw.DrawBone(
 							bone.GetParent().Transform.position,
 							Quaternion.FromToRotation(bone.GetParent().Transform.forward, bone.Transform.position - bone.GetParent().Transform.position) * bone.GetParent().Transform.rotation,
-							4f*BoneSize, bone.GetLength(),
+							12.5f*BoneSize*bone.GetLength(), bone.GetLength(),
 							boneColor.Transparent(alpha)
 						);
 					//}

@@ -548,11 +548,17 @@ public class MotionEditor : MonoBehaviour {
 									Target.PlayAnimation();
 								}
 							}
+							if(Utility.GUIButton("<<", UltiDraw.Grey, UltiDraw.White, 30f, 20f)) {
+								Target.LoadFrame(Mathf.Max(Target.GetCurrentFrame().Index - Mathf.RoundToInt(Target.GetCurrentFile().Data.Framerate), 1));
+							}
 							if(Utility.GUIButton("<", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
 								Target.LoadPreviousFrame();
 							}
 							if(Utility.GUIButton(">", UltiDraw.Grey, UltiDraw.White, 20f, 20f)) {
 								Target.LoadNextFrame();
+							}
+							if(Utility.GUIButton(">>", UltiDraw.Grey, UltiDraw.White, 30f, 20f)) {
+								Target.LoadFrame(Mathf.Min(Target.GetCurrentFrame().Index + Mathf.RoundToInt(Target.GetCurrentFile().Data.Framerate), Target.GetCurrentFile().Data.GetTotalFrames()));
 							}
 							int index = EditorGUILayout.IntSlider(frame.Index, 1, Target.GetCurrentFile().Data.GetTotalFrames(), GUILayout.Width(440f));
 							if(index != frame.Index) {

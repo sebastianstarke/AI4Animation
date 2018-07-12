@@ -230,6 +230,8 @@ public class MotionTools : EditorWindow {
 
 					//data.Export = true;
 
+					data.Ground = LayerMask.GetMask("Ground");
+
 					EditorUtility.SetDirty(data);
 				}
             }

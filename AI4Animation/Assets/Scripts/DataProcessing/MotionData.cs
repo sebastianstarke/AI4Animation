@@ -235,37 +235,19 @@ public class MotionData : ScriptableObject {
 	[System.Serializable]
 	public class Sequence {
 		public MotionData Data;
-		//public int[] TransitionCopies;
-		//public int[] StyleCopies;
-		public Interval[] Copies;
 		public int Start;
 		public int End;
 
 		public Sequence(MotionData data) {
 			Data = data;
-			//TransitionCopies = new int[data.Styles.Length];
-			//StyleCopies = new int[data.Styles.Length];
-			Copies = new Interval[0];
 			SetStart(1);
 			SetEnd(data.GetTotalFrames());
 		}
 
 		public Sequence(MotionData data, int start, int end) {
 			Data = data;
-			//TransitionCopies = new int[data.Styles.Length];
-			//StyleCopies = new int[data.Styles.Length];
-			Copies = new Interval[0];
 			SetStart(start);
 			SetEnd(end);
-		}
-
-		public Interval[] GetIntervals() {
-			Interval[] intervals = new Interval[1 + Copies.Length];
-			intervals[0] = new Interval(Start, End);
-			for(int i=1; i<intervals.Length; i++) {
-				intervals[i] = Copies[i-1];
-			}
-			return intervals;
 		}
 
 		public int GetLength() {
@@ -277,115 +259,12 @@ public class MotionData : ScriptableObject {
 		}
 
 		public void SetStart(int value) {
-			value = Mathf.Clamp(value, 1, Data.GetTotalFrames());
-			if(Start != value) {
-				Start = value;
-				CreateCopies();
-			}
+			Start = Mathf.Clamp(value, 1, Data.GetTotalFrames());
 		}
 
 		public void SetEnd(int value) {
-			value = Mathf.Clamp(value, 1, Data.GetTotalFrames());
-			if(End != value) {
-				End = value;
-				CreateCopies();
-			}
+			End = Mathf.Clamp(value, 1, Data.GetTotalFrames());
 		}
-
-		public void SetTransitionCopies(int index, int value) {
-			//value = Mathf.Max(0, value);
-			//if(TransitionCopies[index] != value) {
-			//	TransitionCopies[index] = value;
-			//	CreateCopies();
-			//}
-		}
-
-		public void SetTransitionCopies(string style, int value) {
-			//SetTransitionCopies(System.Array.FindIndex(Data.Styles, x => x == style), value);
-		}
-
-		public void SetStyleCopies(int index, int value) {
-			//value = Mathf.Max(0, value);
-			//if(StyleCopies[index] != value) {
-			//	StyleCopies[index] = value;
-			//	CreateCopies();
-			//}
-		}
-
-		public void SetStyleCopies(string style, int value) {
-			//SetStyleCopies(System.Array.FindIndex(Data.Styles, x => x == style), value);
-		}
-
-		public void CreateCopies() {
-			/*
-			Copies = new Interval[0];
-
-			//Transition Copies
-			for(int c=0; c<TransitionCopies.Length; c++) {
-				for(int i=Start; i<=End; i++) {
-					if(Data.GetFrame(i).IsTransition(c)) {
-						Interval copy = new Interval();
-						copy.Start = i;
-						while(true) {
-							i += 1;
-							if(i==End) {
-								copy.End = i;
-								break;
-							}
-							if(!Data.GetFrame(i).IsTransition(c)) {
-								copy.End = i-1;
-								break;
-							}
-						}
-						for(int k=0; k<TransitionCopies[c]; k++) {
-							ArrayExtensions.Add(ref Copies, copy);
-						}
-					}
-				}
-			}
-
-			//Style Copies
-			for(int c=0; c<StyleCopies.Length; c++) {
-				if(StyleCopies[c] > 0) {
-					for(int i=Start; i<=End; i++) {
-						if(Data.GetFrame(i).StyleValues[c] == 1f) {
-							Interval copy = new Interval();
-							copy.Start = i;
-							while(true) {
-								i += 1;
-								if(i==End) {
-									copy.End = i;
-									break;
-								}
-								if(Data.GetFrame(i).StyleValues[c] != 1f) {
-									copy.End = i-1;
-									break;
-								}
-							}
-							for(int k=0; k<StyleCopies[c]; k++) {
-								ArrayExtensions.Add(ref Copies, copy);
-							}
-						}
-					}
-				}
-			}
-			*/
-		}
-
-		[System.Serializable]
-		public class Interval {
-			public int Start;
-			public int End;
-			public Interval() {
-				Start = 0;
-				End = 0;
-			}
-			public Interval(int start, int end) {
-				Start = start;
-				End = end;
-			}
-		}
-
 	}
 
 	public void Inspector(MotionEditor editor) {
