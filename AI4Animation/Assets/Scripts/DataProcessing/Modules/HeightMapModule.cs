@@ -60,7 +60,7 @@ public class HeightMapModule : Module {
 	//}
 
 	public override void Draw(MotionEditor editor) {
-
+		GetHeightMap(editor.GetCurrentFrame(), editor.Mirror).Draw();
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
