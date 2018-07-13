@@ -16,7 +16,6 @@ public class MotionEditor : MonoBehaviour {
 	//public bool ShowMotion = false;
 	public bool Mirror = false;
 	public bool Velocities = false;
-	public bool Trajectory = false;
 	public bool InspectSettings = false;
 
 	private bool AutoFocus = false;
@@ -308,10 +307,6 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.End();
 		}
 
-		if(Trajectory) {
-			GetCurrentFrame().GetTrajectory(Mirror).Draw();
-		}
-
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);
 		}
@@ -523,9 +518,6 @@ public class MotionEditor : MonoBehaviour {
 							Target.Timescale = EditorGUILayout.FloatField(Target.Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
 							if(Utility.GUIButton("M", Target.Mirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 								Target.SetMirror(!Target.Mirror);
-							}
-							if(Utility.GUIButton("T", Target.Trajectory ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-								Target.Trajectory = !Target.Trajectory;
 							}
 							if(Utility.GUIButton("V", Target.Velocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 								Target.Velocities = !Target.Velocities;

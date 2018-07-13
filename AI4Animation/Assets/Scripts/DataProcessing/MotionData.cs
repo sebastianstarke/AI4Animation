@@ -80,6 +80,9 @@ public class MotionData : ScriptableObject {
 			Debug.Log("Module of type " + type.ToString() + " already exists.");
 		} else {
 			switch(type) {
+				case Module.TYPE.Trajectory:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<TrajectoryModule>().Initialise(this));
+				break;
 				case Module.TYPE.Style:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<StyleModule>().Initialise(this));
 				break;
@@ -95,6 +98,9 @@ public class MotionData : ScriptableObject {
 				case Module.TYPE.HeightMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<HeightMapModule>().Initialise(this));
 				break;
+				default:
+				Debug.Log("Module of type " + type.ToString() + " not considered.");
+				return;
 			}
 			AssetDatabase.AddObjectToAsset(Modules[Modules.Length-1], this);
 		}

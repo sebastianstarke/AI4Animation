@@ -442,7 +442,7 @@ public class MotionExporter : EditorWindow {
 			Root = editor.GetCurrentFrame().GetRootTransformation(editor.Mirror);
 			Posture = editor.GetCurrentFrame().GetBoneTransformations(editor.Mirror);
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
-			Trajectory = editor.GetCurrentFrame().GetTrajectory(editor.Mirror);
+			Trajectory = ((TrajectoryModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(editor.GetCurrentFrame(), editor.Mirror);
 		}
 	}
 
