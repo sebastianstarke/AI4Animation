@@ -286,7 +286,7 @@ public class MotionExporter : EditorWindow {
 								for(float t=start; t<=end; t+=1f/Framerate) {
 									Generating = (t-start) / (end-start-1f/Framerate);
 									editor.LoadFrame(t);
-									states.Add(new State(this, editor, t));
+									states.Add(new State(this, editor));
 									//Spin
 									items += 1;
 									if(items == BatchSize) {
@@ -299,6 +299,10 @@ public class MotionExporter : EditorWindow {
 									Writing = (float)(state) / (float)(states.Count-2);
 									State current = states[state];
 									State next = states[state+1];
+
+									if(current.Timestamp == next.Timestamp) {
+										Debug.Log("FAIL");
+									}
 
 									//Input
 									string inputLine = string.Empty;
@@ -433,12 +437,14 @@ public class MotionExporter : EditorWindow {
 	}
 
 	public class State {
+		public float Timestamp;
 		public Matrix4x4 Root;
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
 
-		public State(MotionExporter exporter, MotionEditor editor, float t) {
+		public State(MotionExporter exporter, MotionEditor editor) {
+			Timestamp = editor.GetCurrentFrame().Timestamp;
 			Root = editor.GetCurrentFrame().GetRootTransformation(editor.Mirror);
 			Posture = editor.GetCurrentFrame().GetBoneTransformations(editor.Mirror);
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);

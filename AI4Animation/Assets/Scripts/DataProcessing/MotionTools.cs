@@ -230,7 +230,7 @@ public class MotionTools : EditorWindow {
 
 					//data.Export = true;
 
-					data.Ground = LayerMask.GetMask("Ground");
+					data.AddModule(Module.TYPE.Trajectory);
 
 					EditorUtility.SetDirty(data);
 				}

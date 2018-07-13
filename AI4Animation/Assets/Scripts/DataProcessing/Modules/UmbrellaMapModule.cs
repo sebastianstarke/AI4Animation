@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-public class HeightMapModule : Module {
+public class UmbrellaMapModule : Module {
 
 	public int Sensor = 0;
 	public float Size = 0.25f;
@@ -13,7 +13,7 @@ public class HeightMapModule : Module {
 	public string[] Names = new string[0];
 
 	public override TYPE Type() {
-		return TYPE.HeightMap ;
+		return TYPE.UmbrellaMap;
 	}
 
 	public override Module Initialise(MotionData data) {

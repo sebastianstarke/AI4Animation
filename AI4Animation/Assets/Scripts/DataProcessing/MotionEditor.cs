@@ -155,8 +155,10 @@ public class MotionEditor : MonoBehaviour {
 
 	public void LoadFile(File file) {
 		if(Instance != file) {
+			for(int i=0; i<Files.Length; i++) {
+				Files[i].Environment.gameObject.SetActive(false);
+			}
 			if(Instance != null) {
-				Instance.Environment.gameObject.SetActive(false);
 				Save(Instance);
 			}
 			Instance = file;

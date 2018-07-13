@@ -98,6 +98,9 @@ public class MotionData : ScriptableObject {
 				case Module.TYPE.HeightMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<HeightMapModule>().Initialise(this));
 				break;
+				case Module.TYPE.UmbrellaMap:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<UmbrellaMapModule>().Initialise(this));
+				break;
 				default:
 				Debug.Log("Module of type " + type.ToString() + " not considered.");
 				return;
