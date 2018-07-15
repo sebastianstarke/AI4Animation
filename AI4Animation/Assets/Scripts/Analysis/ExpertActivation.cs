@@ -59,8 +59,14 @@ public class ExpertActivation : MonoBehaviour {
 			values[i] = NN.GetTensor(ID).GetValue(i, 0);
 		}
 
-		//Utility.SoftMax(ref values);
-		
+		for(int i=0; i<values.Length; i++) {
+			values[i] = Mathf.Pow(values[i], 2f);
+		}
+		float sum = Utility.Sum(values);
+		for(int i=0; i<values.Length; i++) {
+			values[i] = values[i] / sum;
+		}
+
 		for(int i=0; i<Values.Length; i++) {
 			Values[i].Dequeue();
 			Values[i].Enqueue(values[i]);

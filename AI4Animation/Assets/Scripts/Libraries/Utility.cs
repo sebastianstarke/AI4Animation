@@ -201,6 +201,18 @@ public static class Utility {
 		return Matrix4x4.TRS(Interpolate(from.GetPosition(), to.GetPosition(), amount), Interpolate(from.GetRotation(), to.GetRotation(), amount), Vector3.one);
 	}
 
+	public static float[] Interpolate(float[] from, float[] to, float amount) {
+		if(from.Length != to.Length) {
+			Debug.Log("Interpolation not possible.");
+			return from;
+		}
+		float[] result = new float[from.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = Interpolate(from[i], to[i], amount);
+		}
+		return result;
+	}
+
 	public static float GetSignedAngle(Vector3 A, Vector3 B, Vector3 axis) {
 		return Mathf.Atan2(
 			Vector3.Dot(axis, Vector3.Cross(A, B)),

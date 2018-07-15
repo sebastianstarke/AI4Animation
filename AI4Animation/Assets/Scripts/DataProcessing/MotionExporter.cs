@@ -300,10 +300,6 @@ public class MotionExporter : EditorWindow {
 									State current = states[state];
 									State next = states[state+1];
 
-									if(current.Timestamp == next.Timestamp) {
-										Debug.Log("FAIL");
-									}
-
 									//Input
 									string inputLine = string.Empty;
 									for(int k=0; k<12; k++) {
