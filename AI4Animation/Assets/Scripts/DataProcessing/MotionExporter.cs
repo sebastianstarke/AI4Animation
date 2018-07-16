@@ -178,24 +178,26 @@ public class MotionExporter : EditorWindow {
 		}
 		for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
 			if(editor.GetCurrentFile().Data.Source.Bones[i].Active) {
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"+(i+1)); index += 1;
-				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"+(i+1)); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"); index += 1;
+				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 			}
 		}
 
-		for(int i=1; i<=Styles.Length; i++) {
-			file.WriteLine(index + " " + Styles[i-1] + "X"); index += 1;
-			file.WriteLine(index + " " + Styles[i-1] + "Y"); index += 1;
+		for(int k=1; k<=7; k++) {
+			for(int i=1; i<=Styles.Length; i++) {
+				file.WriteLine(index + " " + Styles[i-1] + "X" + k); index += 1;
+				file.WriteLine(index + " " + Styles[i-1] + "Y" + k); index += 1;
+			}
 		}
 
 		yield return new WaitForSeconds(0f);
@@ -229,18 +231,18 @@ public class MotionExporter : EditorWindow {
 			}
 			for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
 				if(editor.GetCurrentFile().Data.Source.Bones[i].Active) {
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"+(i+1)); index += 1;
-					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"+(i+1)); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionX"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionY"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "PositionZ"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardX"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardY"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "ForwardZ"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpX"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpY"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "UpZ"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityX"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityY"); index += 1;
+					file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 				}
 			}
 
@@ -325,7 +327,9 @@ public class MotionExporter : EditorWindow {
 										inputLine += Format(up);
 										inputLine += Format(velocity);
 									}
-									inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
+									for(int k=0; k<7; k++) {
+										inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
+									}
 
 									inputLine = inputLine.Remove(inputLine.Length-1);
 									inputLine = inputLine.Replace(",",".");

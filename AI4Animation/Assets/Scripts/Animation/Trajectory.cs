@@ -296,7 +296,8 @@ public class Trajectory {
 
 		//Phase
 		for(int i=0; i<Points.Length; i+=step) {
-			UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, UltiDraw.IndianRed);
+			//UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, UltiDraw.IndianRed);
+			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, 0.8f, 0.025f, 0.05f, UltiDraw.IndianRed.Transparent(0.5f));
 		}
 		
 		UltiDraw.End();
