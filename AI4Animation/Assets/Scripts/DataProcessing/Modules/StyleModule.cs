@@ -130,6 +130,7 @@ public class StyleModule : Module {
 			if(Utility.GUIButton(Functions[i].Name, colors[i].Transparent(Utility.Normalise(Functions[i].GetValue(frame), 0f, 1f, 0.25f, 1f)), UltiDraw.White, 200f, height)) {
 				Functions[i].Toggle(frame);
 			}
+			EditorGUILayout.Toggle(Functions[i].GetFlag(frame));
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
@@ -237,13 +238,15 @@ public class StyleModule : Module {
 		public StyleModule Module;
 		public string Name;
 		public float[] Values;
-		public bool[] Flags;
 
 		public StyleFunction(StyleModule module, string name) {
 			Module = module;
 			Name = name;
 			Values = new float[Module.Data.GetTotalFrames()];
-			Flags = new bool[Module.Data.GetTotalFrames()];
+		}
+
+		public bool GetFlag(Frame frame) {
+			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f);
 		}
 
 		public float GetValue(Frame frame) {

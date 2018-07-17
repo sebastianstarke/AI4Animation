@@ -649,12 +649,24 @@ public static class UltiDraw {
 		DrawGUIRectangle(new Vector2(center.x - size.x/2f + Normalise(pivot * size.x, 0f, size.x, pivotWidth/2f, size.x - pivotWidth/2f), center.y), new Vector2(pivotWidth, size.y), pivotColor);
 	}
 
+	public static void DrawGUIVerticalPivot(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float pivot, float pivotHeight, Color pivotColor) {
+		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangle(new Vector2(center.x, center.y - size.y/2f + Normalise(pivot * size.y, 0f, size.y, pivotHeight/2f, size.y - pivotHeight/2f)), new Vector2(size.x, pivotHeight), pivotColor);
+	}
+
 	public static void DrawGUICircularPivot(Vector2 center, float size, Color backgroundColor, float degrees, float length, Color pivotColor) {
 		degrees = Mathf.Repeat(degrees, 360f);
 		DrawGUICircle(center, size, backgroundColor);
 		Vector2 end = length * size * (Quaternion.AngleAxis(-degrees, Vector3.forward) * Vector2.up);
 		end.x = end.x / Screen.width * Screen.height;
-		DrawGUILine(center, center + end, length*size/5f, 0f, pivotColor);
+		DrawGUILine(center, center + end, Mathf.Abs(length*size/5f), 0f, pivotColor);
+	}
+
+	public static void DrawGUICircularPoint(Vector2 center, float size, Vector2 position, Color backgroundColor, Color pointColor) {
+		DrawGUICircle(center, size, backgroundColor);
+		Vector2 point = size * position;
+		point.x = point.x / Screen.width * Screen.height;
+		DrawGUICircle(center + point, size/10f, pointColor);
 	}
 
 	//------------------------------------------------------------------------------------------

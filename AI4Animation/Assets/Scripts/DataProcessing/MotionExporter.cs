@@ -192,13 +192,25 @@ public class MotionExporter : EditorWindow {
 				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 			}
 		}
-
-		for(int k=1; k<=7; k++) {
+		
+		for(int k=1; k<=12; k++) {
 			for(int i=1; i<=Styles.Length; i++) {
-				file.WriteLine(index + " " + Styles[i-1] + "X" + k); index += 1;
-				file.WriteLine(index + " " + Styles[i-1] + "Y" + k); index += 1;
+				file.WriteLine(index + " " + Styles[i-1] + "ValueX" + k); index += 1;
+				file.WriteLine(index + " " + Styles[i-1] + "ValueY" + k); index += 1;
 			}
 		}
+
+		/*
+		for(int i=1; i<=Styles.Length; i++) {
+			file.WriteLine(index + " " + Styles[i-1] + "ValueX"); index += 1;
+			file.WriteLine(index + " " + Styles[i-1] + "ValueY"); index += 1;
+		}
+	
+		for(int i=1; i<=Styles.Length; i++) {
+			file.WriteLine(index + " " + Styles[i-1] + "UpdateX"); index += 1;
+			file.WriteLine(index + " " + Styles[i-1] + "UpdateY"); index += 1;
+		}
+		*/
 
 		yield return new WaitForSeconds(0f);
 
@@ -299,6 +311,7 @@ public class MotionExporter : EditorWindow {
 
 								for(int state=0; state<states.Count-1; state++) {
 									Writing = (float)(state) / (float)(states.Count-2);
+									//State previous = states[state-1];
 									State current = states[state];
 									State next = states[state+1];
 
@@ -327,9 +340,16 @@ public class MotionExporter : EditorWindow {
 										inputLine += Format(up);
 										inputLine += Format(velocity);
 									}
-									for(int k=0; k<7; k++) {
-										inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
+									for(int k=0; k<12; k++) {
+										float[] currentStyle = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
+										inputLine += Format(Utility.StylePhase(currentStyle, current.Trajectory.Points[k].Phase));
 									}
+									/*
+									float[] previousStyle = FilterStyle(previous.Trajectory.Points[6].Styles, previous.Trajectory.Styles, Styles);
+									float[] currentStyle = FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles);
+									inputLine += Format(Utility.StylePhase(currentStyle, current.Trajectory.Points[6].Phase));
+									inputLine += Format(Utility.StyleUpdatePhase(previousStyle, currentStyle, previous.Trajectory.Points[6].Phase, current.Trajectory.Points[6].Phase));
+									*/
 
 									inputLine = inputLine.Remove(inputLine.Length-1);
 									inputLine = inputLine.Replace(",",".");

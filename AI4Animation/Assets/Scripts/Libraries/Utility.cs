@@ -719,13 +719,23 @@ public static class Utility {
 	}
 
 	public static float[] StylePhase(float[] style, float phase) {
-		float[] phaseStyle = new float[2*style.Length];
+		float[] result = new float[2*style.Length];
 		for(int i=0; i<style.Length; i++) {
 			Vector2 direction = style[i] * GetCirclePhase(phase);
-			phaseStyle[2*i+0] = direction.x;
-			phaseStyle[2*i+1] = direction.y;
+			result[2*i+0] = direction.x;
+			result[2*i+1] = direction.y;
 		}
-		return phaseStyle;
+		return result;
+	}
+
+	public static float[] StyleUpdatePhase(float[] previousStyle, float[] currentStyle, float previousPhase, float currentPhase) {
+		float[] previousStylePhase = StylePhase(previousStyle, previousPhase);
+		float[] currentStylePhase = StylePhase(currentStyle, currentPhase);
+		float[] result = new float[2*currentStyle.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = currentStylePhase[i] - previousStylePhase[i];
+		}
+		return result;
 	}
 
 }
