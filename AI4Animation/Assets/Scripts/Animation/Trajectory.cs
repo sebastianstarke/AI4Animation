@@ -87,7 +87,7 @@ public class Trajectory {
 		private Vector3 RightSample;
 		private float Slope;
 		public float Phase;
-		public bool[] Signals = new bool[0];
+		public float[] Signals = new float[0];
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
@@ -97,7 +97,7 @@ public class Trajectory {
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
 			Slope = 0f;
-			Signals = new bool[styles];
+			Signals = new float[styles];
 			Styles = new float[styles];
 		}
 
@@ -259,9 +259,26 @@ public class Trajectory {
 					g += Points[i].Styles[j] * colors[j].g;
 					b += Points[i].Styles[j] * colors[j].b;
 				}
-				UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f, new Color(r, g, b, 1f));
+				Color color = new Color(r,g,b,1f);
+				UltiDraw.DrawCube(Points[i].GetPosition(), Points[i].GetRotation(), 0.05f, color);
 			}
 		}
+
+		//Signals
+		/*
+		if(Styles.Length > 0) {
+			for(int i=0; i<Points.Length; i+=step) {
+				Color color = UltiDraw.Black;
+				for(int j=0; j<Points[i].Signals.Length; j++) {
+					if(Points[i].Signals[j]) {
+						color = colors[j];
+						break;
+					}
+				}
+				UltiDraw.DrawCone(Points[i].GetPosition(), Quaternion.identity, 0.1f, 0.1f, color);
+			}
+		}
+		*/
 
 		/*
 		//Speed
@@ -301,7 +318,7 @@ public class Trajectory {
 			//UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, UltiDraw.IndianRed);
 			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, 0.8f, 0.025f, 0.05f, UltiDraw.IndianRed.Transparent(0.5f));
 		}
-		
+
 		UltiDraw.End();
 	}
 

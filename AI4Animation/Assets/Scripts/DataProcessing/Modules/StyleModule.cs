@@ -64,16 +64,16 @@ public class StyleModule : Module {
 		}
 	}
 
-	public bool[] GetControl(Frame frame) {
-		bool[] control = new bool[Functions.Length];
+	public float[] GetControl(Frame frame) {
+		float[] control = new float[Functions.Length];
 		for(int i=0; i<control.Length; i++) {
 			control[i] = Functions[i].GetFlag(frame);
 		}
 		return control;
 	}
 
-	public bool[] GetRelease(Frame frame) {
-		bool[] release = new bool[Functions.Length];
+	public float[] GetRelease(Frame frame) {
+		float[] release = new float[Functions.Length];
 		for(int i=0; i<release.Length; i++) {
 			release[i] = Functions[i].GetRelease(frame);
 		}
@@ -146,8 +146,8 @@ public class StyleModule : Module {
 			if(Utility.GUIButton(Functions[i].Name, colors[i].Transparent(Utility.Normalise(Functions[i].GetValue(frame), 0f, 1f, 0.25f, 1f)), UltiDraw.White, 200f, height)) {
 				Functions[i].Toggle(frame);
 			}
-			EditorGUILayout.Toggle(Functions[i].GetFlag(frame));
-			EditorGUILayout.Toggle(Functions[i].GetRelease(frame));
+			//EditorGUILayout.Toggle(Functions[i].GetFlag(frame));
+			//EditorGUILayout.Toggle(Functions[i].GetRelease(frame));
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
@@ -262,12 +262,12 @@ public class StyleModule : Module {
 			Values = new float[Module.Data.GetTotalFrames()];
 		}
 
-		public bool GetFlag(Frame frame) {
-			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f);
+		public float GetFlag(Frame frame) {
+			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f) ? 1f : 0f;
 		}
 
-		public bool GetRelease(Frame frame) {
-			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) < 0f);
+		public float GetRelease(Frame frame) {
+			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) < 0f) ? 1f : 0f;
 		}
 
 		public float GetValue(Frame frame) {

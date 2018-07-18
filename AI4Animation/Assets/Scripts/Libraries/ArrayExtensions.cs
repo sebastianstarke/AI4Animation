@@ -61,4 +61,28 @@ public static class ArrayExtensions {
 		return FindIndex(ref array, element) >= 0;
 	}
 
+	public static float[] Add(float[] lhs, float[] rhs) {
+		if(lhs.Length != rhs.Length) {
+			Debug.Log("Incompatible array dimensions.");
+			return null;
+		}
+		float[] result = new float[lhs.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = lhs[i] + rhs[i];
+		}
+		return result;
+	}
+
+	public static float[] Sub(float[] lhs, float[] rhs) {
+		if(lhs.Length != rhs.Length) {
+			Debug.Log("Incompatible array dimensions.");
+			return null;
+		}
+		float[] result = new float[lhs.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = lhs[i] - rhs[i];
+		}
+		return result;
+	}
+
 }
