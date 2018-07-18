@@ -173,7 +173,10 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
 			for(int j=0; j<Styles.Length; j++) {
-				file.WriteLine(index + " " + Styles[j] + i); index += 1;
+				file.WriteLine(index + " " + Styles[j] + "Value" + i); index += 1;
+			}
+			for(int j=0; j<Styles.Length; j++) {
+				file.WriteLine(index + " " + Styles[j] + "Signal" + i); index += 1;
 			}
 		}
 		for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
@@ -192,13 +195,20 @@ public class MotionExporter : EditorWindow {
 				file.WriteLine(index + " " + editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 			}
 		}
-		
+
+		for(int i=0; i<Styles.Length; i++) {
+			file.WriteLine(index + " " + Styles[i] + "State"); index += 1;
+			file.WriteLine(index + " " + Styles[i] + "State"); index += 1;
+		}
+
+		/*
 		for(int k=1; k<=12; k++) {
 			for(int i=1; i<=Styles.Length; i++) {
 				file.WriteLine(index + " " + Styles[i-1] + "ValueX" + k); index += 1;
 				file.WriteLine(index + " " + Styles[i-1] + "ValueY" + k); index += 1;
 			}
 		}
+		*/
 
 		/*
 		for(int i=1; i<=Styles.Length; i++) {
@@ -322,6 +332,7 @@ public class MotionExporter : EditorWindow {
 										Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 										Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 										float[] style = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
+										bool[] control = FilterControl(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
 										inputLine += Format(position.x);
 										inputLine += Format(position.z);
 										inputLine += Format(direction.x);
@@ -329,6 +340,7 @@ public class MotionExporter : EditorWindow {
 										inputLine += Format(velocity.x);
 										inputLine += Format(velocity.z);
 										inputLine += Format(style);
+										inputLine += Format(control);
 									}
 									for(int k=0; k<current.Posture.Length; k++) {
 										Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -340,10 +352,13 @@ public class MotionExporter : EditorWindow {
 										inputLine += Format(up);
 										inputLine += Format(velocity);
 									}
+									inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
+									/*
 									for(int k=0; k<12; k++) {
 										float[] currentStyle = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
 										inputLine += Format(Utility.StylePhase(currentStyle, current.Trajectory.Points[k].Phase));
 									}
+									*/
 									/*
 									float[] previousStyle = FilterStyle(previous.Trajectory.Points[6].Styles, previous.Trajectory.Styles, Styles);
 									float[] currentStyle = FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles);
@@ -407,12 +422,24 @@ public class MotionExporter : EditorWindow {
 		yield return new WaitForSeconds(0f);
 	}
 
-	private float[] FilterStyle(float[] style, string[] from, string[] to) {
+	private float[] FilterStyle(float[] values, string[] from, string[] to) {
 		float[] filtered = new float[to.Length];
 		for(int i=0; i<to.Length; i++) {
 			for(int j=0; j<from.Length; j++) {
 				if(to[i] == from[j]) {
-					filtered[i] = style[j];
+					filtered[i] = values[j];
+				}
+			}
+		}
+		return filtered;
+	}
+
+	private bool[] FilterControl(bool[] values, string[] from, string[] to) {
+		bool[] filtered = new bool[to.Length];
+		for(int i=0; i<to.Length; i++) {
+			for(int j=0; j<from.Length; j++) {
+				if(to[i] == from[j]) {
+					filtered[i] = values[j];
 				}
 			}
 		}
@@ -462,6 +489,7 @@ public class MotionExporter : EditorWindow {
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
+		public bool[] Control;
 
 		public State(MotionExporter exporter, MotionEditor editor) {
 			Timestamp = editor.GetCurrentFrame().Timestamp;
@@ -469,6 +497,7 @@ public class MotionExporter : EditorWindow {
 			Posture = editor.GetCurrentFrame().GetBoneTransformations(editor.Mirror);
 			Velocities = editor.GetCurrentFrame().GetBoneVelocities(editor.Mirror);
 			Trajectory = ((TrajectoryModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(editor.GetCurrentFrame(), editor.Mirror);
+			Control = ((StyleModule)editor.GetCurrentFile().Data.GetModule(Module.TYPE.Style)).GetControl(editor.GetCurrentFrame());
 		}
 	}
 

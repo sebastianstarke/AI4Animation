@@ -87,6 +87,7 @@ public class Trajectory {
 		private Vector3 RightSample;
 		private float Slope;
 		public float Phase;
+		public bool[] Signals = new bool[0];
 		public float[] Styles = new float[0];
 
 		public Point(int index, int styles) {
@@ -96,6 +97,7 @@ public class Trajectory {
 			LeftSample = Vector3.zero;
 			RightSample = Vector3.zero;
 			Slope = 0f;
+			Signals = new bool[styles];
 			Styles = new float[styles];
 		}
 

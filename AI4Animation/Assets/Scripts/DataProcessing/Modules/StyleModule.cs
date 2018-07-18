@@ -64,6 +64,22 @@ public class StyleModule : Module {
 		}
 	}
 
+	public bool[] GetControl(Frame frame) {
+		bool[] control = new bool[Functions.Length];
+		for(int i=0; i<control.Length; i++) {
+			control[i] = Functions[i].GetFlag(frame);
+		}
+		return control;
+	}
+
+	public bool[] GetRelease(Frame frame) {
+		bool[] release = new bool[Functions.Length];
+		for(int i=0; i<release.Length; i++) {
+			release[i] = Functions[i].GetRelease(frame);
+		}
+		return release;
+	}
+
 	public float[] GetStyle(Frame frame) {
 		float[] style = new float[Functions.Length];
 		for(int i=0; i<style.Length; i++) {
@@ -131,6 +147,7 @@ public class StyleModule : Module {
 				Functions[i].Toggle(frame);
 			}
 			EditorGUILayout.Toggle(Functions[i].GetFlag(frame));
+			EditorGUILayout.Toggle(Functions[i].GetRelease(frame));
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
@@ -247,6 +264,10 @@ public class StyleModule : Module {
 
 		public bool GetFlag(Frame frame) {
 			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f);
+		}
+
+		public bool GetRelease(Frame frame) {
+			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) < 0f);
 		}
 
 		public float GetValue(Frame frame) {
