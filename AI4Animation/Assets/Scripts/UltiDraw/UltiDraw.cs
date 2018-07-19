@@ -491,10 +491,6 @@ public static class UltiDraw {
 	}
 
 	public static void DrawGUIRectangle(Vector2 center, Vector2 size, Color color, float borderWidth, Color borderColor) {
-		DrawGUIRectangle(new Vector2(center.x - size.x/2f - borderWidth/2f, center.y), new Vector2(borderWidth, size.y), borderColor);
-		DrawGUIRectangle(new Vector2(center.x + size.x/2f + borderWidth/2f, center.y), new Vector2(borderWidth, size.y), borderColor);
-		DrawGUIRectangle(new Vector2(center.x, center.y - size.y/2f - borderWidth*Screen.width/Screen.height/2f), new Vector2(size.x + 2f*borderWidth, borderWidth*Screen.width/Screen.height), borderColor);
-		DrawGUIRectangle(new Vector2(center.x, center.y + size.y/2f + borderWidth*Screen.width/Screen.height/2f), new Vector2(size.x + 2f*borderWidth, borderWidth*Screen.width/Screen.height), borderColor);
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.QUADS);
@@ -507,9 +503,11 @@ public static class UltiDraw {
 		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x-size.x/2f, center.y-size.y/2f, Camera.nearClipPlane + GUIOffset)));
 		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+-size.x/2f, center.y+size.y/2f, Camera.nearClipPlane + GUIOffset)));
 		GL.Vertex(Camera.ScreenToWorldPoint(new Vector3(center.x+size.x/2f, center.y+size.y/2f, Camera.nearClipPlane + GUIOffset)));
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
 	}
 
 	public static void DrawGUITriangle(Vector2 a, Vector2 b, Vector2 c, Color color) {
+		//TODO: There is some dependency here on the order of triangles, need to fix...
 		if(Camera != Camera.main) {return;}
 		if(Return()) {return;}
 		SetProgram(PROGRAM.TRIANGLES);
@@ -545,6 +543,13 @@ public static class UltiDraw {
 		GUI.DrawTexture(new Rect(pos.x, pos.y, area.x, area.y), texture, ScaleMode.StretchToFill, true, 1f, color, 0f, 100f);
 	}
 
+	public static void DrawGUIRectangleFrame(Vector2 center, Vector2 size, float thickness, Color color) {
+		DrawGUIRectangle(new Vector2(center.x - size.x/2f - thickness/2f, center.y), new Vector2(thickness, size.y), color);
+		DrawGUIRectangle(new Vector2(center.x + size.x/2f + thickness/2f, center.y), new Vector2(thickness, size.y), color);
+		DrawGUIRectangle(new Vector2(center.x, center.y - size.y/2f - thickness*Screen.width/Screen.height/2f), new Vector2(size.x + 2f*thickness, thickness*Screen.width/Screen.height), color);
+		DrawGUIRectangle(new Vector2(center.x, center.y + size.y/2f + thickness*Screen.width/Screen.height/2f), new Vector2(size.x + 2f*thickness, thickness*Screen.width/Screen.height), color);
+	}
+
 	//------------------------------------------------------------------------------------------
 	//PLOTTING FUNCTIONS
 	//------------------------------------------------------------------------------------------
@@ -564,6 +569,37 @@ public static class UltiDraw {
 
 	public static void DrawGUIFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line) {
 		DrawGUIRectangle(center, size, background);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		//float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			DrawGUILine(
+					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+				thickness,
+				line
+			);
+		}
+	}
+
+	public static void DrawGUIFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		//float scale = yMax - yMin;
+		for(int i=0; i<values.Length-1; i++) {
+			DrawGUILine(
+					new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+				line
+			);
+		}
+	}
+
+	public static void DrawGUIFunction(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
 		float x = center.x - size.x/2f;
 		float y = center.y - size.y/2f;
 		//float scale = yMax - yMin;
@@ -610,6 +646,41 @@ public static class UltiDraw {
 		}
 	}
 
+	public static void DrawGUIFunctions(Vector2 center, Vector2 size, List<float[]> values, float yMin, float yMax, Color background, Color[] lines, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		//float scale = yMax - yMin;
+		for(int k=0; k<values.Count; k++) {
+			for(int i=0; i<values[k].Length-1; i++) {
+				DrawGUILine(
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					lines[k]
+				);
+			}
+		}
+	}
+
+	public static void DrawGUIFunctions(Vector2 center, Vector2 size, List<float[]> values, float yMin, float yMax, float thickness, Color background, Color[] lines, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
+		float x = center.x - size.x/2f;
+		float y = center.y - size.y/2f;
+		//float scale = yMax - yMin;
+		for(int k=0; k<values.Count; k++) {
+			for(int i=0; i<values[k].Length-1; i++) {
+				DrawGUILine(
+					new Vector2(x + (float)i/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					new Vector2(x + (float)(i+1)/(float)(values[k].Length-1)*size.x, y + Mathf.Clamp(Utility.Normalise(values[k][i+1], yMin, yMax, 0f, 1f), 0f, 1f)*size.y),
+					thickness,
+					lines[k]
+				);
+			}
+		}
+	}
+
 	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line) {
 		DrawGUIRectangle(center, size, background);
 		float x = center.x - size.x/2f;
@@ -640,17 +711,17 @@ public static class UltiDraw {
 
 	public static void DrawGUIHorizontalBar(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float fillAmount, Color fillColor) {
 		fillAmount = Mathf.Clamp(fillAmount, 0f, 1f);
-		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
 		DrawGUIRectangle(new Vector2(center.x - size.x/2f + fillAmount * size.x/2f, center.y), new Vector2(fillAmount * size.x, size.y), fillColor);
 	}
 
 	public static void DrawGUIHorizontalPivot(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float pivot, float pivotWidth, Color pivotColor) {
-		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangleFrame(center, size,  borderWidth, borderColor);
 		DrawGUIRectangle(new Vector2(center.x - size.x/2f + Normalise(pivot * size.x, 0f, size.x, pivotWidth/2f, size.x - pivotWidth/2f), center.y), new Vector2(pivotWidth, size.y), pivotColor);
 	}
 
 	public static void DrawGUIVerticalPivot(Vector2 center, Vector2 size, Color backgroundColor, float borderWidth, Color borderColor, float pivot, float pivotHeight, Color pivotColor) {
-		DrawGUIRectangle(center, size, backgroundColor, borderWidth, borderColor);
+		DrawGUIRectangleFrame(center, size,  borderWidth, borderColor);
 		DrawGUIRectangle(new Vector2(center.x, center.y - size.y/2f + Normalise(pivot * size.y, 0f, size.y, pivotHeight/2f, size.y - pivotHeight/2f)), new Vector2(size.x, pivotHeight), pivotColor);
 	}
 

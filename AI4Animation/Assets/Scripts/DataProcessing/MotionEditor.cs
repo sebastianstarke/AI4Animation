@@ -309,6 +309,32 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.End();
 		}
 
+		UltiDraw.Begin();
+		//Exp Map
+		int window = 10;
+		for(int k=0; k<3; k++) {
+			List<float[]> functions = new List<float[]>();
+			for(int i=0; i<Actor.Bones.Length; i++) {
+				List<float> values = new List<float>();
+				for(int j=Mathf.Clamp(GetCurrentFrame().Index - window, 1, GetCurrentFile().Data.GetTotalFrames()); j<=Mathf.Clamp(GetCurrentFrame().Index + window, 1, GetCurrentFile().Data.GetTotalFrames()); j++) {
+					Frame frame = GetCurrentFile().Data.GetFrame(j);
+					Vector3 exp = frame.World[i].GetRotation().GetLog();
+					if(k==0) {
+						values.Add(exp.x);
+					}
+					if(k==1) {
+						values.Add(exp.y);
+					}
+					if(k==2) {
+						values.Add(exp.z);
+					}
+				}
+				functions.Add(values.ToArray());
+			}
+			UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f + k*0.2f), new Vector2(0.8f, 0.175f), functions, -1f, 1f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(functions.Count));
+		}
+		UltiDraw.End();
+
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);
 		}

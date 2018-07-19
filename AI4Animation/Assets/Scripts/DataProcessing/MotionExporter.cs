@@ -173,7 +173,7 @@ public class MotionExporter : EditorWindow {
 			file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
 			file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
 			for(int j=0; j<Styles.Length; j++) {
-				file.WriteLine(index + " " + Styles[j] + "Value" + i); index += 1;
+				file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
 			}
 			for(int j=0; j<Styles.Length; j++) {
 				file.WriteLine(index + " " + Styles[j] + "Signal" + i); index += 1;
@@ -196,10 +196,16 @@ public class MotionExporter : EditorWindow {
 			}
 		}
 
-		for(int k=1; k<=7; k++) {
-			for(int i=0; i<Styles.Length; i++) {
-				file.WriteLine(index + " " + Styles[i] + "State" + k); index += 1;
-				file.WriteLine(index + " " + Styles[i] + "State" + k); index += 1;
+		//for(int i=1; i<=7; i++) {
+		//	for(int j=0; j<Styles.Length; j++) {
+		//		file.WriteLine(index + " " + Styles[j] + "Value" + i); index += 1;
+		//	}
+		//}
+
+		for(int i=1; i<=7; i++) {
+			for(int j=0; j<Styles.Length; j++) {
+				file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
+				file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
 			}
 		}
 
@@ -250,7 +256,7 @@ public class MotionExporter : EditorWindow {
 				file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
 				file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
 				for(int j=0; j<Styles.Length; j++) {
-					file.WriteLine(index + " " + Styles[j] + i); index += 1;
+					file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
 				}
 			}
 			for(int i=0; i<editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
@@ -312,14 +318,14 @@ public class MotionExporter : EditorWindow {
 								Generating = 0f;
 								Writing = 0f;
 
-								List<State> states = new List<State>();
+								List<State> frames = new List<State>();
 								float start = editor.GetCurrentFile().Data.GetFrame(editor.GetCurrentFile().Data.Sequences[s].Start).Timestamp;
 								float end = editor.GetCurrentFile().Data.GetFrame(editor.GetCurrentFile().Data.Sequences[s].End).Timestamp;
 
 								for(float t=start; t<=end; t+=1f/Framerate) {
 									Generating = (t-start) / (end-start-1f/Framerate);
 									editor.LoadFrame(t);
-									states.Add(new State(this, editor));
+									frames.Add(new State(this, editor));
 									//Spin
 									items += 1;
 									if(items == BatchSize) {
@@ -328,11 +334,11 @@ public class MotionExporter : EditorWindow {
 									}
 								}
 
-								for(int state=0; state<states.Count-1; state++) {
-									Writing = (float)(state) / (float)(states.Count-2);
-									//State previous = states[state-1];
-									State current = states[state];
-									State next = states[state+1];
+								for(int frame=0; frame<frames.Count-1; frame++) {
+									Writing = (float)(frame) / (float)(frames.Count-2);
+									//State previous = frames[frame-1];
+									State current = frames[frame];
+									State next = frames[frame+1];
 
 									//Input
 									string inputLine = string.Empty;
@@ -340,16 +346,16 @@ public class MotionExporter : EditorWindow {
 										Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 										Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 										Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-										float[] style = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-										float[] control = FilterControl(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
+										float[] state = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
+										float[] signal = FilterControl(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
 										inputLine += Format(position.x);
 										inputLine += Format(position.z);
 										inputLine += Format(direction.x);
 										inputLine += Format(direction.z);
 										inputLine += Format(velocity.x);
 										inputLine += Format(velocity.z);
-										inputLine += Format(style);
-										inputLine += Format(control);
+										inputLine += Format(state);
+										inputLine += Format(signal);
 									}
 									for(int k=0; k<current.Posture.Length; k++) {
 										Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -363,9 +369,11 @@ public class MotionExporter : EditorWindow {
 									}
 									//inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
 									
+									//for(int k=0; k<7; k++) {
+									///	inputLine += Format(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles));
+									//}
 									for(int k=0; k<7; k++) {
-										float[] currentStyle = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-										inputLine += Format(Utility.StylePhase(currentStyle, current.Trajectory.Points[k].Phase));
+										inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
 									}
 									
 									/*
@@ -385,14 +393,14 @@ public class MotionExporter : EditorWindow {
 										Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 										Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 										Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-										float[] style = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
+										float[] state = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
 										outputLine += Format(position.x);
 										outputLine += Format(position.z);
 										outputLine += Format(direction.x);
 										outputLine += Format(direction.z);
 										outputLine += Format(velocity.x);
 										outputLine += Format(velocity.z);
-										outputLine += Format(style);
+										outputLine += Format(state);
 									}
 									for(int k=0; k<next.Posture.Length; k++) {
 										Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -406,7 +414,6 @@ public class MotionExporter : EditorWindow {
 									}
 
 									//outputLine += Format(FilterStyle(next.Trajectory.Points[6].Styles, next.Trajectory.Styles, Styles));
-									
 									outputLine += Format(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
 
 									//for(int k=6; k<12; k++) {
