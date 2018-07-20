@@ -309,6 +309,7 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.End();
 		}
 
+		/*
 		UltiDraw.Begin();
 		//Exp Map
 		int window = 10;
@@ -334,6 +335,7 @@ public class MotionEditor : MonoBehaviour {
 			UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f + k*0.2f), new Vector2(0.8f, 0.175f), functions, -1f, 1f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(functions.Count));
 		}
 		UltiDraw.End();
+		*/
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);
