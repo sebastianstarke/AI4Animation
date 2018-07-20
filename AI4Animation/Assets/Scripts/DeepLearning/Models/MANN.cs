@@ -18,7 +18,6 @@ namespace DeepLearning {
 		public int[] ControlNeurons = new int[0];
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
-		private Tensor X, Y;
 		private Tensor BX, BY;
 		private Tensor BW0, BW1, BW2, Bb0, Bb1, Bb2;
 		private Tensor[] CW;
@@ -114,14 +113,6 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
-		}
-
-		public override void SetInput(int index, float value) {
-			X.SetValue(index, 0, value);
-		}
-
-		public override float GetOutput(int index) {
-			return Y.GetValue(index, 0);
 		}
 		
 	}

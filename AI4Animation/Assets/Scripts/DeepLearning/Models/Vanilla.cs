@@ -13,7 +13,6 @@ namespace DeepLearning {
 
 		private Tensor Xmean, Xstd, Ymean, Ystd;
 		private Tensor W0, W1, W2, b0, b1, b2;
-		private Tensor X, Y;
 
 		protected override void StoreParametersDerived() {
 			Parameters.Store(Folder+"/Xmean.bin", XDim, 1, "Xmean");
@@ -54,14 +53,6 @@ namespace DeepLearning {
 
 			//Renormalise Output
 			Renormalise(Y, Ymean, Ystd, Y);
-		}
-
-		public override void SetInput(int index, float value) {
-			X.SetValue(index, 0, value);
-		}
-
-		public override float GetOutput(int index) {
-			return Y.GetValue(index, 0);
 		}
 
 	}

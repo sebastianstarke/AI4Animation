@@ -12,6 +12,9 @@ namespace DeepLearning {
         public string Destination = "";
         public Parameters Parameters = null;
 
+        public Tensor X, Y;
+        private int Pivot = 0;
+
         private List<Tensor> Tensors = new List<Tensor>();
 
         public void StoreParameters() {
@@ -35,8 +38,6 @@ namespace DeepLearning {
         protected abstract void StoreParametersDerived();
         protected abstract void LoadParametersDerived();
         public abstract void Predict();
-        public abstract void SetInput(int index, float value);
-        public abstract float GetOutput(int index);
 
         public Tensor CreateTensor(int rows, int cols, string id) {
             if(Tensors.Exists(x => x.ID == id)) {
@@ -88,6 +89,24 @@ namespace DeepLearning {
             }
             return Tensors[index].ID;
         }
+
+		public void SetInput(int index, float value) {
+			Pivot = index;
+			X.SetValue(index, 0, value);
+		}
+
+		public float GetOutput(int index) {
+			Pivot = index;
+			return Y.GetValue(index, 0);
+		}
+
+		public void SetNextInput(float value) {
+			SetInput(Pivot+1, value);
+		}
+
+		public float GetNextOutput() {
+			return GetOutput(Pivot+1);
+		}
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
