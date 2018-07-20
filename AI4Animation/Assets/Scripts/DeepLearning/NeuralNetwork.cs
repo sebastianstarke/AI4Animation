@@ -13,7 +13,7 @@ namespace DeepLearning {
         public Parameters Parameters = null;
 
         public Tensor X, Y;
-        private int Pivot = 0;
+        private int Pivot = -1;
 
         private List<Tensor> Tensors = new List<Tensor>();
 
@@ -90,10 +90,24 @@ namespace DeepLearning {
             return Tensors[index].ID;
         }
 
+        public void ResetPivot() {
+            Pivot = -1;
+        }
+
 		public void SetInput(int index, float value) {
 			Pivot = index;
 			X.SetValue(index, 0, value);
 		}
+
+        public float GetInput(int index) {
+            Pivot = index;
+            return X.GetValue(index, 0);
+        }
+
+        public void SetOutput(int index, float value) {
+            Pivot = index;
+            Y.SetValue(index, 0, value);
+        }
 
 		public float GetOutput(int index) {
 			Pivot = index;
