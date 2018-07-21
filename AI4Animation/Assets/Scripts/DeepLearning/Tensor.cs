@@ -27,6 +27,14 @@ namespace DeepLearning {
             }
         }
 
+        public void Resize(int rows, int cols) {
+            Eigen.Resize(Ptr, rows, cols);
+        }
+
+        public void ConservativeResize(int rows, int cols) {
+            Eigen.ConservativeResize(Ptr, rows, cols);
+        }
+
         public int GetRows() {
             return Eigen.GetRows(Ptr);
         }

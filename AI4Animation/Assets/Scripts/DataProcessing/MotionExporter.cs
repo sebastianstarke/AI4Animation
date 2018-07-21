@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.SceneManagement;
+using DeepLearning;
 
 public class MotionExporter : EditorWindow {
 
@@ -23,6 +24,7 @@ public class MotionExporter : EditorWindow {
 
     private bool Exporting = false;
 	private float Generating = 0f;
+	private float Processing = 0f;
 	private float Writing = 0f;
 
 	private static string Separator = " ";
@@ -90,8 +92,11 @@ public class MotionExporter : EditorWindow {
 						EditorGUILayout.LabelField("Generating");
 						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Generating * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
 
+						EditorGUILayout.LabelField("Processing");
+						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Processing * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
+
 						EditorGUILayout.LabelField("Writing");
-						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Writing * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.IndianRed.Transparent(0.75f));
+						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Writing * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
 
 						if(Utility.GUIButton("Stop", UltiDraw.DarkRed, UltiDraw.White)) {
 							this.StopAllCoroutines();
@@ -275,26 +280,27 @@ public class MotionExporter : EditorWindow {
 		} else {
 			Exporting = true;
 
+			Generating = 0f;
+			Processing = 0f;
+			Writing = 0f;
+			
 			List<List<State>> data = new List<List<State>>();
 
-			Generating = 0f;
-			Writing = 0f;
-
 			int items = 0;
+			int files = 5;
+			int samples = 0;
 
 			//Generating
-			int filesGenerated = 0;
-			int totalFiles = 0;
-			for(int j=0; j<Editor.Files.Length; j++) {
+			int generatedFiles = 0;
+			int filesToGenerate = 0;
+			for(int j=0; j<files; j++) {
 				if(Editor.Files[j].Data.Export) {
-					totalFiles += 1;
+					filesToGenerate += 1;
 				}
 			}
-
-			for(int i=0; i<Editor.Files.Length; i++) {
+			for(int i=0; i<files; i++) {
 				if(Editor.Files[i].Data.Export) {
 					Editor.LoadFile(Editor.Files[i]);
-
 					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 						if(m==1) {
 							Editor.SetMirror(false);
@@ -310,23 +316,178 @@ public class MotionExporter : EditorWindow {
 							for(float t=start; t<=end; t+=1f/Framerate) {
 								Editor.LoadFrame(t);
 								states.Add(new State(Editor));
-
+								samples += 1;
 								items += 1;
 								if(items == BatchSize) {
 									items = 0;
 									yield return new WaitForSeconds(0f);
 								}
 							}
-
 							data.Add(states);
 						}
 					}
-
-					filesGenerated += 1;
-					Generating = (float)filesGenerated / (float)totalFiles;
+					generatedFiles += 1;
+					Generating = (float)generatedFiles / (float)filesToGenerate;
 				}
 			}
 
+			//Processing
+			int processedSamples = 0;
+			Tensor inputData = null;
+			Tensor outputData = null;
+			for(int i=0; i<data.Count; i++) {
+				List<State> states = data[i];
+				for(int j=0; j<states.Count-1; j++) {
+					State current = states[j];
+					State next = states[j+1];
+
+					//Input
+					List<float> inputDims = new List<float>();
+
+					for(int k=0; k<12; k++) {
+						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
+						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
+						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
+						float[] state = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
+						float[] signal = FilterSignal(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
+						inputDims.Add(position.x);
+						inputDims.Add(position.z);
+						inputDims.Add(direction.x);
+						inputDims.Add(direction.z);
+						inputDims.Add(velocity.x);
+						inputDims.Add(velocity.z);
+						inputDims.AddRange(state);
+						inputDims.AddRange(signal);
+					}
+					for(int k=0; k<current.Posture.Length; k++) {
+						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
+						Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
+						Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
+						Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
+						inputDims.Add(position.x);
+						inputDims.Add(position.y);
+						inputDims.Add(position.z);
+						inputDims.Add(forward.x);
+						inputDims.Add(forward.y);
+						inputDims.Add(forward.z);
+						inputDims.Add(up.x);
+						inputDims.Add(up.y);
+						inputDims.Add(up.z);
+						inputDims.Add(velocity.x);
+						inputDims.Add(velocity.y);
+						inputDims.Add(velocity.z);
+					}
+					for(int k=0; k<7; k++) {
+						inputDims.AddRange(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
+					}
+
+					if(inputData == null) {
+						inputData = new Tensor(samples, inputDims.Count, "Input");
+					}
+					for(int k=0; k<inputDims.Count; k++) {
+						inputData.SetValue(processedSamples, k, inputDims[k]);
+					}
+					//
+
+					//Output
+					List<float> outputDims = new List<float>();
+
+					for(int k=6; k<12; k++) {
+						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
+						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
+						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
+						float[] state = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
+						outputDims.Add(position.x);
+						outputDims.Add(position.z);
+						outputDims.Add(direction.x);
+						outputDims.Add(direction.z);
+						outputDims.Add(velocity.x);
+						outputDims.Add(velocity.z);
+						outputDims.AddRange(state);
+					}
+					for(int k=0; k<next.Posture.Length; k++) {
+						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
+						Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
+						Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
+						Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
+						outputDims.Add(position.x);
+						outputDims.Add(position.y);
+						outputDims.Add(position.z);
+						outputDims.Add(forward.x);
+						outputDims.Add(forward.y);
+						outputDims.Add(forward.z);
+						outputDims.Add(up.x);
+						outputDims.Add(up.y);
+						outputDims.Add(up.z);
+						outputDims.Add(velocity.x);
+						outputDims.Add(velocity.y);
+						outputDims.Add(velocity.z);
+					}
+					outputDims.Add(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
+
+					if(outputData == null) {
+						outputData = new Tensor(samples, outputDims.Count, "Output");
+					}
+					for(int k=0; k<outputDims.Count; k++) {
+						outputData.SetValue(processedSamples, k, outputDims[k]);
+					}
+					//
+
+					processedSamples += 1;
+					Processing = (float)processedSamples / (float)samples;
+
+					items += 1;
+					if(items == BatchSize) {
+						items = 0;
+						yield return new WaitForSeconds(0f);
+					}
+				}
+			}
+			Tensor inputMean = new Tensor(1, inputData.GetCols());
+			Tensor inputStd = new Tensor(1, inputData.GetCols());
+			Tensor outputMean = new Tensor(1, outputData.GetCols());
+			Tensor outputStd = new Tensor(1, outputData.GetCols());
+			
+			//Writing
+			StreamWriter input = CreateFile("Input");
+			StreamWriter output = CreateFile("Output");
+			for(int i=0; i<samples; i++) {
+				string inputLine = string.Empty;
+				for(int j=0; j<inputData.GetCols(); j++) {
+					inputLine += Format(inputData.GetValue(i, j));
+				}
+				inputLine = inputLine.Remove(inputLine.Length-1);
+				inputLine = inputLine.Replace(",",".");
+				input.WriteLine(inputLine);
+
+				string outputLine = string.Empty;
+				for(int j=0; j<outputData.GetCols(); j++) {
+					outputLine += Format(outputData.GetValue(i, j));
+				}
+				outputLine = outputLine.Remove(outputLine.Length-1);
+				outputLine = outputLine.Replace(",",".");
+				output.WriteLine(outputLine);
+
+				Writing = (float)(i+1) / (float)samples;
+
+				items += 1;
+				if(items == BatchSize) {
+					items = 0;
+					yield return new WaitForSeconds(0f);
+				}
+			}
+			input.Close();
+			output.Close();
+
+			//Cleanup
+			inputData.Delete();
+			outputData.Delete();
+			inputMean.Delete();
+			inputStd.Delete();
+			outputMean.Delete();
+			outputStd.Delete();
+			
+			/*
 			//Writing
 			StreamWriter input = CreateFile("Input");
 			StreamWriter output = CreateFile("Output");
@@ -380,6 +541,7 @@ public class MotionExporter : EditorWindow {
 					inputLine += Format(Utility.StyleUpdatePhase(previousStyle, currentStyle, previous.Trajectory.Points[6].Phase, current.Trajectory.Points[6].Phase));
 					*/
 
+					/*
 					inputLine = inputLine.Remove(inputLine.Length-1);
 					inputLine = inputLine.Replace(",",".");
 					input.WriteLine(inputLine);
@@ -431,6 +593,7 @@ public class MotionExporter : EditorWindow {
 			}
 			input.Close();
 			output.Close();
+			*/
 
 			Exporting = false;
 			yield return new WaitForSeconds(0f);

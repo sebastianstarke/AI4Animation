@@ -17,6 +17,14 @@ extern "C" {
 		delete T;
 	}
 
+	EXPORT_API void Resize(MatrixXf* T, int rows, int cols) {
+		(*T).resize(rows, cols);
+	}
+
+	EXPORT_API void ConservativeResize(MatrixXf* T, int rows, int cols) {
+		(*T).conservativeResize(rows, cols);
+	}
+
 	EXPORT_API int GetRows(MatrixXf* T) {
 		return (*T).rows();
 	}
