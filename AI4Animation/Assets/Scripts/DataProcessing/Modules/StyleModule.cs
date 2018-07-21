@@ -64,15 +64,15 @@ public class StyleModule : Module {
 		}
 	}
 
-	public float[] GetControl(Frame frame) {
-		float[] control = new float[Functions.Length];
-		for(int i=0; i<control.Length; i++) {
-			control[i] = Functions[i].GetFlag(frame);
+	public float[] GetSignal(Frame frame) {
+		float[] signal = new float[Functions.Length];
+		for(int i=0; i<signal.Length; i++) {
+			signal[i] = Functions[i].GetFlag(frame);
 		}
-		return control;
+		return signal;
 	}
 
-	public float[] GetRelease(Frame frame) {
+	public float[] GetMirrorSignal(Frame frame) {
 		float[] release = new float[Functions.Length];
 		for(int i=0; i<release.Length; i++) {
 			release[i] = Functions[i].GetRelease(frame);
