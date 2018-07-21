@@ -287,7 +287,7 @@ public class MotionExporter : EditorWindow {
 			List<List<State>> data = new List<List<State>>();
 
 			int items = 0;
-			int files = 5;
+			int files = Editor.Files.Length;
 			int samples = 0;
 
 			//Generating
@@ -443,10 +443,18 @@ public class MotionExporter : EditorWindow {
 					}
 				}
 			}
-			Tensor inputMean = new Tensor(1, inputData.GetCols());
-			Tensor inputStd = new Tensor(1, inputData.GetCols());
-			Tensor outputMean = new Tensor(1, outputData.GetCols());
-			Tensor outputStd = new Tensor(1, outputData.GetCols());
+			Tensor inputMean = new Tensor(1, inputData.GetCols(), "Xmean");
+			Tensor inputStd = new Tensor(1, inputData.GetCols(), "Xstd");
+			Tensor outputMean = new Tensor(1, outputData.GetCols(), "Ymean");
+			Tensor outputStd = new Tensor(1, outputData.GetCols(), "Ystd");
+			for(int i=0; i<inputData.GetCols(); i++) {
+				inputMean.SetValue(0, i, inputData.ColMean(i));
+				inputStd.SetValue(0, i, inputData.ColStd(i));
+			}
+			for(int i=0; i<outputData.GetCols(); i++) {
+				outputMean.SetValue(0, i, outputData.ColMean(i));
+				outputStd.SetValue(0, i, outputData.ColStd(i));
+			}
 			
 			//Writing
 			StreamWriter input = CreateFile("Input");
@@ -477,22 +485,31 @@ public class MotionExporter : EditorWindow {
 					yield return new WaitForSeconds(0f);
 				}
 			}
+
 			string line = string.Empty;
 			for(int i=0; i<inputMean.GetCols(); i++) {
 				line += Format(inputMean.GetValue(0, i));
 			}
+			normalization.WriteLine(line);
+
 			line = string.Empty;
 			for(int i=0; i<inputStd.GetCols(); i++) {
 				line += Format(inputStd.GetValue(0, i));
 			}
+			normalization.WriteLine(line);
+
 			line = string.Empty;
 			for(int i=0; i<outputMean.GetCols(); i++) {
 				line += Format(outputMean.GetValue(0, i));
 			}
+			normalization.WriteLine(line);
+
 			line = string.Empty;
 			for(int i=0; i<outputStd.GetCols(); i++) {
 				line += Format(outputStd.GetValue(0, i));
 			}
+			normalization.WriteLine(line);
+
 			input.Close();
 			output.Close();
 			normalization.Close();

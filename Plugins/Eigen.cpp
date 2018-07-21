@@ -71,21 +71,15 @@ extern "C" {
 	}
 
 	EXPORT_API float RowStd(MatrixXf* T, int row) {
-		MatrixXf diff = (*T).matrix - RowMean(T, row);
+		MatrixXf diff = (*T).row(row) - (*T).row(row).mean() * MatrixXf::Ones(1, (*T).rows());
 		diff = diff.cwiseProduct(diff);
-		float std = diff.sum();
-		std /= (*T).cols();
-		std = std::sqrt(std);
-		return std;
+		return std::sqrt(diff.sum() / (*T).cols());
 	}
 
 	EXPORT_API float ColStd(MatrixXf* T, int col) {
-		MatrixXf diff = (*T).matrix - ColMean(T, col);
+		MatrixXf diff = (*T).col(col) - (*T).col(col).mean() * MatrixXf::Ones((*T).rows(), 1);
 		diff = diff.cwiseProduct(diff);
-		float std = diff.sum();
-		std /= (*T).rows();
-		std = std::sqrt(std);
-		return std;
+		return std::sqrt(diff.sum() / (*T).rows());
 	}
 
 	EXPORT_API float RowSum(MatrixXf* T, int row) {

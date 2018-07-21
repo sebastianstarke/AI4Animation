@@ -37,6 +37,14 @@ public static class Eigen {
     [DllImport("Eigen")]
     public static extern void PointwiseAbsolute(IntPtr IN, IntPtr OUT);
     [DllImport("Eigen")]
+    public static extern float RowMean(IntPtr T, int row);
+    [DllImport("Eigen")]
+    public static extern float ColMean(IntPtr T, int col);
+    [DllImport("Eigen")]
+    public static extern float RowStd(IntPtr T, int row);
+    [DllImport("Eigen")]
+    public static extern float ColStd(IntPtr T, int col);
+    [DllImport("Eigen")]
     public static extern float RowSum(IntPtr T, int row);
     [DllImport("Eigen")]
     public static extern float ColSum(IntPtr T, int col);
