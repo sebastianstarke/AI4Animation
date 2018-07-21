@@ -9,12 +9,6 @@ public static class Eigen {
     [DllImport("Eigen")]
     public static extern IntPtr Delete(IntPtr T);
 
-    //Operations
-    [DllImport("Eigen")]
-    public static extern void Resize(IntPtr T, int rows, int cols);
-    [DllImport("Eigen")]
-    public static extern void ConservativeResize(IntPtr T, int rows, int cols);
-
     //Setters and Getters
     [DllImport("Eigen")]
     public static extern int GetRows(IntPtr T);

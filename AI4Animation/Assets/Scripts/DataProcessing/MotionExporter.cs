@@ -451,6 +451,7 @@ public class MotionExporter : EditorWindow {
 			//Writing
 			StreamWriter input = CreateFile("Input");
 			StreamWriter output = CreateFile("Output");
+			StreamWriter normalization = CreateFile("Normalization");
 			for(int i=0; i<samples; i++) {
 				string inputLine = string.Empty;
 				for(int j=0; j<inputData.GetCols(); j++) {
@@ -476,8 +477,26 @@ public class MotionExporter : EditorWindow {
 					yield return new WaitForSeconds(0f);
 				}
 			}
+			string line = string.Empty;
+			for(int i=0; i<inputMean.GetCols(); i++) {
+				line += Format(inputMean.GetValue(0, i));
+			}
+			line = string.Empty;
+			for(int i=0; i<inputStd.GetCols(); i++) {
+				line += Format(inputStd.GetValue(0, i));
+			}
+			line = string.Empty;
+			for(int i=0; i<outputMean.GetCols(); i++) {
+				line += Format(outputMean.GetValue(0, i));
+			}
+			line = string.Empty;
+			for(int i=0; i<outputStd.GetCols(); i++) {
+				line += Format(outputStd.GetValue(0, i));
+			}
 			input.Close();
 			output.Close();
+			normalization.Close();
+
 
 			//Cleanup
 			inputData.Delete();

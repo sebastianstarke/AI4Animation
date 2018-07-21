@@ -17,14 +17,6 @@ extern "C" {
 		delete T;
 	}
 
-	EXPORT_API void Resize(MatrixXf* T, int rows, int cols) {
-		(*T).resize(rows, cols);
-	}
-
-	EXPORT_API void ConservativeResize(MatrixXf* T, int rows, int cols) {
-		(*T).conservativeResize(rows, cols);
-	}
-
 	EXPORT_API int GetRows(MatrixXf* T) {
 		return (*T).rows();
 	}
@@ -68,6 +60,32 @@ extern "C" {
 
 	EXPORT_API void PointwiseAbsolute(MatrixXf* in, MatrixXf* out) {
 		*out = (*in).cwiseAbs();
+	}
+
+	EXPORT_API float RowMean(MatrixXf* T, int row) {
+		return (*T).row(row).mean();
+	}
+
+	EXPORT_API float ColMean(MatrixXf* T, int col) {
+		return (*T).col(col).mean();
+	}
+
+	EXPORT_API float RowStd(MatrixXf* T, int row) {
+		MatrixXf diff = (*T).matrix - RowMean(T, row);
+		diff = diff.cwiseProduct(diff);
+		float std = diff.sum();
+		std /= (*T).cols();
+		std = std::sqrt(std);
+		return std;
+	}
+
+	EXPORT_API float ColStd(MatrixXf* T, int col) {
+		MatrixXf diff = (*T).matrix - ColMean(T, col);
+		diff = diff.cwiseProduct(diff);
+		float std = diff.sum();
+		std /= (*T).rows();
+		std = std::sqrt(std);
+		return std;
 	}
 
 	EXPORT_API float RowSum(MatrixXf* T, int row) {
