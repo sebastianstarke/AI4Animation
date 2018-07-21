@@ -29,7 +29,6 @@ extern "C" {
 		*out = *lhs + *rhs;
 	}
 
-
 	EXPORT_API void Subtract(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
 		*out = *lhs - *rhs;
 	}
