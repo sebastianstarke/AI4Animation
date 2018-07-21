@@ -46,7 +46,20 @@ public class MotionExporter : EditorWindow {
 		Editor = GameObject.FindObjectOfType<MotionEditor>();
 
 		if(Editor == null) {
-			EditorGUILayout.LabelField("No Motion Editor found in scene.");
+			Utility.SetGUIColor(UltiDraw.Black);
+			using(new EditorGUILayout.VerticalScope ("Box")) {
+				Utility.ResetGUIColor();
+				Utility.SetGUIColor(UltiDraw.Grey);
+				using(new EditorGUILayout.VerticalScope ("Box")) {
+					Utility.ResetGUIColor();
+					Utility.SetGUIColor(UltiDraw.Orange);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.LabelField("Exporter");
+					}
+					EditorGUILayout.LabelField("No Motion Editor found in scene.");
+				}
+			}
 		} else {
 			Utility.SetGUIColor(UltiDraw.Black);
 			using(new EditorGUILayout.VerticalScope ("Box")) {
@@ -177,40 +190,12 @@ public class MotionExporter : EditorWindow {
 					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 				}
 			}
-
-			//for(int i=1; i<=7; i++) {
-			//	for(int j=0; j<Styles.Length; j++) {
-			//		file.WriteLine(index + " " + Styles[j] + "Value" + i); index += 1;
-			//	}
-			//}
-
 			for(int i=1; i<=7; i++) {
 				for(int j=0; j<Styles.Length; j++) {
 					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
 					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
 				}
 			}
-
-			/*
-			for(int k=1; k<=12; k++) {
-				for(int i=1; i<=Styles.Length; i++) {
-					file.WriteLine(index + " " + Styles[i-1] + "ValueX" + k); index += 1;
-					file.WriteLine(index + " " + Styles[i-1] + "ValueY" + k); index += 1;
-				}
-			}
-			*/
-
-			/*
-			for(int i=1; i<=Styles.Length; i++) {
-				file.WriteLine(index + " " + Styles[i-1] + "ValueX"); index += 1;
-				file.WriteLine(index + " " + Styles[i-1] + "ValueY"); index += 1;
-			}
-		
-			for(int i=1; i<=Styles.Length; i++) {
-				file.WriteLine(index + " " + Styles[i-1] + "UpdateX"); index += 1;
-				file.WriteLine(index + " " + Styles[i-1] + "UpdateY"); index += 1;
-			}
-			*/
 
 			yield return new WaitForSeconds(0f);
 
@@ -256,15 +241,7 @@ public class MotionExporter : EditorWindow {
 					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 				}
 			}
-
-			//for(int i=0; i<Styles.Length; i++) {
-			//	file.WriteLine(index + " " + Styles[i]); index += 1;
-			//}
 			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
-
-			//for(int i=7; i<=12; i++) {
-			//	file.WriteLine(index + " " + "PhaseUpdate" + i); index += 1;
-			//}
 
 			yield return new WaitForSeconds(0f);
 
@@ -288,10 +265,8 @@ public class MotionExporter : EditorWindow {
 
 			int items = 0;
 			int files = Editor.Files.Length;
-			int samples = 0;
 
 			//Generating
-			int generatedFiles = 0;
 			int filesToGenerate = 0;
 			for(int j=0; j<files; j++) {
 				if(Editor.Files[j].Data.Export) {
@@ -316,7 +291,6 @@ public class MotionExporter : EditorWindow {
 							for(float t=start; t<=end; t+=1f/Framerate) {
 								Editor.LoadFrame(t);
 								states.Add(new State(Editor));
-								samples += 1;
 								items += 1;
 								if(items == BatchSize) {
 									items = 0;
@@ -326,20 +300,22 @@ public class MotionExporter : EditorWindow {
 							data.Add(states);
 						}
 					}
-					generatedFiles += 1;
-					Generating = (float)generatedFiles / (float)filesToGenerate;
+					Generating += 1f / (float)filesToGenerate;
 				}
 			}
 
 			//Processing
-			int processedSamples = 0;
+			int samples = 0;
+			for(int i=0; i<data.Count; i++) {
+				samples += data[i].Count-1;
+			}
+			int processed = 0;
 			Tensor inputData = null;
 			Tensor outputData = null;
 			for(int i=0; i<data.Count; i++) {
-				List<State> states = data[i];
-				for(int j=0; j<states.Count-1; j++) {
-					State current = states[j];
-					State next = states[j+1];
+				for(int j=0; j<data[i].Count-1; j++) {
+					State current = data[i][j];
+					State next = data[i][j+1];
 
 					//Input
 					List<float> inputDims = new List<float>();
@@ -385,7 +361,7 @@ public class MotionExporter : EditorWindow {
 						inputData = new Tensor(samples, inputDims.Count, "Input");
 					}
 					for(int k=0; k<inputDims.Count; k++) {
-						inputData.SetValue(processedSamples, k, inputDims[k]);
+						inputData.SetValue(processed, k, inputDims[k]);
 					}
 					//
 
@@ -429,12 +405,12 @@ public class MotionExporter : EditorWindow {
 						outputData = new Tensor(samples, outputDims.Count, "Output");
 					}
 					for(int k=0; k<outputDims.Count; k++) {
-						outputData.SetValue(processedSamples, k, outputDims[k]);
+						outputData.SetValue(processed, k, outputDims[k]);
 					}
 					//
 
-					processedSamples += 1;
-					Processing = (float)processedSamples / (float)samples;
+					processed += 1;
+					Processing = (float)processed / (float)samples;
 
 					items += 1;
 					if(items == BatchSize) {
@@ -459,7 +435,8 @@ public class MotionExporter : EditorWindow {
 			//Writing
 			StreamWriter input = CreateFile("Input");
 			StreamWriter output = CreateFile("Output");
-			StreamWriter normalization = CreateFile("Normalization");
+			StreamWriter normInput = CreateFile("InputNormalization");
+			StreamWriter normOutput = CreateFile("OutputNormalization");
 			for(int i=0; i<samples; i++) {
 				string inputLine = string.Empty;
 				for(int j=0; j<inputData.GetCols(); j++) {
@@ -490,30 +467,30 @@ public class MotionExporter : EditorWindow {
 			for(int i=0; i<inputMean.GetCols(); i++) {
 				line += Format(inputMean.GetValue(0, i));
 			}
-			normalization.WriteLine(line);
+			normInput.WriteLine(line);
 
 			line = string.Empty;
 			for(int i=0; i<inputStd.GetCols(); i++) {
 				line += Format(inputStd.GetValue(0, i));
 			}
-			normalization.WriteLine(line);
+			normInput.WriteLine(line);
 
 			line = string.Empty;
 			for(int i=0; i<outputMean.GetCols(); i++) {
 				line += Format(outputMean.GetValue(0, i));
 			}
-			normalization.WriteLine(line);
+			normOutput.WriteLine(line);
 
 			line = string.Empty;
 			for(int i=0; i<outputStd.GetCols(); i++) {
 				line += Format(outputStd.GetValue(0, i));
 			}
-			normalization.WriteLine(line);
+			normOutput.WriteLine(line);
 
 			input.Close();
 			output.Close();
-			normalization.Close();
-
+			normInput.Close();
+			normOutput.Close();
 
 			//Cleanup
 			inputData.Delete();
@@ -522,114 +499,6 @@ public class MotionExporter : EditorWindow {
 			inputStd.Delete();
 			outputMean.Delete();
 			outputStd.Delete();
-			
-			/*
-			//Writing
-			StreamWriter input = CreateFile("Input");
-			StreamWriter output = CreateFile("Output");
-			for(int i=0; i<data.Count; i++) {
-				List<State> states = data[i];
-				for(int frame=0; frame<states.Count-1; frame++) {
-
-					State current = states[frame];
-					State next = states[frame+1];
-
-					//Input
-					string inputLine = string.Empty;
-					for(int k=0; k<12; k++) {
-						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-						float[] signal = FilterSignal(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
-						inputLine += Format(position.x);
-						inputLine += Format(position.z);
-						inputLine += Format(direction.x);
-						inputLine += Format(direction.z);
-						inputLine += Format(velocity.x);
-						inputLine += Format(velocity.z);
-						inputLine += Format(state);
-						inputLine += Format(signal);
-					}
-					for(int k=0; k<current.Posture.Length; k++) {
-						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
-						Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
-						inputLine += Format(position);
-						inputLine += Format(forward);
-						inputLine += Format(up);
-						inputLine += Format(velocity);
-					}
-					//inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[6].Phase));
-					
-					//for(int k=0; k<7; k++) {
-					///	inputLine += Format(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles));
-					//}
-					for(int k=0; k<7; k++) {
-						inputLine += Format(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
-					}
-					
-					/*
-					float[] previousStyle = FilterStyle(previous.Trajectory.Points[6].Styles, previous.Trajectory.Styles, Styles);
-					float[] currentStyle = FilterStyle(current.Trajectory.Points[6].Styles, current.Trajectory.Styles, Styles);
-					inputLine += Format(Utility.StylePhase(currentStyle, current.Trajectory.Points[6].Phase));
-					inputLine += Format(Utility.StyleUpdatePhase(previousStyle, currentStyle, previous.Trajectory.Points[6].Phase, current.Trajectory.Points[6].Phase));
-					*/
-
-					/*
-					inputLine = inputLine.Remove(inputLine.Length-1);
-					inputLine = inputLine.Replace(",",".");
-					input.WriteLine(inputLine);
-
-					//Output
-					string outputLine = string.Empty;
-					for(int k=6; k<12; k++) {
-						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
-						outputLine += Format(position.x);
-						outputLine += Format(position.z);
-						outputLine += Format(direction.x);
-						outputLine += Format(direction.z);
-						outputLine += Format(velocity.x);
-						outputLine += Format(velocity.z);
-						outputLine += Format(state);
-					}
-					for(int k=0; k<next.Posture.Length; k++) {
-						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
-						Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
-						outputLine += Format(position);
-						outputLine += Format(forward);
-						outputLine += Format(up);
-						outputLine += Format(velocity);
-					}
-
-					//outputLine += Format(FilterStyle(next.Trajectory.Points[6].Styles, next.Trajectory.Styles, Styles));
-					outputLine += Format(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
-
-					//for(int k=6; k<12; k++) {
-					//	outputLine += Format(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[k].Phase, next.Trajectory.Points[k].Phase));
-					//}
-
-					outputLine = outputLine.Remove(outputLine.Length-1);
-					outputLine = outputLine.Replace(",",".");
-					output.WriteLine(outputLine);
-
-					items += 1;
-					if(items == BatchSize) {
-						items = 0;
-						yield return new WaitForSeconds(0f);
-					}
-				}
-				Writing = (float)(i+1) / (float)data.Count;
-			}
-			input.Close();
-			output.Close();
-			*/
 
 			Exporting = false;
 			yield return new WaitForSeconds(0f);
