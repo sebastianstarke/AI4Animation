@@ -324,8 +324,8 @@ public class MotionExporter : EditorWindow {
 						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-						float[] signal = FilterSignal(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
+						float[] state = Filter(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
+						float[] signal = Filter(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
 						inputDims.Add(position.x);
 						inputDims.Add(position.z);
 						inputDims.Add(direction.x);
@@ -354,7 +354,7 @@ public class MotionExporter : EditorWindow {
 						inputDims.Add(velocity.z);
 					}
 					for(int k=0; k<7; k++) {
-						inputDims.AddRange(Utility.StylePhase(FilterStyle(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
+						inputDims.AddRange(Utility.StylePhase(Filter(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
 					}
 
 					if(inputData == null) {
@@ -372,7 +372,7 @@ public class MotionExporter : EditorWindow {
 						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = FilterStyle(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
+						float[] state = Filter(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
 						outputDims.Add(position.x);
 						outputDims.Add(position.z);
 						outputDims.Add(direction.x);
@@ -419,15 +419,15 @@ public class MotionExporter : EditorWindow {
 					}
 				}
 			}
-			Tensor inputMean = new Tensor(1, inputData.GetCols(), "Xmean");
-			Tensor inputStd = new Tensor(1, inputData.GetCols(), "Xstd");
-			Tensor outputMean = new Tensor(1, outputData.GetCols(), "Ymean");
-			Tensor outputStd = new Tensor(1, outputData.GetCols(), "Ystd");
-			for(int i=0; i<inputData.GetCols(); i++) {
+			Tensor inputMean = new Tensor(1, inputData.Cols(), "Xmean");
+			Tensor inputStd = new Tensor(1, inputData.Cols(), "Xstd");
+			Tensor outputMean = new Tensor(1, outputData.Cols(), "Ymean");
+			Tensor outputStd = new Tensor(1, outputData.Cols(), "Ystd");
+			for(int i=0; i<inputData.Cols(); i++) {
 				inputMean.SetValue(0, i, inputData.ColMean(i));
 				inputStd.SetValue(0, i, inputData.ColStd(i));
 			}
-			for(int i=0; i<outputData.GetCols(); i++) {
+			for(int i=0; i<outputData.Cols(); i++) {
 				outputMean.SetValue(0, i, outputData.ColMean(i));
 				outputStd.SetValue(0, i, outputData.ColStd(i));
 			}
@@ -439,7 +439,7 @@ public class MotionExporter : EditorWindow {
 			StreamWriter normOutput = CreateFile("OutputNormalization");
 			for(int i=0; i<samples; i++) {
 				string inputLine = string.Empty;
-				for(int j=0; j<inputData.GetCols(); j++) {
+				for(int j=0; j<inputData.Cols(); j++) {
 					inputLine += Format(inputData.GetValue(i, j));
 				}
 				inputLine = inputLine.Remove(inputLine.Length-1);
@@ -447,7 +447,7 @@ public class MotionExporter : EditorWindow {
 				input.WriteLine(inputLine);
 
 				string outputLine = string.Empty;
-				for(int j=0; j<outputData.GetCols(); j++) {
+				for(int j=0; j<outputData.Cols(); j++) {
 					outputLine += Format(outputData.GetValue(i, j));
 				}
 				outputLine = outputLine.Remove(outputLine.Length-1);
@@ -464,25 +464,25 @@ public class MotionExporter : EditorWindow {
 			}
 
 			string line = string.Empty;
-			for(int i=0; i<inputMean.GetCols(); i++) {
+			for(int i=0; i<inputMean.Cols(); i++) {
 				line += Format(inputMean.GetValue(0, i));
 			}
 			normInput.WriteLine(line);
 
 			line = string.Empty;
-			for(int i=0; i<inputStd.GetCols(); i++) {
+			for(int i=0; i<inputStd.Cols(); i++) {
 				line += Format(inputStd.GetValue(0, i));
 			}
 			normInput.WriteLine(line);
 
 			line = string.Empty;
-			for(int i=0; i<outputMean.GetCols(); i++) {
+			for(int i=0; i<outputMean.Cols(); i++) {
 				line += Format(outputMean.GetValue(0, i));
 			}
 			normOutput.WriteLine(line);
 
 			line = string.Empty;
-			for(int i=0; i<outputStd.GetCols(); i++) {
+			for(int i=0; i<outputStd.Cols(); i++) {
 				line += Format(outputStd.GetValue(0, i));
 			}
 			normOutput.WriteLine(line);
@@ -505,19 +505,7 @@ public class MotionExporter : EditorWindow {
 		}
 	}
 
-	private float[] FilterStyle(float[] values, string[] from, string[] to) {
-		float[] filtered = new float[to.Length];
-		for(int i=0; i<to.Length; i++) {
-			for(int j=0; j<from.Length; j++) {
-				if(to[i] == from[j]) {
-					filtered[i] = values[j];
-				}
-			}
-		}
-		return filtered;
-	}
-
-	private float[] FilterSignal(float[] values, string[] from, string[] to) {
+	private float[] Filter(float[] values, string[] from, string[] to) {
 		float[] filtered = new float[to.Length];
 		for(int i=0; i<to.Length; i++) {
 			for(int j=0; j<from.Length; j++) {

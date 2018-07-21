@@ -17,11 +17,11 @@ extern "C" {
 		delete T;
 	}
 
-	EXPORT_API int GetRows(MatrixXf* T) {
+	EXPORT_API int Rows(MatrixXf* T) {
 		return (*T).rows();
 	}
 
-	EXPORT_API int GetCols(MatrixXf* T) {
+	EXPORT_API int Cols(MatrixXf* T) {
 		return (*T).cols();
 	}
 
@@ -62,6 +62,14 @@ extern "C" {
 		*out = (*in).cwiseAbs();
 	}
 
+	EXPORT_API float RowSum(MatrixXf* T, int row) {
+		return (*T).row(row).sum();
+	}
+
+	EXPORT_API float ColSum(MatrixXf* T, int col) {
+		return (*T).col(col).sum();
+	}
+
 	EXPORT_API float RowMean(MatrixXf* T, int row) {
 		return (*T).row(row).mean();
 	}
@@ -80,14 +88,6 @@ extern "C" {
 		MatrixXf diff = (*T).col(col) - (*T).col(col).mean() * MatrixXf::Ones((*T).rows(), 1);
 		diff = diff.cwiseProduct(diff);
 		return std::sqrt(diff.sum() / (*T).rows());
-	}
-
-	EXPORT_API float RowSum(MatrixXf* T, int row) {
-		return (*T).row(row).sum();
-	}
-
-	EXPORT_API float ColSum(MatrixXf* T, int col) {
-		return (*T).col(col).sum();
 	}
 
 	EXPORT_API void Normalise(MatrixXf* T, MatrixXf* mean, MatrixXf* std, MatrixXf* out) {

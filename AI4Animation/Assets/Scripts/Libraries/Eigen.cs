@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 public static class Eigen {
     //Default
@@ -11,9 +10,9 @@ public static class Eigen {
 
     //Setters and Getters
     [DllImport("Eigen")]
-    public static extern int GetRows(IntPtr T);
+    public static extern int Rows(IntPtr T);
     [DllImport("Eigen")]
-    public static extern int GetCols(IntPtr T);
+    public static extern int Cols(IntPtr T);
     [DllImport("Eigen")]
     public static extern void SetZero(IntPtr T);
     [DllImport("Eigen")]
@@ -37,6 +36,10 @@ public static class Eigen {
     [DllImport("Eigen")]
     public static extern void PointwiseAbsolute(IntPtr IN, IntPtr OUT);
     [DllImport("Eigen")]
+    public static extern float RowSum(IntPtr T, int row);
+    [DllImport("Eigen")]
+    public static extern float ColSum(IntPtr T, int col);
+    [DllImport("Eigen")]
     public static extern float RowMean(IntPtr T, int row);
     [DllImport("Eigen")]
     public static extern float ColMean(IntPtr T, int col);
@@ -44,10 +47,6 @@ public static class Eigen {
     public static extern float RowStd(IntPtr T, int row);
     [DllImport("Eigen")]
     public static extern float ColStd(IntPtr T, int col);
-    [DllImport("Eigen")]
-    public static extern float RowSum(IntPtr T, int row);
-    [DllImport("Eigen")]
-    public static extern float ColSum(IntPtr T, int col);
 
     //Deep Learning Functions
     [DllImport("Eigen")]

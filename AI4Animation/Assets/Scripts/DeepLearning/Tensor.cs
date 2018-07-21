@@ -27,12 +27,12 @@ namespace DeepLearning {
             }
         }
 
-        public int GetRows() {
-            return Eigen.GetRows(Ptr);
+        public int Rows() {
+            return Eigen.Rows(Ptr);
         }
 
-        public int GetCols() {
-            return Eigen.GetCols(Ptr);
+        public int Cols() {
+            return Eigen.Cols(Ptr);
         }
 
         public void SetZero() {
@@ -40,7 +40,7 @@ namespace DeepLearning {
         }
 
         public void SetValue(int row, int col, float value) {
-            if(row >= GetRows() || col >= GetCols()) {
+            if(row >= Rows() || col >= Cols()) {
                 Debug.Log("Setting out of bounds at [" + row + ", " + col + "].");
                 return;
             }
@@ -48,7 +48,7 @@ namespace DeepLearning {
         }
 
         public float GetValue(int row, int col) {
-            if(row >= GetRows() || col >= GetCols()) {
+            if(row >= Rows() || col >= Cols()) {
                 Debug.Log("Getting out of bounds at [" + row + ", " + col + "].");
                 return 0f;
             }
@@ -56,7 +56,7 @@ namespace DeepLearning {
         }
 
         public static Tensor Add(Tensor lhs, Tensor rhs, Tensor OUT) {
-            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+            if(lhs.Rows() != rhs.Rows() || lhs.Cols() != rhs.Cols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
                 Eigen.Add(lhs.Ptr, rhs.Ptr, OUT.Ptr);
@@ -65,7 +65,7 @@ namespace DeepLearning {
         }
 
         public static Tensor Subtract(Tensor lhs, Tensor rhs, Tensor OUT) {
-            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+            if(lhs.Rows() != rhs.Rows() || lhs.Cols() != rhs.Cols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
                 Eigen.Subtract(lhs.Ptr, rhs.Ptr, OUT.Ptr);
@@ -74,7 +74,7 @@ namespace DeepLearning {
         }
 
         public static Tensor Product(Tensor lhs, Tensor rhs, Tensor OUT) {
-            if(lhs.GetCols() != rhs.GetRows()) {
+            if(lhs.Cols() != rhs.Rows()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else { 
                 Eigen.Product(lhs.Ptr, rhs.Ptr, OUT.Ptr);
@@ -88,7 +88,7 @@ namespace DeepLearning {
         }
 
         public static Tensor PointwiseProduct(Tensor lhs, Tensor rhs, Tensor OUT) {
-            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+            if(lhs.Rows() != rhs.Rows() || lhs.Cols() != rhs.Cols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
                 Eigen.PointwiseProduct(lhs.Ptr, rhs.Ptr, OUT.Ptr);
@@ -97,7 +97,7 @@ namespace DeepLearning {
         }
 
         public static Tensor PointwiseQuotient(Tensor lhs, Tensor rhs, Tensor OUT) {
-            if(lhs.GetRows() != rhs.GetRows() || lhs.GetCols() != rhs.GetCols()) {
+            if(lhs.Rows() != rhs.Rows() || lhs.Cols() != rhs.Cols()) {
                 Debug.Log("Incompatible tensor dimensions.");
             } else {
                 Eigen.PointwiseQuotient(lhs.Ptr, rhs.Ptr, OUT.Ptr);
@@ -111,7 +111,7 @@ namespace DeepLearning {
         }
 
         public float RowMean(int row) {
-            if(row >= GetRows()) {
+            if(row >= Rows()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -119,7 +119,7 @@ namespace DeepLearning {
         }
 
         public float ColMean(int col) {
-            if(col >= GetCols()) {
+            if(col >= Cols()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -127,7 +127,7 @@ namespace DeepLearning {
         }
 
         public float RowStd(int row) {
-            if(row >= GetRows()) {
+            if(row >= Rows()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -135,7 +135,7 @@ namespace DeepLearning {
         }
 
         public float ColStd(int col) {
-            if(col >= GetCols()) {
+            if(col >= Cols()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -143,7 +143,7 @@ namespace DeepLearning {
         }
 
         public float RowSum(int row) {
-            if(row >= GetRows()) {
+            if(row >= Rows()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -151,7 +151,7 @@ namespace DeepLearning {
         }
 
         public float ColSum(int col) {
-            if(col >= GetCols()) {
+            if(col >= Cols()) {
                 Debug.Log("Accessing out of bounds.");
                 return 0f;
             }
@@ -160,8 +160,8 @@ namespace DeepLearning {
 
         public void Print() {
             string output = string.Empty;
-            for(int i=0; i<GetRows(); i++) {
-                for(int j=0; j<GetCols(); j++) {
+            for(int i=0; i<Rows(); i++) {
+                for(int j=0; j<Cols(); j++) {
                     output += GetValue(i, j) + " "; 
                 }
                 output += "\n";
