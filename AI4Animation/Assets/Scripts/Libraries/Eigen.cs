@@ -16,6 +16,8 @@ public static class Eigen {
     [DllImport("Eigen")]
     public static extern void SetZero(IntPtr T);
     [DllImport("Eigen")]
+    public static extern void SetSize(IntPtr T, int rows, int cols);
+    [DllImport("Eigen")]
     public static extern void SetValue(IntPtr T, int row, int col, float value);
     [DllImport("Eigen")]
     public static extern float GetValue(IntPtr T, int row, int col);

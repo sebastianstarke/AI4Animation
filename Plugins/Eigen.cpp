@@ -25,6 +25,14 @@ extern "C" {
 		return (*T).cols();
 	}
 
+	EXPORT_API void SetZero(MatrixXf* T) {
+		*T = (*T).Zero((*T).rows(), (*T).cols());
+	}
+
+	EXPORT_API void SetSize(MatrixXf* T, int rows, int cols) {
+		(*T).conservativeResize(rows, cols);
+	}
+
 	EXPORT_API void Add(MatrixXf* lhs, MatrixXf* rhs, MatrixXf* out) {
 		*out = *lhs + *rhs;
 	}
@@ -162,9 +170,5 @@ extern "C" {
 		for (int i = 0; i<rows; i++) {
 			(*T)(i, 0) = std::exp((*T)(i, 0));
 		}
-	}
-
-	EXPORT_API void SetZero(MatrixXf* T) {
-		*T = (*T).Zero((*T).rows(), (*T).cols());
 	}
 }

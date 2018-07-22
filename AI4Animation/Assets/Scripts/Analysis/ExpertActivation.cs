@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ExpertActivation : MonoBehaviour {
 
-	public string ID = "BY";
+	public string ID = "";
 
 	public enum MODE {Function, Bars, Graph}
 

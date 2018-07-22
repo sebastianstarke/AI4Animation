@@ -39,6 +39,10 @@ namespace DeepLearning {
             Eigen.SetZero(Ptr);
         }
 
+        public void SetSize(int rows, int cols) {
+            Eigen.SetSize(Ptr, rows, cols);
+        }
+
         public void SetValue(int row, int col, float value) {
             if(row >= Rows() || col >= Cols()) {
                 Debug.Log("Setting out of bounds at [" + row + ", " + col + "].");
