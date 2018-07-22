@@ -62,7 +62,7 @@ public class ExpertActivation : MonoBehaviour {
 		for(int i=0; i<values.Length; i++) {
 			values[i] = Mathf.Pow(values[i], 2f);
 		}
-		float sum = Utility.Sum(values);
+		float sum = values.Sum();
 		for(int i=0; i<values.Length; i++) {
 			values[i] = values[i] / sum;
 		}
