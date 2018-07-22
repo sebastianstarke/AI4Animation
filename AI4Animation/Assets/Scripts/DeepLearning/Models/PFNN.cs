@@ -82,34 +82,6 @@ namespace DeepLearning {
 			Phase = Mathf.Repeat(Phase + (1f-Damping)*GetOutput(PhaseIndex)*2f*Mathf.PI, 2f*Mathf.PI);
 		}
 
-		public void Sample(float phase) {
-			//Normalise Input
-			Normalise(X, Xmean, Xstd, Y);
-
-			//Process PFNN
-			int index = (int)((phase / (2f*M_PI)) * 50f);
-			ELU(Layer(Y, W0[index], b0[index], Y));
-			ELU(Layer(Y, W1[index], b1[index], Y));
-			Layer(Y, W2[index], b2[index], Y);
-
-			//Renormalise Output
-			Renormalise(Y, Ymean, Ystd, Y);
-		}
-
-		/*
-		private Matrix Linear(ref Matrix y0, ref Matrix y1, float mu) {
-			return (1.0f-mu) * y0 + (mu) * y1;
-		}
-
-		private Matrix Cubic(ref Matrix y0, ref Matrix y1, ref Matrix y2, ref Matrix y3, float mu) {
-			return
-			(-0.5f*y0 + 1.5f*y1 - 1.5f*y2 + 0.5f*y3)*mu*mu*mu + 
-			(y0 - 2.5f*y1 + 2.0f*y2 - 0.5f*y3)*mu*mu + 
-			(-0.5f*y0 + 0.5f*y2)*mu + 
-			(y1);
-		}
-		*/
-
 		public void SetDamping(float value) {
 			Damping = value;
 		}
