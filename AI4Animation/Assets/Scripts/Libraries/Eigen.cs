@@ -10,9 +10,9 @@ public static class Eigen {
 
     //Setters and Getters
     [DllImport("Eigen")]
-    public static extern int Rows(IntPtr T);
+    public static extern int GetRows(IntPtr T);
     [DllImport("Eigen")]
-    public static extern int Cols(IntPtr T);
+    public static extern int GetCols(IntPtr T);
     [DllImport("Eigen")]
     public static extern void SetZero(IntPtr T);
     [DllImport("Eigen")]

@@ -17,11 +17,11 @@ extern "C" {
 		delete T;
 	}
 
-	EXPORT_API int Rows(MatrixXf* T) {
+	EXPORT_API int GetRows(MatrixXf* T) {
 		return (*T).rows();
 	}
 
-	EXPORT_API int Cols(MatrixXf* T) {
+	EXPORT_API int GetCols(MatrixXf* T) {
 		return (*T).cols();
 	}
 

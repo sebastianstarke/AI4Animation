@@ -49,16 +49,16 @@ public class TensorActivation : MonoBehaviour {
         
         if(Operator == OPERATOR.AbsSum) {
             if(Axis == AXIS.X) {
-                Values = new float[T.Rows()];
-                for(int i=0; i<T.Rows(); i++) {
+                Values = new float[T.GetRows()];
+                for(int i=0; i<T.GetRows(); i++) {
                     Values[i] = T.RowSum(i);
                     Minimum = Mathf.Min(Minimum, Values[i]);
                     Maximum = Mathf.Max(Maximum, Values[i]);
                 }
             }
             if(Axis == AXIS.Y) {
-                Values = new float[T.Cols()];
-                for(int i=0; i<T.Cols(); i++) {
+                Values = new float[T.GetCols()];
+                for(int i=0; i<T.GetCols(); i++) {
                     Values[i] = T.ColSum(i);
                     Minimum = Mathf.Min(Minimum, Values[i]);
                     Maximum = Mathf.Max(Maximum, Values[i]);

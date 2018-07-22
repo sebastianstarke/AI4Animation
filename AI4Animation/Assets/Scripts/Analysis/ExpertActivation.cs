@@ -29,7 +29,7 @@ public class ExpertActivation : MonoBehaviour {
 		if(NN.GetTensor(ID) == null) {
 			return;
 		}
-		Values = new Queue<float>[NN.GetTensor(ID).Rows()];
+		Values = new Queue<float>[NN.GetTensor(ID).GetRows()];
 		for(int i=0; i<Values.Length; i++) {
 			Values[i] = new Queue<float>();
 			for(int j=0; j<Frames; j++) {

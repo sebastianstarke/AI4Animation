@@ -123,7 +123,7 @@ namespace DeepLearning {
 		}
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
-            if(IN.Rows() != mean.Rows() || IN.Rows() != std.Rows() || IN.Cols() != mean.Cols() || IN.Cols() != std.Cols()) {
+            if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
                 Debug.Log("Incompatible dimensions for normalisation.");
                 return IN;
             } else {
@@ -133,7 +133,7 @@ namespace DeepLearning {
         }
         
         public Tensor Renormalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
-            if(IN.Rows() != mean.Rows() || IN.Rows() != std.Rows() || IN.Cols() != mean.Cols() || IN.Cols() != std.Cols()) {
+            if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
                 Debug.Log("Incompatible dimensions for renormalisation.");
                 return IN;
             } else {
@@ -143,7 +143,7 @@ namespace DeepLearning {
         }
 
         public Tensor Layer(Tensor IN, Tensor W, Tensor b, Tensor OUT) {
-            if(IN.Rows() != W.Cols() || W.Rows() != b.Rows() || IN.Cols() != b.Cols()) {
+            if(IN.GetRows() != W.GetCols() || W.GetRows() != b.GetRows() || IN.GetCols() != b.GetCols()) {
                 Debug.Log("Incompatible dimensions for feed-forward.");
                 return IN;
             } else {
@@ -153,7 +153,7 @@ namespace DeepLearning {
         }
 
         public Tensor Blend(Tensor T, Tensor W, float w) {
-            if(T.Rows() != W.Rows() || T.Cols() != W.Cols()) {
+            if(T.GetRows() != W.GetRows() || T.GetCols() != W.GetCols()) {
                 Debug.Log("Incompatible dimensions for blending.");
                 return T;
             } else {
