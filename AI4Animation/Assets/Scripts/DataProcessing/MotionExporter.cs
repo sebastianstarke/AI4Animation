@@ -261,7 +261,7 @@ public class MotionExporter : EditorWindow {
 			Processing = 0f;
 			Writing = 0f;
 			
-			List<List<State>> data = new List<List<State>>();
+			List<List<State>> capture = new List<List<State>>();
 
 			int items = 0;
 			int files = Editor.Files.Length;
@@ -291,13 +291,14 @@ public class MotionExporter : EditorWindow {
 							for(float t=start; t<=end; t+=1f/Framerate) {
 								Editor.LoadFrame(t);
 								states.Add(new State(Editor));
+
 								items += 1;
 								if(items == BatchSize) {
 									items = 0;
 									yield return new WaitForSeconds(0f);
 								}
 							}
-							data.Add(states);
+							capture.Add(states);
 						}
 					}
 					Generating += 1f / (float)filesToGenerate;
@@ -305,207 +306,144 @@ public class MotionExporter : EditorWindow {
 			}
 
 			//Processing
-			int samples = 0;
-			for(int i=0; i<data.Count; i++) {
-				samples += data[i].Count-1;
-			}
-			int processed = 0;
-			Tensor inputData = null;
-			Tensor outputData = null;
-			for(int i=0; i<data.Count; i++) {
-				for(int j=0; j<data[i].Count-1; j++) {
-					State current = data[i][j];
-					State next = data[i][j+1];
+			Data data = new Data();
+			for(int i=0; i<capture.Count; i++) {
+				for(int j=0; j<capture[i].Count-1; j++) {
+					State current = capture[i][j];
+					State next = capture[i][j+1];
+					Sample sample = new Sample();
 
 					//Input
-					List<float> inputDims = new List<float>();
-
 					for(int k=0; k<12; k++) {
 						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = Filter(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles);
-						float[] signal = Filter(current.Trajectory.Points[k].Signals, current.Trajectory.Styles, Styles);
-						inputDims.Add(position.x);
-						inputDims.Add(position.z);
-						inputDims.Add(direction.x);
-						inputDims.Add(direction.z);
-						inputDims.Add(velocity.x);
-						inputDims.Add(velocity.z);
-						inputDims.AddRange(state);
-						inputDims.AddRange(signal);
+						float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
+						float[] signal = Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles);
+						sample.Input.Add(position.x);
+						sample.Input.Add(position.z);
+						sample.Input.Add(direction.x);
+						sample.Input.Add(direction.z);
+						sample.Input.Add(velocity.x);
+						sample.Input.Add(velocity.z);
+						sample.Input.AddRange(state);
+						sample.Input.AddRange(signal);
 					}
 					for(int k=0; k<current.Posture.Length; k++) {
 						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 						Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
-						inputDims.Add(position.x);
-						inputDims.Add(position.y);
-						inputDims.Add(position.z);
-						inputDims.Add(forward.x);
-						inputDims.Add(forward.y);
-						inputDims.Add(forward.z);
-						inputDims.Add(up.x);
-						inputDims.Add(up.y);
-						inputDims.Add(up.z);
-						inputDims.Add(velocity.x);
-						inputDims.Add(velocity.y);
-						inputDims.Add(velocity.z);
+						sample.Input.Add(position.x);
+						sample.Input.Add(position.y);
+						sample.Input.Add(position.z);
+						sample.Input.Add(forward.x);
+						sample.Input.Add(forward.y);
+						sample.Input.Add(forward.z);
+						sample.Input.Add(up.x);
+						sample.Input.Add(up.y);
+						sample.Input.Add(up.z);
+						sample.Input.Add(velocity.x);
+						sample.Input.Add(velocity.y);
+						sample.Input.Add(velocity.z);
 					}
 					for(int k=0; k<7; k++) {
-						inputDims.AddRange(Utility.StylePhase(Filter(current.Trajectory.Points[k].Styles, current.Trajectory.Styles, Styles), current.Trajectory.Points[k].Phase));
+						sample.Input.AddRange(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase));
 					}
-
-					if(inputData == null) {
-						inputData = new Tensor(samples, inputDims.Count, "Input");
-					}
-					for(int k=0; k<inputDims.Count; k++) {
-						inputData.SetValue(processed, k, inputDims[k]);
-					}
-					//
 
 					//Output
-					List<float> outputDims = new List<float>();
-
 					for(int k=6; k<12; k++) {
 						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = Filter(next.Trajectory.Points[k].Styles, next.Trajectory.Styles, Styles);
-						outputDims.Add(position.x);
-						outputDims.Add(position.z);
-						outputDims.Add(direction.x);
-						outputDims.Add(direction.z);
-						outputDims.Add(velocity.x);
-						outputDims.Add(velocity.z);
-						outputDims.AddRange(state);
+						float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
+						sample.Output.Add(position.x);
+						sample.Output.Add(position.z);
+						sample.Output.Add(direction.x);
+						sample.Output.Add(direction.z);
+						sample.Output.Add(velocity.x);
+						sample.Output.Add(velocity.z);
+						sample.Output.AddRange(state);
 					}
 					for(int k=0; k<next.Posture.Length; k++) {
 						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 						Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
-						outputDims.Add(position.x);
-						outputDims.Add(position.y);
-						outputDims.Add(position.z);
-						outputDims.Add(forward.x);
-						outputDims.Add(forward.y);
-						outputDims.Add(forward.z);
-						outputDims.Add(up.x);
-						outputDims.Add(up.y);
-						outputDims.Add(up.z);
-						outputDims.Add(velocity.x);
-						outputDims.Add(velocity.y);
-						outputDims.Add(velocity.z);
+						sample.Output.Add(position.x);
+						sample.Output.Add(position.y);
+						sample.Output.Add(position.z);
+						sample.Output.Add(forward.x);
+						sample.Output.Add(forward.y);
+						sample.Output.Add(forward.z);
+						sample.Output.Add(up.x);
+						sample.Output.Add(up.y);
+						sample.Output.Add(up.z);
+						sample.Output.Add(velocity.x);
+						sample.Output.Add(velocity.y);
+						sample.Output.Add(velocity.z);
 					}
-					outputDims.Add(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
+					sample.Output.Add(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase));
 
-					if(outputData == null) {
-						outputData = new Tensor(samples, outputDims.Count, "Output");
-					}
-					for(int k=0; k<outputDims.Count; k++) {
-						outputData.SetValue(processed, k, outputDims[k]);
-					}
-					//
-
-					processed += 1;
-					Processing = (float)processed / (float)samples;
+					data.Samples.Add(sample);
 
 					items += 1;
 					if(items == BatchSize) {
+						Processing = (float)(i+1) / (float)capture.Count;
 						items = 0;
 						yield return new WaitForSeconds(0f);
 					}
 				}
 			}
-			Tensor inputMean = new Tensor(1, inputData.Cols(), "Xmean");
-			Tensor inputStd = new Tensor(1, inputData.Cols(), "Xstd");
-			Tensor outputMean = new Tensor(1, outputData.Cols(), "Ymean");
-			Tensor outputStd = new Tensor(1, outputData.Cols(), "Ystd");
-			for(int i=0; i<inputData.Cols(); i++) {
-				inputMean.SetValue(0, i, inputData.ColMean(i));
-				inputStd.SetValue(0, i, inputData.ColStd(i));
+			for(int i=0; i<data.Samples[0].Input.Count; i++) {
+				data.XMean.Add(0f);
+				data.XStd.Add(1f);
 			}
-			for(int i=0; i<outputData.Cols(); i++) {
-				outputMean.SetValue(0, i, outputData.ColMean(i));
-				outputStd.SetValue(0, i, outputData.ColStd(i));
+			for(int i=0; i<data.Samples[0].Output.Count; i++) {
+				data.YMean.Add(0f);
+				data.YStd.Add(1f);
 			}
-			
+			Processing = 1f;
+
 			//Writing
 			StreamWriter input = CreateFile("Input");
-			StreamWriter output = CreateFile("Output");
-			StreamWriter normInput = CreateFile("InputNormalization");
-			StreamWriter normOutput = CreateFile("OutputNormalization");
-			for(int i=0; i<samples; i++) {
-				string inputLine = string.Empty;
-				for(int j=0; j<inputData.Cols(); j++) {
-					inputLine += Format(inputData.GetValue(i, j));
-				}
-				inputLine = inputLine.Remove(inputLine.Length-1);
-				inputLine = inputLine.Replace(",",".");
-				input.WriteLine(inputLine);
-
-				string outputLine = string.Empty;
-				for(int j=0; j<outputData.Cols(); j++) {
-					outputLine += Format(outputData.GetValue(i, j));
-				}
-				outputLine = outputLine.Remove(outputLine.Length-1);
-				outputLine = outputLine.Replace(",",".");
-				output.WriteLine(outputLine);
-
-				Writing = (float)(i+1) / (float)samples;
-
+			for(int i=0; i<data.Samples.Count; i++) {
+				WriteLine(input, data.Samples[i].Input);
 				items += 1;
 				if(items == BatchSize) {
+					Writing = 0f + 0.45f * (float)(i+1) / (float)data.Samples.Count;
 					items = 0;
 					yield return new WaitForSeconds(0f);
 				}
 			}
-
-			string line = string.Empty;
-			for(int i=0; i<inputMean.Cols(); i++) {
-				line += Format(inputMean.GetValue(0, i));
-			}
-			normInput.WriteLine(line);
-
-			line = string.Empty;
-			for(int i=0; i<inputStd.Cols(); i++) {
-				line += Format(inputStd.GetValue(0, i));
-			}
-			normInput.WriteLine(line);
-
-			line = string.Empty;
-			for(int i=0; i<outputMean.Cols(); i++) {
-				line += Format(outputMean.GetValue(0, i));
-			}
-			normOutput.WriteLine(line);
-
-			line = string.Empty;
-			for(int i=0; i<outputStd.Cols(); i++) {
-				line += Format(outputStd.GetValue(0, i));
-			}
-			normOutput.WriteLine(line);
-
 			input.Close();
+			StreamWriter output = CreateFile("Output");
+			for(int i=0; i<data.Samples.Count; i++) {
+				WriteLine(input, data.Samples[i].Output);
+				items += 1;
+				if(items == BatchSize) {
+					Writing = 0.45f + 0.45f * (float)(i+1) / (float)data.Samples.Count;
+					items = 0;
+					yield return new WaitForSeconds(0f);
+				}
+			}
 			output.Close();
+			StreamWriter normInput = CreateFile("InputNorm");
+			WriteLine(normInput, data.XMean);
+			WriteLine(normInput, data.XStd);
 			normInput.Close();
+			StreamWriter normOutput = CreateFile("OutputNorm");
+			WriteLine(normOutput, data.YMean);
+			WriteLine(normOutput, data.YStd);
 			normOutput.Close();
-
-			//Cleanup
-			inputData.Delete();
-			outputData.Delete();
-			inputMean.Delete();
-			inputStd.Delete();
-			outputMean.Delete();
-			outputStd.Delete();
+			Writing = 1f;
 
 			Exporting = false;
 			yield return new WaitForSeconds(0f);
 		}
 	}
 
-	private float[] Filter(float[] values, string[] from, string[] to) {
+	private float[] Filter(ref float[] values, ref string[] from, ref string[] to) {
 		float[] filtered = new float[to.Length];
 		for(int i=0; i<to.Length; i++) {
 			for(int j=0; j<from.Length; j++) {
@@ -517,41 +455,27 @@ public class MotionExporter : EditorWindow {
 		return filtered;
 	}
 
-	private string Format(string value) {
-		return value + Separator;
-	}
-
-	private string Format(float value) {
-		return value.ToString(Accuracy) + Separator;
-	}
-
-	private string Format(float[] array) {
-		string format = string.Empty;
-		for(int i=0; i<array.Length; i++) {
-			format += array[i].ToString(Accuracy) + Separator;
+	private void WriteLine(StreamWriter stream, List<float> values) {
+		string line = string.Empty;
+		for(int i=0; i<values.Count; i++) {
+			line += values[i].ToString(Accuracy) + Separator;
 		}
-		return format;
+		line = line.Remove(line.Length-1);
+		line = line.Replace(",",".");
+		stream.WriteLine(line);
 	}
 
-	private string Format(bool[] array) {
-		string format = string.Empty;
-		for(int i=0; i<array.Length; i++) {
-			float value = array[i] ? 1f : 0f;
-			format += value.ToString(Accuracy) + Separator;
-		}
-		return format;
+	public class Data {
+		public List<Sample> Samples = new List<Sample>();
+		public List<float> XMean = new List<float>();
+		public List<float> XStd = new List<float>();
+		public List<float> YMean = new List<float>();
+		public List<float> YStd = new List<float>();
 	}
 
-	private string Format(Vector2 vector) {
-		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator;
-	}
-
-	private string Format(Vector3 vector) {
-		return vector.x.ToString(Accuracy) + Separator + vector.y.ToString(Accuracy) + Separator + vector.z.ToString(Accuracy) + Separator;
-	}
-
-	private string Format(Quaternion quaternion) {
-		return quaternion.x + Separator + quaternion.y + Separator + quaternion.z + Separator + quaternion.w + Separator;
+	public class Sample {
+		public List<float> Input = new List<float>();
+		public List<float> Output = new List<float>();
 	}
 
 	public class State {
