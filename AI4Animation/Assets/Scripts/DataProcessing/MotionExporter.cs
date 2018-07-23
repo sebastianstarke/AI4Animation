@@ -29,6 +29,7 @@ public class MotionExporter : EditorWindow {
 
 	public bool WriteData = true;
 	public bool WriteNorm = true;
+	public bool WriteLabels = true;
 
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
@@ -79,15 +80,6 @@ public class MotionExporter : EditorWindow {
 					}
 
 					if(!Exporting) {
-						EditorGUILayout.BeginHorizontal();
-						if(Utility.GUIButton("Export Input Labels", UltiDraw.DarkGrey, UltiDraw.White)) {
-							this.StartCoroutine(ExportInputLabels());
-						}
-						if(Utility.GUIButton("Export Output Labels", UltiDraw.DarkGrey, UltiDraw.White)) {
-							this.StartCoroutine(ExportOutputLabels());
-						}
-						EditorGUILayout.EndHorizontal();
-
 						if(Utility.GUIButton("Export Data", UltiDraw.DarkGrey, UltiDraw.White)) {
 							this.StartCoroutine(ExportData());
 						}
@@ -156,119 +148,6 @@ public class MotionExporter : EditorWindow {
 		return File.CreateText(filename+".txt");
 	}
 
-	private IEnumerator ExportInputLabels() {
-		if(Editor == null) {
-			Debug.Log("No editor found.");
-		} else {
-			StreamWriter file = CreateFile("InputLabels");
-		
-			int index = 0;
-			for(int i=1; i<=12; i++) {
-				file.WriteLine(index + " " + "TrajectoryPositionX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryPositionZ" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionZ" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
-				//for(int j=0; j<Styles.Length; j++) {
-				//	file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
-				//}
-				for(int j=0; j<Styles.Length; j++) {
-					file.WriteLine(index + " " + Styles[j] + "Signal" + i); index += 1;
-				}
-			}
-			for(int i=0; i<Editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
-				if(Editor.GetCurrentFile().Data.Source.Bones[i].Active) {
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
-				}
-			}
-			
-			//for(int i=1; i<=7; i++) {
-			//	for(int j=0; j<Styles.Length; j++) {
-			//		file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
-			//	}
-			//}
-
-			for(int i=1; i<=7; i++) {
-				for(int j=0; j<Styles.Length; j++) {
-					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
-					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
-				}
-			}
-
-			//for(int j=0; j<Styles.Length; j++) {
-			//	file.WriteLine(index + " " + Styles[j] + "Phase"); index += 1;
-			//	file.WriteLine(index + " " + Styles[j] + "Phase"); index += 1;
-			//}
-
-			yield return new WaitForSeconds(0f);
-
-			file.Close();
-
-			Exporting = false;
-		}
-	}
-
-	private IEnumerator ExportOutputLabels() {
-		if(Editor == null) {
-			Debug.Log("No editor found.");
-		} else {
-			Exporting = true;
-
-			StreamWriter file = CreateFile("OutputLabels");
-
-			int index = 0;
-			for(int i=7; i<=12; i++) {
-				file.WriteLine(index + " " + "TrajectoryPositionX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryPositionZ" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryDirectionZ" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityX" + i); index += 1;
-				file.WriteLine(index + " " + "TrajectoryVelocityZ" + i); index += 1;
-				//for(int j=0; j<Styles.Length; j++) {
-				//	file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
-				//}
-			}
-			for(int i=0; i<Editor.GetCurrentFile().Data.Source.Bones.Length; i++) {
-				if(Editor.GetCurrentFile().Data.Source.Bones[i].Active) {
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "PositionZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "ForwardZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "UpZ"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityX"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityY"); index += 1;
-					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
-				}
-			}
-			for(int j=0; j<Styles.Length; j++) {
-				file.WriteLine(index + " " + Styles[j] + "State"); index += 1;
-			}
-			file.WriteLine(index + " " + "PhaseUpdate"); index += 1;
-
-			yield return new WaitForSeconds(0f);
-
-			file.Close();
-
-			Exporting = false;
-		}
-	}
-
 	private IEnumerator ExportData() {
 		if(Editor == null) {
 			Debug.Log("No editor found.");
@@ -279,7 +158,7 @@ public class MotionExporter : EditorWindow {
 			Processing = 0f;
 			Writing = 0f;
 			
-			List<State[]> capture = new List<State[]>();
+			State[][] capture = new State[0][];
 
 			int items = 0;
 			int files = Editor.Files.Length;
@@ -316,7 +195,7 @@ public class MotionExporter : EditorWindow {
 									yield return new WaitForSeconds(0f);
 								}
 							}
-							capture.Add(states.ToArray());
+							ArrayExtensions.Add(ref capture, states.ToArray());
 						}
 					}
 					Generating += 1f / (float)filesToGenerate;
@@ -324,9 +203,9 @@ public class MotionExporter : EditorWindow {
 			}
 
 			//Processing
-			Data X = new Data(WriteData ? CreateFile("Input") : null, WriteNorm ? CreateFile("InputNorm") : null);
-			Data Y = new Data(WriteData ? CreateFile("Output") : null, WriteNorm ? CreateFile("OutputNorm") : null);
-			for(int i=0; i<capture.Count; i++) {
+			Data X = new Data(WriteData ? CreateFile("Input") : null, WriteNorm ? CreateFile("InputNorm") : null, WriteLabels ? CreateFile("InputLabels") : null);
+			Data Y = new Data(WriteData ? CreateFile("Output") : null, WriteNorm ? CreateFile("OutputNorm") : null, WriteLabels ? CreateFile("OutputLabels") : null);
+			for(int i=0; i<capture.Length; i++) {
 				for(int j=0; j<capture[i].Length-1; j++) {
 					State current = capture[i][j];
 					State next = capture[i][j+1];
@@ -336,40 +215,40 @@ public class MotionExporter : EditorWindow {
 						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						//float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
+						float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
 						float[] signal = Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles);
-						X.Feed(position.x, Data.ID.Standard);
-						X.Feed(position.z, Data.ID.Standard);
-						X.Feed(direction.x, Data.ID.Standard);
-						X.Feed(direction.z, Data.ID.Standard);
-						X.Feed(velocity.x, Data.ID.Standard);
-						X.Feed(velocity.z, Data.ID.Standard);
-						//X.Feed(state, Data.ID.OnOff);
-						X.Feed(signal, Data.ID.OnOff);
+						X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
+						X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
+						X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
+						X.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
+						X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
+						X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
+						X.Feed(state, Data.ID.OnOff, "Trajectory"+(k+1)+"State");
+						X.Feed(signal, Data.ID.OnOff, "Trajectory"+(k+1)+"Signal");
 					}
 					for(int k=0; k<current.Posture.Length; k++) {
 						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 						Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
-						X.Feed(position.x, Data.ID.Standard);
-						X.Feed(position.y, Data.ID.Standard);
-						X.Feed(position.z, Data.ID.Standard);
-						X.Feed(forward.x, Data.ID.Standard);
-						X.Feed(forward.y, Data.ID.Standard);
-						X.Feed(forward.z, Data.ID.Standard);
-						X.Feed(up.x, Data.ID.Standard);
-						X.Feed(up.y, Data.ID.Standard);
-						X.Feed(up.z, Data.ID.Standard);
-						X.Feed(velocity.x, Data.ID.Standard);
-						X.Feed(velocity.y, Data.ID.Standard);
-						X.Feed(velocity.z, Data.ID.Standard);
+						X.Feed(position.x, Data.ID.Standard, "Bone"+(k+1)+"PositionX");
+						X.Feed(position.y, Data.ID.Standard, "Bone"+(k+1)+"PositionY");
+						X.Feed(position.z, Data.ID.Standard, "Bone"+(k+1)+"PositionZ");
+						X.Feed(forward.x, Data.ID.Standard, "Bone"+(k+1)+"ForwardX");
+						X.Feed(forward.y, Data.ID.Standard, "Bone"+(k+1)+"ForwardY");
+						X.Feed(forward.z, Data.ID.Standard, "Bone"+(k+1)+"ForwardZ");
+						X.Feed(up.x, Data.ID.Standard, "Bone"+(k+1)+"UpX");
+						X.Feed(up.y, Data.ID.Standard, "Bone"+(k+1)+"UpY");
+						X.Feed(up.z, Data.ID.Standard, "Bone"+(k+1)+"UpZ");
+						X.Feed(velocity.x, Data.ID.Standard, "Bone"+(k+1)+"VelocityX");
+						X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
+						X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
 					//for(int k=0; k<7; k++) {
 					//	X.Feed(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Data.ID.OnOff);
 					//}
 					for(int k=0; k<7; k++) {
-						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore);
+						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-");
 					}
 					//X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[6].Phase), Data.ID.Ignore);
 					X.Store();
@@ -380,41 +259,41 @@ public class MotionExporter : EditorWindow {
 						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						//float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
-						Y.Feed(position.x, Data.ID.Standard);
-						Y.Feed(position.z, Data.ID.Standard);
-						Y.Feed(direction.x, Data.ID.Standard);
-						Y.Feed(direction.z, Data.ID.Standard);
-						Y.Feed(velocity.x, Data.ID.Standard);
-						Y.Feed(velocity.z, Data.ID.Standard);
-						//Y.Feed(state, Data.ID.OnOff);
+						float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
+						Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
+						Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
+						Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
+						Y.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
+						Y.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
+						Y.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
+						Y.Feed(state, Data.ID.OnOff, "Trajectory"+(k+1)+"State");
 					}
 					for(int k=0; k<next.Posture.Length; k++) {
 						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
 						Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
 						Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
-						Y.Feed(position.x, Data.ID.Standard);
-						Y.Feed(position.y, Data.ID.Standard);
-						Y.Feed(position.z, Data.ID.Standard);
-						Y.Feed(forward.x, Data.ID.Standard);
-						Y.Feed(forward.y, Data.ID.Standard);
-						Y.Feed(forward.z, Data.ID.Standard);
-						Y.Feed(up.x, Data.ID.Standard);
-						Y.Feed(up.y, Data.ID.Standard);
-						Y.Feed(up.z, Data.ID.Standard);
-						Y.Feed(velocity.x, Data.ID.Standard);
-						Y.Feed(velocity.y, Data.ID.Standard);
-						Y.Feed(velocity.z, Data.ID.Standard);
+						Y.Feed(position.x, Data.ID.Standard, "Bone"+(k+1)+"PositionX");
+						Y.Feed(position.y, Data.ID.Standard, "Bone"+(k+1)+"PositionY");
+						Y.Feed(position.z, Data.ID.Standard, "Bone"+(k+1)+"PositionZ");
+						Y.Feed(forward.x, Data.ID.Standard, "Bone"+(k+1)+"ForwardX");
+						Y.Feed(forward.y, Data.ID.Standard, "Bone"+(k+1)+"ForwardY");
+						Y.Feed(forward.z, Data.ID.Standard, "Bone"+(k+1)+"ForwardZ");
+						Y.Feed(up.x, Data.ID.Standard, "Bone"+(k+1)+"UpX");
+						Y.Feed(up.y, Data.ID.Standard, "Bone"+(k+1)+"UpY");
+						Y.Feed(up.z, Data.ID.Standard, "Bone"+(k+1)+"UpZ");
+						Y.Feed(velocity.x, Data.ID.Standard, "Bone"+(k+1)+"VelocityX");
+						Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
+						Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
-					Y.Feed(Filter(ref next.Trajectory.Points[6].Styles, ref next.Trajectory.Styles, ref Styles), Data.ID.OnOff);
-					Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase), Data.ID.Standard);
+					//Y.Feed(Filter(ref next.Trajectory.Points[6].Styles, ref next.Trajectory.Styles, ref Styles), Data.ID.OnOff);
+					Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase), Data.ID.Standard, "PhaseUpdate");
 					Y.Store();
 					//
 
 					items += 1;
 					if(items == BatchSize) {
-						Processing = (float)(i+1) / (float)capture.Count + 1f / (float)capture.Count * j / capture[i].Length;
+						Processing = (float)(i+1) / (float)capture.Length + 1f / (float)capture.Length * j / capture[i].Length;
 						items = 0;
 						yield return new WaitForSeconds(0f);
 					}
@@ -443,49 +322,52 @@ public class MotionExporter : EditorWindow {
 	}
 
 	public class Data {
-		public StreamWriter File, Norm;
+		public StreamWriter File, Norm, Labels;
 		public enum ID {Standard, OnOff, Ignore}
 
 		public RunningStatistics[] Statistics = null;
 
-		private List<float> Values = new List<float>();
-		private List<ID> Types = new List<ID>();
+		private float[] Values = new float[0];
+		private ID[] Types = new ID[0];
+		private string[] Names = new string[0];
 		private int Dim = 0;
 
-		public Data(StreamWriter file, StreamWriter norm) {
+		public Data(StreamWriter file, StreamWriter norm, StreamWriter labels) {
 			File = file;
 			Norm = norm;
+			Labels = labels;
 		}
 
-		public void Feed(float value, ID type) {
+		public void Feed(float value, ID type, string name) {
 			Dim += 1;
-			if(Values.Count < Dim) {
-				Values.Add(value);
+			if(Values.Length < Dim) {
+				ArrayExtensions.Add(ref Values, value);
 			} else {
 				Values[Dim-1] = value;
 			}
-			if(Types.Count < Dim) {
-				Types.Add(type);
-			} else {
-				Types[Dim-1] = type;
+			if(Types.Length < Dim) {
+				ArrayExtensions.Add(ref Types, type);
+			}
+			if(Names.Length < Dim) {
+				ArrayExtensions.Add(ref Names, name);
 			}
 		}
 
-		public void Feed(float[] values, ID type) {
+		public void Feed(float[] values, ID type, string name) {
 			for(int i=0; i<values.Length; i++) {
-				Feed(values[i], type);
+				Feed(values[i], type, name + (i+1));
 			}
 		}
 
 		public void Store() {
 			if(Norm != null) {
 				if(Statistics == null) {
-					Statistics = new RunningStatistics[Values.Count];
+					Statistics = new RunningStatistics[Values.Length];
 					for(int i=0; i<Statistics.Length; i++) {
 						Statistics[i] = new RunningStatistics();
 					}
 				}
-				for(int i=0; i<Values.Count; i++) {
+				for(int i=0; i<Values.Length; i++) {
 					switch(Types[i]) {
 						case ID.Standard:		//Ground Truth
 						Statistics[i].Add(Values[i]);
@@ -503,7 +385,7 @@ public class MotionExporter : EditorWindow {
 
 			if(File != null) {
 				string line = string.Empty;
-				for(int i=0; i<Values.Count; i++) {
+				for(int i=0; i<Values.Length; i++) {
 					line += Values[i].ToString(Accuracy) + Separator;
 				}
 				line = line.Remove(line.Length-1);
@@ -515,9 +397,12 @@ public class MotionExporter : EditorWindow {
 		}
 
 		public void Finish() {
-			Values.Clear();
-			Types.Clear();
-			Dim = 0;
+			if(Labels != null) {
+				for(int i=0; i<Names.Length; i++) {
+					Labels.WriteLine("[" + i + "]" + " " + Names[i]);
+				}
+				Labels.Close();
+			}
 
 			if(File != null) {
 				File.Close();
