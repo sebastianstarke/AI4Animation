@@ -26,7 +26,7 @@ public class RunningStatistics {
         } else {
             m_newM = m_oldM + (sample - m_oldM)/m_n;
             m_newS = m_oldS + (sample - m_oldM)*(sample - m_newM);
-            // set up for next iteration
+            // Set up for next iteration
             m_oldM = m_newM; 
             m_oldS = m_newS;
         }
