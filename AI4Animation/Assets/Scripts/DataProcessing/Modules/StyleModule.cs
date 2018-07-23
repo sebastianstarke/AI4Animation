@@ -73,11 +73,11 @@ public class StyleModule : Module {
 	}
 
 	public float[] GetMirrorSignal(Frame frame) {
-		float[] release = new float[Functions.Length];
-		for(int i=0; i<release.Length; i++) {
-			release[i] = Functions[i].GetRelease(frame);
+		float[] mirror = new float[Functions.Length];
+		for(int i=0; i<mirror.Length; i++) {
+			mirror[i] = Functions[i].GetMirrorFlag(frame);
 		}
-		return release;
+		return mirror;
 	}
 
 	public float[] GetStyle(Frame frame) {
@@ -146,8 +146,8 @@ public class StyleModule : Module {
 			if(Utility.GUIButton(Functions[i].Name, colors[i].Transparent(Utility.Normalise(Functions[i].GetValue(frame), 0f, 1f, 0.25f, 1f)), UltiDraw.White, 200f, height)) {
 				Functions[i].Toggle(frame);
 			}
-			//EditorGUILayout.Toggle(Functions[i].GetFlag(frame));
-			//EditorGUILayout.Toggle(Functions[i].GetRelease(frame));
+			EditorGUILayout.Toggle(Functions[i].GetFlag(frame) == 1f ? true : false);
+			EditorGUILayout.Toggle(Functions[i].GetMirrorFlag(frame) == 1f ? true : false);
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
@@ -263,11 +263,19 @@ public class StyleModule : Module {
 		}
 
 		public float GetFlag(Frame frame) {
-			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f) ? 1f : 0f;
+			return 
+				((GetValue(frame) == 1f) && GetValue(frame.GetNextFrame()) == 1f)
+				||
+				(GetValue(frame.GetNextFrame()) - GetValue(frame) > 0f) 
+				? 1f : 0f;
 		}
 
-		public float GetRelease(Frame frame) {
-			return (GetValue(frame) == 1f) || (GetValue(frame) != 0f && GetValue(frame.GetNextFrame()) - GetValue(frame) < 0f) ? 1f : 0f;
+		public float GetMirrorFlag(Frame frame) {
+			return 
+				((GetValue(frame) == 1f) && GetValue(frame.GetPreviousFrame()) == 1f)
+				||
+				(GetValue(frame.GetPreviousFrame()) - GetValue(frame) > 0f) 
+				? 1f : 0f;
 		}
 
 		public float GetValue(Frame frame) {

@@ -193,17 +193,24 @@ public class MotionExporter : EditorWindow {
 					file.WriteLine(index + " " + Editor.GetActor().Bones[i].GetName() + "VelocityZ"); index += 1;
 				}
 			}
-			for(int i=1; i<=7; i++) {
-				for(int j=0; j<Styles.Length; j++) {
-					file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
-				}
-			}
+			
+			//for(int i=1; i<=7; i++) {
+			//	for(int j=0; j<Styles.Length; j++) {
+			//		file.WriteLine(index + " " + Styles[j] + "State" + i); index += 1;
+			//	}
+			//}
+
 			for(int i=1; i<=7; i++) {
 				for(int j=0; j<Styles.Length; j++) {
 					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
 					file.WriteLine(index + " " + Styles[j] + "Phase" + i); index += 1;
 				}
 			}
+
+			//for(int j=0; j<Styles.Length; j++) {
+			//	file.WriteLine(index + " " + Styles[j] + "Phase"); index += 1;
+			//	file.WriteLine(index + " " + Styles[j] + "Phase"); index += 1;
+			//}
 
 			yield return new WaitForSeconds(0f);
 
@@ -358,12 +365,13 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.y, Data.ID.Standard);
 						X.Feed(velocity.z, Data.ID.Standard);
 					}
-					for(int k=0; k<7; k++) {
-						X.Feed(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Data.ID.OnOff);
-					}
+					//for(int k=0; k<7; k++) {
+					//	X.Feed(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Data.ID.OnOff);
+					//}
 					for(int k=0; k<7; k++) {
 						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore);
 					}
+					//X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[6].Phase), Data.ID.Ignore);
 					X.Store();
 					//
 
@@ -406,7 +414,7 @@ public class MotionExporter : EditorWindow {
 
 					items += 1;
 					if(items == BatchSize) {
-						Processing = (float)(i+1) / (float)capture.Count;
+						Processing = (float)(i+1) / (float)capture.Count + 1f / (float)capture.Count * j / capture[i].Length;
 						items = 0;
 						yield return new WaitForSeconds(0f);
 					}
