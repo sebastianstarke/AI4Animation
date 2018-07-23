@@ -21,7 +21,7 @@ public class HeightMapModule : Module {
 		Inspect = true;
 		MotionData.Hierarchy.Bone bone = Data.Source.FindBoneContains("Hip");
 		if(bone == null) {
-			Debug.Log("Could not find umbrella map sensor.");
+			Debug.Log("Could not find height map sensor.");
 		} else {
 			Sensor = bone.Index;
 		}
@@ -32,15 +32,15 @@ public class HeightMapModule : Module {
 		return this;
 	}
 
-	public UmbrellaMap GetUmbrellaMap(Frame frame, bool mirrored) {
-		UmbrellaMap umbrellaMap = new UmbrellaMap(Size);
-		Matrix4x4 pivot = frame.GetBoneTransformation(Sensor, mirrored);
-		umbrellaMap.Sense(pivot, Mask);
-		return umbrellaMap;
+	public HeightMap GetHeightMap(Frame frame, bool mirrored) {
+		HeightMap heightMap = new HeightMap(Size);
+		Matrix4x4 pivot = frame.GetRootTransformation(mirrored);
+		heightMap.Sense(pivot, Mask);
+		return heightMap;
 	}
 
 	public override void Draw(MotionEditor editor) {
-		GetUmbrellaMap(editor.GetCurrentFrame(), editor.Mirror).Draw();
+		GetHeightMap(editor.GetCurrentFrame(), editor.Mirror).Draw();
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {

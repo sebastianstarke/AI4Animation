@@ -24,7 +24,6 @@ public class MotionExporter : EditorWindow {
 
     private bool Exporting = false;
 	private float Generating = 0f;
-	private float Processing = 0f;
 	private float Writing = 0f;
 
 	public bool WriteData = true;
@@ -100,9 +99,6 @@ public class MotionExporter : EditorWindow {
 						EditorGUILayout.LabelField("Generating");
 						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Generating * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
 
-						EditorGUILayout.LabelField("Processing");
-						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Processing * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
-
 						EditorGUILayout.LabelField("Writing");
 						EditorGUI.DrawRect(new Rect(EditorGUILayout.GetControlRect().x, EditorGUILayout.GetControlRect().y, Writing * EditorGUILayout.GetControlRect().width, 25f), UltiDraw.Green.Transparent(0.75f));
 
@@ -155,7 +151,6 @@ public class MotionExporter : EditorWindow {
 			Exporting = true;
 
 			Generating = 0f;
-			Processing = 0f;
 			Writing = 0f;
 			
 			State[][] capture = new State[0][];
@@ -223,8 +218,8 @@ public class MotionExporter : EditorWindow {
 						X.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
 						X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 						X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-						X.Feed(state, Data.ID.OnOff, "Trajectory"+(k+1)+"State");
-						X.Feed(signal, Data.ID.OnOff, "Trajectory"+(k+1)+"Signal");
+						X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
+						X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 					}
 					for(int k=0; k<current.Posture.Length; k++) {
 						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -266,7 +261,7 @@ public class MotionExporter : EditorWindow {
 						Y.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
 						Y.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 						Y.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-						Y.Feed(state, Data.ID.OnOff, "Trajectory"+(k+1)+"State");
+						Y.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
 					}
 					for(int k=0; k<next.Posture.Length; k++) {
 						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -293,7 +288,7 @@ public class MotionExporter : EditorWindow {
 
 					items += 1;
 					if(items == BatchSize) {
-						Processing = (float)(i+1) / (float)capture.Length + 1f / (float)capture.Length * j / capture[i].Length;
+						Writing = (float)i / (float)capture.Length + 1f / (float)capture.Length * (float)j / capture[i].Length;
 						items = 0;
 						yield return new WaitForSeconds(0f);
 					}
@@ -301,7 +296,6 @@ public class MotionExporter : EditorWindow {
 			}
 			X.Finish();
 			Y.Finish();
-			Processing = 1f;
 			Writing = 1f;
 
 			Exporting = false;
@@ -376,8 +370,9 @@ public class MotionExporter : EditorWindow {
 						Statistics[i].Add(1f);
 						Statistics[i].Add(0f);
 						break;
-						case ID.Ignore:			//Mean 0.0 Std 0.0
-						Statistics[i].Add(0f);
+						case ID.Ignore:			//Mean 0.0 Std 1.0
+						Statistics[i].Add(-1f);
+						Statistics[i].Add(1f);
 						break;
 					}
 				}
