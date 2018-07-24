@@ -319,7 +319,7 @@ public class MotionEditor : MonoBehaviour {
 				List<float> values = new List<float>();
 				for(int j=Mathf.Clamp(GetCurrentFrame().Index - window, 1, GetCurrentFile().Data.GetTotalFrames()); j<=Mathf.Clamp(GetCurrentFrame().Index + window, 1, GetCurrentFile().Data.GetTotalFrames()); j++) {
 					Frame frame = GetCurrentFile().Data.GetFrame(j);
-					Vector3 exp = frame.World[i].GetRotation().GetLog();
+					Vector3 exp = frame.Local[i].GetRotation().GetLog();
 					if(k==0) {
 						values.Add(exp.x);
 					}
@@ -333,6 +333,7 @@ public class MotionEditor : MonoBehaviour {
 				functions.Add(values.ToArray());
 			}
 			UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f + k*0.2f), new Vector2(0.8f, 0.175f), functions, -1f, 1f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(functions.Count));
+			UltiDraw.DrawGUILine(new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), 0.0025f, UltiDraw.Green.Transparent(0.5f));
 		}
 		UltiDraw.End();
 		*/
@@ -344,6 +345,17 @@ public class MotionEditor : MonoBehaviour {
 
 	void OnRenderObject() {
 		Draw();
+	}
+
+	void OnGUI() {
+		/*
+		for(int i=0; i<Actor.Bones.Length; i++) {
+			Quaternion quat = GetCurrentFrame().Local[i].GetRotation();
+			Vector3 exp = quat.GetLog();
+			GUI.color = Color.black;
+			GUI.Label(Utility.GetGUIRect(0.05f, i*0.025f, 200f, 0.025f*Screen.height), Actor.Bones[i].GetName() + ": " + exp.ToString("F3") + " / " + quat.eulerAngles.ToString("F3"));
+		}
+		*/
 	}
 
 	void OnDrawGizmos() {
