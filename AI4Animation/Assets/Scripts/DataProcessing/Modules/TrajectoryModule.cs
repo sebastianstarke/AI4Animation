@@ -30,7 +30,9 @@ public class TrajectoryModule : Module {
 		trajectory.Points[6].SetSpeed(frame.GetSpeed(mirrored));
 		trajectory.Points[6].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(frame);
 		trajectory.Points[6].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(frame, mirrored);
+		trajectory.Points[6].PhaseUpdate = phaseModule == null ? 0f : phaseModule.GetPhaseUpdate(frame, mirrored);
 		trajectory.Points[6].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(frame);
+
 
 		//Past
 		for(int i=0; i<6; i++) {
@@ -46,6 +48,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference);
 				trajectory.Points[i].Phase = phaseModule == null ? 0f : 1f - phaseModule.GetPhase(reference, mirrored);
+				trajectory.Points[i].PhaseUpdate = phaseModule == null ? 0f : phaseModule.GetPhaseUpdate(reference, mirrored);
 				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetMirrorSignal(reference);
 			} else {
 				Frame previous = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
@@ -54,6 +57,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[i].SetSpeed(previous.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(previous);
 				trajectory.Points[i].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(previous, mirrored);
+				trajectory.Points[i].PhaseUpdate = phaseModule == null ? 0f : phaseModule.GetPhaseUpdate(previous, mirrored);
 				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(previous);
 			}
 		}
@@ -72,6 +76,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[6+i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference);
 				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : 1f - phaseModule.GetPhase(reference, mirrored);
+				trajectory.Points[6+i].PhaseUpdate = phaseModule == null ? 0f : phaseModule.GetPhaseUpdate(reference, mirrored);
 				trajectory.Points[6+i].Signals = styleModule == null ? new float[0] : styleModule.GetMirrorSignal(reference);
 			} else {
 				Frame future = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
@@ -80,6 +85,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[6+i].SetSpeed(future.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(future);
 				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(future, mirrored);
+				trajectory.Points[6+i].PhaseUpdate = phaseModule == null ? 0f : phaseModule.GetPhaseUpdate(future, mirrored);
 				trajectory.Points[6+i].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(future);
 			}
 		}

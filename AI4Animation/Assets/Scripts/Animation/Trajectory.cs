@@ -87,6 +87,7 @@ public class Trajectory {
 		private Vector3 RightSample;
 		private float Slope;
 		public float Phase;
+		public float PhaseUpdate;
 		public float[] Signals = new float[0];
 		public float[] Styles = new float[0];
 
@@ -317,6 +318,7 @@ public class Trajectory {
 		for(int i=0; i<Points.Length; i+=step) {
 			//UltiDraw.DrawLine(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, UltiDraw.IndianRed);
 			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, 0.8f, 0.025f, 0.05f, UltiDraw.IndianRed.Transparent(0.5f));
+			UltiDraw.DrawSphere(Points[i].GetPosition(), Quaternion.identity, Points[i].PhaseUpdate / 10f, UltiDraw.Purple.Transparent(0.25f));
 		}
 
 		UltiDraw.End();

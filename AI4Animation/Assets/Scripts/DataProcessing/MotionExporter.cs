@@ -216,6 +216,7 @@ public class MotionExporter : EditorWindow {
 						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 						float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
 						float[] signal = Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles);
+						float phaseUpdate = current.Trajectory.Points[k].PhaseUpdate;
 						X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 						X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 						X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
@@ -224,6 +225,7 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
 						X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
 						X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
+						X.Feed(phaseUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"PhaseUpdate");
 					}
 					for(int k=0; k<current.Posture.Length; k++) {
 						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -243,8 +245,12 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 						X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
-					for(int k=0; k<7; k++) {
+					for(int k=0; k<6; k++) {
 						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", (float)(k+1) / 7f);
+					}
+					X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[6].Phase), Data.ID.Ignore, "StylePhase"+6+"-", 1f);
+					for(int k=7; k<12; k++) {
+						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", 1f - (float)(k-6) / 6f);
 					}
 					X.Store();
 					//
@@ -281,7 +287,10 @@ public class MotionExporter : EditorWindow {
 						Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 						Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
-					Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase), Data.ID.Standard, "PhaseUpdate");
+					for(int k=6; k<12; k++) {
+						Y.Feed(next.Trajectory.Points[k].PhaseUpdate, Data.ID.Standard, "PhaseUpdate");
+					}
+					//Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase), Data.ID.Standard, "PhaseUpdate");
 					Y.Store();
 					//
 
