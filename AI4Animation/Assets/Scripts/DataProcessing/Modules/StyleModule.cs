@@ -146,8 +146,8 @@ public class StyleModule : Module {
 			if(Utility.GUIButton(Functions[i].Name, colors[i].Transparent(Utility.Normalise(Functions[i].GetValue(frame), 0f, 1f, 0.25f, 1f)), UltiDraw.White, 200f, height)) {
 				Functions[i].Toggle(frame);
 			}
-			EditorGUILayout.Toggle(Functions[i].GetFlag(frame) == 1f ? true : false);
-			EditorGUILayout.Toggle(Functions[i].GetMirrorFlag(frame) == 1f ? true : false);
+			//EditorGUILayout.Toggle(Functions[i].GetFlag(frame) == 1f ? true : false);
+			//EditorGUILayout.Toggle(Functions[i].GetMirrorFlag(frame) == 1f ? true : false);
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));

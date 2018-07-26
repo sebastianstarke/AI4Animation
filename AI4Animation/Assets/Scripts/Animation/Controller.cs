@@ -35,16 +35,16 @@ public class Controller {
 
 	public Vector3 QueryMove() {
 		Vector3 move = Vector3.zero;
-		if(Input.GetKey(Forward)) {
+		if(InputHandler.GetKey(Forward)) {
 			move.z += 1f;
 		}
-		if(Input.GetKey(Back)) {
+		if(InputHandler.GetKey(Back)) {
 			move.z -= 1f;
 		}
-		if(Input.GetKey(Left)) {
+		if(InputHandler.GetKey(Left)) {
 			move.x -= 1f;
 		}
-		if(Input.GetKey(Right)) {
+		if(InputHandler.GetKey(Right)) {
 			move.x += 1f;
 		}
 		return move;
@@ -52,10 +52,10 @@ public class Controller {
 
 	public float QueryTurn() {
 		float turn = 0f;
-		if(Input.GetKey(TurnLeft)) {
+		if(InputHandler.GetKey(TurnLeft)) {
 			turn -= 1f;
 		}
-		if(Input.GetKey(TurnRight)) {
+		if(InputHandler.GetKey(TurnRight)) {
 			turn += 1f;
 		}
 		return turn;
@@ -87,12 +87,12 @@ public class Controller {
 			float _bias = Styles[i].Bias;
 			float max = 0f;
 			for(int j=0; j<Styles[i].Multipliers.Length; j++) {
-				if(Input.GetKey(Styles[i].Multipliers[j].Key)) {
+				if(InputHandler.GetKey(Styles[i].Multipliers[j].Key)) {
 					max = Mathf.Max(max, Styles[i].Bias * Styles[i].Multipliers[j].Value);
 				}
 			}
 			for(int j=0; j<Styles[i].Multipliers.Length; j++) {
-				if(Input.GetKey(Styles[i].Multipliers[j].Key)) {
+				if(InputHandler.GetKey(Styles[i].Multipliers[j].Key)) {
 					_bias = Mathf.Min(max, _bias * Styles[i].Multipliers[j].Value);
 				}
 			}
@@ -120,11 +120,11 @@ public class Controller {
 			for(int i=0; i<Keys.Length; i++) {
 				if(!Negations[i]) {
 					if(Keys[i] == KeyCode.None) {
-						if(!Input.anyKey) {
+						if(!InputHandler.anyKey) {
 							active = true;
 						}
 					} else {
-						if(Input.GetKey(Keys[i])) {
+						if(InputHandler.GetKey(Keys[i])) {
 							active = true;
 						}
 					}
@@ -134,11 +134,11 @@ public class Controller {
 			for(int i=0; i<Keys.Length; i++) {
 				if(Negations[i]) {
 					if(Keys[i] == KeyCode.None) {
-						if(!Input.anyKey) {
+						if(!InputHandler.anyKey) {
 							active = false;
 						}
 					} else {
-						if(Input.GetKey(Keys[i])) {
+						if(InputHandler.GetKey(Keys[i])) {
 							active = false;
 						}
 					}

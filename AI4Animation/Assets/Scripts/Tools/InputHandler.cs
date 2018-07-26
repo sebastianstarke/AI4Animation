@@ -7,6 +7,15 @@ public class InputHandler : MonoBehaviour {
 
 	private static List<List<KeyCode>> Keys = new List<List<KeyCode>>();
 	private static int Capacity = 2;
+	private static int Clients = 0;
+
+	void OnEnable() {
+		Clients += 1;
+	}
+
+	void OnDisable() {
+		Clients -= 1;
+	}
 
 	public static bool anyKey {
 		get{
@@ -33,12 +42,16 @@ public class InputHandler : MonoBehaviour {
 	}
 
 	public static bool GetKey(KeyCode k) {
-		for(int i=0; i<Keys.Count; i++) {
-			if(Keys[i].Contains(k)) {
-				return true;
+		if(Clients == 0) {
+			return Input.GetKey(k);
+		} else {
+			for(int i=0; i<Keys.Count; i++) {
+				if(Keys[i].Contains(k)) {
+					return true;
+				}
 			}
+			return false;
 		}
-		return false;
 	}
 	
 }

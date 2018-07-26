@@ -8,7 +8,7 @@ using UnityEditorInternal;
 public class HeightMapModule : Module {
 
 	public int Sensor = 0;
-	public float Size = 0.25f;
+	public float Size = 1f;
 	public LayerMask Mask = -1;
 	public string[] Names = new string[0];
 

@@ -245,6 +245,10 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 						X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
+					float[] heights = current.HeightMap.GetHeights();
+					for(int k=0; k<heights.Length; k++) {
+						X.Feed(heights[k], Data.ID.Standard, "Height"+(k+1));
+					}
 					for(int k=0; k<6; k++) {
 						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", (float)(k+1) / 7f);
 					}
@@ -455,6 +459,7 @@ public class MotionExporter : EditorWindow {
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
+		public HeightMap HeightMap;
 
 		public State(MotionEditor editor) {
 			MotionEditor.File file = editor.GetCurrentFile();
@@ -465,6 +470,7 @@ public class MotionExporter : EditorWindow {
 			Posture = frame.GetBoneTransformations(editor.Mirror);
 			Velocities = frame.GetBoneVelocities(editor.Mirror);
 			Trajectory = ((TrajectoryModule)file.Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(frame, editor.Mirror);
+			HeightMap = ((HeightMapModule)file.Data.GetModule(Module.TYPE.HeightMap)).GetHeightMap(frame, editor.Mirror);
 		}
 	}
 
