@@ -13,7 +13,7 @@ public class HeightMapModule : Module {
 	public string[] Names = new string[0];
 
 	public override TYPE Type() {
-		return TYPE.HeightMap ;
+		return TYPE.HeightMap;
 	}
 
 	public override Module Initialise(MotionData data) {

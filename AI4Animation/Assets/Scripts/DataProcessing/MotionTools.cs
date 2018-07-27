@@ -230,7 +230,8 @@ public class MotionTools : EditorWindow {
 
 					//data.Export = true;
 
-					((HeightMapModule)data.GetModule(Module.TYPE.HeightMap)).Size = 1f;
+					data.RemoveModule(Module.TYPE.HeightMap);
+					//((HeightMapModule)data.GetModule(Module.TYPE.HeightMap)).Size = 1f;
 
 					EditorUtility.SetDirty(data);
 				}

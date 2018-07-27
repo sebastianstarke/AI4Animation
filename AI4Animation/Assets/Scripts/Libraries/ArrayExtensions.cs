@@ -61,6 +61,13 @@ public static class ArrayExtensions {
 		return FindIndex(ref array, element) >= 0;
 	}
 
+	public static T[] Concat<T>(T[] lhs, T[] rhs) {
+		T[] result = new T[lhs.Length + rhs.Length];
+		lhs.CopyTo(result, 0);
+		rhs.CopyTo(result, lhs.Length);
+		return result;
+	}
+
 	public static float[] Add(float[] lhs, float[] rhs) {
 		if(lhs.Length != rhs.Length) {
 			Debug.Log("Incompatible array dimensions.");

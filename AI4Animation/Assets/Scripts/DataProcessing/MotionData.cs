@@ -101,6 +101,9 @@ public class MotionData : ScriptableObject {
 				case Module.TYPE.UmbrellaMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<UmbrellaMapModule>().Initialise(this));
 				break;
+				case Module.TYPE.Attention:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<AttentionModule>().Initialise(this));
+				break;
 				default:
 				Debug.Log("Module of type " + type.ToString() + " not considered.");
 				return;
