@@ -16,7 +16,6 @@ public class MotionExporter : EditorWindow {
 	public int Framerate = 60;
 	public int BatchSize = 60;
 
-	public bool Mirror = true;
 	public string[] Styles = new string[0];
 
 	public MotionEditor Editor = null;
@@ -29,6 +28,7 @@ public class MotionExporter : EditorWindow {
 	public bool WriteData = true;
 	public bool WriteNorm = true;
 	public bool WriteLabels = true;
+	public bool GenerateMirror = true;
 
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
@@ -81,6 +81,7 @@ public class MotionExporter : EditorWindow {
 					WriteData = EditorGUILayout.Toggle("Write Data", WriteData);
 					WriteLabels = EditorGUILayout.Toggle("Write Labels", WriteLabels);
 					WriteNorm = EditorGUILayout.Toggle("Write Norm", WriteNorm);
+					GenerateMirror = EditorGUILayout.Toggle("Generate Mirror", GenerateMirror);
 
 					if(!Exporting) {
 						if(Utility.GUIButton("Export Data", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -114,7 +115,6 @@ public class MotionExporter : EditorWindow {
 					
 					Framerate = EditorGUILayout.IntField("Framerate", Framerate);
 					BatchSize = Mathf.Max(1, EditorGUILayout.IntField("Batch Size", BatchSize));
-					Mirror = EditorGUILayout.Toggle("Mirror", Mirror);
 					for(int i=0; i<Styles.Length; i++) {
 						Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Styles[i]);
 					}
@@ -172,7 +172,7 @@ public class MotionExporter : EditorWindow {
 			for(int i=0; i<files; i++) {
 				if(Editor.Files[i].Data.Export) {
 					Editor.LoadFile(Editor.Files[i]);
-					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
+					for(int m=1; m<=(GenerateMirror ? 2 : 1); m++) {
 						if(m==1) {
 							Editor.SetMirror(false);
 						}
@@ -224,8 +224,8 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 						X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
 						X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-						X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 						X.Feed(phaseUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"PhaseUpdate");
+						X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 					}
 					for(int k=0; k<current.Posture.Length; k++) {
 						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -245,10 +245,7 @@ public class MotionExporter : EditorWindow {
 						X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 						X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
-					float[] heights = current.HeightMap.GetHeights();
-					for(int k=0; k<heights.Length; k++) {
-						X.Feed(heights[k], Data.ID.Standard, "Height"+(k+1));
-					}
+					X.Feed(current.HeightMap.GetHeights(), Data.ID.Standard, "Height");
 					for(int k=0; k<6; k++) {
 						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", (float)(k+1) / 7f);
 					}
@@ -265,6 +262,7 @@ public class MotionExporter : EditorWindow {
 						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 						float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
+						float phaseUpdate = next.Trajectory.Points[k].PhaseUpdate;
 						Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 						Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 						Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
@@ -272,6 +270,7 @@ public class MotionExporter : EditorWindow {
 						Y.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 						Y.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
 						Y.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
+						Y.Feed(phaseUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"PhaseUpdate");
 					}
 					for(int k=0; k<next.Posture.Length; k++) {
 						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -291,10 +290,6 @@ public class MotionExporter : EditorWindow {
 						Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 						Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 					}
-					for(int k=6; k<12; k++) {
-						Y.Feed(next.Trajectory.Points[k].PhaseUpdate, Data.ID.Standard, "PhaseUpdate");
-					}
-					//Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[6].Phase), Data.ID.Standard, "PhaseUpdate");
 					Y.Store();
 					//
 
