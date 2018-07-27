@@ -16,6 +16,7 @@ public class MotionExporter : EditorWindow {
 	public int Framerate = 60;
 	public int BatchSize = 60;
 
+	public bool Mirror = true;
 	public string[] Styles = new string[0];
 
 	public MotionEditor Editor = null;
@@ -28,7 +29,6 @@ public class MotionExporter : EditorWindow {
 	public bool WriteData = true;
 	public bool WriteNorm = true;
 	public bool WriteLabels = true;
-	public bool GenerateMirror = true;
 
 	private static string Separator = " ";
 	private static string Accuracy = "F5";
@@ -81,7 +81,6 @@ public class MotionExporter : EditorWindow {
 					WriteData = EditorGUILayout.Toggle("Write Data", WriteData);
 					WriteLabels = EditorGUILayout.Toggle("Write Labels", WriteLabels);
 					WriteNorm = EditorGUILayout.Toggle("Write Norm", WriteNorm);
-					GenerateMirror = EditorGUILayout.Toggle("Generate Mirror", GenerateMirror);
 
 					if(!Exporting) {
 						if(Utility.GUIButton("Export Data", UltiDraw.DarkGrey, UltiDraw.White)) {
@@ -115,6 +114,7 @@ public class MotionExporter : EditorWindow {
 					
 					Framerate = EditorGUILayout.IntField("Framerate", Framerate);
 					BatchSize = Mathf.Max(1, EditorGUILayout.IntField("Batch Size", BatchSize));
+					Mirror = EditorGUILayout.Toggle("Mirror", Mirror);
 					for(int i=0; i<Styles.Length; i++) {
 						Styles[i] = EditorGUILayout.TextField("Style " + (i+1), Styles[i]);
 					}
@@ -165,7 +165,7 @@ public class MotionExporter : EditorWindow {
 			for(int i=0; i<Editor.Files.Length; i++) {
 				if(Editor.Files[i].Data.Export) {
 					Editor.LoadFile(Editor.Files[i]);
-					for(int m=1; m<=(GenerateMirror ? 2 : 1); m++) {
+					for(int m=1; m<=(Mirror ? 2 : 1); m++) {
 						if(m==1) {
 							Editor.SetMirror(false);
 						}
@@ -299,109 +299,6 @@ public class MotionExporter : EditorWindow {
 				}
 			}
 
-<<<<<<< HEAD
-=======
-			//Processing
-			Data X = new Data(WriteData ? CreateFile("Input") : null, WriteNorm ? CreateFile("InputNorm") : null, WriteLabels ? CreateFile("InputLabels") : null);
-			Data Y = new Data(WriteData ? CreateFile("Output") : null, WriteNorm ? CreateFile("OutputNorm") : null, WriteLabels ? CreateFile("OutputLabels") : null);
-			for(int i=0; i<capture.Length; i++) {
-				for(int j=0; j<capture[i].Length-1; j++) {
-					State current = capture[i][j];
-					State next = capture[i][j+1];
-
-					//Input
-					for(int k=0; k<12; k++) {
-						Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
-						float[] signal = Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles);
-						float phaseUpdate = current.Trajectory.Points[k].PhaseUpdate;
-						X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
-						X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
-						X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
-						X.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
-						X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
-						X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-						X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-						X.Feed(phaseUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"PhaseUpdate");
-						X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
-					}
-					for(int k=0; k<current.Posture.Length; k++) {
-						Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
-						Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
-						X.Feed(position.x, Data.ID.Standard, "Bone"+(k+1)+"PositionX");
-						X.Feed(position.y, Data.ID.Standard, "Bone"+(k+1)+"PositionY");
-						X.Feed(position.z, Data.ID.Standard, "Bone"+(k+1)+"PositionZ");
-						X.Feed(forward.x, Data.ID.Standard, "Bone"+(k+1)+"ForwardX");
-						X.Feed(forward.y, Data.ID.Standard, "Bone"+(k+1)+"ForwardY");
-						X.Feed(forward.z, Data.ID.Standard, "Bone"+(k+1)+"ForwardZ");
-						X.Feed(up.x, Data.ID.Standard, "Bone"+(k+1)+"UpX");
-						X.Feed(up.y, Data.ID.Standard, "Bone"+(k+1)+"UpY");
-						X.Feed(up.z, Data.ID.Standard, "Bone"+(k+1)+"UpZ");
-						X.Feed(velocity.x, Data.ID.Standard, "Bone"+(k+1)+"VelocityX");
-						X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
-						X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
-					}
-					X.Feed(current.HeightMap.GetHeights(), Data.ID.Standard, "Height");
-					for(int k=0; k<6; k++) {
-						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", (float)(k+1) / 7f);
-					}
-					X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[6].Phase), Data.ID.Ignore, "StylePhase"+6+"-", 1f);
-					for(int k=7; k<12; k++) {
-						X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", 1f - (float)(k-6) / 6f);
-					}
-					X.Store();
-					//
-
-					//Output
-					for(int k=6; k<12; k++) {
-						Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-						float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
-						float phaseUpdate = next.Trajectory.Points[k].PhaseUpdate;
-						Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
-						Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
-						Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
-						Y.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
-						Y.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
-						Y.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-						Y.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-						Y.Feed(phaseUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"PhaseUpdate");
-					}
-					for(int k=0; k<next.Posture.Length; k++) {
-						Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
-						Vector3 forward = next.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
-						Vector3 up = next.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
-						Vector3 velocity = next.Velocities[k].GetRelativeDirectionTo(current.Root);
-						Y.Feed(position.x, Data.ID.Standard, "Bone"+(k+1)+"PositionX");
-						Y.Feed(position.y, Data.ID.Standard, "Bone"+(k+1)+"PositionY");
-						Y.Feed(position.z, Data.ID.Standard, "Bone"+(k+1)+"PositionZ");
-						Y.Feed(forward.x, Data.ID.Standard, "Bone"+(k+1)+"ForwardX");
-						Y.Feed(forward.y, Data.ID.Standard, "Bone"+(k+1)+"ForwardY");
-						Y.Feed(forward.z, Data.ID.Standard, "Bone"+(k+1)+"ForwardZ");
-						Y.Feed(up.x, Data.ID.Standard, "Bone"+(k+1)+"UpX");
-						Y.Feed(up.y, Data.ID.Standard, "Bone"+(k+1)+"UpY");
-						Y.Feed(up.z, Data.ID.Standard, "Bone"+(k+1)+"UpZ");
-						Y.Feed(velocity.x, Data.ID.Standard, "Bone"+(k+1)+"VelocityX");
-						Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
-						Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
-					}
-					Y.Store();
-					//
-
-					items += 1;
-					if(items == BatchSize) {
-						Writing = (float)i / (float)capture.Length + 1f / (float)capture.Length * (float)j / capture[i].Length;
-						items = 0;
-						yield return new WaitForSeconds(0f);
-					}
-				}
-			}
->>>>>>> edcd6fc40837699dc674e18910af28c709e54dd2
 			X.Finish();
 			Y.Finish();
 
