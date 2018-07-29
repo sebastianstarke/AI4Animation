@@ -59,10 +59,6 @@ public class PhaseModule : Module {
 		return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
 	}
 
-	public float GetPhaseUpdate(Frame frame, bool mirrored) {
-		return mirrored ? InversePhaseFunction.GetPhaseUpdate(frame) : RegularPhaseFunction.GetPhaseUpdate(frame);
-	}
-
 	public override void Draw(MotionEditor editor) {
 
 	}
@@ -211,14 +207,6 @@ public class PhaseModule : Module {
 
 		public float GetPhase(Frame frame) {
 			return Phase[frame.Index-1];
-		}
-
-		public float GetPhaseUpdate(Frame frame) {
-			if(frame.Index == 1) {
-				return GetPhaseUpdate(frame.GetNextFrame());
-			} else {
-				return Utility.GetLinearPhaseUpdate(GetPhase(frame.GetPreviousFrame()), GetPhase(frame)) * Module.Data.Framerate;
-			}
 		}
 
 		public Frame GetPreviousKey(Frame frame) {
