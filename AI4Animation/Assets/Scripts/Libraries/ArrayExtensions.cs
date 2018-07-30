@@ -293,4 +293,28 @@ public static class ArrayExtensions {
 		return System.Math.Sqrt(variance);
 	}
 
+	public static void Print(this double[] values) {
+		string output = "[";
+		for(int i=0; i<values.Length; i++) {
+			output += values[i].ToString() + (i==values.Length-1 ? "]" : ", ");
+		}
+		Debug.Log(output);
+	}
+
+	public static void Print(this float[] values) {
+		string output = "[";
+		for(int i=0; i<values.Length; i++) {
+			output += values[i].ToString() + (i==values.Length-1 ? "]" : ", ");
+		}
+		Debug.Log(output);
+	}
+
+	public static void Print(this int[] values) {
+		string output = "[";
+		for(int i=0; i<values.Length; i++) {
+			output += values[i].ToString() + (i==values.Length-1 ? "]" : ", ");
+		}
+		Debug.Log(output);
+	}
+
 }

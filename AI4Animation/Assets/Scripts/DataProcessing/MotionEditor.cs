@@ -338,6 +338,44 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 
+		UltiDraw.Begin();
+		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame(), Mirror);
+		Color[] colors = UltiDraw.GetRainbowColors(previous.Styles.Length);
+		
+		List<float[]> signalInput = new List<float[]>();
+		for(int i=0; i<previous.Styles.Length; i++) {
+			float[] s = new float[previous.Points.Length];
+			for(int j=0; j<previous.Points.Length; j++) {
+				s[j] = previous.Points[j].Signals[i];
+			}
+			signalInput.Add(s);
+		}
+		List<float[]> stateInput = new List<float[]>();
+		for(int i=0; i<previous.Styles.Length; i++) {
+			float[] s = new float[previous.Points.Length];
+			for(int j=0; j<previous.Points.Length; j++) {
+				s[j] = previous.Points[j].Styles[i];
+			}
+			stateInput.Add(s);
+		}
+		//UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.9f), new Vector2(0.75f, 0.1f), signalInput, -1f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.75f), new Vector2(0.75f, 0.1f), stateInput, 0f, 1f, UltiDraw.DarkGrey, colors);
+
+		Trajectory next = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame().GetNextFrame(), Mirror);
+
+		List<float[]> stateOutput = new List<float[]>();
+		for(int i=0; i<next.Styles.Length; i++) {
+			float[] s = new float[next.Points.Length];
+			for(int j=0; j<next.Points.Length; j++) {
+				s[j] = next.Points[j].Styles[i];
+			}
+			stateOutput.Add(s);
+		}
+		//UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.75f), new Vector2(0.75f, 0.1f), stateUpdate, 0f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		
+		UltiDraw.End();
+
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);
 		}
