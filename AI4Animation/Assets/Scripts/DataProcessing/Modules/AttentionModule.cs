@@ -39,7 +39,7 @@ public class AttentionModule : Module {
 			Vector3 gradient = Vector3.zero;
 			for(int j=0; j<points.Count; j++) {
 				float w = 1f - Vector3.Distance(bone, points[j]) / radius;
-				Vector3 v = Utility.Interpolate((points[j] - bone).normalized, (centers[j] - bone).normalized, Mathf.Pow(w, Size));
+				Vector3 v = Utility.Interpolate((points[j] - bone).normalized, (centers[j] - bone).normalized, w*w);
 				gradient += w * radius * v;
 				UltiDraw.DrawSphere(points[j], Quaternion.identity, 0.025f, UltiDraw.White);
 			}

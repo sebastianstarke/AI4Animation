@@ -64,20 +64,46 @@ public class StyleModule : Module {
 		}
 	}
 
-	public float[] GetSignal(Frame frame) {
+	public float[] GetSignal(Frame frame, int window=0) {
 		float[] signal = new float[Functions.Length];
-		for(int i=0; i<signal.Length; i++) {
-			signal[i] = Functions[i].GetFlag(frame);
+		if(window == 0) {
+			for(int i=0; i<signal.Length; i++) {
+				signal[i] = Functions[i].GetFlag(frame);
+			}
+		} else {
+			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
+			for(int i=0; i<frames.Length; i++) {
+				float[] tmp = GetSignal(frames[i]);
+				for(int j=0; j<signal.Length; j++) {
+					signal[j] += tmp[j];
+				}
+			}
+			for(int j=0; j<signal.Length; j++) {
+				signal[j] /= frames.Length;
+			}
 		}
 		return signal;
 	}
 
-	public float[] GetMirrorSignal(Frame frame) {
-		float[] mirror = new float[Functions.Length];
-		for(int i=0; i<mirror.Length; i++) {
-			mirror[i] = Functions[i].GetMirrorFlag(frame);
+	public float[] GetMirrorSignal(Frame frame, int window=0) {
+		float[] signal = new float[Functions.Length];
+		if(window == 0) {
+			for(int i=0; i<signal.Length; i++) {
+				signal[i] = Functions[i].GetMirrorFlag(frame);
+			}
+		} else {
+			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
+			for(int i=0; i<frames.Length; i++) {
+				float[] tmp = GetMirrorSignal(frames[i]);
+				for(int j=0; j<signal.Length; j++) {
+					signal[j] += tmp[j];
+				}
+			}
+			for(int j=0; j<signal.Length; j++) {
+				signal[j] /= frames.Length;
+			}
 		}
-		return mirror;
+		return signal;
 	}
 
 	public float[] GetStyle(Frame frame) {
