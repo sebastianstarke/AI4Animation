@@ -247,7 +247,7 @@ public class MotionExporter : EditorWindow {
 								}
 								*/
 								for(int k=0; k<12; k++) {
-									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-", GetWeight((float)k));
+									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
 								}
 								X.Store();
 								//

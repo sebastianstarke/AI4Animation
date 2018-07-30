@@ -26,7 +26,7 @@ public class AttentionModule : Module {
 		for(int i=0; i<Data.Source.Bones.Length; i++) {
 			float radius = Size/2f;
 			Vector3 bone = frame.GetBoneTransformation(i, editor.Mirror).GetPosition();
-			UltiDraw.DrawSphere(bone, Quaternion.identity, 2f*radius, UltiDraw.Purple.Transparent(0.05f));
+			UltiDraw.DrawWireSphere(bone, frame.GetBoneTransformation(i, editor.Mirror).GetRotation(), 2f*radius, UltiDraw.Black.Transparent(0.05f));
 			Collider[] colliders = Physics.OverlapSphere(bone, radius, Mask);
 			List<Vector3> points = new List<Vector3>();
 			List<Vector3> centers = new List<Vector3>();
@@ -39,7 +39,7 @@ public class AttentionModule : Module {
 			Vector3 gradient = Vector3.zero;
 			for(int j=0; j<points.Count; j++) {
 				float w = 1f - Vector3.Distance(bone, points[j]) / radius;
-				Vector3 v = Utility.Interpolate((points[j] - bone).normalized, (centers[j] - bone).normalized, Mathf.Pow(w, 5f));
+				Vector3 v = Utility.Interpolate((points[j] - bone).normalized, (centers[j] - bone).normalized, Mathf.Pow(w, Size));
 				gradient += w * radius * v;
 				UltiDraw.DrawSphere(points[j], Quaternion.identity, 0.025f, UltiDraw.White);
 			}
