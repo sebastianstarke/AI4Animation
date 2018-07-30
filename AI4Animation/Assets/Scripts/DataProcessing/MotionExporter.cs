@@ -88,9 +88,9 @@ public class MotionExporter : EditorWindow {
 						}
 
 						if(Utility.GUIButton("Test", UltiDraw.DarkGrey, UltiDraw.White)) {
-							for(int i=0; i<12; i++) {
-								Debug.Log(GetWeight(i));
-							}
+							Debug.Log(Mathf.Repeat(-0.1f, 1f));
+							//float[] angles = new float[6]{0f, 0.4f, 0.6f, 1.0f, 1.2f, 1.4f};
+							//Debug.Log(Utility.FilterGaussian(angles, true));
 						}
 
 						EditorGUILayout.BeginHorizontal();
@@ -258,7 +258,7 @@ public class MotionExporter : EditorWindow {
 									Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 									Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 									float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
-									float[] stateUpdate = ArrayExtensions.Sub(Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles));
+									float[] stateUpdate = ArrayExtensions.Sub(Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles));
 									Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");

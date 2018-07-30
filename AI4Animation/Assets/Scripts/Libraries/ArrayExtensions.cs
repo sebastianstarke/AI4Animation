@@ -80,6 +80,14 @@ public static class ArrayExtensions {
 		return result;
 	}
 
+	public static float[] Add(float[] lhs, float value) {
+		float[] result = new float[lhs.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = lhs[i] + value;
+		}
+		return result;
+	}
+
 	public static float[] Sub(float[] lhs, float[] rhs) {
 		if(lhs.Length != rhs.Length) {
 			Debug.Log("Incompatible array dimensions.");
@@ -88,6 +96,14 @@ public static class ArrayExtensions {
 		float[] result = new float[lhs.Length];
 		for(int i=0; i<result.Length; i++) {
 			result[i] = lhs[i] - rhs[i];
+		}
+		return result;
+	}
+
+	public static float[] Sub(float[] lhs, float value) {
+		float[] result = new float[lhs.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = lhs[i] - value;
 		}
 		return result;
 	}

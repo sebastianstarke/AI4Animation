@@ -350,7 +350,7 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<previous.Styles.Length; i++) {
 			float[] s = new float[previous.Points.Length];
 			for(int j=0; j<previous.Points.Length; j++) {
-				s[j] = previous.Points[j].Signals[i] - previous.Points[6].Styles[i];
+				s[j] = previous.Points[j].Signals[i] - previous.Points[j].Styles[i];
 			}
 			signalInput.Add(s);
 		}
@@ -369,7 +369,7 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<next.Styles.Length; i++) {
 			float[] s = new float[next.Points.Length];
 			for(int j=0; j<next.Points.Length; j++) {
-				s[j] = next.Points[j].Styles[i] - previous.Points[6].Styles[i];
+				s[j] = next.Points[j].Styles[i] - previous.Points[j].Styles[i];
 			}
 			stateUpdate.Add(s);
 		}
@@ -381,11 +381,24 @@ public class MotionEditor : MonoBehaviour {
 			}
 			stateOutput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateUpdate, -1f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateUpdate, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
-		
+
+		float[] phase = new float[next.Points.Length];
+		for(int i=0; i<next.Points.Length; i++) {
+			phase[i] = next.Points[i].Phase;
+		}
+		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.45f), new Vector2(0.75f, 0.1f), phase, 0f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.White);
+		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.45f - 0.05f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.45f + 0.05f), UltiDraw.Green);
+
+		float[] phaseUpdate = new float[next.Points.Length];
+		for(int i=0; i<next.Points.Length; i++) {
+			phaseUpdate[i] = Utility.GetLinearPhaseUpdate(previous.Points[i].Phase, next.Points[i].Phase);
+		}
+		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), phaseUpdate, 0f, 0.05f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.White);
+		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f - 0.05f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f + 0.05f), UltiDraw.Green);
+
 		UltiDraw.End();
-		
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);

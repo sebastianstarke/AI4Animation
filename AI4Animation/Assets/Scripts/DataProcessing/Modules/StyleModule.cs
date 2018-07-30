@@ -85,16 +85,16 @@ public class StyleModule : Module {
 		return signal;
 	}
 
-	public float[] GetMirrorSignal(Frame frame, int window=0) {
+	public float[] GetInverseSignal(Frame frame, int window=0) {
 		float[] signal = new float[Functions.Length];
 		if(window == 0) {
 			for(int i=0; i<signal.Length; i++) {
-				signal[i] = Functions[i].GetMirrorFlag(frame);
+				signal[i] = Functions[i].GetInverseFlag(frame);
 			}
 		} else {
 			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
 			for(int i=0; i<frames.Length; i++) {
-				float[] tmp = GetMirrorSignal(frames[i]);
+				float[] tmp = GetInverseSignal(frames[i]);
 				for(int j=0; j<signal.Length; j++) {
 					signal[j] += tmp[j];
 				}
@@ -106,10 +106,23 @@ public class StyleModule : Module {
 		return signal;
 	}
 
-	public float[] GetStyle(Frame frame) {
+	public float[] GetStyle(Frame frame, int window=0) {
 		float[] style = new float[Functions.Length];
-		for(int i=0; i<style.Length; i++) {
-			style[i] = Functions[i].GetValue(frame);
+		if(window == 0) {
+			for(int i=0; i<style.Length; i++) {
+				style[i] = Functions[i].GetValue(frame);
+			}
+		} else {
+			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
+			for(int i=0; i<frames.Length; i++) {
+				float[] tmp = GetStyle(frames[i]);
+				for(int j=0; j<style.Length; j++) {
+					style[j] += tmp[j];
+				}
+			}
+			for(int j=0; j<style.Length; j++) {
+				style[j] /= frames.Length;
+			}
 		}
 		return style;
 	}
@@ -173,7 +186,7 @@ public class StyleModule : Module {
 				Functions[i].Toggle(frame);
 			}
 			//EditorGUILayout.Toggle(Functions[i].GetFlag(frame) == 1f ? true : false);
-			//EditorGUILayout.Toggle(Functions[i].GetMirrorFlag(frame) == 1f ? true : false);
+			//EditorGUILayout.Toggle(Functions[i].GetInverseFlag(frame) == 1f ? true : false);
 			Rect c = EditorGUILayout.GetControlRect();
 			Rect r = new Rect(c.x, c.y, Functions[i].GetValue(frame) * c.width, height);
 			EditorGUI.DrawRect(r, colors[i].Transparent(0.75f));
@@ -296,7 +309,7 @@ public class StyleModule : Module {
 				? 1f : 0f;
 		}
 
-		public float GetMirrorFlag(Frame frame) {
+		public float GetInverseFlag(Frame frame) {
 			return 
 				((GetValue(frame) == 1f) && GetValue(frame.GetPreviousFrame()) == 1f)
 				||

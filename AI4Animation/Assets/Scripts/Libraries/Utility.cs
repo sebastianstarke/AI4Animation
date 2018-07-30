@@ -510,11 +510,39 @@ public static class Utility {
 	}
 
 	public static Vector2 GetCirclePhase(float value) {
-		return Quaternion.AngleAxis(-value*360f, Vector3.forward) * Vector2.up;
+		value *= 2f*Mathf.PI;
+		return new Vector2(Mathf.Sin(value), Mathf.Cos(value));
+		//return Quaternion.AngleAxis(-value*360f, Vector3.forward) * Vector2.up;
 	}
 
 	public static Vector2 GetCirclePhaseUpdate(float from, float to) {
 		return GetCirclePhase(to) - GetCirclePhase(from);
+	}
+
+	public static float AveragePhase(float[] values) {
+		float[] x = new float[values.Length];
+		float[] y = new float[values.Length];
+		for(int i=0; i<values.Length; i++) {
+			Vector2 v = GetCirclePhase(values[i]);
+			x[i] = v.x;
+			y[i] = v.y;
+		}
+		return Mathf.Repeat(-Vector2.SignedAngle(Vector2.up, new Vector2(FilterGaussian(x), FilterGaussian(y)).normalized) / 360f, 1f);
+	}
+
+	public static float FilterGaussian(float[] values) {
+		if(values.Length == 0) {
+			return 0f;
+		}
+		float window = ((float)values.Length - 1f) / 2f;
+		float sum = 0f;
+		float value = 0f;
+		for(int i=0; i<values.Length; i++) {
+			float weight = Mathf.Exp(-Mathf.Pow((float)i - window, 2f) / Mathf.Pow(0.5f * window, 2f));
+			value += weight * values[i];
+			sum += weight;
+		}
+		return value / sum;
 	}
 
 	public static float[] StylePhase(float[] style, float phase) {
