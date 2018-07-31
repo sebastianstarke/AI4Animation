@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -278,6 +279,64 @@ public static class Utility {
 			}
 		}
 		return Vector3.Angle(normal, Vector3.up) / 90f;
+	}
+
+	public static Vector3 GetNormal(Vector3 position, Vector3 point, Collider collider, float radius, LayerMask mask) {
+		if(position == point) {
+			List<RaycastHit> hits = new List<RaycastHit>();
+			Quaternion rotation = collider.transform.rotation;
+
+			Vector3 x = rotation * Vector3.right;
+			Vector3 y = rotation * Vector3.up;
+			Vector3 z = rotation * Vector3.forward;
+
+			RaycastHit XP;
+			if(Physics.Raycast(point + radius * x, -x, out XP, 2f*radius, mask)) {
+				hits.Add(XP);
+			}
+			RaycastHit XN;
+			if(Physics.Raycast(point + radius * -x, x, out XN, 2f*radius, mask)) {
+				hits.Add(XN);
+			}
+			RaycastHit YP;
+			if(Physics.Raycast(point + radius * y, -y, out YP, 2f*radius, mask)) {
+				hits.Add(YP);
+			}
+			RaycastHit YN;
+			if(Physics.Raycast(point + radius * -y, y, out YN, 2f*radius, mask)) {
+				hits.Add(YN);
+			}
+			RaycastHit ZP;
+			if(Physics.Raycast(point + radius * z, -z, out ZP, 2f*radius, mask)) {
+				hits.Add(ZP);
+			}
+			RaycastHit ZN;
+			if(Physics.Raycast(point + radius * -z, z, out ZN, 2f*radius, mask)) {
+				hits.Add(ZN);
+			}
+			
+			if(hits.Count > 0) {
+				RaycastHit closest = hits[0];
+				for(int k=1; k<hits.Count; k++) {
+					if(Vector3.Distance(hits[k].point, point) < Vector3.Distance(closest.point, point)) {
+						closest = hits[k];
+					}
+				}
+				return closest.normal;
+			} else {
+				Debug.Log("Could not compute normal for collider " + collider.name + ".");
+				return Vector3.zero;
+			}
+		} else {
+			RaycastHit hit;
+			if(Physics.Raycast(position, (point - position).normalized, out hit, 2f*radius, mask)) {
+				return hit.normal;
+			} else {
+				Debug.Log("Could not compute normal for collider " + collider.name + ".");
+				return Vector3.zero;
+			}
+			
+		}
 	}
 
 	public static Vector3 GetNormal(Vector3 origin, LayerMask mask) {

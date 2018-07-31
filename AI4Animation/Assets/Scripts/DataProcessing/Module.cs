@@ -6,7 +6,7 @@ using UnityEditor;
 
 public abstract class Module : ScriptableObject {
 
-	public enum TYPE {Trajectory, Style, Phase, Contact, DepthMap, HeightMap, UmbrellaMap, Attention, Length};
+	public enum TYPE {Trajectory, Style, Phase, Contact, DepthMap, HeightMap, UmbrellaMap, Keypoint, Length};
 
 	public MotionData Data;
 	public bool Inspect;

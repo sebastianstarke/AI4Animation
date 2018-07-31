@@ -15,7 +15,6 @@ public class MotionEditor : MonoBehaviour {
 
 	//public bool ShowMotion = false;
 	public bool Mirror = false;
-	public bool Velocities = false;
 	public bool InspectSettings = false;
 
 	private bool AutoFocus = false;
@@ -183,9 +182,11 @@ public class MotionEditor : MonoBehaviour {
 		GetActor().GetRoot().position = root.GetPosition();
 		GetActor().GetRoot().rotation = root.GetRotation();
 		Matrix4x4[] posture = frame.GetBoneTransformations(Mirror);
+		Vector3[] velocities = frame.GetBoneVelocities(Mirror);
 		for(int i=0; i<Mathf.Min(GetActor().Bones.Length, posture.Length); i++) {
 			GetActor().Bones[i].Transform.position = posture[i].GetPosition();
 			GetActor().Bones[i].Transform.rotation = posture[i].GetRotation();
+			GetActor().Bones[i].Velocity = velocities[i];
 		}
 
 		/*
@@ -292,22 +293,6 @@ public class MotionEditor : MonoBehaviour {
 		//		GetActor().DrawSimple(Color.Lerp(UltiDraw.Red, UltiDraw.Orange, (float)i/5f).Transparent(0.75f), GetState().FutureBoneTransformations[i]);
 		//	}
 		//}
-	
-		if(Velocities) {
-			UltiDraw.Begin();
-			Vector3[] velocities = GetCurrentFrame().GetBoneVelocities(Mirror);
-			for(int i=0; i<velocities.Length; i++) {
-				UltiDraw.DrawArrow(
-					GetActor().Bones[i].Transform.position,
-					GetActor().Bones[i].Transform.position + velocities[i],
-					0.75f,
-					0.0075f,
-					0.05f,
-					UltiDraw.Purple.Transparent(0.5f)
-				);
-			}
-			UltiDraw.End();
-		}
 
 		/*
 		UltiDraw.Begin();
@@ -338,7 +323,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 
-		
+		/*
 		UltiDraw.Begin();
 		
 		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame(), Mirror);
@@ -399,6 +384,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f - 0.05f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f + 0.05f), UltiDraw.Green);
 
 		UltiDraw.End();
+		*/
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);
@@ -604,6 +590,7 @@ public class MotionEditor : MonoBehaviour {
 				}
 
 				if(Target.GetCurrentFile() != null) {
+					Target.GetCurrentFile().Data.Repair(Target);
 					Utility.SetGUIColor(UltiDraw.Grey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
@@ -620,11 +607,8 @@ public class MotionEditor : MonoBehaviour {
 							EditorGUILayout.LabelField("Framerate: " + Target.GetCurrentFile().Data.Framerate.ToString("F1") + "Hz", GUILayout.Width(130f));
 							EditorGUILayout.LabelField("Timescale:", GUILayout.Width(65f), GUILayout.Height(20f)); 
 							Target.Timescale = EditorGUILayout.FloatField(Target.Timescale, GUILayout.Width(30f), GUILayout.Height(20f));
-							if(Utility.GUIButton("M", Target.Mirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
+							if(Utility.GUIButton("Mirror", Target.Mirror ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
 								Target.SetMirror(!Target.Mirror);
-							}
-							if(Utility.GUIButton("V", Target.Velocities ? UltiDraw.Cyan : UltiDraw.LightGrey, UltiDraw.Black)) {
-								Target.Velocities = !Target.Velocities;
 							}
 							GUILayout.FlexibleSpace();
 							EditorGUILayout.EndHorizontal();

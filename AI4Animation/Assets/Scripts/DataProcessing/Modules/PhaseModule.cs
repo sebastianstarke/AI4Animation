@@ -471,11 +471,19 @@ public class PhaseModule : Module {
 				//
 
 				//Current Pivot
+				float pStart = (float)(Module.Data.GetFrame(Mathf.Clamp(frame.Timestamp-1f, 0f, Module.Data.GetTotalTime())).Index-start) / (float)elements;
+				float pEnd = (float)(Module.Data.GetFrame(Mathf.Clamp(frame.Timestamp+1f, 0f, Module.Data.GetTotalTime())).Index-start) / (float)elements;
+				float pLeft = rect.x + pStart * rect.width;
+				float pRight = rect.x + pEnd * rect.width;
+				Vector3 pA = new Vector3(pLeft, rect.y, 0f);
+				Vector3 pB = new Vector3(pRight, rect.y, 0f);
+				Vector3 pC = new Vector3(pLeft, rect.y+rect.height, 0f);
+				Vector3 pD = new Vector3(pRight, rect.y+rect.height, 0f);
+				UltiDraw.DrawTriangle(pA, pC, pB, UltiDraw.White.Transparent(0.1f));
+				UltiDraw.DrawTriangle(pB, pC, pD, UltiDraw.White.Transparent(0.1f));
 				top.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 				bottom.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 				UltiDraw.DrawLine(top, bottom, UltiDraw.Yellow);
-				UltiDraw.DrawCircle(top, 3f, UltiDraw.Green);
-				UltiDraw.DrawCircle(bottom, 3f, UltiDraw.Green);
 
 				Handles.DrawLine(Vector3.zero, Vector3.zero); //Somehow needed to get it working...
 				EditorGUILayout.EndVertical();

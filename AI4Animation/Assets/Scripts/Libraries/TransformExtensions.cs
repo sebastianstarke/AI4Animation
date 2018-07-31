@@ -4,12 +4,12 @@ using UnityEngine;
 
 public static class TransformExtensions {
 
-	public static Matrix4x4 GetLocalMatrix(this Transform transform) {
-		return Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
+	public static Matrix4x4 GetLocalMatrix(this Transform transform, bool unitScale=true) {
+		return Matrix4x4.TRS(transform.localPosition, transform.localRotation, unitScale ? Vector3.one : transform.localScale);
 	}
 
-	public static Matrix4x4 GetWorldMatrix(this Transform transform) {
-		return Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
+	public static Matrix4x4 GetWorldMatrix(this Transform transform, bool unitScale=true) {
+		return Matrix4x4.TRS(transform.position, transform.rotation, unitScale ? Vector3.one : transform.lossyScale);
 	}
 
 	public static void OverridePosition(this Transform transform, Vector3 position) {

@@ -41,7 +41,7 @@ public class AnimatorImporter : MonoBehaviour {
 
 	private void PostProcess() {
 		//Mapping
-		Matrix4x4[] posture = GetActor().GetWorldPosture();
+		Matrix4x4[] posture = GetActor().GetPosture();
 		for(int i=0; i<posture.Length; i++) {
 			posture[i] *= Matrix4x4.TRS(Vector3.zero, Mapping[i], Vector3.one);
 		}
@@ -106,12 +106,12 @@ public class AnimatorImporter : MonoBehaviour {
 						while(GetAnimator().GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) {
 							GetAnimator().speed = Speed;
 							PostProcess();
-							Samples.Add(new Sample(GetTimestamp(), Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
+							Samples.Add(new Sample(GetTimestamp(), Retarget.GetPosture(), Retarget.GetPosture()));
 							yield return new WaitForEndOfFrame();
 						}
 						GetAnimator().speed = Speed;
 						PostProcess();
-						Samples.Add(new Sample(GetTimestamp(),Retarget.GetWorldPosture(), Retarget.GetLocalPosture()));
+						Samples.Add(new Sample(GetTimestamp(),Retarget.GetPosture(), Retarget.GetPosture()));
 
 						//Save Bake
 						MotionData data = ScriptableObject.CreateInstance<MotionData>();

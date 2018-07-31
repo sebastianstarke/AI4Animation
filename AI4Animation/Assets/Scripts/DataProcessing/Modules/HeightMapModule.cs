@@ -32,15 +32,14 @@ public class HeightMapModule : Module {
 		return this;
 	}
 
-	public HeightMap GetHeightMap(Frame frame, bool mirrored) {
-		HeightMap heightMap = new HeightMap(Size);
-		Matrix4x4 pivot = frame.GetRootTransformation(mirrored);
-		heightMap.Sense(pivot, Mask);
+	public HeightMap GetHeightMap(Actor actor) {
+		HeightMap heightMap = new HeightMap(Size, Mask);
+		heightMap.Sense(actor.GetRoot().GetWorldMatrix());
 		return heightMap;
 	}
 
 	public override void Draw(MotionEditor editor) {
-		GetHeightMap(editor.GetCurrentFrame(), editor.Mirror).Draw();
+		GetHeightMap(editor.GetActor()).Draw();
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {

@@ -7,43 +7,36 @@ public class HeightMap {
 	public Matrix4x4 Pivot = Matrix4x4.identity;
 	public Vector3[] Points = new Vector3[0];
 
-	private float Size = 1f;
+	public float Size = 1f;
+	public LayerMask Mask = -1;
 	private const int Layer1 = 20;
 	private const int Layer2 = 40;
 	private const int Layer3 = 60;
 
-	public HeightMap() {
-		Size = 1f;
-		Points = new Vector3[Layer1+Layer2+Layer3];
-	}
-
-	public HeightMap(float size) {
+	public HeightMap(float size, LayerMask mask) {
 		Size = size;
+		Mask = mask;
 		Points = new Vector3[Layer1+Layer2+Layer3];
 	}
 
-	public float GetSize() {
-		return Size;
-	}
-
-	public void Sense(Matrix4x4 pivot, LayerMask mask) {
+	public void Sense(Matrix4x4 pivot) {
 		Pivot = pivot;
 		Vector3 position = Pivot.GetPosition();
 		Quaternion rotation = Quaternion.AngleAxis(Pivot.GetRotation().eulerAngles.y, Vector3.up);
 		for(int i=0; i<Layer1; i++) {
 			int sample = i;
 			float angle = 2f * Mathf.PI * (float)i / (float)Layer1;
-			Points[sample] = Utility.ProjectGround(position + 1f/4f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), mask);
+			Points[sample] = Utility.ProjectGround(position + 1f/4f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), Mask);
 		}
 		for(int i=0; i<Layer2; i++) {
 			int sample = Layer1+i;
 			float angle = 2f * Mathf.PI * (float)i / (float)Layer2;
-			Points[sample] = Utility.ProjectGround(position + 1f/2f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), mask);
+			Points[sample] = Utility.ProjectGround(position + 1f/2f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), Mask);
 		}
 		for(int i=0; i<Layer3; i++) {
 			int sample = Layer1+Layer2+i;
 			float angle = 2f * Mathf.PI * (float)i / (float)Layer3;
-			Points[sample] = Utility.ProjectGround(position + 1f/1f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), mask);
+			Points[sample] = Utility.ProjectGround(position + 1f/1f * Size * (rotation * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle))), Mask);
 		}
 	}
 

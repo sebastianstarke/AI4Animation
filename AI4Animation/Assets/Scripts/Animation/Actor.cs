@@ -13,8 +13,9 @@ public class Actor : MonoBehaviour {
 	
 	public bool DrawRoot = false;
 	public bool DrawSkeleton = true;
+	public bool DrawVelocities = false;
 	public bool DrawTransforms = false;
-
+	
 	public float BoneSize = 0.025f;
 	public Color BoneColor = UltiDraw.Black;
 	public Color JointColor = UltiDraw.Mustard;
@@ -95,6 +96,7 @@ public class Actor : MonoBehaviour {
 		recursion(GetRoot(), null);
 	}
 
+	/*
 	public Matrix4x4[] GetLocalPosture() {
 		Matrix4x4[] posture = new Matrix4x4[Bones.Length];
 		for(int i=0; i<posture.Length; i++) {
@@ -104,6 +106,15 @@ public class Actor : MonoBehaviour {
 	}
 
 	public Matrix4x4[] GetWorldPosture() {
+		Matrix4x4[] posture = new Matrix4x4[Bones.Length];
+		for(int i=0; i<posture.Length; i++) {
+			posture[i] = Bones[i].Transform.GetWorldMatrix();
+		}
+		return posture;
+	}
+	*/
+
+	public Matrix4x4[] GetPosture() {
 		Matrix4x4[] posture = new Matrix4x4[Bones.Length];
 		for(int i=0; i<posture.Length; i++) {
 			posture[i] = Bones[i].Transform.GetWorldMatrix();
@@ -149,6 +160,21 @@ public class Actor : MonoBehaviour {
 			if(Bones.Length > 0) {
 				recursion(Bones[0]);
 			}
+		}
+
+		if(DrawVelocities) {
+			UltiDraw.Begin();
+			for(int i=0; i<Bones.Length; i++) {
+				UltiDraw.DrawArrow(
+					Bones[i].Transform.position,
+					Bones[i].Transform.position + Bones[i].Velocity,
+					0.75f,
+					0.0075f,
+					0.05f,
+					UltiDraw.Purple.Transparent(0.5f)
+				);
+			}
+			UltiDraw.End();
 		}
 
 		if(DrawTransforms) {
@@ -220,6 +246,7 @@ public class Actor : MonoBehaviour {
 	public class Bone {
 		public Actor Actor;
 		public Transform Transform;
+		public Vector3 Velocity;
 		public int Index;
 		public int Parent;
 		public int[] Childs;
@@ -227,6 +254,7 @@ public class Actor : MonoBehaviour {
 		public Bone(Actor actor, Transform transform, int index) {
 			Actor = actor;
 			Transform = transform;
+			Velocity = Vector3.zero;
 			Index = index;
 			Parent = -1;
 			Childs = new int[0];
@@ -270,6 +298,7 @@ public class Actor : MonoBehaviour {
 			EditorGUILayout.ObjectField("Root", Target.GetRoot(), typeof(Transform), true);
 			Target.DrawRoot = EditorGUILayout.Toggle("Draw Root", Target.DrawRoot);
 			Target.DrawSkeleton = EditorGUILayout.Toggle("Draw Skeleton", Target.DrawSkeleton);
+			Target.DrawVelocities = EditorGUILayout.Toggle("Draw Velocities", Target.DrawVelocities);
 			Target.DrawTransforms = EditorGUILayout.Toggle("Draw Transforms", Target.DrawTransforms);
 
 			Utility.SetGUIColor(Color.white);

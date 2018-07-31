@@ -9,30 +9,6 @@ public class StyleModule : Module {
 	public bool[] Keys = new bool[0];
 	public StyleFunction[] Functions = new StyleFunction[0];
 
-	public void Repair() {
-		if(Keys.Length != Data.GetTotalFrames()) {
-			Keys = new bool[Data.GetTotalFrames()];
-			Keys[0] = true;
-			Keys[Keys.Length-1] = true;
-			for(int i=1; i<Keys.Length-1; i++) {
-				for(int j=0; j<Functions.Length; j++) {
-					if(Functions[j].Values[i] == 0f && Functions[j].Values[i+1] != 0f) {
-						Keys[i] = true;
-					}
-					if(Functions[j].Values[i] == 1f && Functions[j].Values[i+1] != 1f) {
-						Keys[i] = true;
-					}
-					if(Functions[j].Values[i] != 0f && Functions[j].Values[i+1] == 0f) {
-						Keys[i+1] = true;
-					}
-					if(Functions[j].Values[i] != 1f && Functions[j].Values[i+1] == 1f) {
-						Keys[i+1] = true;
-					}
-				}
-			}
-		}
-	}
-
 	public override TYPE Type() {
 		return TYPE.Style;
 	}
@@ -171,8 +147,6 @@ public class StyleModule : Module {
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
-		Repair();
-
 		Frame frame = editor.GetCurrentFrame();
 
 		if(Utility.GUIButton("Key", IsKey(frame) ? UltiDraw.Cyan : UltiDraw.DarkGrey, IsKey(frame) ? UltiDraw.Black : UltiDraw.White)) {
@@ -274,11 +248,19 @@ public class StyleModule : Module {
 		}
 
 		//Current Pivot
+		float pStart = (float)(Data.GetFrame(Mathf.Clamp(frame.Timestamp-1f, 0f, Data.GetTotalTime())).Index-start) / (float)elements;
+		float pEnd = (float)(Data.GetFrame(Mathf.Clamp(frame.Timestamp+1f, 0f, Data.GetTotalTime())).Index-start) / (float)elements;
+		float pLeft = rect.x + pStart * rect.width;
+		float pRight = rect.x + pEnd * rect.width;
+		Vector3 pA = new Vector3(pLeft, rect.y, 0f);
+		Vector3 pB = new Vector3(pRight, rect.y, 0f);
+		Vector3 pC = new Vector3(pLeft, rect.y+rect.height, 0f);
+		Vector3 pD = new Vector3(pRight, rect.y+rect.height, 0f);
+		UltiDraw.DrawTriangle(pA, pC, pB, UltiDraw.White.Transparent(0.1f));
+		UltiDraw.DrawTriangle(pB, pC, pD, UltiDraw.White.Transparent(0.1f));
 		top.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 		bottom.x = rect.xMin + (float)(frame.Index-start)/elements * rect.width;
 		UltiDraw.DrawLine(top, bottom, UltiDraw.Yellow);
-		UltiDraw.DrawCircle(top, 3f, UltiDraw.Green);
-		UltiDraw.DrawCircle(bottom, 3f, UltiDraw.Green);
 
 		UltiDraw.End();
 		EditorGUILayout.EndVertical();

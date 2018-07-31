@@ -101,8 +101,8 @@ public class MotionData : ScriptableObject {
 				case Module.TYPE.UmbrellaMap:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<UmbrellaMapModule>().Initialise(this));
 				break;
-				case Module.TYPE.Attention:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<AttentionModule>().Initialise(this));
+				case Module.TYPE.Keypoint:
+				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<KeypointModule>().Initialise(this));
 				break;
 				default:
 				Debug.Log("Module of type " + type.ToString() + " not considered.");
@@ -279,8 +279,53 @@ public class MotionData : ScriptableObject {
 		}
 	}
 
-	public void Inspector(MotionEditor editor) {
-		
+	public void Repair(MotionEditor editor) {
+		//Repair
+		for(int i=0; i<Modules.Length; i++) {
+			if(Modules[i] == null) {
+				ArrayExtensions.RemoveAt(ref Modules, i);
+				i--;
+			}
+		}
+		Object[] objects = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(this));
+		foreach(Object o in objects) {
+			if(o is Module) {
+				if(ArrayExtensions.Contains(ref Modules, (Module)o)) {
+				//	Debug.Log(((Module)o).Type().ToString() + " contained.");
+				} else {
+					ArrayExtensions.Add(ref Modules, (Module)o);
+				//	Debug.Log(((Module)o).Type().ToString() + " missing.");
+				}
+			}
+		}
+
+		//Repair
+		StyleModule styleModule = (StyleModule)GetModule(Module.TYPE.Style);
+		if(styleModule != null) {
+			if(styleModule.Keys.Length != styleModule.Data.GetTotalFrames()) {
+				styleModule.Keys = new bool[styleModule.Data.GetTotalFrames()];
+				styleModule.Keys[0] = true;
+				styleModule.Keys[styleModule.Keys.Length-1] = true;
+				for(int i=1; i<styleModule.Keys.Length-1; i++) {
+					for(int j=0; j<styleModule.Functions.Length; j++) {
+						if(styleModule.Functions[j].Values[i] == 0f && styleModule.Functions[j].Values[i+1] != 0f) {
+							styleModule.Keys[i] = true;
+						}
+						if(styleModule.Functions[j].Values[i] == 1f && styleModule.Functions[j].Values[i+1] != 1f) {
+							styleModule.Keys[i] = true;
+						}
+						if(styleModule.Functions[j].Values[i] != 0f && styleModule.Functions[j].Values[i+1] == 0f) {
+							styleModule.Keys[i+1] = true;
+						}
+						if(styleModule.Functions[j].Values[i] != 1f && styleModule.Functions[j].Values[i+1] == 1f) {
+							styleModule.Keys[i+1] = true;
+						}
+					}
+				}
+			}
+		}
+		//
+		//
 	}
 
 }

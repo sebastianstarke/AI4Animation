@@ -287,7 +287,7 @@ public class MotionExporter : EditorWindow {
 									Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
 								for(int k=6; k<12; k++) {
-									Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[6].Phase, next.Trajectory.Points[k].Phase), Data.ID.Standard, "PhaseUpdate"+(k+1));
+									Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[k].Phase, next.Trajectory.Points[k].Phase), Data.ID.Standard, "PhaseUpdate"+(k+1));
 								}
 								Y.Store();
 								//
@@ -459,7 +459,6 @@ public class MotionExporter : EditorWindow {
 	}
 
 	public class State {
-		public float Timestamp;
 		public Matrix4x4 Root;
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
@@ -469,9 +468,8 @@ public class MotionExporter : EditorWindow {
 			MotionEditor.File file = editor.GetCurrentFile();
 			Frame frame = editor.GetCurrentFrame();
 
-			Timestamp = frame.Timestamp;
-			Root = frame.GetRootTransformation(editor.Mirror);
-			Posture = frame.GetBoneTransformations(editor.Mirror);
+			Root = editor.GetActor().GetRoot().GetWorldMatrix();
+			Posture = editor.GetActor().GetPosture();
 			Velocities = frame.GetBoneVelocities(editor.Mirror);
 			Trajectory = ((TrajectoryModule)file.Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(frame, editor.Mirror);
 		}
