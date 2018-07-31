@@ -77,12 +77,7 @@ public class PhaseModule : Module {
 		ShowCycle = EditorGUILayout.Toggle("Show Cycle", ShowCycle);
 		SetMaximumVelocity(EditorGUILayout.FloatField("Maximum Velocity", MaximumVelocity));
 		SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThreshold));
-		string[] names = new string[1 + Data.Source.Bones.Length];
-		names[0] = "Select...";
-		for(int i=0; i<names.Length-1; i++) {
-			names[i+1] = Data.Source.Bones[i].Name;
-		}
-		int index = EditorGUILayout.Popup("Phase Detector", 0, names);
+		int index = EditorGUILayout.Popup("Phase Detector", 0, ArrayExtensions.Concat("Select...", Data.Source.GetNames()));
 		if(index > 0) {
 			ToggleVariable(index-1);
 		}

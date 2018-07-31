@@ -8,7 +8,6 @@ using UnityEditorInternal;
 public class ContactModule : Module {
 
 	public ContactFunction[] Functions = new ContactFunction[0];
-	public string[] Names = new string[0];
 
 	public override TYPE Type() {
 		return TYPE.Contact;
@@ -17,10 +16,6 @@ public class ContactModule : Module {
 	public override Module Initialise(MotionData data) {
 		Data = data;
 		Inspect = true;
-		Names = new string[Data.Source.Bones.Length];
-		for(int i=0; i<Data.Source.Bones.Length; i++) {
-			Names[i] = Data.Source.Bones[i].Name;
-		}
 		return this;
 	}
 
@@ -227,7 +222,7 @@ public class ContactModule : Module {
 
 				Frame frame = editor.GetCurrentFrame();
 
-				SetSensor(EditorGUILayout.Popup("Sensor", Sensor, Module.Names));
+				SetSensor(EditorGUILayout.Popup("Sensor", Sensor, Module.Data.Source.GetNames()));
 				SetDistanceThreshold(EditorGUILayout.FloatField("Distance Threshold", DistanceThreshold));
 				SetVelocityThreshold(EditorGUILayout.FloatField("Velocity Threshold", VelocityThtreshold));
 				SetFilterWidth(EditorGUILayout.IntField("Filter Width", FilterWidth));

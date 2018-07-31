@@ -13,7 +13,6 @@ public class DepthMapModule : Module {
 	public float Size = 10f;
 	public float Distance = 10f;
 	public LayerMask Mask = -1;
-	public string[] Names = new string[0];
 
 	public override TYPE Type() {
 		return TYPE.DepthMap;
@@ -28,10 +27,6 @@ public class DepthMapModule : Module {
 		} else {
 			Sensor = bone.Index;
 		}
-		Names = new string[Data.Source.Bones.Length];
-		for(int i=0; i<Data.Source.Bones.Length; i++) {
-			Names[i] = Data.Source.Bones[i].Name;
-		}
 		return this;
 	}
 
@@ -43,7 +38,7 @@ public class DepthMapModule : Module {
 		return depthMap;
 	}
 
-	//public void Draw() {
+	public void Draw() {
 		/*
 		UltiDraw.Begin();
 		UltiDraw.DrawGUIRectangle(Vector2.one/2f, Vector2.one, UltiDraw.Mustard);
@@ -61,14 +56,14 @@ public class DepthMapModule : Module {
 			UltiDraw.End();
 		}
 		*/
-	//}
+	}
 
 	public override void Draw(MotionEditor editor) {
-
+		GetDepthMap(editor.GetCurrentFrame(), editor.Mirror).Draw();
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
-		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Names);
+		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Data.Source.GetNames());
 		Axis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Axis", Axis);
 		Resolution = EditorGUILayout.IntField("Resolution", Resolution);
 		Size = EditorGUILayout.FloatField("Size", Size);

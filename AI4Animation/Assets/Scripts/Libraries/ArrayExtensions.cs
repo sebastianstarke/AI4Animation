@@ -68,6 +68,18 @@ public static class ArrayExtensions {
 		return result;
 	}
 
+	public static T[] Concat<T>(T lhs, T[] rhs) {
+		T[] clone = (T[])rhs.Clone();
+		Insert(ref clone, lhs, 0);
+		return clone;
+	}
+
+	public static T[] Concat<T>(T[] lhs, T rhs) {
+		T[] clone = (T[])lhs.Clone();
+		ArrayExtensions.Add(ref clone, rhs);
+		return clone;
+	}
+
 	public static float[] Add(float[] lhs, float[] rhs) {
 		if(lhs.Length != rhs.Length) {
 			Debug.Log("Incompatible array dimensions.");

@@ -10,7 +10,6 @@ public class HeightMapModule : Module {
 	public int Sensor = 0;
 	public float Size = 1f;
 	public LayerMask Mask = -1;
-	public string[] Names = new string[0];
 
 	public override TYPE Type() {
 		return TYPE.HeightMap;
@@ -24,10 +23,6 @@ public class HeightMapModule : Module {
 			Debug.Log("Could not find height map sensor.");
 		} else {
 			Sensor = bone.Index;
-		}
-		Names = new string[Data.Source.Bones.Length];
-		for(int i=0; i<Data.Source.Bones.Length; i++) {
-			Names[i] = Data.Source.Bones[i].Name;
 		}
 		return this;
 	}
@@ -43,7 +38,7 @@ public class HeightMapModule : Module {
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
-		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Names);
+		Sensor = EditorGUILayout.Popup("Sensor", Sensor, Data.Source.GetNames());
 		Size = EditorGUILayout.FloatField("Size", Size);
 		Mask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Mask), InternalEditorUtility.layers));
 	}

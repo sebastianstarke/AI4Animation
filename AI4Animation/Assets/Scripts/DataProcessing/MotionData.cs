@@ -211,6 +211,8 @@ public class MotionData : ScriptableObject {
 	public class Hierarchy {
 		public Bone[] Bones;
 
+		private string[] Names;
+
 		public Hierarchy() {
 			Bones = new Bone[0];
 		}
@@ -225,6 +227,16 @@ public class MotionData : ScriptableObject {
 
 		public Bone FindBoneContains(string name) {
 			return System.Array.Find(Bones, x => x.Name.Contains(name));
+		}
+
+		public string[] GetNames() {
+			if(Names == null) {
+				Names = new string[Bones.Length];
+				for(int i=0; i<Bones.Length; i++) {
+					Names[i] = Bones[i].Name;
+				}
+			}
+			return Names;
 		}
 
 		[System.Serializable]
