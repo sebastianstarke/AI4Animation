@@ -189,22 +189,20 @@ public class MotionEditor : MonoBehaviour {
 			GetActor().Bones[i].Velocity = velocities[i];
 		}
 
-		/*
 		if(AutoFocus) {
 			if(SceneView.lastActiveSceneView != null) {
 				Vector3 lastPosition = SceneView.lastActiveSceneView.camera.transform.position;
 				Quaternion lastRotation = SceneView.lastActiveSceneView.camera.transform.rotation;
-				Vector3 position = GetState().Root.GetPosition();
+				Vector3 position = root.GetPosition();
 				position.y += FocusHeight;
-				Quaternion rotation = GetState().Root.GetRotation();
+				Quaternion rotation = root.GetRotation();
 				rotation.x = 0f;
 				rotation.z = 0f;
-				rotation = Quaternion.Euler(0f, ShowMirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
+				rotation = Quaternion.Euler(0f, Mirror ? Mathf.Repeat(FocusAngle + 0f, 360f) : FocusAngle, 0f) * rotation;
 				position += FocusOffset * (rotation * Vector3.right);
 				SceneView.lastActiveSceneView.LookAtDirect(Vector3.Lerp(lastPosition, position, 1f-FocusSmoothing), Quaternion.Slerp(lastRotation, rotation, (1f-FocusSmoothing)), FocusDistance*(1f-FocusSmoothing));
 			}
 		}
-		*/
 	}
 
 	public void LoadFrame(int index) {
@@ -323,7 +321,7 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 
-		/*
+		
 		UltiDraw.Begin();
 		
 		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame(), Mirror);
@@ -369,22 +367,10 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateUpdate, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
 
-		float[] phase = new float[next.Points.Length];
-		for(int i=0; i<next.Points.Length; i++) {
-			phase[i] = next.Points[i].Phase;
-		}
-		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.45f), new Vector2(0.75f, 0.1f), phase, 0f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.White);
-		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.45f - 0.05f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.45f + 0.05f), UltiDraw.Green);
-
-		float[] phaseUpdate = new float[next.Points.Length];
-		for(int i=0; i<next.Points.Length; i++) {
-			phaseUpdate[i] = Utility.GetLinearPhaseUpdate(previous.Points[i].Phase, next.Points[i].Phase);
-		}
-		UltiDraw.DrawGUIFunction(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), phaseUpdate, 0f, 0.05f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.White);
-		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f - 0.05f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0.6f + 0.05f), UltiDraw.Green);
+		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 1f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0f), 0.0025f, UltiDraw.Green);
 
 		UltiDraw.End();
-		*/
+		
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);

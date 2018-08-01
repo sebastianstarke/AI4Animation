@@ -209,7 +209,8 @@ public class MotionExporter : EditorWindow {
 									Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 									Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 									float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
-									float[] signal = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles));
+									float[] stateUpdate = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Filter(ref previous.Trajectory.Points[k].Styles, ref previous.Trajectory.Styles, ref Styles));
+									//float[] signal = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles));
 									X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
@@ -217,7 +218,8 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 									X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
 									X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-									X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
+									X.Feed(stateUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"StateUpdate");
+									//X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 								}
 								for(int k=0; k<current.Posture.Length; k++) {
 									Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -237,15 +239,9 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 									X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
-								/*
-								for(int k=0; k<6; k++) {
-									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", Mathf.Pow((float)(k+1) / 7f, 2f));
+								for(int k=0; k<7; k++) {
+									X.Feed(ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles)), Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 								}
-								X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[6].Phase), Data.ID.Ignore, "StylePhase"+6+"-", 1f);
-								for(int k=7; k<12; k++) {
-									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Ignore, "StylePhase"+(k+1)+"-", Mathf.Pow(1f - (float)(k-6) / 6f, 2f));
-								}
-								*/
 								for(int k=0; k<12; k++) {
 									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
 								}

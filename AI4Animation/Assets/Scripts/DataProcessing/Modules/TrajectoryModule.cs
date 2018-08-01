@@ -24,7 +24,7 @@ public class TrajectoryModule : Module {
 		
 		Trajectory trajectory = new Trajectory(12, styleModule == null ? new string[0] : styleModule.GetNames());
 
-		int window = 5;
+		int window = 0;
 
 		//Current
 		trajectory.Points[6].SetTransformation(frame.GetRootTransformation(mirrored));

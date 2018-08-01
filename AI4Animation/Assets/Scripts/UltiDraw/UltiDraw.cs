@@ -681,61 +681,96 @@ public static class UltiDraw {
 		}
 	}
 
-	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line) {
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color color) {
 		DrawGUIRectangle(center, size, background);
-		float x = center.x - size.x/2f;
-		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
-		for(int i=0; i<values.Length-1; i++) {
-			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
-			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
-			float pivot = 0.5f * (bottom.x + top.x);
-			bottom.x = pivot; top.x = pivot;
-			DrawGUILine(bottom, top, line);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, color);
 		}
 	}
 
-	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line) {
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color[] colors) {
 		DrawGUIRectangle(center, size, background);
-		float x = center.x - size.x/2f;
-		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
-		for(int i=0; i<values.Length-1; i++) {
-			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
-			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
-			float pivot = 0.5f * (bottom.x + top.x);
-			bottom.x = pivot; top.x = pivot;
-			DrawGUILine(bottom, top, thickness, line);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, colors[i]);
 		}
 	}
 
-	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color line, float borderWidth, Color borderColor) {
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color color) {
+		DrawGUIRectangle(center, size, background);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + Utility.Normalise((float)i / (float)(values.Length-1), 0f, 1f, thickness, 1f-thickness) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, thickness, color);
+		}
+	}
+
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color[] colors) {
+		DrawGUIRectangle(center, size, background);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + Utility.Normalise((float)i / (float)(values.Length-1), 0f, 1f, thickness, 1f-thickness) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, thickness, colors[i]);
+		}
+	}
+
+
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color color, float borderWidth, Color borderColor) {
 		DrawGUIRectangle(center, size, background);
 		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
-		float x = center.x - size.x/2f;
-		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
-		for(int i=0; i<values.Length-1; i++) {
-			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
-			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
-			float pivot = 0.5f * (bottom.x + top.x);
-			bottom.x = pivot; top.x = pivot;
-			DrawGUILine(bottom, top, line);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, color);
 		}
 	}
 
-	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color line, float borderWidth, Color borderColor) {
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, Color background, Color[] colors, float borderWidth, Color borderColor) {
 		DrawGUIRectangle(center, size, background);
 		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
-		float x = center.x - size.x/2f;
-		float y = center.y - size.y/2f;
-		float scale = yMax - yMin;
-		for(int i=0; i<values.Length-1; i++) {
-			Vector2 bottom = new Vector2(x + (float)i/(float)(values.Length-1)*size.x, y);
-			Vector2 top = new Vector2(x + (float)(i+1)/(float)(values.Length-1)*size.x, y + Mathf.Clamp(values[i+1]/scale, 0f, 1f)*size.y);
-			float pivot = 0.5f * (bottom.x + top.x);
-			bottom.x = pivot; top.x = pivot;
-			DrawGUILine(bottom, top, thickness, line);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, colors[i]);
+		}
+	}
+
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color color, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, color);
+		}
+	}
+
+	public static void DrawGUIBars(Vector2 center, Vector2 size, float[] values, float yMin, float yMax, float thickness, Color background, Color[] colors, float borderWidth, Color borderColor) {
+		DrawGUIRectangle(center, size, background);
+		DrawGUIRectangleFrame(center, size, borderWidth, borderColor);
+		for(int i=0; i<values.Length; i++) {
+			float x = center.x - size.x/2f + (float)i / (float)(values.Length-1) * size.x;
+			float y = center.y - size.y/2f;
+			Vector3 pivot = new Vector2(x, y + Utility.Normalise(0f, yMin, yMax, 0f, 1f)*size.y);
+			Vector2 tip = new Vector2(x, y + Mathf.Clamp(Normalise(values[i], yMin, yMax, 0f, 1f), 0f, 1f)*size.y);
+			DrawGUILine(pivot, tip, colors[i]);
 		}
 	}
 

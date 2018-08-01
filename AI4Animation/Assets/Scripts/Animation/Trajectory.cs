@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Trajectory {
 
@@ -319,6 +320,36 @@ public class Trajectory {
 			UltiDraw.DrawArrow(Points[i].GetPosition(), Points[i].GetPosition() + Points[i].Phase*Vector3.up, 0.8f, 0.025f, 0.05f, UltiDraw.IndianRed.Transparent(0.5f));
 			//UltiDraw.DrawSphere(Points[i].GetPosition(), Quaternion.identity, Points[i].PhaseUpdate / 10f, UltiDraw.Purple.Transparent(0.25f));
 		}
+
+		/*
+		List<float[]> signal = new List<float[]>();
+		for(int i=0; i<Styles.Length; i++) {
+			float[] s = new float[Points.Length];
+			for(int j=0; j<Points.Length; j++) {
+				s[j] = Points[j].Signals[i];
+			}
+			signal.Add(s);
+		}
+		List<float[]> signalInput = new List<float[]>();
+		for(int i=0; i<Styles.Length; i++) {
+			float[] s = new float[Points.Length];
+			for(int j=0; j<Points.Length; j++) {
+				s[j] = Points[j].Signals[i] - Points[j].Styles[i];
+			}
+			signalInput.Add(s);
+		}
+		List<float[]> stateInput = new List<float[]>();
+		for(int i=0; i<Styles.Length; i++) {
+			float[] s = new float[Points.Length];
+			for(int j=0; j<Points.Length; j++) {
+				s[j] = Points[j].Styles[i];
+			}
+			stateInput.Add(s);
+		}
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.4f), new Vector2(0.75f, 0.1f), signal, 0f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateInput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), signalInput, -1f, 1f, UltiDraw.DarkGrey, colors);
+		*/
 
 		UltiDraw.End();
 	}
