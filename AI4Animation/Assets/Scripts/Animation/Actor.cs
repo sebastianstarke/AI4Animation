@@ -122,6 +122,14 @@ public class Actor : MonoBehaviour {
 		return posture;
 	}
 
+	public Vector3[] GetVelocities() {
+		Vector3[] velocities = new Vector3[Bones.Length];
+		for(int i=0; i<velocities.Length; i++) {
+			velocities[i] = Bones[i].Velocity;
+		}
+		return velocities;
+	}
+
 	public void Draw() {
 		Draw(BoneColor, JointColor, 1f);
 	}

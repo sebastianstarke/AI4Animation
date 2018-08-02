@@ -333,7 +333,7 @@ public class MotionEditor : MonoBehaviour {
 		for(int i=0; i<previous.Styles.Length; i++) {
 			float[] s = new float[previous.Points.Length];
 			for(int j=0; j<previous.Points.Length; j++) {
-				s[j] = previous.Points[j].Signals[i] - previous.Points[j].Styles[i];
+				s[j] = previous.Points[Mathf.Min(j, 6)].Signals[i] - previous.Points[j].Styles[i];
 			}
 			signalInput.Add(s);
 		}
