@@ -124,6 +124,11 @@ namespace DeepLearning {
             }
         }
 
+        public void Feed(Vector2 vector) {
+            Feed(vector.x);
+            Feed(vector.y);
+        }
+
         public void Feed(Vector3 vector) {
             Feed(vector.x);
             Feed(vector.y);

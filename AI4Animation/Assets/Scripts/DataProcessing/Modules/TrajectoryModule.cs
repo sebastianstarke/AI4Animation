@@ -29,10 +29,8 @@ public class TrajectoryModule : Module {
 		//Current
 		trajectory.Points[6].SetTransformation(frame.GetRootTransformation(mirrored));
 		trajectory.Points[6].SetVelocity(frame.GetRootVelocity(mirrored));
-		trajectory.Points[6].SetSpeed(frame.GetSpeed(mirrored));
 		trajectory.Points[6].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(frame, window);
 		trajectory.Points[6].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(frame, mirrored, window);
-		trajectory.Points[6].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(frame, window);
 
 		//Past
 		for(int i=0; i<6; i++) {
@@ -45,18 +43,14 @@ public class TrajectoryModule : Module {
 				trajectory.Points[i].SetPosition(Data.GetFirstFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetFirstFrame().GetRootPosition(mirrored)));
 				trajectory.Points[i].SetRotation(reference.GetRootRotation(mirrored));
 				trajectory.Points[i].SetVelocity(reference.GetRootVelocity(mirrored));
-				trajectory.Points[i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference, window);
 				trajectory.Points[i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window) - Utility.PhaseUpdate(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window), phaseModule.GetPhase(reference, mirrored, window)), 1f);
-				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetInverseSignal(reference, window);
 			} else {
 				Frame previous = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
 				trajectory.Points[i].SetTransformation(previous.GetRootTransformation(mirrored));
 				trajectory.Points[i].SetVelocity(previous.GetRootVelocity(mirrored));
-				trajectory.Points[i].SetSpeed(previous.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(previous, window);
 				trajectory.Points[i].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(previous, mirrored, window);
-				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(previous, window);
 			}
 		}
 
@@ -71,20 +65,70 @@ public class TrajectoryModule : Module {
 				trajectory.Points[6+i].SetPosition(Data.GetLastFrame().GetRootPosition(mirrored) - ratio * (reference.GetRootPosition(mirrored) - Data.GetLastFrame().GetRootPosition(mirrored)));
 				trajectory.Points[6+i].SetRotation(reference.GetRootRotation(mirrored));
 				trajectory.Points[6+i].SetVelocity(reference.GetRootVelocity(mirrored));
-				trajectory.Points[6+i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference, window);
 				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window) + Utility.PhaseUpdate(phaseModule.GetPhase(reference, mirrored, window), phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window)), 1f);
-				trajectory.Points[6+i].Signals = styleModule == null ? new float[0] : styleModule.GetInverseSignal(reference, window);
 			} else {
 				Frame future = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
 				trajectory.Points[6+i].SetTransformation(future.GetRootTransformation(mirrored));
 				trajectory.Points[6+i].SetVelocity(future.GetRootVelocity(mirrored));
-				trajectory.Points[6+i].SetSpeed(future.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(future, window);
 				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : phaseModule.GetPhase(future, mirrored, window);
-				trajectory.Points[6+i].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(future, window);
 			}
 		}
+
+		//Signals
+		for(int i=0; i<12; i++) {
+			float delta = -2f + (float)(2*i)/11f;
+			if(frame.Timestamp + delta < 0f) {
+				float pivot = - frame.Timestamp - delta;
+				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+				Frame reference = Data.GetFrame(clamped);
+				float[] control = styleModule.GetInverseSignal(reference, window);
+				float[] style = styleModule.GetStyle(reference, window);
+				float[] signal = new float[control.Length];
+				for(int j=0; j<control.Length; j++) {
+					signal[j] = control[j] - style[j];
+				}
+				trajectory.Points[i].Signals = signal;
+			} else {
+				Frame pivot = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
+				float[] control = styleModule.GetSignal(pivot, window);
+				float[] style = styleModule.GetStyle(pivot, window);
+				float[] signal = new float[control.Length];
+				for(int j=0; j<control.Length; j++) {
+					signal[j] = control[j] - style[j];
+				}
+				trajectory.Points[i].Signals = signal;
+			}
+		}
+
+		//Finish
+		for(int i=0; i<trajectory.GetLast().Signals.Length; i++) {
+			if(trajectory.GetLast().Signals[i] != 0f) {
+				for(int j=7; j<12; j++) {
+					if(trajectory.GetLast().Signals[i] > 0f) {
+						trajectory.Points[j].Styles[i] = Mathf.Max(trajectory.Points[j-1].Styles[i], trajectory.Points[j].Styles[i]);
+						trajectory.Points[j].StyleUpdate[i] = Mathf.Max(trajectory.Points[j-1].StyleUpdate[i], trajectory.Points[j].StyleUpdate[i]);
+					}
+					if(trajectory.GetLast().Signals[i] < 0f) {
+						trajectory.Points[j].Styles[i] = Mathf.Min(trajectory.Points[j-1].Styles[i], trajectory.Points[j].Styles[i]);
+						trajectory.Points[j].StyleUpdate[i] = Mathf.Min(trajectory.Points[j-1].StyleUpdate[i], trajectory.Points[j].StyleUpdate[i]);
+					}
+				}
+			} else {
+				for(int j=7; j<12; j++) {
+					trajectory.Points[j].Styles[i] = 0f;
+					trajectory.Points[j].StyleUpdate[i] = 0f;
+				}
+			}
+		}
+		if(trajectory.GetLast().Signals.AbsSum() == 0f) {
+			for(int j=7; j<12; j++) {
+				trajectory.Points[j].Styles = trajectory.Points[6].Styles;
+				trajectory.Points[j].StyleUpdate = trajectory.Points[6].StyleUpdate;
+			}
+		}
+
 		return trajectory;
 	}
 

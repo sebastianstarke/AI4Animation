@@ -321,6 +321,12 @@ public static class ArrayExtensions {
 		return System.Math.Sqrt(variance);
 	}
 
+	public static void Zero(this float[] values) {
+		for(int i=0; i<values.Length; i++) {
+			values[i] = 0f;
+		}
+	}
+
 	public static void Print(this double[] values) {
 		string output = "[";
 		for(int i=0; i<values.Length; i++) {
