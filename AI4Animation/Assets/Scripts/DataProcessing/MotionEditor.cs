@@ -321,41 +321,81 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 
-		
+		/*
 		UltiDraw.Begin();
 		
-		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame(), Mirror);
+		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame().GetPreviousFrame(), Mirror);
+		Trajectory current = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame(), Mirror);
 		Trajectory next = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame().GetNextFrame(), Mirror);
 
 		Color[] colors = UltiDraw.GetRainbowColors(previous.Styles.Length);
+		*/
 		
+		/*
+		for(int i=0; i<current.Styles.Length; i++) {
+			float value = 360f*(current.Points[6].Signals[i] - current.Points[6].Styles[i]);
+			UltiDraw.DrawGUICircularPivot(new Vector2(Utility.Normalise((float)i/(float)(current.Styles.Length-1), 0f, 1f, 0.2f, 0.8f), 0.9f), 0.05f, UltiDraw.DarkGrey, value, 1f, UltiDraw.Cyan);
+		}
+		*/
+		
+		/*
 		List<float[]> signalInput = new List<float[]>();
-		for(int i=0; i<previous.Styles.Length; i++) {
-			float[] s = new float[previous.Points.Length];
-			for(int j=0; j<previous.Points.Length; j++) {
-				s[j] = previous.Points[Mathf.Min(j, 6)].Signals[i] - previous.Points[j].Styles[i];
+		float[] avg = new float[current.Points.Length];
+		for(int i=0; i<current.Styles.Length; i++) {
+			for(int j=0; j<7; j++) {
+				avg[i] += current.Points[j].Signals[i];
+			}
+			avg[i] /= 7;
+		}
+		for(int i=0; i<current.Styles.Length; i++) {
+			float[] s = new float[current.Points.Length];
+			for(int j=0; j<current.Points.Length; j++) {
+				if(j < 7) {
+					s[j] = current.Points[j].Signals[i] - current.Points[j].Styles[i];
+				} else {
+					s[j] = current.Points[6].Signals[i] - current.Points[j].Styles[i];
+					//s[j] = Utility.Interpolate(current.Points[j].Signals[i], avg[i], (float)(j-6)/(float)5) - current.Points[j].Styles[i];
+				}
 			}
 			signalInput.Add(s);
 		}
+		*/
+
+		/*
+		List<float[]> signalInput = new List<float[]>();
+		for(int i=0; i<current.Styles.Length; i++) {
+			float[] s = new float[current.Points.Length];
+			for(int j=0; j<current.Points.Length; j++) {
+				s[j] = current.Points[6].Signals[i] - current.Points[j].Styles[i];
+			}
+			signalInput.Add(s);
+		}
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.9f), new Vector2(0.75f, 0.1f), signalInput, -1f, 1f, UltiDraw.DarkGrey, colors);
+
+		for(int i=0; i<current.Styles.Length; i++) {
+			float value = 360f*(current.Points[6].Signals[i] - current.Points[6].Styles[i]);
+			UltiDraw.DrawGUICircularPivot(new Vector2(Utility.Normalise((float)i/(float)(current.Styles.Length-1), 0f, 1f, 0.2f, 0.8f), 0.5f), 0.05f, UltiDraw.DarkGrey, value, 1f, UltiDraw.Cyan);
+		}
+
 		List<float[]> stateInput = new List<float[]>();
-		for(int i=0; i<previous.Styles.Length; i++) {
-			float[] s = new float[previous.Points.Length];
-			for(int j=0; j<previous.Points.Length; j++) {
-				s[j] = previous.Points[j].Styles[i];
+		for(int i=0; i<current.Styles.Length; i++) {
+			float[] s = new float[current.Points.Length];
+			for(int j=0; j<current.Points.Length; j++) {
+				s[j] = current.Points[j].Styles[i];
 			}
 			stateInput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.9f), new Vector2(0.75f, 0.1f), signalInput, -1f, 1f, UltiDraw.DarkGrey, colors);
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.75f), new Vector2(0.75f, 0.1f), stateInput, 0f, 1f, UltiDraw.DarkGrey, colors);
-
-		List<float[]> stateUpdate = new List<float[]>();
-		for(int i=0; i<next.Styles.Length; i++) {
-			float[] s = new float[next.Points.Length];
-			for(int j=0; j<next.Points.Length; j++) {
-				s[j] = next.Points[j].Styles[i] - previous.Points[j].Styles[i];
+		List<float[]> stateUpdateInput = new List<float[]>();
+		for(int i=0; i<current.Styles.Length; i++) {
+			float[] s = new float[current.Points.Length];
+			for(int j=0; j<current.Points.Length; j++) {
+				s[j] = current.Points[j].Styles[i] - previous.Points[j].Styles[i];
 			}
-			stateUpdate.Add(s);
+			stateUpdateInput.Add(s);
 		}
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateUpdateInput, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
+
 		List<float[]> stateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
 			float[] s = new float[next.Points.Length];
@@ -364,13 +404,21 @@ public class MotionEditor : MonoBehaviour {
 			}
 			stateOutput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateUpdate, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		List<float[]> stateUpdateOutput = new List<float[]>();
+		for(int i=0; i<next.Styles.Length; i++) {
+			float[] s = new float[next.Points.Length];
+			for(int j=0; j<next.Points.Length; j++) {
+				s[j] = next.Points[j].Styles[i] - current.Points[j].Styles[i];
+			}
+			stateUpdateOutput.Add(s);
+		}
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateUpdateOutput, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
 
 		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 1f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0f), 0.0025f, UltiDraw.Green);
 
 		UltiDraw.End();
-		
+		*/		
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);

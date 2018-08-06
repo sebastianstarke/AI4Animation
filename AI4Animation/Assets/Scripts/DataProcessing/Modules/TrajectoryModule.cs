@@ -47,7 +47,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[i].SetVelocity(reference.GetRootVelocity(mirrored));
 				trajectory.Points[i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference, window);
-				trajectory.Points[i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window) - Utility.GetLinearPhaseUpdate(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window), phaseModule.GetPhase(reference, mirrored, window)), 1f);
+				trajectory.Points[i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window) - Utility.PhaseUpdate(phaseModule.GetPhase(Data.GetFirstFrame(), mirrored, window), phaseModule.GetPhase(reference, mirrored, window)), 1f);
 				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetInverseSignal(reference, window);
 			} else {
 				Frame previous = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
@@ -73,7 +73,7 @@ public class TrajectoryModule : Module {
 				trajectory.Points[6+i].SetVelocity(reference.GetRootVelocity(mirrored));
 				trajectory.Points[6+i].SetSpeed(reference.GetSpeed(mirrored));
 				trajectory.Points[6+i].Styles = styleModule == null ? new float[0] : styleModule.GetStyle(reference, window);
-				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window) + Utility.GetLinearPhaseUpdate(phaseModule.GetPhase(reference, mirrored, window), phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window)), 1f);
+				trajectory.Points[6+i].Phase = phaseModule == null ? 0f : Mathf.Repeat(phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window) + Utility.PhaseUpdate(phaseModule.GetPhase(reference, mirrored, window), phaseModule.GetPhase(Data.GetLastFrame(), mirrored, window)), 1f);
 				trajectory.Points[6+i].Signals = styleModule == null ? new float[0] : styleModule.GetInverseSignal(reference, window);
 			} else {
 				Frame future = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));

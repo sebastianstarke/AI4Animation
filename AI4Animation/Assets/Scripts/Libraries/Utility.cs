@@ -544,6 +544,7 @@ public static class Utility {
 		return new Vector3(GaussianValue(mean, sigma), GaussianValue(mean, sigma), GaussianValue(mean, sigma));
 	}
 	
+	/*
 	public static float GetLinearPhase(float value) {
 		return value;
 	}
@@ -577,17 +578,49 @@ public static class Utility {
 	public static Vector2 GetCirclePhaseUpdate(float from, float to) {
 		return GetCirclePhase(to) - GetCirclePhase(from);
 	}
+	*/
 
-	public static float AveragePhase(float[] values) {
+	public static float PhaseUpdate(float from, float to) {
+		return Mathf.Repeat((to - from + 1f), 1f);
+	}
+
+	public static Vector2 PhaseVector(float phase) {
+		phase *= 2f*Mathf.PI;
+		return new Vector2(Mathf.Sin(phase), Mathf.Cos(phase));
+	}
+
+	public static float PhaseAverage(float[] values) {
 		float[] x = new float[values.Length];
 		float[] y = new float[values.Length];
 		for(int i=0; i<values.Length; i++) {
-			Vector2 v = GetCirclePhase(values[i]);
+			Vector2 v = PhaseVector(values[i]);
 			x[i] = v.x;
 			y[i] = v.y;
 		}
 		return Mathf.Repeat(-Vector2.SignedAngle(Vector2.up, new Vector2(FilterGaussian(x), FilterGaussian(y)).normalized) / 360f, 1f);
 	}
+
+	public static float[] PhaseStyle(float[] style, float phase) {
+		float[] result = new float[2*style.Length];
+		for(int i=0; i<style.Length; i++) {
+			Vector2 direction = style[i] * PhaseVector(phase);
+			result[2*i+0] = direction.x;
+			result[2*i+1] = direction.y;
+		}
+		return result;
+	}
+
+	/*
+	public static float[] StyleUpdatePhase(float[] previousStyle, float[] currentStyle, float previousPhase, float currentPhase) {
+		float[] previousStylePhase = StylePhase(previousStyle, previousPhase);
+		float[] currentStylePhase = StylePhase(currentStyle, currentPhase);
+		float[] result = new float[2*currentStyle.Length];
+		for(int i=0; i<result.Length; i++) {
+			result[i] = currentStylePhase[i] - previousStylePhase[i];
+		}
+		return result;
+	}
+	*/
 
 	public static float FilterGaussian(float[] values) {
 		if(values.Length == 0) {
@@ -602,26 +635,6 @@ public static class Utility {
 			sum += weight;
 		}
 		return value / sum;
-	}
-
-	public static float[] StylePhase(float[] style, float phase) {
-		float[] result = new float[2*style.Length];
-		for(int i=0; i<style.Length; i++) {
-			Vector2 direction = style[i] * GetCirclePhase(phase);
-			result[2*i+0] = direction.x;
-			result[2*i+1] = direction.y;
-		}
-		return result;
-	}
-
-	public static float[] StyleUpdatePhase(float[] previousStyle, float[] currentStyle, float previousPhase, float currentPhase) {
-		float[] previousStylePhase = StylePhase(previousStyle, previousPhase);
-		float[] currentStylePhase = StylePhase(currentStyle, currentPhase);
-		float[] result = new float[2*currentStyle.Length];
-		for(int i=0; i<result.Length; i++) {
-			result[i] = currentStylePhase[i] - previousStylePhase[i];
-		}
-		return result;
 	}
 
 }

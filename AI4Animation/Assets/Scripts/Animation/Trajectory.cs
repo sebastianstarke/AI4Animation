@@ -90,6 +90,7 @@ public class Trajectory {
 		public float Phase;
 		public float[] Signals = new float[0];
 		public float[] Styles = new float[0];
+		public float[] StyleUpdate = new float[0];
 
 		public Point(int index, int styles) {
 			Index = index;
@@ -100,6 +101,7 @@ public class Trajectory {
 			Slope = 0f;
 			Signals = new float[styles];
 			Styles = new float[styles];
+			StyleUpdate = new float[styles];
 		}
 
 		public void SetIndex(int index) {

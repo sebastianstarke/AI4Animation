@@ -26,16 +26,7 @@ public class ExpertActivation : MonoBehaviour {
 	}
 
 	void Start() {
-		if(NN.GetTensor(ID) == null) {
-			return;
-		}
-		Values = new Queue<float>[NN.GetTensor(ID).GetRows()];
-		for(int i=0; i<Values.Length; i++) {
-			Values[i] = new Queue<float>();
-			for(int j=0; j<Frames; j++) {
-				Values[i].Enqueue(0f);
-			}
-		}
+		Setup();
 	}
 
 	void OnEnable() {
@@ -43,12 +34,29 @@ public class ExpertActivation : MonoBehaviour {
 		Start();
 	}
 
+	private bool Setup() {
+		Tensor tensor = NN.GetTensor(ID);
+		if(tensor == null) {
+			return false;
+		}
+		if(Values == null || Values.Length != tensor.GetRows()) {
+			Values = new Queue<float>[tensor.GetRows()];
+			for(int i=0; i<Values.Length; i++) {
+				Values[i] = new Queue<float>();
+				for(int j=0; j<Frames; j++) {
+					Values[i].Enqueue(0f);
+				}
+			}
+		}
+		return true;
+	}
+
 	void OnRenderObject() {
 		if(!Application.isPlaying) {
 			return;
 		}
 
-		if(NN.GetTensor(ID) == null) {
+		if(!Setup()) {
 			return;
 		}
 

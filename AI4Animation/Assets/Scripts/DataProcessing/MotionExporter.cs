@@ -211,8 +211,7 @@ public class MotionExporter : EditorWindow {
 									Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 									Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
 									float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
-									//float[] stateUpdate = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Filter(ref previous.Trajectory.Points[k].Styles, ref previous.Trajectory.Styles, ref Styles));
-									//float[] signal = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles));
+									float[] stateUpdate = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Filter(ref previous.Trajectory.Points[k].Styles, ref previous.Trajectory.Styles, ref Styles));
 									X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
@@ -220,8 +219,8 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 									X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
 									X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-									//X.Feed(stateUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"StateUpdate");
-									//X.Feed(signal, Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
+									X.Feed(stateUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"StateUpdate");
+									X.Feed(ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[6].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles)), Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
 								}
 								for(int k=0; k<current.Posture.Length; k++) {
 									Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -242,10 +241,14 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
 								for(int k=0; k<12; k++) {
-									X.Feed(ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[Mathf.Min(k, 6)].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles)), Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
+									X.Feed(Utility.PhaseStyle(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
 								}
-								for(int k=0; k<12; k++) {
-									X.Feed(Utility.StylePhase(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
+								float[] transitions = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[6].Signals, ref current.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[6].Styles, ref current.Trajectory.Styles, ref Styles));
+								for(int k=0; k<transitions.Length; k++) {
+									float value = transitions[k];
+									Vector2 vector = Utility.PhaseVector(value);
+									X.Feed(vector.x, Data.ID.Standard, "Transition"+(k+1)+"X");
+									X.Feed(vector.y, Data.ID.Standard, "Transition"+(k+1)+"Y");
 								}
 								X.Store();
 								//
@@ -287,7 +290,7 @@ public class MotionExporter : EditorWindow {
 									Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
 								for(int k=6; k<12; k++) {
-									Y.Feed(Utility.GetLinearPhaseUpdate(current.Trajectory.Points[k].Phase, next.Trajectory.Points[k].Phase), Data.ID.Standard, "PhaseUpdate"+(k+1));
+									Y.Feed(Utility.PhaseUpdate(current.Trajectory.Points[k].Phase, next.Trajectory.Points[k].Phase), Data.ID.Standard, "PhaseUpdate"+(k+1));
 								}
 								Y.Store();
 								//

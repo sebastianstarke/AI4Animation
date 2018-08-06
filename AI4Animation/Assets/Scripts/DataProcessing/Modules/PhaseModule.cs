@@ -64,7 +64,7 @@ public class PhaseModule : Module {
 			for(int i=0; i<frames.Length; i++) {
 				values[i] = GetPhase(frames[i], mirrored);
 			}
-			return Utility.AveragePhase(values);
+			return Utility.PhaseAverage(values);
 		}
 	}
 

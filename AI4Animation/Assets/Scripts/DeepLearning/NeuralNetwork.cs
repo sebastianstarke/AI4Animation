@@ -114,13 +114,33 @@ namespace DeepLearning {
 			return Y.GetValue(index, 0);
 		}
 
-		public void SetNextInput(float value) {
+		public void Feed(float value) {
 			SetInput(Pivot+1, value);
 		}
 
-		public float GetNextOutput() {
+        public void Feed(float[] values) {
+            for(int i=0; i<values.Length; i++) {
+                Feed(values[i]);
+            }
+        }
+
+        public void Feed(Vector3 vector) {
+            Feed(vector.x);
+            Feed(vector.y);
+            Feed(vector.z);
+        }
+
+		public float Read() {
 			return GetOutput(Pivot+1);
 		}
+
+        public float[] Read(int count) {
+            float[] values = new float[count];
+            for(int i=0; i<count; i++) {
+                values[i] = Read();
+            }
+            return values;
+        }
 
         public Tensor Normalise(Tensor IN, Tensor mean, Tensor std, Tensor OUT) {
             if(IN.GetRows() != mean.GetRows() || IN.GetRows() != std.GetRows() || IN.GetCols() != mean.GetCols() || IN.GetCols() != std.GetCols()) {
