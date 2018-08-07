@@ -357,7 +357,7 @@ public class MotionEditor : MonoBehaviour {
 			}
 			stateUpdateInput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateUpdateInput, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateUpdateInput, -1f, 1f, UltiDraw.DarkGrey, colors);
 
 		List<float[]> stateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
@@ -376,7 +376,7 @@ public class MotionEditor : MonoBehaviour {
 			}
 			stateUpdateOutput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateUpdateOutput, -0.1f, 0.1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateUpdateOutput, -1f, 1f, UltiDraw.DarkGrey, colors);
 
 		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 1f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0f), 0.0025f, UltiDraw.Green);
 

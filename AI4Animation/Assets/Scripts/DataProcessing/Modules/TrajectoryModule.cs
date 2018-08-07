@@ -76,56 +76,98 @@ public class TrajectoryModule : Module {
 			}
 		}
 
+		/*
 		//Signals
-		for(int i=0; i<12; i++) {
-			float delta = -2f + (float)(2*i)/11f;
+		for(int i=0; i<7; i++) {
+			float delta = -2f + (float)i/6f;
 			if(frame.Timestamp + delta < 0f) {
 				float pivot = - frame.Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
 				Frame reference = Data.GetFrame(clamped);
-				float[] control = styleModule.GetInverseSignal(reference, window);
-				float[] style = styleModule.GetStyle(reference, window);
-				float[] signal = new float[control.Length];
-				for(int j=0; j<control.Length; j++) {
-					signal[j] = control[j] - style[j];
-				}
-				trajectory.Points[i].Signals = signal;
+				trajectory.Points[i].Signals = ArrayExtensions.Sub(styleModule.GetInverseSignal(reference, window), styleModule.GetStyle(reference, window));
 			} else {
 				Frame pivot = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
-				float[] control = styleModule.GetSignal(pivot, window);
-				float[] style = styleModule.GetStyle(pivot, window);
-				float[] signal = new float[control.Length];
-				for(int j=0; j<control.Length; j++) {
-					signal[j] = control[j] - style[j];
-				}
-				trajectory.Points[i].Signals = signal;
+				trajectory.Points[i].Signals = ArrayExtensions.Sub(styleModule.GetSignal(pivot, window), styleModule.GetStyle(pivot, window));
+			}
+		}
+		for(int i=1; i<=5; i++) {
+			float delta = -1f + (float)i/5f;
+			if(frame.Timestamp + delta < 0f) {
+				float pivot = - frame.Timestamp - delta;
+				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+				Frame reference = Data.GetFrame(clamped);
+				trajectory.Points[6+i].Signals = ArrayExtensions.Sub(styleModule.GetInverseSignal(reference, window), styleModule.GetStyle(reference, window));
+			} else {
+				Frame pivot = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
+				trajectory.Points[6+i].Signals = ArrayExtensions.Sub(styleModule.GetSignal(pivot, window), styleModule.GetStyle(pivot, window));
 			}
 		}
 
 		//Finish
 		for(int i=0; i<trajectory.GetLast().Signals.Length; i++) {
-			if(trajectory.GetLast().Signals[i] != 0f) {
-				for(int j=7; j<12; j++) {
-					if(trajectory.GetLast().Signals[i] > 0f) {
-						trajectory.Points[j].Styles[i] = Mathf.Max(trajectory.Points[j-1].Styles[i], trajectory.Points[j].Styles[i]);
-						trajectory.Points[j].StyleUpdate[i] = Mathf.Max(trajectory.Points[j-1].StyleUpdate[i], trajectory.Points[j].StyleUpdate[i]);
-					}
-					if(trajectory.GetLast().Signals[i] < 0f) {
-						trajectory.Points[j].Styles[i] = Mathf.Min(trajectory.Points[j-1].Styles[i], trajectory.Points[j].Styles[i]);
-						trajectory.Points[j].StyleUpdate[i] = Mathf.Min(trajectory.Points[j-1].StyleUpdate[i], trajectory.Points[j].StyleUpdate[i]);
-					}
+			for(int j=7; j<12; j++) {
+				if(trajectory.GetLast().Signals[i] > 0f && trajectory.GetLast().Signals[i] < 1f) {
+					int pivot = j-1;
+					trajectory.Points[j].Styles[i] = Mathf.Max(trajectory.Points[pivot].Styles[i], trajectory.Points[j].Styles[i]);
 				}
-			} else {
-				for(int j=7; j<12; j++) {
+				if(trajectory.GetLast().Signals[i] < 0f && trajectory.GetLast().Signals[i] > -1f) {
+					int pivot = j-1;
+					trajectory.Points[j].Styles[i] = Mathf.Min(trajectory.Points[pivot].Styles[i], trajectory.Points[j].Styles[i]);
+				}
+				if(trajectory.GetLast().Signals[i] == 0f) {
 					trajectory.Points[j].Styles[i] = 0f;
-					trajectory.Points[j].StyleUpdate[i] = 0f;
+				}
+				if(trajectory.GetLast().Signals[i] == 1f || trajectory.GetLast().Signals[i] == -1f) {
+					trajectory.Points[j].Styles[i] = trajectory.Points[6].Styles[i];
 				}
 			}
 		}
 		if(trajectory.GetLast().Signals.AbsSum() == 0f) {
 			for(int j=7; j<12; j++) {
 				trajectory.Points[j].Styles = trajectory.Points[6].Styles;
-				trajectory.Points[j].StyleUpdate = trajectory.Points[6].StyleUpdate;
+			}
+		}
+		*/
+
+		//Signals
+		for(int i=0; i<7; i++) {
+			float delta = -1f + (float)i/6f;
+			if(frame.Timestamp + delta < 0f) {
+				float pivot = - frame.Timestamp - delta;
+				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
+				Frame reference = Data.GetFrame(clamped);
+				trajectory.Points[i].Signals = ArrayExtensions.Sub(styleModule.GetInverseSignal(reference, window), styleModule.GetStyle(reference, window));
+			} else {
+				Frame pivot = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
+				trajectory.Points[i].Signals = ArrayExtensions.Sub(styleModule.GetSignal(pivot, window), styleModule.GetStyle(pivot, window));
+			}
+		}
+		for(int i=7; i<12; i++) {
+			trajectory.Points[i].Signals = trajectory.Points[6].Signals;
+		}
+
+		//Finish
+		for(int i=0; i<trajectory.GetLast().Signals.Length; i++) {
+			for(int j=7; j<12; j++) {
+				if(trajectory.GetLast().Signals[i] > 0f && trajectory.GetLast().Signals[i] < 1f) {
+					int pivot = j-1;
+					trajectory.Points[j].Styles[i] = Mathf.Max(trajectory.Points[pivot].Styles[i], trajectory.Points[j].Styles[i]);
+				}
+				if(trajectory.GetLast().Signals[i] < 0f && trajectory.GetLast().Signals[i] > -1f) {
+					int pivot = j-1;
+					trajectory.Points[j].Styles[i] = Mathf.Min(trajectory.Points[pivot].Styles[i], trajectory.Points[j].Styles[i]);
+				}
+				if(trajectory.GetLast().Signals[i] == 0f) {
+					trajectory.Points[j].Styles[i] = 0f;
+				}
+				if(trajectory.GetLast().Signals[i] == 1f || trajectory.GetLast().Signals[i] == -1f) {
+					trajectory.Points[j].Styles[i] = trajectory.Points[6].Styles[i];
+				}
+			}
+		}
+		if(trajectory.GetLast().Signals.AbsSum() == 0f) {
+			for(int j=7; j<12; j++) {
+				trajectory.Points[j].Styles = trajectory.Points[6].Styles;
 			}
 		}
 
