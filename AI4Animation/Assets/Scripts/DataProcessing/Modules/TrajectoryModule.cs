@@ -143,7 +143,7 @@ public class TrajectoryModule : Module {
 			}
 		}
 		for(int i=7; i<12; i++) {
-			trajectory.Points[i].Signals = trajectory.Points[6].Signals;
+			trajectory.Points[i].Signals = (float[])trajectory.Points[6].Signals.Clone();
 		}
 
 		//Finish
@@ -158,7 +158,7 @@ public class TrajectoryModule : Module {
 					trajectory.Points[j].Styles[i] = Mathf.Min(trajectory.Points[pivot].Styles[i], trajectory.Points[j].Styles[i]);
 				}
 				if(trajectory.GetLast().Signals[i] == 0f) {
-					trajectory.Points[j].Styles[i] = 0f;
+					trajectory.Points[j].Styles[i] = trajectory.Points[6].Styles[i];
 				}
 				if(trajectory.GetLast().Signals[i] == 1f || trajectory.GetLast().Signals[i] == -1f) {
 					trajectory.Points[j].Styles[i] = trajectory.Points[6].Styles[i];
@@ -167,9 +167,15 @@ public class TrajectoryModule : Module {
 		}
 		if(trajectory.GetLast().Signals.AbsSum() == 0f) {
 			for(int j=7; j<12; j++) {
-				trajectory.Points[j].Styles = trajectory.Points[6].Styles;
+				trajectory.Points[j].Styles = (float[])trajectory.Points[6].Styles.Clone();
 			}
 		}
+
+		//for(int i=0; i<trajectory.Points.Length; i++) {
+		//	for(int j=0; j<trajectory.Points[i].Signals.Length; j++) {
+		//		trajectory.Points[i].Signals[j] = Mathf.Sign(trajectory.Points[i].Signals[j]) * Mathf.Pow(Mathf.Abs(trajectory.Points[i].Signals[j]), 0.5f);
+		//	}
+		//}
 
 		return trajectory;
 	}
