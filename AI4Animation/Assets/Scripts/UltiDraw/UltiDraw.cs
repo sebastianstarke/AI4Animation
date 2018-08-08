@@ -11,6 +11,13 @@ public static class UltiDraw {
 		[Range(0f, 1f)] public float W = 0.5f;
 		[Range(0f, 1f)] public float H = 0.5f;
 
+		public GUIRect(float x, float y, float w, float h) {
+			X = x;
+			Y = y;
+			W = w;
+			H = h;
+		}
+
 		public Vector2 GetPosition() {
 			return new Vector2(X, Y);
 		}

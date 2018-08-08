@@ -240,6 +240,12 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 									X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
+								for(int k=0; k<current.KeypointField.Gradients.Length; k++) {
+									Vector3 gradient = current.KeypointField.Gradients[k].GetRelativeDirectionTo(current.Root);
+									X.Feed(gradient.x, Data.ID.Standard, "Keypoint"+(k+1)+"GradientX");
+									X.Feed(gradient.y, Data.ID.Standard, "Keypoint"+(k+1)+"GradientY");
+									X.Feed(gradient.z, Data.ID.Standard, "Keypoint"+(k+1)+"GradientZ");
+								}
 								for(int k=0; k<12; k++) {
 									X.Feed(Utility.PhaseStyle(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
 								}
@@ -459,6 +465,7 @@ public class MotionExporter : EditorWindow {
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
+		public KeypointField KeypointField;
 
 		public State(MotionEditor editor) {
 			MotionEditor.File file = editor.GetCurrentFile();
@@ -468,6 +475,7 @@ public class MotionExporter : EditorWindow {
 			Posture = editor.GetActor().GetPosture();
 			Velocities = editor.GetActor().GetVelocities();
 			Trajectory = ((TrajectoryModule)file.Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(frame, editor.Mirror);
+			KeypointField = ((KeypointModule)file.Data.GetModule(Module.TYPE.Keypoint)).GetKeypointField(editor.GetActor());
 		}
 	}
 

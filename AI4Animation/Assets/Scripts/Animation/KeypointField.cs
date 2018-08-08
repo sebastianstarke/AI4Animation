@@ -22,21 +22,32 @@ public class KeypointField {
 		Keypoints.Clear();
 		Positions = new Vector3[Actor.Bones.Length];
 		Gradients = new Vector3[Actor.Bones.Length];
+		LayerMask groundMask = LayerMask.GetMask("Ground");
 		for(int i=0; i<Actor.Bones.Length; i++) {
 			Positions[i] = Actor.Bones[i].Transform.position;
-			Collider[] colliders = Physics.OverlapSphere(Positions[i], Radius, Mask);
 			List<Vector3> points = new List<Vector3>();
-			List<Vector3> centers = new List<Vector3>();
+			List<Vector3> origins = new List<Vector3>();
+
+			Collider[] colliders = Physics.OverlapSphere(Positions[i], Radius, Mask);
 			for(int j=0; j<colliders.Length; j++) {
-				if(!(colliders[j] is MeshCollider && !((MeshCollider)colliders[j]).convex)) {
+				if((LayerMask.LayerToName(colliders[j].gameObject.layer) == "Objects") && !(colliders[j] is MeshCollider && !((MeshCollider)colliders[j]).convex)) {
 					points.Add(colliders[j].ClosestPoint(Positions[i]));
-					centers.Add(colliders[j].bounds.center);
+					origins.Add(colliders[j].bounds.center);
 				}
 			}
+			for(int j=0; j<colliders.Length; j++) {
+				if((LayerMask.LayerToName(colliders[j].gameObject.layer) == "Ground") && !(colliders[j] is MeshCollider && !((MeshCollider)colliders[j]).convex)) {
+					points.Add(colliders[j].ClosestPoint(Positions[i]));
+					Vector3 origin = Utility.ProjectGround(Positions[i], groundMask);
+					origin.y = Mathf.Min(origin.y, Positions[i].y - 0.00001f);
+					origins.Add(origin);
+				}
+			}
+
 			Vector3 gradient = Vector3.zero;
 			for(int j=0; j<points.Count; j++) {
 				float w = 1f - Vector3.Distance(Positions[i], points[j]) / Radius;
-				Vector3 v = Utility.Interpolate((points[j] - Positions[i]).normalized, (centers[j] - Positions[i]).normalized, w * w);
+				Vector3 v = Utility.Interpolate((points[j] - Positions[i]).normalized, (origins[j] - Positions[i]).normalized, w * w);
 				gradient += w * Radius * v;
 			}
 			gradient = Vector3.ClampMagnitude(gradient, Radius);
