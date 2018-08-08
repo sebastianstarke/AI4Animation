@@ -349,6 +349,7 @@ public class MotionEditor : MonoBehaviour {
 			stateInput.Add(s);
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.75f), new Vector2(0.75f, 0.1f), stateInput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		/*
 		List<float[]> stateUpdateInput = new List<float[]>();
 		for(int i=0; i<current.Styles.Length; i++) {
 			float[] s = new float[current.Points.Length];
@@ -358,7 +359,7 @@ public class MotionEditor : MonoBehaviour {
 			stateUpdateInput.Add(s);
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateUpdateInput, -1f, 1f, UltiDraw.DarkGrey, colors);
-
+		*/
 		List<float[]> stateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
 			float[] s = new float[next.Points.Length];
@@ -367,7 +368,8 @@ public class MotionEditor : MonoBehaviour {
 			}
 			stateOutput.Add(s);
 		}
-		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.25f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		/*
 		List<float[]> stateUpdateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
 			float[] s = new float[next.Points.Length];
@@ -377,7 +379,7 @@ public class MotionEditor : MonoBehaviour {
 			stateUpdateOutput.Add(s);
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateUpdateOutput, -1f, 1f, UltiDraw.DarkGrey, colors);
-
+		*/
 		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 1f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0f), 0.0025f, UltiDraw.Green);
 
 		UltiDraw.End();

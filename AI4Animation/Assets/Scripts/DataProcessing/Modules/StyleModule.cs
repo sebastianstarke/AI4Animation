@@ -44,18 +44,16 @@ public class StyleModule : Module {
 		float[] signal = new float[Functions.Length];
 		if(window == 0) {
 			for(int i=0; i<signal.Length; i++) {
-				signal[i] = Functions[i].GetFlag(frame);
-			}
+				signal[i] = Functions[i].GetFlag(frame) - Functions[i].GetValue(frame);
+			} 
 		} else {
 			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
-			for(int i=0; i<frames.Length; i++) {
-				float[] tmp = GetSignal(frames[i]);
-				for(int j=0; j<signal.Length; j++) {
-					signal[j] += tmp[j];
+			for(int i=0; i<signal.Length; i++) {
+				float[] values = new float[frames.Length];
+				for(int j=0; j<values.Length; j++) {
+					values[j] = Functions[i].GetFlag(frames[j]) - Functions[i].GetValue(frames[j]);
 				}
-			}
-			for(int j=0; j<signal.Length; j++) {
-				signal[j] /= frames.Length;
+				signal[i] = Utility.FilterGaussian(values);
 			}
 		}
 		return signal;
@@ -65,40 +63,25 @@ public class StyleModule : Module {
 		float[] signal = new float[Functions.Length];
 		if(window == 0) {
 			for(int i=0; i<signal.Length; i++) {
-				signal[i] = Functions[i].GetInverseFlag(frame);
-			}
+				signal[i] = Functions[i].GetInverseFlag(frame) - Functions[i].GetValue(frame);
+			} 
 		} else {
 			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
-			for(int i=0; i<frames.Length; i++) {
-				float[] tmp = GetInverseSignal(frames[i]);
-				for(int j=0; j<signal.Length; j++) {
-					signal[j] += tmp[j];
+			for(int i=0; i<signal.Length; i++) {
+				float[] values = new float[frames.Length];
+				for(int j=0; j<values.Length; j++) {
+					values[j] = Functions[i].GetInverseFlag(frames[j]) - Functions[i].GetValue(frames[j]);
 				}
-			}
-			for(int j=0; j<signal.Length; j++) {
-				signal[j] /= frames.Length;
+				signal[i] = Utility.FilterGaussian(values);
 			}
 		}
 		return signal;
 	}
 
-	public float[] GetStyle(Frame frame, int window=0) {
+	public float[] GetStyle(Frame frame) {
 		float[] style = new float[Functions.Length];
-		if(window == 0) {
-			for(int i=0; i<style.Length; i++) {
-				style[i] = Functions[i].GetValue(frame);
-			}
-		} else {
-			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
-			for(int i=0; i<frames.Length; i++) {
-				float[] tmp = GetStyle(frames[i]);
-				for(int j=0; j<style.Length; j++) {
-					style[j] += tmp[j];
-				}
-			}
-			for(int j=0; j<style.Length; j++) {
-				style[j] /= frames.Length;
-			}
+		for(int i=0; i<style.Length; i++) {
+			style[i] = Functions[i].GetValue(frame);
 		}
 		return style;
 	}

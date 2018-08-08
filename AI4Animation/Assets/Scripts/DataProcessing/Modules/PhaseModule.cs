@@ -55,17 +55,8 @@ public class PhaseModule : Module {
 		InversePhaseFunction.ComputeVelocities();
 	}
 
-	public float GetPhase(Frame frame, bool mirrored, int window=0) {
-		if(window == 0) {
-			return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
-		} else {
-			Frame[] frames = Data.GetFrames(Mathf.Clamp(frame.Index - window, 1, Data.GetTotalFrames()), Mathf.Clamp(frame.Index + window, 1, Data.GetTotalFrames()));
-			float[] values = new float[frames.Length];
-			for(int i=0; i<frames.Length; i++) {
-				values[i] = GetPhase(frames[i], mirrored);
-			}
-			return Utility.PhaseAverage(values);
-		}
+	public float GetPhase(Frame frame, bool mirrored) {
+		return mirrored ? InversePhaseFunction.GetPhase(frame) : RegularPhaseFunction.GetPhase(frame);
 	}
 
 	public override void Draw(MotionEditor editor) {
