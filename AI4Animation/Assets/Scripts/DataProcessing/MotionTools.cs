@@ -234,7 +234,7 @@ public class MotionTools : EditorWindow {
 					//((HeightMapModule)data.GetModule(Module.TYPE.HeightMap)).Size = 1f;
 
 					//data.Repair(Editors[i]);
-					((KeypointModule)data.GetModule(Module.TYPE.Keypoint)).Size = 1.5f;
+					((KeypointModule)data.GetModule(Module.TYPE.Keypoint)).Size = 5f;
 
 					EditorUtility.SetDirty(data);
 				}
