@@ -321,7 +321,29 @@ public class MotionEditor : MonoBehaviour {
 		UltiDraw.End();
 		*/
 
-		
+		/*
+		UltiDraw.Begin();
+
+		Frame[] frames = GetCurrentFile().Data.GetFrames(Mathf.Clamp(GetCurrentFrame().Index - 100, 1, GetCurrentFile().Data.GetTotalFrames()), Mathf.Clamp(GetCurrentFrame().Index + 100, 1, GetCurrentFile().Data.GetTotalFrames()));
+		List<float[]> velocities = new List<float[]>();
+		for(int i=0; i<2; i++) {
+			velocities.Add(new float[frames.Length]);
+		}
+		//int leftHand = GetCurrentFile().Data.Source.FindBone("LeftHandSite").Index;
+		//int rightHand = GetCurrentFile().Data.Source.FindBone("RightHandSite").Index;
+		int leftFoot = GetCurrentFile().Data.Source.FindBone("LeftToeSite").Index;
+		int rightFoot = GetCurrentFile().Data.Source.FindBone("RightToeSite").Index;
+		for(int i=0; i<frames.Length; i++) {
+			velocities[0][i] = frames[i].GetBoneVelocity(leftFoot, Mirror).magnitude;
+			velocities[1][i] = frames[i].GetBoneVelocity(rightFoot, Mirror).magnitude;
+			//velocities[2][i] = frames[i].GetBoneVelocity(leftFoot, Mirror).magnitude;
+			//velocities[3][i] = frames[i].GetBoneVelocity(rightFoot, Mirror).magnitude;
+		}
+		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.75f), new Vector2(0.9f, 0.25f), velocities, 0f, 10f, 0.005f, UltiDraw.White, UltiDraw.GetRainbowColors(velocities.Count));
+		UltiDraw.End();
+		*/
+
+		/*
 		UltiDraw.Begin();
 		
 		Trajectory previous = ((TrajectoryModule)GetCurrentFile().Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(GetCurrentFrame().GetPreviousFrame(), Mirror);
@@ -360,6 +382,7 @@ public class MotionEditor : MonoBehaviour {
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateUpdateInput, -1f, 1f, UltiDraw.DarkGrey, colors);
 		*/
+		/*
 		List<float[]> stateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
 			float[] s = new float[next.Points.Length];
@@ -369,6 +392,7 @@ public class MotionEditor : MonoBehaviour {
 			stateOutput.Add(s);
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.6f), new Vector2(0.75f, 0.1f), stateOutput, 0f, 1f, UltiDraw.DarkGrey, colors);
+		*/
 		/*
 		List<float[]> stateUpdateOutput = new List<float[]>();
 		for(int i=0; i<next.Styles.Length; i++) {
@@ -380,10 +404,11 @@ public class MotionEditor : MonoBehaviour {
 		}
 		UltiDraw.DrawGUIFunctions(new Vector2(0.5f, 0.1f), new Vector2(0.75f, 0.1f), stateUpdateOutput, -1f, 1f, UltiDraw.DarkGrey, colors);
 		*/
+		/*
 		UltiDraw.DrawGUILine(new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 1f), new Vector2(0.5f - 0.75f/2f + 6f/11f*0.75f, 0f), 0.0025f, UltiDraw.Green);
 
 		UltiDraw.End();
-		
+		*/
 
 		for(int i=0; i<GetCurrentFile().Data.Modules.Length; i++) {
 			GetCurrentFile().Data.Modules[i].Draw(this);

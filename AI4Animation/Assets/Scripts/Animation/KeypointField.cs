@@ -12,19 +12,26 @@ public class KeypointField {
 	private float Radius;
 	private LayerMask Mask;
 
-	public KeypointField(Actor actor, float radius, LayerMask mask) {
+	private bool Constant;
+
+	public KeypointField(Actor actor, float radius, LayerMask mask, bool constant=false) {
 		Actor = actor;
 		Radius = radius;
 		Mask = mask;
+		Constant = constant;
 	}
 
 	private float GetRadius(int index) {
-		float length = Actor.Bones[index].GetLength();
-		for(int i=0; i<Actor.Bones[index].Childs.Length; i++) {
-			length += Actor.Bones[index].GetChild(i).GetLength();
+		if(Constant) {
+			return 0.75f;
+		} else {
+			float length = Actor.Bones[index].GetLength();
+			for(int i=0; i<Actor.Bones[index].Childs.Length; i++) {
+				length += Actor.Bones[index].GetChild(i).GetLength();
+			}
+			length /= Actor.Bones[index].Childs.Length + 1;
+			return Radius*length;
 		}
-		length /= Actor.Bones[index].Childs.Length + 1;
-		return Radius*length;
 	}
 
 	public void Sense() {
