@@ -204,23 +204,20 @@ public class MotionExporter : EditorWindow {
 								State next = states[j+1];
 
 								//Input --- REPLACE THIS WITH YOUR OWN INPUT EXPORTING FORMAT ---
-								//THIS PART OF THE CODE IS ALWAYS EXPERIMENTAL AND NEVER FIXED.
-								//THINGS ARE PROBABLY NOT WORKING FOR YOU. PLEASE UPDATE AS REQUIRED.
 								for(int k=0; k<12; k++) {
 									Vector3 position = current.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 									Vector3 direction = current.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 									Vector3 velocity = current.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-									float[] state = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
-									//float[] stateUpdate = ArrayExtensions.Sub(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), Filter(ref previous.Trajectory.Points[k].Styles, ref previous.Trajectory.Styles, ref Styles));
+									float speed = current.Trajectory.Points[k].GetSpeed();
+									float[] styles = Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles);
 									X.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									X.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									X.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
 									X.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
 									X.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 									X.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-									X.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-									//X.Feed(stateUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"StateUpdate");
-									X.Feed(Filter(ref current.Trajectory.Points[k].Signals, ref current.Trajectory.Styles, ref Styles), Data.ID.Standard, "Trajectory"+(k+1)+"Signal");
+									X.Feed(speed, Data.ID.Standard, "Trajectory"+(k+1)+"Speed");
+									X.Feed(styles, Data.ID.Standard, "Trajectory"+(k+1)+"Style");
 								}
 								for(int k=0; k<current.Posture.Length; k++) {
 									Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -240,35 +237,20 @@ public class MotionExporter : EditorWindow {
 									X.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 									X.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
-								for(int k=0; k<current.KeypointField.Gradients.Length; k++) {
-									Vector3 gradient = current.KeypointField.Gradients[k].GetRelativeDirectionTo(current.Root);
-									X.Feed(gradient.x, Data.ID.Standard, "Keypoint"+(k+1)+"GradientX");
-									X.Feed(gradient.y, Data.ID.Standard, "Keypoint"+(k+1)+"GradientY");
-									X.Feed(gradient.z, Data.ID.Standard, "Keypoint"+(k+1)+"GradientZ");
-								}
-								for(int k=0; k<12; k++) {
-									X.Feed(Utility.PhaseStyle(Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles), current.Trajectory.Points[k].Phase), Data.ID.Standard, "StylePhase"+(k+1)+"-");//, GetWeight((float)k));
-								}
 								X.Store();
 								//
 
 								//Output --- REPLACE THIS WITH YOUR OWN OUTPUT EXPORTING FORMAT ---
-								//THIS PART OF THE CODE IS ALWAYS EXPERIMENTAL AND NEVER FIXED.
-								//THINGS ARE PROBABLY NOT WORKING FOR YOU. PLEASE UPDATE AS REQUIRED.
 								for(int k=6; k<12; k++) {
 									Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
 									Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
 									Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
-									float[] state = Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles);
-									//float[] stateUpdate = ArrayExtensions.Sub(Filter(ref next.Trajectory.Points[k].Styles, ref next.Trajectory.Styles, ref Styles), Filter(ref current.Trajectory.Points[k].Styles, ref current.Trajectory.Styles, ref Styles));
 									Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
 									Y.Feed(direction.z, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionZ");
 									Y.Feed(velocity.x, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityX");
 									Y.Feed(velocity.z, Data.ID.Standard, "Trajectory"+(k+1)+"VelocityZ");
-									Y.Feed(state, Data.ID.Standard, "Trajectory"+(k+1)+"State");
-									//Y.Feed(stateUpdate, Data.ID.Standard, "Trajectory"+(k+1)+"StateUpdate");
 								}
 								for(int k=0; k<next.Posture.Length; k++) {
 									Vector3 position = next.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
@@ -287,9 +269,6 @@ public class MotionExporter : EditorWindow {
 									Y.Feed(velocity.x, Data.ID.Standard, "Bone"+(k+1)+"VelocityX");
 									Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 									Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
-								}
-								for(int k=6; k<12; k++) {
-									Y.Feed(Utility.PhaseUpdate(current.Trajectory.Points[k].Phase, next.Trajectory.Points[k].Phase), Data.ID.Standard, "PhaseUpdate"+(k+1));
 								}
 								Y.Store();
 								//
@@ -465,7 +444,6 @@ public class MotionExporter : EditorWindow {
 		public Matrix4x4[] Posture;
 		public Vector3[] Velocities;
 		public Trajectory Trajectory;
-		public KeypointField KeypointField;
 
 		public State(MotionEditor editor) {
 			MotionEditor.File file = editor.GetCurrentFile();
@@ -475,7 +453,6 @@ public class MotionExporter : EditorWindow {
 			Posture = editor.GetActor().GetPosture();
 			Velocities = editor.GetActor().GetVelocities();
 			Trajectory = ((TrajectoryModule)file.Data.GetModule(Module.TYPE.Trajectory)).GetTrajectory(frame, editor.Mirror);
-			KeypointField = ((KeypointModule)file.Data.GetModule(Module.TYPE.Keypoint)).GetKeypointField(editor.GetActor());
 		}
 	}
 

@@ -17,6 +17,12 @@ namespace DeepLearning {
 
         private List<Tensor> Tensors = new List<Tensor>();
 
+        protected abstract void StoreParametersDerived();
+
+        protected abstract void LoadParametersDerived();
+        
+        public abstract void Predict();
+
         public void StoreParameters() {
             Parameters = ScriptableObject.CreateInstance<Parameters>();
             StoreParametersDerived();
@@ -35,9 +41,6 @@ namespace DeepLearning {
                 LoadParametersDerived();
             }
         }
-        protected abstract void StoreParametersDerived();
-        protected abstract void LoadParametersDerived();
-        public abstract void Predict();
 
         public Tensor CreateTensor(int rows, int cols, string id) {
             if(Tensors.Exists(x => x.ID == id)) {
