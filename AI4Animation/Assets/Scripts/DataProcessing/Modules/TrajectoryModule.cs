@@ -86,10 +86,10 @@ public class TrajectoryModule : Module {
 				float pivot = - frame.Timestamp - delta;
 				float clamped = Mathf.Clamp(pivot, 0f, Data.GetTotalTime());
 				Frame reference = Data.GetFrame(clamped);
-				trajectory.Points[i].Signals = styleModule.GetInverseSignal(reference);
+				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetInverseSignal(reference);
 			} else {
 				Frame pivot = Data.GetFrame(Mathf.Clamp(frame.Timestamp + delta, 0f, Data.GetTotalTime()));
-				trajectory.Points[i].Signals = styleModule.GetSignal(pivot);
+				trajectory.Points[i].Signals = styleModule == null ? new float[0] : styleModule.GetSignal(pivot);
 			}
 		}
 		for(int i=7; i<12; i++) {
