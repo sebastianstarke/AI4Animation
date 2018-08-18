@@ -16,6 +16,7 @@ public class MotionData : ScriptableObject {
 	public float Framerate = 1f;
 	public float Scaling = 1f;
 	public int RootSmoothing = 0;
+	public AXIS ForwardAxis = AXIS.ZPositive;
 	public AXIS MirrorAxis = AXIS.XPositive;
 	public int[] Symmetry = new int[0];
 	public LayerMask Ground = -1;
@@ -230,7 +231,7 @@ public class MotionData : ScriptableObject {
 		}
 
 		public string[] GetNames() {
-			if(Names == null) {
+			if(Names == null || Names.Length == 0) {
 				Names = new string[Bones.Length];
 				for(int i=0; i<Bones.Length; i++) {
 					Names[i] = Bones[i].Name;

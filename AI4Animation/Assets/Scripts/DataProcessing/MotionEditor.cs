@@ -701,6 +701,7 @@ public class MotionEditor : MonoBehaviour {
 							Target.SetScaling(EditorGUILayout.FloatField("Scaling", Target.GetCurrentFile().Data.Scaling));
 							Target.GetCurrentFile().Data.RootSmoothing = EditorGUILayout.IntField("Root Smoothing", Target.GetCurrentFile().Data.RootSmoothing);
 							Target.GetCurrentFile().Data.Ground = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField("Ground Mask", InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Target.GetCurrentFile().Data.Ground), InternalEditorUtility.layers));
+							Target.GetCurrentFile().Data.ForwardAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Forward Axis", Target.GetCurrentFile().Data.ForwardAxis);
 							Target.GetCurrentFile().Data.MirrorAxis = (MotionData.AXIS)EditorGUILayout.EnumPopup("Mirror Axis", Target.GetCurrentFile().Data.MirrorAxis);
 							string[] names = new string[Target.GetCurrentFile().Data.Source.Bones.Length];
 							for(int i=0; i<Target.GetCurrentFile().Data.Source.Bones.Length; i++) {

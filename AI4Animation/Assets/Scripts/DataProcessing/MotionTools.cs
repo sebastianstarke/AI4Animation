@@ -234,7 +234,15 @@ public class MotionTools : EditorWindow {
 					//((HeightMapModule)data.GetModule(Module.TYPE.HeightMap)).Size = 1f;
 
 					//data.Repair(Editors[i]);
-					((KeypointModule)data.GetModule(Module.TYPE.Keypoint)).Size = 5f;
+					//((KeypointModule)data.GetModule(Module.TYPE.Keypoint)).Size = 5f;
+
+					//PhaseModule module = (PhaseModule)data.GetModule(Module.TYPE.Phase);
+					//int index = data.Source.FindBone("LeftHandSite").Index;
+					//if(module.Variables[index] == false) {
+					//	module.ToggleVariable(index);
+					//}
+					data.Sequences[0].Start = 1;
+					data.Sequences[1].End = data.GetTotalFrames();
 
 					EditorUtility.SetDirty(data);
 				}

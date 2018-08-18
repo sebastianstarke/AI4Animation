@@ -123,7 +123,11 @@ public class Frame {
 		//forward += GetBoneTransformation(rightShoulder, mirrored, Data.RootSmoothing).GetPosition() - GetBoneTransformation(rightUpLeg, mirrored, Data.RootSmoothing).GetPosition();
 		*/
 
-		Vector3 forward = GetBoneTransformation(Data.Source.FindBoneContains("Hip").Index, mirrored, Data.RootSmoothing).GetForward();
+		//Vector3 forward = GetBoneTransformation(Data.Source.FindBoneContains("Hip").Index, mirrored, Data.RootSmoothing).GetForward();
+
+		Vector3 forward = GetBoneTransformation(0, mirrored, Data.RootSmoothing).GetForward();
+
+		forward = Quaternion.FromToRotation(Vector3.forward, Data.GetAxis(Data.ForwardAxis)) * forward;
 
 		forward.y = 0f;
 		return Quaternion.LookRotation(forward.normalized, Vector3.up);

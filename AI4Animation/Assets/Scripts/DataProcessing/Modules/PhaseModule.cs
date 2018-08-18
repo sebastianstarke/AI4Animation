@@ -60,7 +60,13 @@ public class PhaseModule : Module {
 	}
 
 	public override void Draw(MotionEditor editor) {
-
+		UltiDraw.Begin();
+		for(int i=0; i<Variables.Length; i++) {
+			if(Variables[i]) {
+				UltiDraw.DrawSphere(editor.GetCurrentFrame().GetBoneTransformation(i, editor.Mirror).GetPosition(), Quaternion.identity, 0.05f, UltiDraw.Red);
+			}
+		}
+		UltiDraw.End();
 	}
 
 	protected override void DerivedInspector(MotionEditor editor) {
