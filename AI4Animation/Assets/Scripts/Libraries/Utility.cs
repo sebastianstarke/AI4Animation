@@ -600,28 +600,6 @@ public static class Utility {
 		return Mathf.Repeat(-Vector2.SignedAngle(Vector2.up, new Vector2(FilterGaussian(x), FilterGaussian(y)).normalized) / 360f, 1f);
 	}
 
-	public static float[] PhaseStyle(float[] style, float phase) {
-		float[] result = new float[2*style.Length];
-		for(int i=0; i<style.Length; i++) {
-			Vector2 direction = style[i] * PhaseVector(phase);
-			result[2*i+0] = direction.x;
-			result[2*i+1] = direction.y;
-		}
-		return result;
-	}
-
-	/*
-	public static float[] StyleUpdatePhase(float[] previousStyle, float[] currentStyle, float previousPhase, float currentPhase) {
-		float[] previousStylePhase = StylePhase(previousStyle, previousPhase);
-		float[] currentStylePhase = StylePhase(currentStyle, currentPhase);
-		float[] result = new float[2*currentStyle.Length];
-		for(int i=0; i<result.Length; i++) {
-			result[i] = currentStylePhase[i] - previousStylePhase[i];
-		}
-		return result;
-	}
-	*/
-
 	public static float FilterGaussian(float[] values) {
 		if(values.Length == 0) {
 			return 0f;
