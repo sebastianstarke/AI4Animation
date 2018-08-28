@@ -34,8 +34,3 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-
-# Custom
-AI4Animation/Assets/Project*
-TensorFlow/Project*
-Export*
