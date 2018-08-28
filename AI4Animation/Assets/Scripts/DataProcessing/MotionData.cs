@@ -90,21 +90,6 @@ public class MotionData : ScriptableObject {
 				case Module.TYPE.Phase:
 				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<PhaseModule>().Initialise(this));
 				break;
-				case Module.TYPE.Contact:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<ContactModule>().Initialise(this));
-				break;
-				case Module.TYPE.DepthMap:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<DepthMapModule>().Initialise(this));
-				break;
-				case Module.TYPE.HeightMap:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<HeightMapModule>().Initialise(this));
-				break;
-				case Module.TYPE.UmbrellaMap:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<UmbrellaMapModule>().Initialise(this));
-				break;
-				case Module.TYPE.Keypoint:
-				ArrayExtensions.Add(ref Modules, ScriptableObject.CreateInstance<KeypointModule>().Initialise(this));
-				break;
 				default:
 				Debug.Log("Module of type " + type.ToString() + " not considered.");
 				return;
