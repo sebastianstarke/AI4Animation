@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour {
 
-	private static List<List<KeyCode>> Keys = new List<List<KeyCode>>();
+	private static List<HashSet<KeyCode>> Keys = new List<HashSet<KeyCode>>();
 	private static int Capacity = 2;
 	private static int Clients = 0;
 
@@ -32,7 +32,7 @@ public class InputHandler : MonoBehaviour {
 		while(Keys.Count >= Capacity) {
 			Keys.RemoveAt(0);
 		}
-		List<KeyCode> state = new List<KeyCode>();
+		HashSet<KeyCode> state = new HashSet<KeyCode>();
 		foreach(KeyCode k in Enum.GetValues(typeof(KeyCode))) {
 			if(Input.GetKey(k)) {
 				state.Add(k);

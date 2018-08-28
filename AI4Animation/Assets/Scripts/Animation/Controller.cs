@@ -112,9 +112,9 @@ public class Controller {
 
 		public bool Query() {
 			if(Keys.Length == 0) {
-				return true;
+				return false;
 			}
-
+			
 			bool active = false;
 
 			for(int i=0; i<Keys.Length; i++) {
