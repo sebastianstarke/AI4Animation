@@ -54,6 +54,12 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 -
 <a href="http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf">Paper</a>
 -
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
+-
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
+-
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
+-
 </p>
 
 Motion Capture
