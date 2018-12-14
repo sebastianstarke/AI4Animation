@@ -63,3 +63,9 @@ In progress.
 Copyright Information
 ------------
 This code implementation is only for research or education purposes, and (especially the learned data) not freely available for commercial use or redistribution. The intellectual property and code implementation belongs to the University of Edinburgh. Licensing is possible if you want to apply this research for commercial use. For scientific use, please reference this repository together with the relevant publications below. In any case, I would ask you to contact me if you intend to seriously use, redistribute or publish anything related to this code or repository.
+### Support:
+
+If you want the good work to continue please support us on
+
+* [PAYPAL](https://www.paypal.me/ishandutta2007)
+* [BITCOIN ADDRESS: 3LZazKXG18Hxa3LLNAeKYZNtLzCxpv1LyD](https://www.coinbase.com/join/5a8e4a045b02c403bc3a9c0c)
