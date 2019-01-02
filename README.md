@@ -60,6 +60,8 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
 -
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">MoCap Data</a>
+-
 </p>
 
 Motion Capture
