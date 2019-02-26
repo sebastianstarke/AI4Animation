@@ -220,10 +220,10 @@ public class MotionExporter : EditorWindow {
 									X.Feed(styles, Data.ID.Standard, "Trajectory"+(k+1)+"Style");
 								}
 								for(int k=0; k<current.Posture.Length; k++) {
-									Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(current.Root);
-									Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(current.Root);
-									Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(current.Root);
-									Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(current.Root);
+									Vector3 position = current.Posture[k].GetPosition().GetRelativePositionTo(previous.Root);
+									Vector3 forward = current.Posture[k].GetForward().GetRelativeDirectionTo(previous.Root);
+									Vector3 up = current.Posture[k].GetUp().GetRelativeDirectionTo(previous.Root);
+									Vector3 velocity = current.Velocities[k].GetRelativeDirectionTo(previous.Root);
 									X.Feed(position.x, Data.ID.Standard, "Bone"+(k+1)+"PositionX");
 									X.Feed(position.y, Data.ID.Standard, "Bone"+(k+1)+"PositionY");
 									X.Feed(position.z, Data.ID.Standard, "Bone"+(k+1)+"PositionZ");
@@ -242,9 +242,9 @@ public class MotionExporter : EditorWindow {
 
 								//Output --- REPLACE THIS WITH YOUR OWN OUTPUT EXPORTING FORMAT ---
 								for(int k=6; k<12; k++) {
-									Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(current.Root);
-									Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(current.Root);
-									Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(current.Root);
+									Vector3 position = next.Trajectory.Points[k].GetPosition().GetRelativePositionTo(next.Root);
+									Vector3 direction = next.Trajectory.Points[k].GetDirection().GetRelativeDirectionTo(next.Root);
+									Vector3 velocity = next.Trajectory.Points[k].GetVelocity().GetRelativeDirectionTo(next.Root);
 									Y.Feed(position.x, Data.ID.Standard, "Trajectory"+(k+1)+"PositionX");
 									Y.Feed(position.z, Data.ID.Standard, "Trajectory"+(k+1)+"PositionZ");
 									Y.Feed(direction.x, Data.ID.Standard, "Trajectory"+(k+1)+"DirectionX");
@@ -270,6 +270,8 @@ public class MotionExporter : EditorWindow {
 									Y.Feed(velocity.y, Data.ID.Standard, "Bone"+(k+1)+"VelocityY");
 									Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
+								Matrix4x4 delta = next.Root.GetRelativeTransformationTo(current.Root);
+								Y.Feed(new Vector3(delta.GetPosition().x, Vector3.SignedAngle(Vector3.forward, delta.GetForward(), Vector3.up), delta.GetPosition().z), Data.ID.Standard, "RootTransform");
 								Y.Store();
 								//
 
