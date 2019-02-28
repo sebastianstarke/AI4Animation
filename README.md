@@ -64,9 +64,13 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 -
 </p>
 
-Motion Capture
+Processing Pipeline
 ------------
-In progress.
+In progress. More information will be added soon.
+
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/ProcessingPipeline/Editor_1.png" width="33%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/ProcessingPipeline/Editor_2.png" width="33%">
+<img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/ProcessingPipeline/Editor_3.png" width="33%">
 
 Copyright Information
 ------------
