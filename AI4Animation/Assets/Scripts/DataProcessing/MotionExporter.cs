@@ -271,7 +271,6 @@ public class MotionExporter : EditorWindow {
 									Y.Feed(velocity.z, Data.ID.Standard, "Bone"+(k+1)+"VelocityZ");
 								}
 								Matrix4x4 delta = next.Root.GetRelativeTransformationTo(current.Root);
-								Vector3 dP = 
 								Y.Feed(delta.GetPosition().x, Data.ID.Standard, "RootTranslationX");
 								Y.Feed(Vector3.SignedAngle(Vector3.forward, delta.GetForward(), Vector3.up), Data.ID.Standard, "RootRotationY");
 								Y.Feed(delta.GetPosition().z, Data.ID.Standard, "RootTranslationZ");
