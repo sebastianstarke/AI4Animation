@@ -239,23 +239,16 @@ public static class Utility {
 	}
 
 	public static float GetHeight(Vector3 origin, LayerMask mask) {
-		RaycastHit[] upHits = Physics.RaycastAll(origin+Vector3.down, Vector3.up, float.PositiveInfinity, mask);
-		RaycastHit[] downHits = Physics.RaycastAll(origin+Vector3.up, Vector3.down, float.PositiveInfinity, mask);
-		if(upHits.Length == 0 && downHits.Length == 0) {
+		RaycastHit[] hits = Physics.RaycastAll(new Vector3(origin.x, 1000f, origin.z), Vector3.down, float.PositiveInfinity, mask);
+		if(hits.Length == 0) {
 			return origin.y;
-		}
-		float height = float.MinValue;
-		for(int i=0; i<downHits.Length; i++) {
-			if(downHits[i].point.y > height && !downHits[i].collider.isTrigger) {
-				height = downHits[i].point.y;
+		} else {
+			float height = float.MinValue;
+			foreach(RaycastHit hit in hits) {
+				height = Mathf.Max(hit.point.y, height);
 			}
+			return height;
 		}
-		for(int i=0; i<upHits.Length; i++) {
-			if(upHits[i].point.y > height && !upHits[i].collider.isTrigger) {
-				height = upHits[i].point.y;
-			}
-		}
-		return height;
 	}
 
 	public static float GetSlope(Vector3 origin, LayerMask mask) {
