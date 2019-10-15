@@ -9,16 +9,15 @@ SIGGRAPH Asia 2019 - Neural State Machine for Character-Scene Interactions
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_Asia_2019/Teaser.png" width="100%">
 Animating characters can be an easy or difficult task - interacting with objects is one of the latter.
-In this research, we present the Neural State Machine, a data-driven deep learning framework for character-scene interactions. The difficulty in such animations is that they require complex 
-planning of periodic as well as aperiodic movementsto complete a given task. Creating them in a production-ready quality is not straightforward and often very time-consuming. Instead, our system can synthesize different movements and scene interactions from motion capture data, and allows the user to seamlessly control the character in real-time from simple control commands. Since our model directly learns from the geometry, the motions can naturally adapt to variations in the scene. We show that our system can generate a large variety of movements, icluding locomotion, sitting on chairs, carrying boxes, opening doors and avoiding obstacles, all from a single model. The model is responsive, compact and scalable, and is the first of such frameworks to handle scene interaction tasks for data-driven character animation.<br /><br /><br />
+In this research, we present the Neural State Machine, a data-driven deep learning framework for character-scene interactions. The difficulty in such animations is that they require complex planning of periodic as well as aperiodic movementsto complete a given task. Creating them in a production-ready quality is not straightforward and often very time-consuming. Instead, our system can synthesize different movements and scene interactions from motion capture data, and allows the user to seamlessly control the character in real-time from simple control commands. Since our model directly learns from the geometry, the motions can naturally adapt to variations in the scene. We show that our system can generate a large variety of movements, icluding locomotion, sitting on chairs, carrying boxes, opening doors and avoiding obstacles, all from a single model. The model is responsive, compact and scalable, and is the first of such frameworks to handle scene interaction tasks for data-driven character animation.<br /><br /><br />
 
 <p align="center">
 -
-<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">Video</a>
+<a href="">Video (coming soon)</a>
 -
-<a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf">Paper</a>
+<a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_Asia_2019/Paper.pdf">Paper</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
+<!-- <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
@@ -27,7 +26,7 @@ planning of periodic as well as aperiodic movementsto complete a given task. Cre
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">MoCap Data</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
--
+- -->
 </p>
 
 <p align="center">
