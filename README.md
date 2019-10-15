@@ -18,7 +18,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 -
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_Asia_2019/Paper.pdf">Paper</a>
 -
-<a href="https://github.com/sebastianstarke/AI4Animation/SIGGRAPH_Asia_2017">Code (coming soon)</a>
+<a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_Asia_2019">Code (coming soon)</a>
 -
 <!-- <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
@@ -52,7 +52,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_2018/Paper.pdf">Paper</a>
 -
-<a href="https://github.com/sebastianstarke/AI4Animation/SIGGRAPH_2018">Code</a>
+<a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_2018">Code</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
@@ -89,7 +89,7 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 -
 <a href="http://theorangeduck.com/media/uploads/other_stuff/phasefunction.pdf">Paper</a>
 -
-<a href="https://github.com/sebastianstarke/AI4Animation/SIGGRAPH_2017">Code (Unity)</a>
+<a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_2017">Code (Unity)</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
 -
