@@ -6,7 +6,6 @@ Description
 This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment. More details are listed below.
 
 <br />
-------------
 SIGGRAPH Asia 2019<br />
 Neural State Machine for Character-Scene Interactions
 ------------
@@ -39,7 +38,6 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 </p> -->
 
 <br />
-------------
 SIGGRAPH 2018<br />
 Mode-Adaptive Neural Networks for Quadruped Motion Control
 ------------
@@ -73,7 +71,6 @@ This year, we will be presenting our recent research on quadruped animation and 
 </p>
 
 <br />
-------------
 SIGGRAPH 2017<br />
 Phase-Functioned Neural Networks for Character Control
 ------------
