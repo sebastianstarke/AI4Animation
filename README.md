@@ -29,11 +29,11 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 - -->
 </p>
 
-<p align="center">
+<!-- <p align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
 <img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
 </a>
-</p>
+</p> -->
 
 SIGGRAPH 2018 - Mode-Adaptive Neural Networks for Quadruped Motion Control
 ------------
