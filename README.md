@@ -32,11 +32,11 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 - -->
 </p>
 
-<!-- <p align="center">
-<a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<p align="center">
+<a href="https://www.youtube.com/watch?v=7c6oQP1u2eQ">
+<img width="60%" src="https://img.youtube.com/vi/7c6oQP1u2eQ/0.jpg">
 </a>
-</p> -->
+</p>
 
 SIGGRAPH 2018<br />
 Mode-Adaptive Neural Networks for Quadruped Motion Control
@@ -62,7 +62,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">MoCap Data</a>
 -
-<a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
+<a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
 -
 </p>
 
