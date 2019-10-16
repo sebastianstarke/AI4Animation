@@ -14,7 +14,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 
 <p align="center">
 -
-<a href="">Video (coming soon)</a>
+<a href="https://www.youtube.com/watch?v=7c6oQP1u2eQ">Video</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_Asia_2019/Paper.pdf">Paper</a>
 -
