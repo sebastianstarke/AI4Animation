@@ -43,7 +43,7 @@ Demos (coming soon)
 
 SIGGRAPH 2018<br />
 Mode-Adaptive Neural Networks for Quadruped Motion Control<br >
-<sub>He Zhang*, Sebastian Starke*, Taku Komura, Jun Saito. ACM Trans. Graph. 37, 4, Article 145. (*Joint First Authors)</sub>
+<sub>He Zhang*, Sebastian Starke*, Taku Komura, Jun Saito. ACM Trans. Graph. 37, 4, Article 145.</sub><br /><sub><sup>(*Joint First Authors)</sup><sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Teaser.png" width="100%">
 <img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="35%">
