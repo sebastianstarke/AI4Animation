@@ -6,8 +6,8 @@ Description
 This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment. More details are listed below.
 
 SIGGRAPH Asia 2019<br />
-Neural State Machine for Character-Scene Interactions
-<sub>Sebastian Starke, He Zhang, Taku Komura, Jun Saito. ACM Trans. Graph. 38, 6, Article 178</sub>
+Neural State Machine for Character-Scene Interactions<br >
+<sub>Sebastian Starke*, He Zhang*, Taku Komura, Jun Saito. ACM Trans. Graph. 38, 6, Article 178. (*Joint First Authors)</sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_Asia_2019/Teaser.jpg" width="100%">
 Animating characters can be an easy or difficult task - interacting with objects is one of the latter.
@@ -42,7 +42,8 @@ Demos (coming soon)
 </p>
 
 SIGGRAPH 2018<br />
-Mode-Adaptive Neural Networks for Quadruped Motion Control
+Mode-Adaptive Neural Networks for Quadruped Motion Control<br >
+<sub>He Zhang*, Sebastian Starke*, Taku Komura, Jun Saito. ACM Trans. Graph. 37, 4, Article 145. (*Joint First Authors)</sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Teaser.png" width="100%">
 <img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2018/Terrain.png" width="35%">
@@ -76,7 +77,8 @@ This year, we will be presenting our recent research on quadruped animation and 
 </p>
 
 SIGGRAPH 2017<br />
-Phase-Functioned Neural Networks for Character Control
+Phase-Functioned Neural Networks for Character Control<br >
+<sub>He Zhang*, Sebastian Starke*, Taku Komura, Jun Saito. ACM Trans. Graph. 36, 4, Article 42. (*Joint First Authors)</sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Adam.png" width="100%">
 <img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Original.png" width="45%">
