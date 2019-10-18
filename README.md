@@ -3,7 +3,7 @@ AI4Animation
 
 Description
 ------------
-This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment. Further work on this research will continue to be added to this project.
+This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment. Further advances on this research will continue to be added to this project.
 
 SIGGRAPH Asia 2019<br />
 Neural State Machine for Character-Scene Interactions<br >
