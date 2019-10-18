@@ -78,7 +78,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 
 SIGGRAPH 2017<br />
 Phase-Functioned Neural Networks for Character Control<br >
-<sub>Daniel Holden, Taku Komura, Jun Saito. ACM Trans. Graph. 36, 4, Article 42. (*Joint First Authors)</sub>
+<sub>Daniel Holden, Taku Komura, Jun Saito. ACM Trans. Graph. 36, 4, Article 42.</sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Adam.png" width="100%">
 <img align="left" src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_2017/Original.png" width="45%">
