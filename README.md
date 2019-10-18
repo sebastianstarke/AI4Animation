@@ -7,7 +7,7 @@ This project explores the opportunities of deep learning for character animation
 
 SIGGRAPH Asia 2019<br />
 Neural State Machine for Character-Scene Interactions
-<H4>Sebastian Starke, He Zhang, Taku Komura, Jun Saito. ACM Trans. Graph. 38, 6, Article 178</H4>
+<sub>Sebastian Starke, He Zhang, Taku Komura, Jun Saito. ACM Trans. Graph. 38, 6, Article 178</sub>
 ------------
 <img src ="https://github.com/sebastianstarke/AI4Animation/blob/master/Media/SIGGRAPH_Asia_2019/Teaser.jpg" width="100%">
 Animating characters can be an easy or difficult task - interacting with objects is one of the latter.
