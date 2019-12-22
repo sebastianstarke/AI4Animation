@@ -1,0 +1,178 @@
+fileFormatVersion: 2
+guid: 84dd37039b7865d6b8d0ac851d98057e
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: SketchUp_ID105
+    100004: SketchUp_ID111
+    100006: SketchUp_ID119
+    100008: SketchUp_ID132
+    100010: SketchUp_ID145
+    100012: SketchUp_ID15
+    100014: SketchUp_ID2
+    100016: SketchUp_ID28
+    100018: SketchUp_ID36
+    100020: SketchUp_ID49
+    100022: SketchUp_ID57
+    100024: SketchUp_ID70
+    100026: SketchUp_ID78
+    100028: SketchUp_ID84
+    100030: SketchUp_ID92
+    400000: //RootNode
+    400002: SketchUp_ID105
+    400004: SketchUp_ID111
+    400006: SketchUp_ID119
+    400008: SketchUp_ID132
+    400010: SketchUp_ID145
+    400012: SketchUp_ID15
+    400014: SketchUp_ID2
+    400016: SketchUp_ID28
+    400018: SketchUp_ID36
+    400020: SketchUp_ID49
+    400022: SketchUp_ID57
+    400024: SketchUp_ID70
+    400026: SketchUp_ID78
+    400028: SketchUp_ID84
+    400030: SketchUp_ID92
+    2100000: material_3
+    2100002: material_4
+    2100004: material_6
+    2100006: material_7
+    2100008: material_8
+    2100010: material_0
+    2100012: material
+    2100014: material_1
+    2100016: material_2
+    2100018: material_5
+    2300000: SketchUp_ID105
+    2300002: SketchUp_ID111
+    2300004: SketchUp_ID119
+    2300006: SketchUp_ID132
+    2300008: SketchUp_ID145
+    2300010: SketchUp_ID15
+    2300012: SketchUp_ID2
+    2300014: SketchUp_ID28
+    2300016: SketchUp_ID36
+    2300018: SketchUp_ID49
+    2300020: SketchUp_ID57
+    2300022: SketchUp_ID70
+    2300024: SketchUp_ID78
+    2300026: SketchUp_ID84
+    2300028: SketchUp_ID92
+    3300000: SketchUp_ID105
+    3300002: SketchUp_ID111
+    3300004: SketchUp_ID119
+    3300006: SketchUp_ID132
+    3300008: SketchUp_ID145
+    3300010: SketchUp_ID15
+    3300012: SketchUp_ID2
+    3300014: SketchUp_ID28
+    3300016: SketchUp_ID36
+    3300018: SketchUp_ID49
+    3300020: SketchUp_ID57
+    3300022: SketchUp_ID70
+    3300024: SketchUp_ID78
+    3300026: SketchUp_ID84
+    3300028: SketchUp_ID92
+    4300000: SketchUp_ID105
+    4300002: SketchUp_ID111
+    4300004: SketchUp_ID119
+    4300006: SketchUp_ID132
+    4300008: SketchUp_ID145
+    4300010: SketchUp_ID15
+    4300012: SketchUp_ID2
+    4300014: SketchUp_ID28
+    4300016: SketchUp_ID36
+    4300018: SketchUp_ID49
+    4300020: SketchUp_ID57
+    4300022: SketchUp_ID70
+    4300024: SketchUp_ID78
+    4300026: SketchUp_ID84
+    4300028: SketchUp_ID92
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

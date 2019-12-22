@@ -1,0 +1,157 @@
+fileFormatVersion: 2
+guid: 213abe995a326adb8851aa758df6d49b
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: group_0_ID3
+    100002: //RootNode
+    100004: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_10_ID102"
+    100006: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_11_ID135"
+    100008: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_1_ID113"
+    100010: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_6_ID123"
+    100012: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_7_ID58"
+    100014: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID69"
+    100016: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID77"
+    100018: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID85"
+    100020: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID18"
+    100022: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID26"
+    100024: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID41"
+    400000: group_0_ID3
+    400002: //RootNode
+    400004: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_10_ID102"
+    400006: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_11_ID135"
+    400008: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_1_ID113"
+    400010: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_6_ID123"
+    400012: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_7_ID58"
+    400014: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID69"
+    400016: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID77"
+    400018: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID85"
+    400020: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID18"
+    400022: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID26"
+    400024: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID41"
+    2100000: material
+    2100002: material_2
+    2100004: material_1
+    2100006: material_0
+    2300000: group_0_ID3
+    2300002: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_10_ID102"
+    2300004: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_11_ID135"
+    2300006: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_1_ID113"
+    2300008: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_6_ID123"
+    2300010: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_7_ID58"
+    2300012: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID69"
+    2300014: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID77"
+    2300016: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID85"
+    2300018: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID18"
+    2300020: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID26"
+    2300022: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID41"
+    3300000: group_0_ID3
+    3300002: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_10_ID102"
+    3300004: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_11_ID135"
+    3300006: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_1_ID113"
+    3300008: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_6_ID123"
+    3300010: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_7_ID58"
+    3300012: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID69"
+    3300014: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID77"
+    3300016: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID85"
+    3300018: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID18"
+    3300020: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID26"
+    3300022: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID41"
+    4300000: group_0_ID3
+    4300002: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_10_ID102"
+    4300004: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_11_ID135"
+    4300006: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_1_ID113"
+    4300008: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_6_ID123"
+    4300010: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_7_ID58"
+    4300012: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID69"
+    4300014: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID77"
+    4300016: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_8_ID85"
+    4300018: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID18"
+    4300020: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID26"
+    4300022: "\u041A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442_9_ID41"
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

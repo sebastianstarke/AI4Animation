@@ -1,0 +1,158 @@
+fileFormatVersion: 2
+guid: f299ad729df70d952b9cafcc4bad60a6
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: WS_Chelsea_Wing_Chair_ID106
+    100004: WS_Chelsea_Wing_Chair_ID114
+    100006: WS_Chelsea_Wing_Chair_ID22
+    100008: WS_Chelsea_Wing_Chair_ID30
+    100010: WS_Chelsea_Wing_Chair_ID38
+    100012: WS_Chelsea_Wing_Chair_ID4
+    100014: WS_Chelsea_Wing_Chair_ID51
+    100016: WS_Chelsea_Wing_Chair_ID59
+    100018: WS_Chelsea_Wing_Chair_ID67
+    100020: WS_Chelsea_Wing_Chair_ID75
+    100022: WS_Chelsea_Wing_Chair_ID90
+    100024: WS_Chelsea_Wing_Chair_ID98
+    400000: //RootNode
+    400002: WS_Chelsea_Wing_Chair_ID106
+    400004: WS_Chelsea_Wing_Chair_ID114
+    400006: WS_Chelsea_Wing_Chair_ID22
+    400008: WS_Chelsea_Wing_Chair_ID30
+    400010: WS_Chelsea_Wing_Chair_ID38
+    400012: WS_Chelsea_Wing_Chair_ID4
+    400014: WS_Chelsea_Wing_Chair_ID51
+    400016: WS_Chelsea_Wing_Chair_ID59
+    400018: WS_Chelsea_Wing_Chair_ID67
+    400020: WS_Chelsea_Wing_Chair_ID75
+    400022: WS_Chelsea_Wing_Chair_ID90
+    400024: WS_Chelsea_Wing_Chair_ID98
+    2100000: material
+    2100002: material_0
+    2100004: material_2
+    2100006: material_3
+    2100008: material_1
+    2300000: WS_Chelsea_Wing_Chair_ID106
+    2300002: WS_Chelsea_Wing_Chair_ID114
+    2300004: WS_Chelsea_Wing_Chair_ID22
+    2300006: WS_Chelsea_Wing_Chair_ID30
+    2300008: WS_Chelsea_Wing_Chair_ID38
+    2300010: WS_Chelsea_Wing_Chair_ID4
+    2300012: WS_Chelsea_Wing_Chair_ID51
+    2300014: WS_Chelsea_Wing_Chair_ID59
+    2300016: WS_Chelsea_Wing_Chair_ID67
+    2300018: WS_Chelsea_Wing_Chair_ID75
+    2300020: WS_Chelsea_Wing_Chair_ID90
+    2300022: WS_Chelsea_Wing_Chair_ID98
+    3300000: WS_Chelsea_Wing_Chair_ID106
+    3300002: WS_Chelsea_Wing_Chair_ID114
+    3300004: WS_Chelsea_Wing_Chair_ID22
+    3300006: WS_Chelsea_Wing_Chair_ID30
+    3300008: WS_Chelsea_Wing_Chair_ID38
+    3300010: WS_Chelsea_Wing_Chair_ID4
+    3300012: WS_Chelsea_Wing_Chair_ID51
+    3300014: WS_Chelsea_Wing_Chair_ID59
+    3300016: WS_Chelsea_Wing_Chair_ID67
+    3300018: WS_Chelsea_Wing_Chair_ID75
+    3300020: WS_Chelsea_Wing_Chair_ID90
+    3300022: WS_Chelsea_Wing_Chair_ID98
+    4300000: WS_Chelsea_Wing_Chair_ID106
+    4300002: WS_Chelsea_Wing_Chair_ID114
+    4300004: WS_Chelsea_Wing_Chair_ID22
+    4300006: WS_Chelsea_Wing_Chair_ID30
+    4300008: WS_Chelsea_Wing_Chair_ID38
+    4300010: WS_Chelsea_Wing_Chair_ID4
+    4300012: WS_Chelsea_Wing_Chair_ID51
+    4300014: WS_Chelsea_Wing_Chair_ID59
+    4300016: WS_Chelsea_Wing_Chair_ID67
+    4300018: WS_Chelsea_Wing_Chair_ID75
+    4300020: WS_Chelsea_Wing_Chair_ID90
+    4300022: WS_Chelsea_Wing_Chair_ID98
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

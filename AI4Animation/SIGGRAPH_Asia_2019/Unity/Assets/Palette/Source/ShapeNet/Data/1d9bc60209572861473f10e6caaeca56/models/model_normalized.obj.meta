@@ -1,0 +1,187 @@
+fileFormatVersion: 2
+guid: 5c3acd22210db71f49324d5f73727e8c
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: chair_half_ID176
+    100002: chair_half_ID6
+    100004: Cushion_Bead_ID137
+    100006: Cushion_Bead_ID143
+    100008: Cushion_Bead_ID54
+    100010: Cushion_Bead_ID60
+    100012: Cushion_Bottom_ID122
+    100014: Cushion_Bottom_ID166
+    100016: Cushion_Corner_ID88
+    100018: Cushion_Corner_ID98
+    100020: Cushion_Edge_1_ID30
+    100022: Cushion_Edge_1_ID68
+    100024: Cushion_Edge_2_ID18
+    100026: Cushion_Edge_2_ID80
+    100028: Cushion_Middle_ID108
+    100030: Cushion_Middle_ID44
+    100032: //RootNode
+    100034: SketchUp_ID182
+    100036: SketchUp_ID190
+    400000: chair_half_ID176
+    400002: chair_half_ID6
+    400004: Cushion_Bead_ID137
+    400006: Cushion_Bead_ID143
+    400008: Cushion_Bead_ID54
+    400010: Cushion_Bead_ID60
+    400012: Cushion_Bottom_ID122
+    400014: Cushion_Bottom_ID166
+    400016: Cushion_Corner_ID88
+    400018: Cushion_Corner_ID98
+    400020: Cushion_Edge_1_ID30
+    400022: Cushion_Edge_1_ID68
+    400024: Cushion_Edge_2_ID18
+    400026: Cushion_Edge_2_ID80
+    400028: Cushion_Middle_ID108
+    400030: Cushion_Middle_ID44
+    400032: //RootNode
+    400034: SketchUp_ID182
+    400036: SketchUp_ID190
+    2100000: material
+    2100002: material_0
+    2100004: material_1
+    2100006: material_2
+    2300000: chair_half_ID176
+    2300002: chair_half_ID6
+    2300004: Cushion_Bead_ID137
+    2300006: Cushion_Bead_ID143
+    2300008: Cushion_Bead_ID54
+    2300010: Cushion_Bead_ID60
+    2300012: Cushion_Bottom_ID122
+    2300014: Cushion_Bottom_ID166
+    2300016: Cushion_Corner_ID88
+    2300018: Cushion_Corner_ID98
+    2300020: Cushion_Edge_1_ID30
+    2300022: Cushion_Edge_1_ID68
+    2300024: Cushion_Edge_2_ID18
+    2300026: Cushion_Edge_2_ID80
+    2300028: Cushion_Middle_ID108
+    2300030: Cushion_Middle_ID44
+    2300032: SketchUp_ID182
+    2300034: SketchUp_ID190
+    3300000: chair_half_ID176
+    3300002: chair_half_ID6
+    3300004: Cushion_Bead_ID137
+    3300006: Cushion_Bead_ID143
+    3300008: Cushion_Bead_ID54
+    3300010: Cushion_Bead_ID60
+    3300012: Cushion_Bottom_ID122
+    3300014: Cushion_Bottom_ID166
+    3300016: Cushion_Corner_ID88
+    3300018: Cushion_Corner_ID98
+    3300020: Cushion_Edge_1_ID30
+    3300022: Cushion_Edge_1_ID68
+    3300024: Cushion_Edge_2_ID18
+    3300026: Cushion_Edge_2_ID80
+    3300028: Cushion_Middle_ID108
+    3300030: Cushion_Middle_ID44
+    3300032: SketchUp_ID182
+    3300034: SketchUp_ID190
+    4300000: chair_half_ID176
+    4300002: chair_half_ID6
+    4300004: Cushion_Bead_ID137
+    4300006: Cushion_Bead_ID143
+    4300008: Cushion_Bead_ID54
+    4300010: Cushion_Bead_ID60
+    4300012: Cushion_Bottom_ID122
+    4300014: Cushion_Bottom_ID166
+    4300016: Cushion_Corner_ID88
+    4300018: Cushion_Corner_ID98
+    4300020: Cushion_Edge_1_ID30
+    4300022: Cushion_Edge_1_ID68
+    4300024: Cushion_Edge_2_ID18
+    4300026: Cushion_Edge_2_ID80
+    4300028: Cushion_Middle_ID108
+    4300030: Cushion_Middle_ID44
+    4300032: SketchUp_ID182
+    4300034: SketchUp_ID190
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

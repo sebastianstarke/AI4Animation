@@ -1,0 +1,165 @@
+fileFormatVersion: 2
+guid: a2fda02db2762d5d5b9ff447d5f55b3d
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: mesh11_mesh11-geometry
+    100002: mesh1_mesh1-geometry
+    100004: mesh21_mesh21-geometry
+    100006: mesh26_mesh26-geometry
+    100008: mesh27_mesh27-geometry
+    100010: mesh37_mesh37-geometry
+    100012: mesh39_mesh39-geometry
+    100014: mesh3_mesh3-geometry
+    100016: mesh41_mesh41-geometry
+    100018: mesh42_mesh42-geometry
+    100020: mesh45_mesh45-geometry
+    100022: mesh46_mesh46-geometry
+    100024: mesh8_mesh8-geometry
+    100026: mesh9_mesh9-geometry
+    100028: //RootNode
+    400000: mesh11_mesh11-geometry
+    400002: mesh1_mesh1-geometry
+    400004: mesh21_mesh21-geometry
+    400006: mesh26_mesh26-geometry
+    400008: mesh27_mesh27-geometry
+    400010: mesh37_mesh37-geometry
+    400012: mesh39_mesh39-geometry
+    400014: mesh3_mesh3-geometry
+    400016: mesh41_mesh41-geometry
+    400018: mesh42_mesh42-geometry
+    400020: mesh45_mesh45-geometry
+    400022: mesh46_mesh46-geometry
+    400024: mesh8_mesh8-geometry
+    400026: mesh9_mesh9-geometry
+    400028: //RootNode
+    2100000: material_0_1_8
+    2100002: material_2_2_8
+    2300000: mesh11_mesh11-geometry
+    2300002: mesh1_mesh1-geometry
+    2300004: mesh21_mesh21-geometry
+    2300006: mesh26_mesh26-geometry
+    2300008: mesh27_mesh27-geometry
+    2300010: mesh37_mesh37-geometry
+    2300012: mesh39_mesh39-geometry
+    2300014: mesh3_mesh3-geometry
+    2300016: mesh41_mesh41-geometry
+    2300018: mesh42_mesh42-geometry
+    2300020: mesh45_mesh45-geometry
+    2300022: mesh46_mesh46-geometry
+    2300024: mesh8_mesh8-geometry
+    2300026: mesh9_mesh9-geometry
+    3300000: mesh11_mesh11-geometry
+    3300002: mesh1_mesh1-geometry
+    3300004: mesh21_mesh21-geometry
+    3300006: mesh26_mesh26-geometry
+    3300008: mesh27_mesh27-geometry
+    3300010: mesh37_mesh37-geometry
+    3300012: mesh39_mesh39-geometry
+    3300014: mesh3_mesh3-geometry
+    3300016: mesh41_mesh41-geometry
+    3300018: mesh42_mesh42-geometry
+    3300020: mesh45_mesh45-geometry
+    3300022: mesh46_mesh46-geometry
+    3300024: mesh8_mesh8-geometry
+    3300026: mesh9_mesh9-geometry
+    4300000: mesh11_mesh11-geometry
+    4300002: mesh1_mesh1-geometry
+    4300004: mesh21_mesh21-geometry
+    4300006: mesh26_mesh26-geometry
+    4300008: mesh27_mesh27-geometry
+    4300010: mesh37_mesh37-geometry
+    4300012: mesh39_mesh39-geometry
+    4300014: mesh3_mesh3-geometry
+    4300016: mesh41_mesh41-geometry
+    4300018: mesh42_mesh42-geometry
+    4300020: mesh45_mesh45-geometry
+    4300022: mesh46_mesh46-geometry
+    4300024: mesh8_mesh8-geometry
+    4300026: mesh9_mesh9-geometry
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
