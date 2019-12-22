@@ -19,7 +19,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 -
 <a href="https://github.com/sebastianstarke/AI4Animation//blob/master/Media/SIGGRAPH_Asia_2019/Paper.pdf">Paper</a>
 -
-Code (coming soon)
+<a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_Asia_2019">Code & Data</a>
 -
 Demos (coming soon)
 -
@@ -28,8 +28,6 @@ Demos (coming soon)
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
--
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">MoCap Data</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/blob/master/AI4Animation/Assets/Demo/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
 - -->
@@ -58,13 +56,13 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_2018">Code</a>
 -
+<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
+-
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
--
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip">MoCap Data</a>
 -
 <a href="https://github.com/sebastianstarke/AI4Animation/tree/master/AI4Animation/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
 -
