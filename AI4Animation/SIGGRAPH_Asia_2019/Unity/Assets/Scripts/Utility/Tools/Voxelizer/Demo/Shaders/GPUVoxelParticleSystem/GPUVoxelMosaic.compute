@@ -1,0 +1,107 @@
+﻿
+#pragma kernel Setup
+#pragma kernel Update
+
+#define THREAD [numthreads(8, 1, 1)]
+#define DISCARD_OVERFLOW if (id.x >= _ParticleCount) return;
+
+#include "../../../Shaders/Voxel.cginc"
+#include "Random.cginc"
+#include "Quaternion.cginc"
+#include "Noise/SimplexNoiseGrad3D.cginc"
+#include "VParticle.cginc"
+
+int _Width, _Height, _Depth;
+float _UnitLength;
+
+StructuredBuffer<Voxel> _VoxelBuffer;
+
+RWStructuredBuffer<VParticle> _ParticleBuffer;
+uint _ParticleCount;
+
+half2 _Speed; // min, max
+
+float2 _DT;
+
+uint3 GetPosition(uint index) {
+    uint3 position;
+    uint wh = _Width * _Height;
+    position.z = index / wh;
+    int rem = index % wh;
+    position.y = rem / _Width;
+    position.x = rem % _Width;
+    return position;
+}
+
+uint GetIndex(uint3 position, uint width, uint height, uint depth)
+{
+    return position.x + position.y * width + position.z * (width * height);
+}
+
+THREAD
+void Setup (uint3 id : SV_DispatchThreadID)
+{
+    DISCARD_OVERFLOW
+
+    int vindex = id.x;
+    Voxel v = _VoxelBuffer[vindex];
+
+    VParticle particle;
+    particle.position = v.position;
+    particle.size = float3(_UnitLength, _UnitLength, _UnitLength);
+    particle.rotation = QUATERNION_IDENTITY;
+    particle.velocity = float3(0, 0, 0);
+    particle.speed = lerp(_Speed.x, _Speed.y, nrand(id.xy));
+    _ParticleBuffer[id.x] = particle;
+}
+
+bool DownSample(uint id, uint level, out uint index)
+{
+    uint3 p = GetPosition(id);
+    uint w = _Width >> level;
+    uint h = _Height >> level;
+    uint d = _Depth >> level;
+    uint x = p.x >> level;
+    uint y = p.y >> level;
+    uint z = p.z >> level;
+
+    index = GetIndex(uint3(x, y, z), w, h, d);
+
+    uint div = uint(pow(2, level));
+    uint rx = p.x % div;
+    uint ry = p.y % div;
+    uint rz = p.z % div;
+    return (rx == 0 && ry == 0 && rz == 0) && (x < w && y < h && z < d);
+}
+
+int _Level;
+
+VParticle GetMosaicParticle(uint id, uint level)
+{
+    VParticle particle = _ParticleBuffer[id.x];
+
+    float dt = _DT.x * particle.speed;
+
+    uint vindex;
+    if (!DownSample(id.x, level, vindex)) {
+        particle.size = lerp(particle.size, float3(0, 0, 0), dt);
+        return particle;
+    }
+
+    Voxel v = _VoxelBuffer[vindex];
+    particle.position = lerp(particle.position, v.position, dt);
+    float3 size = v.fill ? float3(_UnitLength, _UnitLength, _UnitLength) : float3(0, 0, 0);
+    particle.size = lerp(particle.size, size, dt);
+    return particle;
+}
+
+THREAD
+void Update (uint3 id : SV_DispatchThreadID)
+{
+    DISCARD_OVERFLOW
+
+    Voxel v;
+
+    VParticle particle = GetMosaicParticle(id.x, _Level);
+    _ParticleBuffer[id.x] = particle;
+}

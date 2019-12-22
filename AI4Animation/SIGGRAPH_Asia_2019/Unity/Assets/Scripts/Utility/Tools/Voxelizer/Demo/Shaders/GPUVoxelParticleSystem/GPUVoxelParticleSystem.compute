@@ -1,0 +1,152 @@
+﻿
+#pragma kernel Setup
+#pragma kernel Update
+
+#define THREAD [numthreads(8, 1, 1)]
+#define DISCARD_OVERFLOW if (id.x >= _ParticleCount) return;
+
+#include "../../../Shaders/Voxel.cginc"
+#include "Random.cginc"
+#include "Quaternion.cginc"
+#include "Noise/SimplexNoiseGrad3D.cginc"
+#include "VParticle.cginc"
+
+int _Width, _Height, _Depth;
+float _UnitLength;
+
+StructuredBuffer<Voxel> _VoxelBuffer;
+StructuredBuffer<int> _IndexBuffer;
+
+RWStructuredBuffer<VParticle> _ParticleBuffer;
+uint _ParticleCount;
+
+float2 _DT;
+
+half2 _Speed; // min, max
+half2 _Damper; // drag, speed_imit
+half3 _Gravity;
+half2 _Life; // dt / max_life, dt / (max_life * speed_to_life)
+half2 _Spin; // max_spin * dt, speed_to_spin * dt
+half2 _NoiseParams; // frequency, amplitude * dt
+float3 _NoiseOffset;
+
+uint _Threshold;
+
+// Deterministic random rotation axis.
+float3 RotationAxis(float2 uv)
+{
+    // Uniformaly distributed points
+    // http://mathworld.wolfram.com/SpherePointPicking.html
+    float u = nrand(uv, 10) * 2 - 1;
+    float u2 = sqrt(1 - u * u);
+    float sn, cs;
+    sincos(nrand(uv, 11) * PI * 2, sn, cs);
+    return float3(u2 * cs, u2 * sn, u);
+}
+
+VParticle UpdatePosition(VParticle particle, uint2 id)
+{
+    float3 p = particle.position;
+    float3 v = particle.velocity;
+
+    // Apply the velocity cap.
+    float lv = max(length(v.xyz), 1e-6);
+    v.xyz = v * min(lv, _Damper.y) / lv;
+
+    // Update the position with the velocity.
+    p.xyz += v.xyz * _DT.x;
+    particle.position = p;
+
+    return particle;
+}
+
+VParticle UpdateVelocity(VParticle particle, uint2 id)
+{
+    float3 p = particle.position;
+    float3 v = particle.velocity;
+
+    // Drag and acceleration.
+    v.xyz = v.xyz * _Damper.x + _Gravity.xyz;
+
+    // Accelerate with the turbulent noise field.
+    float3 seed = p.xyz;
+    float3 np = (seed + _NoiseOffset) * _NoiseParams.x;
+    float3 n1 = snoise_grad(np);
+    float3 n2 = snoise_grad(np + float3(21.83, 13.28, 7.32));
+    v.xyz += cross(n1, n2) * _NoiseParams.y * particle.speed;
+    particle.velocity = v;
+
+    return particle;
+}
+
+VParticle UpdateRotation(VParticle particle, uint2 id)
+{
+    float4 r = particle.rotation;
+    float3 v = particle.velocity;
+
+    // Calculate the angular velocity.
+    float delta = min(_Spin.x, length(v.xyz) * _Spin.y);
+    delta *= 1 - nrand(id, 18) * 0.5;
+
+    // Convert it to a quaternion.
+    float sn, cs;
+    sincos(delta, sn, cs);
+    float4 dq = float4(RotationAxis(id) * sn, cs);
+
+    // Apply the quaternion and normalize it.
+    particle.rotation = normalize(qmul(dq, r));
+
+    return particle;
+}
+
+uint3 GetPosition(uint index) {
+    uint3 position;
+    uint wh = _Width * _Height;
+    position.z = index / wh;
+    int rem = index % wh;
+    position.y = rem / _Width;
+    position.x = rem % _Width;
+    return position;
+}
+
+THREAD
+void Setup (uint3 id : SV_DispatchThreadID)
+{
+    DISCARD_OVERFLOW
+
+    int vindex = _IndexBuffer[id.x];
+    Voxel v = _VoxelBuffer[vindex];
+
+    VParticle particle;
+    particle.position = v.position;
+    particle.size = float3(_UnitLength, _UnitLength, _UnitLength);
+    particle.rotation = QUATERNION_IDENTITY;
+    particle.velocity = float3(0, 0, 0);
+    particle.speed = lerp(_Speed.x, _Speed.y, nrand(id.xy));
+    _ParticleBuffer[id.x] = particle;
+}
+
+THREAD
+void Update (uint3 id : SV_DispatchThreadID)
+{
+    DISCARD_OVERFLOW
+
+    uint vindex = _IndexBuffer[id.x];
+    Voxel v = _VoxelBuffer[vindex];
+    uint3 p = GetPosition(vindex);
+    VParticle particle = _ParticleBuffer[id.x];
+    if (p.y <= _Threshold)
+    {
+        float dt = _DT.x * particle.speed;
+        particle.position = lerp(particle.position, v.position, dt);
+        particle.velocity = lerp(particle.velocity, float3(0, 0, 0), dt);
+        particle.rotation = q_slerp(particle.rotation, QUATERNION_IDENTITY, dt);
+    }
+    else
+    {
+        particle = UpdatePosition(particle, id.xy);
+        particle = UpdateVelocity(particle, id.xy);
+        particle = UpdateRotation(particle, id.xy);
+    }
+    _ParticleBuffer[id.x] = particle;
+}

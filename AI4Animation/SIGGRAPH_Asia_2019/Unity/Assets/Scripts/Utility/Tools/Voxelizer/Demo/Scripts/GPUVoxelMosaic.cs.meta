@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 3437c6b6b51966b479e6815724496e03
+timeCreated: 1515563344
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mesh: {instanceID: 0}
+  - voxelizer: {fileID: 7200000, guid: 5fdfd9c0be0cd42fca24f981cc152dd4, type: 3}
+  - particleUpdate: {fileID: 7200000, guid: 7fc3236f382c08f499f92f09480b8416, type: 3}
+  - lineMat: {fileID: 2100000, guid: 87476dd3b7809bf48813b25a281da62d, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

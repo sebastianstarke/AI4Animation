@@ -1,0 +1,63 @@
+﻿
+#pragma kernel Setup
+#pragma kernel Update
+
+#define THREAD [numthreads(8, 1, 1)]
+
+#include "../../../Shaders/Voxel.cginc"
+#include "Random.cginc"
+#include "Quaternion.cginc"
+#include "Noise/SimplexNoiseGrad3D.cginc"
+#include "VParticle.cginc"
+
+float _UnitLength;
+
+StructuredBuffer<Voxel> _VoxelBuffer;
+uint _VoxelCount;
+
+RWStructuredBuffer<VParticle> _ParticleBuffer;
+uint _ParticleCount;
+
+THREAD
+void Setup (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _ParticleCount) return;
+
+    VParticle particle;
+    particle.rotation = QUATERNION_IDENTITY;
+    particle.velocity = float3(0, 0, 0);
+    particle.speed = 0;
+
+    uint vindex = id.x;
+    if (vindex < _VoxelCount)
+    {
+        Voxel v = _VoxelBuffer[vindex];
+        particle.position = v.position;
+        particle.size = float3(1, 1, 1) * (lerp(0, _UnitLength, (uint)v.fill));
+    } else
+    {
+        particle.position = float3(0, 0, 0);
+        particle.size = float3(0, 0, 0);
+    }
+    _ParticleBuffer[id.x] = particle;
+}
+
+THREAD
+void Update (uint3 id : SV_DispatchThreadID)
+{
+    uint index = id.x;
+    if (index >= _ParticleCount) return;
+
+    VParticle particle = _ParticleBuffer[index];
+    if (index < _VoxelCount)
+    {
+        Voxel v = _VoxelBuffer[index];
+        float f01 = step(0.5, (uint)v.fill);
+        float3 size = f01 * float3(_UnitLength, _UnitLength, _UnitLength);
+        particle.position = v.position;
+        particle.size = size;
+    } else {
+        particle.size = float3(0, 0, 0);
+    }
+    _ParticleBuffer[index] = particle;
+}
