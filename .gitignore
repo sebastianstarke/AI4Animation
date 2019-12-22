@@ -56,4 +56,9 @@ AI4Animation/SIGGRAPH_Asia_2019/Unity/Packages
 
 # Temporary
 AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/Demo/Demo
-AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Carry
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Door
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Sit
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Jump
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Environment
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/MotionCapture/Locomotion
