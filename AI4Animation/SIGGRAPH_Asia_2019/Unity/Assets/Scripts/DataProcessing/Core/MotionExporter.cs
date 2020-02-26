@@ -90,6 +90,12 @@ public class MotionExporter : EditorWindow {
 					WriteMirror = EditorGUILayout.Toggle("Write Mirror", WriteMirror);
 					LoadActiveOnly = EditorGUILayout.Toggle("Load Active Only", LoadActiveOnly);
 
+					Utility.SetGUIColor(UltiDraw.White);
+					using(new EditorGUILayout.VerticalScope ("Box")) {
+						Utility.ResetGUIColor();
+						EditorGUILayout.LabelField("Export Path: " + GetExportPath());
+					}
+
 					Utility.SetGUIColor(UltiDraw.LightGrey);
 					using(new EditorGUILayout.VerticalScope ("Box")) {
 						Utility.ResetGUIColor();
@@ -510,44 +516,20 @@ public class MotionExporter : EditorWindow {
 		}
 
 	}
-	
-	public class OutputExperimental {
-		public Frame Frame;
-		public Matrix4x4 Root;
-		public Matrix4x4[] Posture;
-		public Vector3[] Velocities;
-		public Vector3[] Accelerations;
-		public TimeSeries TimeSeries;
-		public TimeSeries.Root RootSeries;
-		public TimeSeries.Style StyleSeries;
-		public TimeSeries.Goal GoalSeries;
-		public TimeSeries.Contact ContactSeries;
-		public TimeSeries.Alignment AlignmentSeries;
-		public TimeSeries.Phase PhaseSeries;
 
-		public OutputExperimental(MotionEditor editor, float timestamp) {
-			editor.LoadFrame(timestamp);
-			Frame = editor.GetCurrentFrame();
-			
-			Root = editor.GetActor().GetRoot().GetWorldMatrix(true);
-			Posture = editor.GetActor().GetBoneTransformations();
-			Velocities = editor.GetActor().GetBoneVelocities();
-			Accelerations = editor.GetActor().GetBoneAccelerations();
-			TimeSeries = ((TimeSeriesModule)editor.GetData().GetModule(Module.ID.TimeSeries)).GetTimeSeries(Frame, editor.Mirror, 6, 6, 1f, 1f, 1, 1f/editor.TargetFramerate);
-			RootSeries = (TimeSeries.Root)TimeSeries.GetSeries("Root");
-			StyleSeries = (TimeSeries.Style)TimeSeries.GetSeries("Style");
-			GoalSeries = (TimeSeries.Goal)TimeSeries.GetSeries("Goal");
-			ContactSeries = (TimeSeries.Contact)TimeSeries.GetSeries("Contact");
-			AlignmentSeries = (TimeSeries.Alignment)TimeSeries.GetSeries("Alignment");
-			PhaseSeries = (TimeSeries.Phase)TimeSeries.GetSeries("Phase");
-		}
+	private string GetExportPath() {
+		string path = Application.dataPath;
+		path = path.Substring(0, path.LastIndexOf("/"));
+		path = path.Substring(0, path.LastIndexOf("/"));
+		path += "/Export";
+		return path;
 	}
 
 	private IEnumerator ExportDataSIGGRAPHAsia() {
 		if(Editor == null) {
 			Debug.Log("No editor found.");
 		} else if(!System.IO.Directory.Exists(Application.dataPath + "/../../Export")) {
-			Debug.Log("No export folder found at " + "'" + Application.dataPath + "/../../Export'.");
+			Debug.Log("No export folder found at " + GetExportPath() + ".");
 		} else {
 			Exporting = true;
 
