@@ -131,7 +131,7 @@ public class ExpertActivation : MonoBehaviour {
 		}
 		float sum = Weights.Sum();
 		for(int i=0; i<Weights.Length; i++) {
-			Weights[i] = Weights[i] / sum == 0f ? 1f : sum;
+			Weights[i] = Weights[i] / (sum == 0f ? 1f : sum);
 		}
 		
 		for(int i=0; i<Values.Length; i++) {

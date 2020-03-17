@@ -355,28 +355,25 @@ public class TimeSeries {
 			return Transformations[index].GetForward();
 		}
 
-		public void Draw(bool gui=true) {
+		public void Draw() {
 			UltiDraw.Begin();
 
-			if(gui) {
-				List<float[]> functions = new List<float[]>();
-				for(int i=0; i<Actions.Length; i++) {
-					float[] function = new float[TimeSeries.Samples.Length];
-					for(int j=0; j<function.Length; j++) {
-						function[j] = Values[TimeSeries.Samples[j].Index][i];
-					}
-					functions.Add(function);
+			List<float[]> functions = new List<float[]>();
+			for(int i=0; i<Actions.Length; i++) {
+				float[] function = new float[TimeSeries.Samples.Length];
+				for(int j=0; j<function.Length; j++) {
+					function[j] = Values[TimeSeries.Samples[j].Index][i];
 				}
-				UltiDraw.DrawGUIFunctions(new Vector2(0.875f, 0.875f), new Vector2(0.2f, 0.1f), functions, 0f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(Actions.Length), 0.0025f, UltiDraw.Black);
-				UltiDraw.DrawGUIRectangle(new Vector2(0.875f, 0.875f), new Vector2(0.005f, 0.1f), UltiDraw.White.Transparent(0.5f));
+				functions.Add(function);
 			}
+			UltiDraw.DrawGUIFunctions(new Vector2(0.875f, 0.875f), new Vector2(0.2f, 0.1f), functions, 0f, 1f, 0.0025f, UltiDraw.DarkGrey, UltiDraw.GetRainbowColors(Actions.Length), 0.0025f, UltiDraw.Black);
+			UltiDraw.DrawGUIRectangle(new Vector2(0.875f, 0.875f), new Vector2(0.005f, 0.1f), UltiDraw.White.Transparent(0.5f));
 
 			for(int i=0; i<TimeSeries.KeyCount; i++) {
-				// if(i == TimeSeries.KeyCount-1) {
 				float size = Utility.Normalise((float)i / (float)(TimeSeries.KeyCount-1), 0f, 1f, 0.5f, 1f);
-				Matrix4x4 transformation = Transformations[TimeSeries.GetKey(i).Index];				UltiDraw.DrawWiredSphere(transformation.GetPosition(), Quaternion.LookRotation(transformation.GetForward(), Vector3.up), size*0.2f, UltiDraw.Magenta.Transparent(0.5f), UltiDraw.Black);
+				Matrix4x4 transformation = Transformations[TimeSeries.GetKey(i).Index];	
+				UltiDraw.DrawWiredSphere(transformation.GetPosition(), Quaternion.LookRotation(transformation.GetForward(), Vector3.up), size*0.2f, UltiDraw.Magenta.Transparent(0.5f), UltiDraw.Black);
 				UltiDraw.DrawTranslateGizmo(transformation.GetPosition(), Quaternion.LookRotation(transformation.GetForward(), Vector3.up), size*0.4f);
-				// }
 			}
 			UltiDraw.End();
 		}
@@ -444,6 +441,12 @@ public class TimeSeries {
 			}
 			UltiDraw.End();
 		}
+
+		public void GUI() {
+			UltiDraw.Begin();
+			UltiDraw.DrawGUILabel(0.84f, 0.625f, 0.0175f, "Contacts", UltiDraw.Black);
+			UltiDraw.End();
+		}
 	}
 
 	public class Phase : Series {
@@ -465,6 +468,12 @@ public class TimeSeries {
 			}
 			UltiDraw.Begin();
             UltiDraw.DrawGUIBars(new Vector2(0.875f, 0.510f), new Vector2(0.2f, 0.1f), values, 01f, 1f, 0.01f, UltiDraw.DarkGrey, UltiDraw.White);
+			UltiDraw.End();
+		}
+
+		public void GUI() {
+			UltiDraw.Begin();
+			UltiDraw.DrawGUILabel(0.85f, 0.4f, 0.0175f, "Phase", UltiDraw.Black);
 			UltiDraw.End();
 		}
 	}

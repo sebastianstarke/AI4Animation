@@ -12,6 +12,18 @@ public static class Utility {
 
 	private static Collider[] Colliders = new Collider[128];
 
+	public static bool InvalidClosestPointCheck(Collider collider) {
+		if(collider.isTrigger) {
+			//Debug.Log("Invalid Closest Point Check: " + collider.name + " Parent: " + collider.transform.parent.name + " Type: Trigger");
+			return true;
+		}
+		if(collider is MeshCollider) {
+			Debug.Log("Invalid Closest Point Check: " + collider.name + " Parent: " + collider.transform.name + " Parent: " + collider.transform.parent.name + " Type: MeshCollider");
+			return true;
+		}
+		return false;
+	}
+
 	public static Vector3 GetClosestPointOverlapBox(Vector3 center, Vector3 halfExtents, Quaternion rotation, LayerMask mask, out Collider collider) {
 		Collider[] colliders = Physics.OverlapBox(center, halfExtents, rotation, mask);
 		if(colliders.Length == 0) {
@@ -19,7 +31,7 @@ public static class Utility {
 			return center;
 		}
 		int pivot = 0;
-		while(colliders[pivot].isTrigger) {
+		while(InvalidClosestPointCheck(colliders[pivot])) {
 			pivot++;
 			if(pivot == colliders.Length) {
 				collider = null;
@@ -33,7 +45,7 @@ public static class Utility {
 		float min = x*x + y*y + z*z;
 		collider = colliders[pivot];
 		for(int i=pivot+1; i<colliders.Length; i++) {
-			if(!colliders[i].isTrigger) {
+			if(!InvalidClosestPointCheck(colliders[pivot])) {
 				Vector3 candidate = colliders[i].ClosestPoint(center);
 				x = (candidate.x-center.x)*(candidate.x-center.x);
 				y = (candidate.y-center.y)*(candidate.y-center.y);
@@ -63,7 +75,7 @@ public static class Utility {
 			return center;
 		}
 		int pivot = 0;
-		while(colliders[pivot].isTrigger) {
+		while(InvalidClosestPointCheck(colliders[pivot])) {
 			pivot++;
 			if(pivot == colliders.Length) {
 				collider = null;
@@ -77,7 +89,7 @@ public static class Utility {
 		float min = x*x + y*y + z*z;
 		collider = colliders[pivot];
 		for(int i=pivot+1; i<colliders.Length; i++) {
-			if(!colliders[i].isTrigger) {
+			if(!InvalidClosestPointCheck(colliders[pivot])) {
 				Vector3 candidate = colliders[i].ClosestPoint(center);
 				x = (candidate.x-center.x)*(candidate.x-center.x);
 				y = (candidate.y-center.y)*(candidate.y-center.y);

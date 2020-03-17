@@ -46,6 +46,8 @@ AI4Animation/SIGGRAPH_Asia_2019/Unity/Packages
 *.svd
 *.pdb
 *.vscode
+*.vs
+*__pychache__
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -55,4 +57,6 @@ AI4Animation/SIGGRAPH_Asia_2019/Unity/Packages
 *.unitypackage
 
 # Temporary
-AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/Demo/Demo
+AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/Demo/ToDo
+AI4Animation/SIGGRAPH_Asia_2019/TensorFlow/data
+AI4Animation/SIGGRAPH_Asia_2019/TensorFlow/trained

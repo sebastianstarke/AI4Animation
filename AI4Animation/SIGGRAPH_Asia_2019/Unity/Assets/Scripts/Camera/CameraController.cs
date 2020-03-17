@@ -8,10 +8,6 @@ public class CameraController : MonoBehaviour {
 
 	public enum MODE {FreeView, Follow, LookAt, FixedView}
 
-	public float Threshold = 0f;
-	public Camera Reference;
-	public bool Invoked = false;
-
 	public bool ShowGUI = true;
 	public MODE Mode = MODE.Follow;
 	public Transform Target;
@@ -72,29 +68,6 @@ public class CameraController : MonoBehaviour {
 		// 		transform.position += new Vector3(0f, MinHeight-height, 0f);
 		// 	}
 		// }
-
-		if(Reference != null) {
-			if(transform.position.x > Threshold && !Invoked) {
-				Invoked = true;
-				StopAllCoroutines();
-				StartCoroutine(ReferenceCoroutine());
-			}
-		}
-	}
-
-	private IEnumerator ReferenceCoroutine() {
-		float activation = 0.1f;
-		float positionWeight = 1f;
-		float rotationWeight = 2.5f;
-		float strength = 0.25f;
-		while(true) {
-			activation += strength*Time.deltaTime;
-			float weight = strength*Mathf.Clamp(activation, 0f, 1f);
-			weight *= weight;
-			transform.position = Vector3.Lerp(transform.position, Reference.transform.position, positionWeight * weight);
-			transform.rotation = Quaternion.Slerp(transform.rotation, Reference.transform.rotation, rotationWeight * weight);
-			yield return new WaitForEndOfFrame();
-		}
 	}
 
 	private GUIStyle GetButtonStyle() {

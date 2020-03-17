@@ -72,10 +72,10 @@ namespace DeepLearning {
 
 			public void Load(NSM nn, int index) {
 				if(H1Dim>0){
-					W0 = nn.CreateMatrix(H1Dim, XDim, "encoder"+index+"0"+"_w", nn.Folder+"/encoder"+index+"_w"+"0"+".bin");
-					b0 = nn.CreateMatrix(H1Dim, 1, "encoder"+index+"0"+"_b", nn.Folder+"/encoder"+index+"_b"+"0"+".bin");
-					W1 = nn.CreateMatrix(H2Dim, H1Dim, "encoder"+index+"1"+"_w", nn.Folder+"/encoder"+index+"_w"+"1"+".bin");
-					b1 = nn.CreateMatrix(H2Dim, 1, "encoder"+index+"1"+"_b", nn.Folder+"/encoder"+index+"_b"+"1"+".bin");
+					W0 = nn.CreateMatrix(H1Dim, XDim, "encoder"+index+"_w0", nn.Folder+"/encoder"+index+"_w0"+".bin");
+					b0 = nn.CreateMatrix(H1Dim, 1, "encoder"+index+"_b0", nn.Folder+"/encoder"+index+"_b0"+".bin");
+					W1 = nn.CreateMatrix(H2Dim, H1Dim, "encoder"+index+"_w1", nn.Folder+"/encoder"+index+"_w1"+".bin");
+					b1 = nn.CreateMatrix(H2Dim, 1, "encoder"+index+"_b1", nn.Folder+"/encoder"+index+"_b1"+".bin");
 				}
 
 				X = nn.CreateMatrix(XDim, 1, "encoder"+index+"X");

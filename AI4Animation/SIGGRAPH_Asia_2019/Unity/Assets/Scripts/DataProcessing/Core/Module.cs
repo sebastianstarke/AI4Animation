@@ -7,8 +7,8 @@ public abstract class Module : ScriptableObject {
 	public enum ID {TimeSeries, Root, Style, Goal, Phase, Contact, HeightMap, DepthMap, CylinderMap, CuboidMap, SphereMap, DistanceMap, Motion, Length};
 
 	public MotionData Data;
-	public bool Inspect = true;
-	public bool Visualise = true;
+	[System.NonSerialized] public bool Inspect = false;
+	[System.NonSerialized] public bool Visualise = true;
 
 	private static string[] Names = null;
 
