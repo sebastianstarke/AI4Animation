@@ -58,5 +58,4 @@ AI4Animation/SIGGRAPH_Asia_2019/Unity/Packages
 
 # Temporary
 AI4Animation/SIGGRAPH_Asia_2019/Unity/Assets/Demo/ToDo
-AI4Animation/SIGGRAPH_Asia_2019/TensorFlow/data
-AI4Animation/SIGGRAPH_Asia_2019/TensorFlow/trained
+AI4Animation/SIGGRAPH_Asia_2019/TensorFlow/Export

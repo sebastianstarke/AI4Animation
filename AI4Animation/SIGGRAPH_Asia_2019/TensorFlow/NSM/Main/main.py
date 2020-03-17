@@ -39,7 +39,7 @@ activation_encoders = [
 ]
 assert len(index_encoders) == len(dim_encoders) == len(activation_encoders)
 # Path Setting
-load_path = '../../Export'
+load_path = '../../data'
 save_path = '../../trained'
 type_normalization = 0
 name_model = "NSM"
