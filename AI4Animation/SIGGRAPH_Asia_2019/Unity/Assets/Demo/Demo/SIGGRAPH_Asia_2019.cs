@@ -185,7 +185,7 @@ public class SIGGRAPH_Asia_2019 : NeuralAnimation {
 		//Input Geometry
 		for(int i=0; i<Geometry.Points.Length; i++) {
 			NeuralNetwork.Feed(Geometry.References[i].GetRelativePositionTo(root));
-			NeuralNetwork.Feed(ShowInteraction ? Geometry.Occupancies[i] : 0f);
+			NeuralNetwork.Feed(Geometry.Occupancies[i]);
 		}
 
 		//Setup Gating Features
