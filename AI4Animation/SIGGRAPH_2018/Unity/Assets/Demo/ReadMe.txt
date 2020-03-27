@@ -18,10 +18,6 @@ The camera view can be adjusted on the top right. Switching between flat and
 terrain environment can be done on the top left. Below, you can activate / 
 deactivate different character and data visualisations.
 
-When running the demo inside the Unity engine and not using the compiled
-runtime demo, you need to download the neural network parameters as described
-in Assets/Demo/SIGGRAPH_2018/Link.txt.
-
 To generate the parameters yourself by training the network, you will need
 to download the input and output data into the TensorFlow folder outside of
 the AI4Animation project, as described in TensorFlow/SIGGRAPH_2018/data/Link.txt.

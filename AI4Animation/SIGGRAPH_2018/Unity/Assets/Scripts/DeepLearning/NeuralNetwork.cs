@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.IO;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,7 +10,6 @@ namespace DeepLearning {
 	public abstract class NeuralNetwork : MonoBehaviour {
 
 		public string Folder = "";
-        public string Destination = "";
         public Parameters Parameters = null;
 
         public Tensor X, Y;
@@ -30,7 +30,11 @@ namespace DeepLearning {
 				Parameters = null;
 			} else {
                 #if UNITY_EDITOR
-				AssetDatabase.CreateAsset(Parameters, Destination + "/Parameters.asset");
+                string[] files = Directory.GetFiles(Folder);
+                string directory = new FileInfo(files[0]).Directory.Name;
+                Parameters asset = ScriptableObject.CreateInstance<Parameters>();
+                string path = AssetDatabase.GenerateUniqueAssetPath("Assets/" + directory + ".asset");
+				AssetDatabase.CreateAsset(Parameters, path);
                 #endif
 			}
         }
