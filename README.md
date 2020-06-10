@@ -17,9 +17,9 @@ ACM Trans. Graph. 39, 4, Article 54.
 <img src ="Media/SIGGRAPH_2020/Teaser.png" width="100%">
 
 <br />
-<center>
+<p align="center">
 Not sure how to align complex character movements? Tired of phase labeling? Unclear how to squeeze everything into a single phase variable? Don't worry, a solution exists!
-</center>
+</p>
 <br />
 
 Controlling characters to perform a large variety of dynamic, fast-paced and quickly changing movements is a key challenge in character animation. In this research, we present a deep 
