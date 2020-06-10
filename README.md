@@ -163,6 +163,6 @@ In progress. More information will be added soon.
 
 Copyright Information
 ============
-This project is only for research or education purposes, and not freely available for commercial use or redistribution. The intellectual property belongs to the University of Edinburgh and Adobe Systems. Licensing is possible if you want to use the code for commercial use. For scientific use, please reference this repository together with the relevant publications below.
+This project is only for research or education purposes, and not freely available for commercial use or redistribution. The intellectual property for different scientific contributions belongs to the University of Edinburgh, Adobe Systems and Electronic Arts. Licensing is possible if you want to use the code for commercial use. For scientific use, please reference this repository together with the relevant publications below.
 
 The motion capture data is available only under the terms of the [Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/legalcode) (CC BY-NC 4.0) license.
