@@ -25,7 +25,7 @@ Not sure how to align complex character movements? Tired of phase labeling? Uncl
 Controlling characters to perform a large variety of dynamic, fast-paced and quickly changing movements is a key challenge in character animation. In this research, we present a deep 
 learning framework to interactively synthesize such animations in high quality, both from unstructured motion data and without any manual labeling. We introduce the concept of local 
 motion phases, and show our system being able to produce various motion skills, such as ball dribbling and professional maneuvers in basketball plays, shooting, catching, avoidance, 
-multiple locomotion modes as well as different character and object interactions, all generated under a unified framework.<br /><br /><br />
+multiple locomotion modes as well as different character and object interactions, all generated under a unified framework.<br /><br />
 
 <p align="center">
 -
