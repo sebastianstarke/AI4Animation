@@ -5,7 +5,7 @@ This project explores the opportunities of deep learning for character animation
 
 ------------
 **SIGGRAPH 2020**<br />
-Local Motion Phases for Learning Multi-Contact Character Movements<br >
+**Local Motion Phases for Learning Multi-Contact Character Movements**<br >
 <sub>
 <a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
 <a href="https://www.linkedin.com/in/evan-yiwei-zhao-18584a105/">Yiwei Zhao</a>, 
@@ -48,7 +48,7 @@ Code (coming soon)
 
 ------------
 **SIGGRAPH Asia 2019**<br />
-Neural State Machine for Character-Scene Interactions<br >
+**Neural State Machine for Character-Scene Interactions**<br >
 <sub>
 <a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>+</sup>, 
 <a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>+</sup>, 
@@ -80,7 +80,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 
 ------------
 **SIGGRAPH 2018**<br />
-Mode-Adaptive Neural Networks for Quadruped Motion Control<br >
+**Mode-Adaptive Neural Networks for Quadruped Motion Control**<br >
 <sub>
 <a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>+</sup>, 
 <a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>+</sup>, 
@@ -122,7 +122,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 
 ------------
 **SIGGRAPH 2017**<br />
-Phase-Functioned Neural Networks for Character Control<br >
+**Phase-Functioned Neural Networks for Character Control**<br >
 <sub>
 <a href="https://www.linkedin.com/in/daniel-holden-300b871b/">Daniel Holden</a>,
 <a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
