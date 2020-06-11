@@ -50,12 +50,12 @@ Code (coming soon)
 **SIGGRAPH Asia 2019**<br />
 Neural State Machine for Character-Scene Interactions<br >
 <sub>
-<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>*</sup>, 
-<a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>*</sup>, 
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>+</sup>, 
+<a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>+</sup>, 
 <a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
 <a href="https://www.linkedin.com/in/jun-saito/">Jun Saito</a>. 
 ACM Trans. Graph. 38, 6, Article 178.
-</sub><br /><sub><sup>(*Joint First Authors)</sup>
+</sub><br /><sub><sup>(+Joint First Authors)</sup>
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_Asia_2019/Teaser.jpg" width="100%">
@@ -82,12 +82,12 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 **SIGGRAPH 2018**<br />
 Mode-Adaptive Neural Networks for Quadruped Motion Control<br >
 <sub>
-<a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>*</sup>, 
-<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>*</sup>, 
+<a href="https://www.linkedin.com/in/he-zhang-148467165/">He Zhang</a><sup>+</sup>, 
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a><sup>+</sup>, 
 <a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
 <a href="https://www.linkedin.com/in/jun-saito/">Jun Saito</a>. 
 ACM Trans. Graph. 37, 4, Article 145.
-</sub><br /><sub><sup>(*Joint First Authors)</sup>
+</sub><br /><sub><sup>(+Joint First Authors)</sup>
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_2018/Teaser.png" width="100%">
