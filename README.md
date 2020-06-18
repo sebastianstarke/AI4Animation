@@ -1,7 +1,13 @@
-AI4Animation
+AI4Animation: Deep Learning, Character Animation, Control
 ============
 
-This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, or sports games. Further advances on this research will continue to be added to this project.
+This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a modular and stable framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository enables using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports games. Further advances on this research will continue being added to this project.
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=wNqpSk4FhSw">
+<img width="60%" src="https://img.youtube.com/vi/wNqpSk4FhSw/0.jpg">
+</a>
+</p>
 
 ------------
 **SIGGRAPH 2020**<br />
@@ -59,8 +65,11 @@ ACM Trans. Graph. 38, 6, Article 178.
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_Asia_2019/Teaser.jpg" width="100%">
+
+<p align="center">
 Animating characters can be an easy or difficult task - interacting with objects is one of the latter.
-In this research, we present the Neural State Machine, a data-driven deep learning framework for character-scene interactions. The difficulty in such animations is that they require complex planning of periodic as well as aperiodic movements to complete a given task. Creating them in a production-ready quality is not straightforward and often very time-consuming. Instead, our system can synthesize different movements and scene interactions from motion capture data, and allows the user to seamlessly control the character in real-time from simple control commands. Since our model directly learns from the geometry, the motions can naturally adapt to variations in the scene. We show that our system can generate a large variety of movements, icluding locomotion, sitting on chairs, carrying boxes, opening doors and avoiding obstacles, all from a single model. The model is responsive, compact and scalable, and is the first of such frameworks to handle scene interaction tasks for data-driven character animation.<br /><br />
+In this research, we present the Neural State Machine, a data-driven deep learning framework for character-scene interactions. The difficulty in such animations is that they require complex planning of periodic as well as aperiodic movements to complete a given task. Creating them in a production-ready quality is not straightforward and often very time-consuming. Instead, our system can synthesize different movements and scene interactions from motion capture data, and allows the user to seamlessly control the character in real-time from simple control commands. Since our model directly learns from the geometry, the motions can naturally adapt to variations in the scene. We show that our system can generate a large variety of movements, icluding locomotion, sitting on chairs, carrying boxes, opening doors and avoiding obstacles, all from a single model. The model is responsive, compact and scalable, and is the first of such frameworks to handle scene interaction tasks for data-driven character animation.
+</p>
 
 <p align="center">
 -
@@ -91,8 +100,11 @@ ACM Trans. Graph. 37, 4, Article 145.
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_2018/Teaser.png" width="100%">
+
+<p align="center">
 Animating characters can be a pain, especially those four-legged monsters!
-This year, we will be presenting our recent research on quadruped animation and character control at the SIGGRAPH 2018 in Vancouver. The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks. Instead of optimising a fixed group of weights, the system learns to dynamically blend a group of weights into a further neural network, based on the current state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an end-to-end fashion.<br /><br /><br />
+This year, we will be presenting our recent research on quadruped animation and character control at the SIGGRAPH 2018 in Vancouver. The system can produce natural animations from real motion data using a novel neural network architecture, called Mode-Adaptive Neural Networks. Instead of optimising a fixed group of weights, the system learns to dynamically blend a group of weights into a further neural network, based on the current state of the character. That said, the system does not require labels for the phase or locomotion gaits, but can learn from unstructured motion capture data in an end-to-end fashion.
+</p>
 
 <p align="center">
 -
@@ -131,11 +143,14 @@ ACM Trans. Graph. 36, 4, Article 42.
 </sub>
 ------------
 <img src ="Media/SIGGRAPH_2017/Adam.png" width="100%">
+
+<p align="center">
 This work continues the recent work on PFNN (Phase-Functioned Neural Networks) for character control.
 A demo in Unity3D using the original weights for terrain-adaptive locomotion is contained in the Assets/Demo/SIGGRAPH_2017/Original folder.
 Another demo on flat ground using the Adam character is contained in the Assets/Demo/SIGGRAPH_2017/Adam folder.
 In order to run them, you need to download the neural network weights from the link provided in the Link.txt file, extract them into the /NN folder, 
-and store the parameters via the custom inspector button.<br /><br /><br />
+and store the parameters via the custom inspector button.
+</p>
 
 <p align="center">
 -
@@ -158,6 +173,8 @@ and store the parameters via the custom inspector button.<br /><br /><br />
 <img width="60%" src="https://img.youtube.com/vi/Ul0Gilv5wvY/0.jpg">
 </a>
 </p>
+
+------------
 
 Processing Pipeline
 ============
