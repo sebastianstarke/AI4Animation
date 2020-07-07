@@ -14,7 +14,7 @@ public class MotionExporter : EditorWindow {
 	public static Vector2 Scroll;
 
 	public string Directory = string.Empty;
-	public float Framerate = 60f;
+	public float Framerate = 30f;
 	public int BatchSize = 10;
 
 	public List<LabelGroup> Actions = new List<LabelGroup>();
