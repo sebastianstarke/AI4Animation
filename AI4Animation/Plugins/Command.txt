@@ -1,0 +1,9 @@
+Commands under Linux:
+g++ -Wall -I Eigen -fPIC -shared -O2 -o libEigen.so Eigen.cpp
+g++ -Wall -I Eigen -fPIC -shared -march=native -O3 -o libEigen.so Eigen.cpp
+
+Commands under Windows:
+Open the project in VS and generate .dll from there. Information can be found in Unity tutorials.
+
+Commands under Mac:
+Generate a bundle file using XCode or similar. Information can be found in Unity tutorials.
