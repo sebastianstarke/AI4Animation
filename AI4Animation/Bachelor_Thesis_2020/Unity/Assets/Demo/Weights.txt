@@ -1,0 +1,3 @@
+Extract the weights anywhere you like on your system.
+Insert the path into the 'Folder' field of the neural network component,
+and press the 'Store Parameters' button which creates the NN asset file.

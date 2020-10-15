@@ -1,0 +1,11 @@
+Download the datasets into this folder from:
+http://www.starke-consult.de/BA_Paul/DataAugmentation/Input.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/Input_Original.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/InputLabels.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/InputLabels_Original.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/Output.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/Output_Original.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/OutputLabels.txt
+http://www.starke-consult.de/BA_Paul/DataAugmentation/OutputLabels_Original.txt
+
+To build the training data simply execute main.py.

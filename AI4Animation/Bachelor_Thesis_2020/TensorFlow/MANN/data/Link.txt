@@ -1,0 +1,3 @@
+Download the training data into this folder from:
+http://www.starke-consult.de/BA_Paul/data/Input.txt
+http://www.starke-consult.de/BA_Paul/data/Output.txt
