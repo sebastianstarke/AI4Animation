@@ -23,8 +23,8 @@ Video(coming soon)
 -
 Thesis(coming soon)
 -
-<a href="/TensorFlow/MANN/data/Link.txt">Dataset</a>
+<a href="/AI4Animation/Bachelor_Thesis_2020/TensorFlow/MANN/data/Link.txt">Dataset</a>
 -
-<a href="/Unity/Assets/Demo/ReadMe.txt">ReadMe</a>
+<a href="/AI4Animation/Bachelor_Thesis_2020/Unity/Assets/Demo">ReadMe</a>
 -
 </p>
