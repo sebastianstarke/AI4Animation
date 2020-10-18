@@ -28,3 +28,4 @@ Thesis(coming soon)
 <a href="/AI4Animation/Bachelor_Thesis_2020/Unity/Assets/Demo">ReadMe</a>
 -
 </p>
+<img src ="Media/Styles.png" width="100%">
