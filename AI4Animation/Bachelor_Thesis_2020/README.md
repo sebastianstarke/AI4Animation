@@ -21,11 +21,17 @@ Additionally, this work proposes a new dataset which aims to enhance synthetic m
 -
 Video(coming soon)
 -
-Thesis(coming soon)
+<a href="Media/Thesis.pdf">Thesis</a>
 -
 <a href="/AI4Animation/Bachelor_Thesis_2020/TensorFlow/MANN/data/Link.txt">Dataset</a>
 -
-<a href="/AI4Animation/Bachelor_Thesis_2020/Unity/Assets/Demo">ReadMe</a>
+<a href="http://www.starke-consult.de/BA_Paul/Demo/Demo_Windows.zip">Windows Demo</a>
+-
+<a href="http://www.starke-consult.de/BA_Paul/Demo/Demo_Linux.zip">Linux Demo</a>
+-
+<a href="http://www.starke-consult.de/BA_Paul/Demo/Demo_Mac.zip">Mac Demo</a>
+-
+<a href="/AI4Animation/Bachelor_Thesis_2020/Unity/Assets/Demo/ReadMe.txt">ReadMe</a>
 -
 </p>
 <img src ="Media/Styles.png" width="100%">
