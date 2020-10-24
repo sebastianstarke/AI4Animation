@@ -19,7 +19,7 @@ Additionally, this work proposes a new dataset which aims to enhance synthetic m
 
 <p align="center">
 -
-Video(coming soon)
+<a href="https://www.youtube.com/watch?v=Z3ZAjlxWK1U">Video</a>
 -
 <a href="Media/Thesis.pdf">Thesis</a>
 -
