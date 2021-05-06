@@ -162,11 +162,11 @@ and store the parameters via the custom inspector button.
 -
 <a href="AI4Animation/SIGGRAPH_2017">Code (Unity)</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
 -
 </p>
 
