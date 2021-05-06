@@ -79,7 +79,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 -
 <a href="AI4Animation/SIGGRAPH_Asia_2019">Code & Demo</a>
 -
-<a href="Media/SIGGRAPH_Asia_2019/Mocap.zip">Mocap Data</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip">Mocap Data</a>
 -
 </p>
 
@@ -116,7 +116,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="AI4Animation/SIGGRAPH_2018">Code</a>
 -
-<a href="Media/SIGGRAPH_2018/Mocap.zip">Mocap Data</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
 -
 <a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
