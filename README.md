@@ -118,11 +118,11 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
 <a href="AI4Animation/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
 -
