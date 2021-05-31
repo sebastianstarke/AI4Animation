@@ -1,1 +1,1 @@
-Export the data from Unity and place in this folder.
+Export the data from Unity using MotionExporter and place the generated files in this folder.
