@@ -9,7 +9,7 @@ This project explores the opportunities of deep learning for character animation
 </a>
 </p>
 
-<!-- ------------
+------------
 **SIGGRAPH 2021**<br />
 **Neural Animation Layering for Synthesizing Martial Arts Movements**<br >
 <sub>
@@ -42,7 +42,7 @@ Interactively synthesizing novel combinations and variations of character moveme
 <a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">
 <img width="60%" src="https://img.youtube.com/vi/SkJNxLYNwN0/0.jpg">
 </a>
-</p> -->
+</p>
 
 ------------
 **SIGGRAPH 2020**<br />
