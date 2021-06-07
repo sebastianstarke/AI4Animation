@@ -5,7 +5,7 @@ This project explores the opportunities of deep learning for character animation
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=wNqpSk4FhSw">
-<img width="60%" src="https://img.youtube.com/vi/wNqpSk4FhSw/0.jpg">
+<img width="60%" src="Media/Other/ThesisFastForward.jpg">
 </a>
 </p>
 
@@ -40,7 +40,7 @@ Interactively synthesizing novel combinations and variations of character moveme
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">
-<img width="60%" src="https://img.youtube.com/vi/SkJNxLYNwN0/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_2021/Thumbnail.jpg">
 </a>
 </p>
 
@@ -83,7 +83,7 @@ Code (finally working on it now)
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=Rzj3k3yerDk">
-<img width="60%" src="https://img.youtube.com/vi/Rzj3k3yerDk/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_2020/Thumbnail.jpg">
 </a>
 </p>
 
@@ -120,7 +120,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=7c6oQP1u2eQ">
-<img width="60%" src="https://img.youtube.com/vi/7c6oQP1u2eQ/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_Asia_2019/Thumbnail.jpg">
 </a>
 </p>
 
@@ -165,7 +165,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=uFJvRYtjQ4c">
-<img width="60%" src="https://img.youtube.com/vi/uFJvRYtjQ4c/0.jpg">
+<img width="60%" src="Media/SIGGRAPH_2018/Thumbnail.png">
 </a>
 </p>
 
