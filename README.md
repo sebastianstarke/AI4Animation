@@ -10,6 +10,41 @@ This project explores the opportunities of deep learning for character animation
 </p>
 
 ------------
+**SIGGRAPH 2021**<br />
+**Neural Animation Layering for Synthesizing Martial Arts Movements**<br >
+<sub>
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
+<a href="https://www.linkedin.com/in/evan-yiwei-zhao-18584a105/">Yiwei Zhao</a>, 
+<a href="https://www.linkedin.com/in/fabio-zinno-1a77331/">Fabio Zinno</a>, 
+<a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
+ACM Trans. Graph. 40, 4, Article 92.
+<sub>
+------------
+<img src ="Media/SIGGRAPH_2021/Teaser.jpg" width="100%">
+
+<p align="center">
+<img src ="Media/SIGGRAPH_2021/Layering.png" width="80%">
+</p>
+
+<p align="center">
+Interactively synthesizing novel combinations and variations of character movements from different motion skills is a key problem in computer animation. In this research, we propose a deep learning framework to produce a large variety of martial arts movements in a controllable manner from raw motion capture data. Our method imitates animation layering using neural networks with the aim to overcome typical challenges when mixing, blending and editing movements from unaligned motion sources. The system can be used for offline and online motion generation alike, provides an intuitive interface to integrate with animator workflows, and is relevant for real-time applications such as computer games.
+</p>
+
+<p align="center">
+-
+<a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">Video</a>
+-
+<a href="Media/SIGGRAPH_2020/Paper.pdf">Paper</a>
+-
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">
+<img width="60%" src="https://img.youtube.com/vi/SkJNxLYNwN0/0.jpg">
+</a>
+</p>
+
+------------
 **SIGGRAPH 2020**<br />
 **Local Motion Phases for Learning Multi-Contact Character Movements**<br >
 <sub>
@@ -42,7 +77,7 @@ multiple locomotion modes as well as different character and object interactions
 -
 <a href="Media/SIGGRAPH_2020/Paper.pdf">Paper</a>
 -
-Code (coming soon)
+Code (finally working on it now)
 -
 </p>
 
