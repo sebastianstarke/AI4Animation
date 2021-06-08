@@ -34,7 +34,7 @@ Interactively synthesizing novel combinations and variations of character moveme
 -
 <a href="https://www.youtube.com/watch?v=SkJNxLYNwN0">Video</a>
 -
-<a href="Media/SIGGRAPH_2020/Paper.pdf">Paper</a>
+<a href="Media/SIGGRAPH_2021/Paper.pdf">Paper</a>
 -
 </p>
 
