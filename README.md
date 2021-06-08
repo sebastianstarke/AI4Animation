@@ -169,6 +169,14 @@ This year, we will be presenting our recent research on quadruped animation and 
 </a>
 </p>
 
+
+<p align="center">
+-
+<a href="https://github.com/pauzii/AnimationAuthoring">Animation Authoring Tool</a>
+-
+</p>
+<img src ="https://github.com/pauzii/AnimationAuthoring/raw/main/Media/Teaser.png" width="100%">
+
 ------------
 **SIGGRAPH 2017**<br />
 **Phase-Functioned Neural Networks for Character Control**<br >
