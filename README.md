@@ -159,7 +159,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
-<a href="AI4Animation/SIGGRAPH_2018/ReadMe.txt">ReadMe</a>
+<a href="AI4Animation/SIGGRAPH_2018/Unity/Assets/Demo/ReadMe.txt">ReadMe</a>
 -
 </p>
 
