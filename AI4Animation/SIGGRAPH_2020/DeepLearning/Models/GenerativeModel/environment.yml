@@ -1,0 +1,13 @@
+name: gan-server2
+channels:
+  - pytorch
+  - anaconda
+  - defaults
+dependencies:
+  - numpy
+  - numpy-base
+  - pandas
+  - python=3.6.9
+  - pytorch=1.2.0
+  - scipy
+  - torchvision

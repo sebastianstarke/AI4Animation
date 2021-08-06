@@ -1,0 +1,337 @@
+﻿#pragma kernel SurfaceFront
+#pragma kernel SurfaceBack
+#pragma kernel Volume
+#pragma kernel BuildTexture3D
+
+#include "UnityCG.cginc"
+#include "./Voxel.cginc"
+
+CBUFFER_START(VoxelParams)
+
+float3 _Start, _End, _Size;
+float _Unit, _InvUnit, _HalfUnit;
+
+int _Width, _Height, _Depth;
+
+CBUFFER_END
+
+StructuredBuffer<float3> _VertBuffer;
+StructuredBuffer<float2> _UVBuffer;
+StructuredBuffer<int> _TriBuffer;
+int _TrianglesCount, _TriangleIndexes;
+
+RWStructuredBuffer<Voxel> _VoxelBuffer;
+
+struct AABB
+{
+    float3 min, max, center;
+};
+
+struct Plane
+{
+    float3 normal;
+    float distance;
+};
+
+// https://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+void tri_barycentric(float3 p, float3 a, float3 b, float3 c, out float u, out float v, out float w)
+{
+    float3 v0 = b - a, v1 = c - a, v2 = p - a;
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1);
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+    float denom = 1.0 / (d00 * d11 - d01 * d01);
+    v = (d11 * d20 - d01 * d21) * denom;
+    w = (d00 * d21 - d01 * d20) * denom;
+    u = 1.0f - v - w;
+}
+
+float2 tri_barycentric_uv(float3 p, float3 va, float3 vb, float3 vc, float2 uva, float2 uvb, float2 uvc)
+{
+    float u, v, w;
+    tri_barycentric(p, va, vb, vc, u, v, w);
+    return uva * u + uvb * v + uvc * w;
+}
+
+// check intersection between the triangle (v0, v1, v2) and AABB (extents) with projection onto the axis
+bool intersects_tri_aabb_onto_axis(float3 v0, float3 v1, float3 v2, float3 extents, float3 axis)
+{
+    // project all 3 vertices of the triangle onto the axis
+    float p0 = dot(v0, axis);
+    float p1 = dot(v1, axis);
+    float p2 = dot(v2, axis);
+
+    // project the AABB onto the axis
+    float r = extents.x * abs(axis.x) + extents.y * abs(axis.y) + extents.z * abs(axis.z);
+    float minP = min(p0, min(p1, p2));
+    float maxP = max(p0, max(p1, p2));
+    return !((maxP < -r) || (r < minP));
+}
+
+bool intersects_plane_aabb(Plane pl, AABB aabb)
+{
+    float3 center = aabb.center;
+    float3 extents = aabb.max - center;
+
+    float r = extents.x * abs(pl.normal.x) + extents.y * abs(pl.normal.y) + extents.z * abs(pl.normal.z);
+    float s = dot(pl.normal, center) - pl.distance;
+
+    return abs(s) <= r;
+}
+
+bool intersects_tri_aabb(float3 va, float3 vb, float3 vc, AABB aabb)
+{
+    float p0, p1, p2, r;
+
+    float3 center = aabb.center, extents = aabb.max - center;
+
+    // translate the triangle as conceptually moving the AABB to origin
+    float3 v0 = va - center,
+    v1 = vb - center,
+    v2 = vc - center;
+
+    // compute the edge vectors of the triangle
+    // get the lines between the points as vectors
+    float3 f0 = v1 - v0,
+    f1 = v2 - v1,
+    f2 = v0 - v2;
+
+    // cross products of triangle edges & aabb edges
+    // AABB normals are the x (1, 0, 0), y (0, 1, 0), z (0, 0, 1) axis.
+    // so we can get the cross products between triangle edge vectors and AABB normals without calculation
+    float3 a00 = float3(0, -f0.z, f0.y), // cross product of X and f0
+    a01 = float3(0, -f1.z, f1.y), // X and f1
+    a02 = float3(0, -f2.z, f2.y), // X and f2
+    a10 = float3(f0.z, 0, -f0.x), // Y and f0
+    a11 = float3(f1.z, 0, -f1.x), // Y and f1
+    a12 = float3(f2.z, 0, -f2.x), // Y and f2
+    a20 = float3(-f0.y, f0.x, 0), // Z and f0
+    a21 = float3(-f1.y, f1.x, 0), // Z and f1
+    a22 = float3(-f2.y, f2.x, 0); // Z and f2
+
+    // Test 9 axes
+    if (
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a00) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a01) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a02) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a10) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a11) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a12) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a20) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a21) ||
+        !intersects_tri_aabb_onto_axis(v0, v1, v2, extents, a22)
+    )
+    {
+        return false;
+    }
+
+    // Test x axis
+    if (max(v0.x, max(v1.x, v2.x)) < -extents.x || min(v0.x, min(v1.x, v2.x)) > extents.x)
+    {
+        return false;
+    }
+
+    // Test y axis
+    if (max(v0.y, max(v1.y, v2.y)) < -extents.y || min(v0.y, min(v1.y, v2.y)) > extents.y)
+    {
+        return false;
+    }
+
+    // Test z axis
+    if (max(v0.z, max(v1.z, v2.z)) < -extents.z || min(v0.z, min(v1.z, v2.z)) > extents.z)
+    {
+        return false;
+    }
+
+    // Test triangle normal
+    Plane pl;
+    pl.normal = normalize(cross(f1, f0));
+    pl.distance = dot(pl.normal, va);
+    return intersects_plane_aabb(pl, aabb);
+}
+
+int get_voxel_index(int x, int y, int z) {
+    return z * (_Width * _Height) + y * _Width + x;
+}
+
+float3 get_voxel_position(int x, int y, int z) {
+    return float3(
+        _Start.x + _Unit * x + _HalfUnit,
+        _Start.y + _Unit * y + _HalfUnit,
+        _Start.z + _Unit * z + _HalfUnit
+    );
+}
+
+void GetTriangle(
+    int idx, 
+    out float3 va, out float3 vb, out float3 vc, 
+    out float2 uva, out float2 uvb, out float2 uvc,
+    out bool front
+)
+{
+    int ia = _TriBuffer[idx * 3];
+    int ib = _TriBuffer[idx * 3 + 1];
+    int ic = _TriBuffer[idx * 3 + 2];
+
+    va = _VertBuffer[ia];
+    vb = _VertBuffer[ib];
+    vc = _VertBuffer[ic];
+
+    uva = _UVBuffer[ia];
+    uvb = _UVBuffer[ib];
+    uvc = _UVBuffer[ic];
+
+    float3 normal = cross((vb - va), (vc - vb));
+    front = dot(normal, float3(0, 0, 1)) < 0;
+}
+
+void Surface(
+    float3 va, float3 vb, float3 vc,
+    float2 uva, float2 uvb, float2 uvc,
+    bool front
+)
+{
+    float3 tbmin = min(min(va, vb), vc);
+    float3 tbmax = max(max(va, vb), vc);
+
+    float3 bmin = tbmin - _Start;
+    float3 bmax = tbmax - _Start;
+    int iminX = round(bmin.x / _Unit), iminY = round(bmin.y / _Unit), iminZ = round(bmin.z / _Unit);
+    int imaxX = round(bmax.x / _Unit), imaxY = round(bmax.y / _Unit), imaxZ = round(bmax.z / _Unit);
+
+    iminX = clamp(iminX, 0, _Width - 1);
+    iminY = clamp(iminY, 0, _Height - 1);
+    iminZ = clamp(iminZ, 0, _Depth - 1);
+    imaxX = clamp(imaxX, 0, _Width - 1);
+    imaxY = clamp(imaxY, 0, _Height - 1);
+    imaxZ = clamp(imaxZ, 0, _Depth - 1);
+
+    for(int x = iminX; x <= imaxX; x++) {
+        for(int y = iminY; y <= imaxY; y++) {
+            for(int z = iminZ; z <= imaxZ; z++) {
+                float3 center = float3(x, y, z) * _Unit + _Start;
+                AABB aabb;
+                aabb.min = center - _HalfUnit;
+                aabb.center = center;
+                aabb.max = center + _HalfUnit;
+                if(intersects_tri_aabb(va, vb, vc, aabb))
+                {
+                    uint vid = get_voxel_index(x, y, z);
+                    Voxel voxel = _VoxelBuffer[vid];
+                    voxel.position = get_voxel_position(x, y, z);
+                    voxel.uv = tri_barycentric_uv(voxel.position, va, vb, vc, uva, uvb, uvc);
+                    voxel.front = front;
+                    voxel.fill = true;
+                    _VoxelBuffer[vid] = voxel;
+                }
+            }
+        }
+    }
+}
+
+[numthreads(8, 1, 1)]
+void SurfaceFront (uint3 id : SV_DispatchThreadID)
+{
+    int idx = (int)id.x;
+    if(idx >= _TriangleIndexes) return;
+
+    float3 va, vb, vc;
+    float2 uva, uvb, uvc;
+    bool front;
+    GetTriangle(idx, va, vb, vc, uva, uvb, uvc, front);
+
+    if (!front) return;
+    Surface(va, vb, vc, uva, uvb, uvc, front);
+}
+
+[numthreads(8, 1, 1)]
+void SurfaceBack (uint3 id : SV_DispatchThreadID)
+{
+    int idx = (int)id.x;
+    if(idx >= _TriangleIndexes) return;
+
+    float3 va, vb, vc;
+    float2 uva, uvb, uvc;
+    bool front;
+    GetTriangle(idx, va, vb, vc, uva, uvb, uvc, front);
+
+    if (front) return;
+    Surface(va, vb, vc, uva, uvb, uvc, front);
+}
+
+[numthreads(8, 8, 1)]
+void Volume (uint3 id : SV_DispatchThreadID)
+{
+    int x = (int)id.x;
+    int y = (int)id.y;
+    if(x >= _Width) return;
+    if(y >= _Height) return;
+
+    for (int z = 0; z < _Depth; z++)
+    {
+        Voxel voxel = _VoxelBuffer[get_voxel_index(x, y, z)];
+        if (!voxel.fill) continue;
+
+        int ifront = z;
+        float2 uv = voxel.uv;
+        for (; ifront < _Depth; ifront++) {
+            int vid = get_voxel_index(x, y, ifront);
+            if (!is_front_voxel(_VoxelBuffer[vid])) {
+                break;
+            }
+            uv = _VoxelBuffer[vid].uv;
+        }
+
+        if(ifront >= _Depth) return;
+
+        int iback = ifront;
+
+        // step forward to empty
+        for (; iback < _Depth &&  is_empty_voxel(_VoxelBuffer[get_voxel_index(x, y, iback)]); iback++) {}
+
+        if (iback >= _Depth) return;
+
+        // check if iback is back voxel
+        if (is_back_voxel(_VoxelBuffer[get_voxel_index(x, y, iback)])) {
+            // step forward to back face
+            for (; iback < _Depth && is_back_voxel(_VoxelBuffer[get_voxel_index(x, y, iback)]); iback++) {}
+        }
+
+        // fill from ifront to iback
+        for(int z2 = ifront; z2 < iback; z2++)
+        {
+            Voxel v;
+            v.position = get_voxel_position(x, y, z2);
+            v.uv = uv;
+            v.fill = true;
+            v.front = false;
+            _VoxelBuffer[get_voxel_index(x, y, z2)] = v;
+        }
+
+        z = iback;
+    }
+
+}
+
+RWTexture3D<float4> _VoxelTexture;
+Texture2D<float4> _ColorTexture;
+SamplerState _PointRepeat;
+SamplerState _LinearRepeat;
+
+[numthreads(8, 8, 8)]
+void BuildTexture3D (uint3 id : SV_DispatchThreadID)
+{
+    int x = (int)id.x;
+    int y = (int)id.y;
+    int z = (int)id.z;
+
+    if(x >= _Width) return;
+    if(y >= _Height) return;
+    if(z >= _Depth) return;
+
+    uint vid = get_voxel_index(x, y, z);
+    Voxel v = _VoxelBuffer[vid];
+    _VoxelTexture[id] = lerp(float4(0, 0, 0, 0), _ColorTexture.SampleLevel(_LinearRepeat, v.uv, 0), v.fill ? 1.0 : 0.0);
+}

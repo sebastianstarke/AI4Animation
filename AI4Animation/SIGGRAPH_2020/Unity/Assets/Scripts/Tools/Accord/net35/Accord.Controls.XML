@@ -1,0 +1,3081 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Controls</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Controls.Chart">
+            <summary>
+            Chart control.
+            </summary>
+            
+            <remarks>
+            <para>
+              Note: The Chart class came from the AForge.NET Framework, from a time when better charting
+              solutions were not really available for the .NET Framework. This class is mainly intended to 
+              support applications that had already been written using AForge.NET and that would benefit from 
+              porting over to Accord.NET.</para>
+            <para>
+              At this time, if you need support for advanced charts in your application, it is recommended 
+              to use a more complete charting solution for .NET such as <a href="https://www.nuget.org/packages/ZedGraph/">
+              ZedGraph</a> or <a href="https://code.msdn.microsoft.com/Samples-Environments-for-b01e9c61">Microsoft's
+              own charting controls</a>.
+            </para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.Chart.SeriesType">
+            <summary>
+            Chart series type enumeration.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Chart.SeriesType.Line">
+            <summary>
+            Line style.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Chart.SeriesType.Dots">
+            <summary>
+            Dots style.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Chart.SeriesType.ConnectedDots">
+            <summary>
+            Connected dots style.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Chart.RangeX">
+            <summary>
+            Chart's X range.
+            </summary>
+            
+            <remarks><para>The value sets the X range of data to be displayed on the chart.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Chart.RangeY">
+             <summary>
+             Chart's Y range.
+             </summary>
+             
+             <remarks>The value sets the Y range of data to be displayed on the chart.</remarks>
+            
+        </member>
+        <member name="F:Accord.Controls.Chart.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Chart.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.Chart"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Chart.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Chart.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Chart.AddDataSeries(System.String,System.Drawing.Color,Accord.Controls.Chart.SeriesType,System.Int32)">
+            <summary>
+            Add data series to the chart.
+            </summary>
+            
+            <param name="name">Data series name.</param>
+            <param name="color">Data series color.</param>
+            <param name="type">Data series type.</param>
+            <param name="width">Width (depends on the data series type, see remarks).</param>
+            
+            <remarks><para>Adds new empty data series to the collection of data series. To update this
+            series the <see cref="M:Accord.Controls.Chart.UpdateDataSeries(System.String,System.Double[0:,0:])"/> method should be used.</para>
+            
+            <para>The meaning of the width parameter depends on the data series type:
+            <list type="bullet">
+            <item><b>Line</b> - width of the line;</item>
+            <item><b>Dots</b> - size of dots (rectangular dots with specified width and the same height);</item>
+            <item><b>Connected dots</b> - size of dots (dots are connected with one pixel width line).</item>
+            </list>
+            </para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Chart.AddDataSeries(System.String,System.Drawing.Color,Accord.Controls.Chart.SeriesType,System.Int32,System.Boolean)">
+            <summary>
+            Add data series to the chart.
+            </summary>
+            
+            <param name="name">Data series name.</param>
+            <param name="color">Data series color.</param>
+            <param name="type">Data series type.</param>
+            <param name="width">Width (depends on the data series type, see remarks).</param>
+            <param name="updateYRange">Specifies if <see cref="P:Accord.Controls.Chart.RangeY"/> should be updated.</param>
+            
+            <remarks><para>Adds new empty data series to the collection of data series.</para>
+            
+            <para>The <b>updateYRange</b> parameter specifies if the data series may affect displayable
+            Y range. If the value is set to false, then displayable Y range is not updated, but used the
+            range, which was specified by user (see <see cref="P:Accord.Controls.Chart.RangeY"/> property). In the case if the
+            value is set to true, the displayable Y range is recalculated to fully fit the new data
+            series.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Chart.UpdateDataSeries(System.String,System.Double[0:,0:])">
+            <summary>
+            Update data series on the chart.
+            </summary>
+            
+            <param name="name">Data series name to update.</param>
+            <param name="data">Data series values.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Chart.RemoveDataSeries(System.String)">
+            <summary>
+            Remove data series from the chart.
+            </summary>
+            
+            <param name="name">Data series name to remove.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Chart.RemoveAllDataSeries">
+            <summary>
+            Remove all data series from the chart.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Chart.UpdateYRange">
+            <summary>
+            Update Y range.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.Joystick">
+            <summary>
+            The class provides simple API for enumerating available joysticks and checking their
+            current status.
+            </summary>
+            
+            <remarks><para>The class provides simple access to joysticks (game controllers) through using
+            Win32 API, which allows to enumerate available devices and query their status (state of all buttons,
+            axes, etc).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // enumerate available devices
+            List&lt;Joystick.DeviceInfo&gt; devices = Joystick.GetAvailableDevices( );
+            
+            foreach ( Joystick.DeviceInfo di in devices )
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    string.Format( "{0} : {1} ({2} axes, {3} buttons)",
+                        di.ID, di.Name, di.Axes, di.Buttons ) );
+            }
+            
+            
+            // create new joystick and initialize it
+            Joystick joystick = new Joystick( 0 );
+            // get its current status
+            Joystick.Status status = joystick.GetCurrentStatus( );
+            // check if 1st button is pressed
+            if ( status.IsButtonPressed( Joystick.Buttons.Button1 ) )
+            {
+                // 1st button is pressed
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Joystick.Info">
+             <summary>
+             Information about initialized joystick.
+             </summary>
+            
+             <remarks><para>The property keeps information about joystick, which was
+             initialized using <see cref="M:Accord.Controls.Joystick.Init(System.Int32)"/> method. If no joystick was initialized,
+             then accessing this property will generate <see cref="T:System.ApplicationException"/>
+             exception.</para></remarks>
+             
+             <exception cref="T:System.ApplicationException">Joystick was not initialized.</exception>
+            
+        </member>
+        <member name="T:Accord.Controls.Joystick.DeviceInfo">
+            <summary>
+            Information about joystick connected to the system.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Joystick.DeviceInfo.ID">
+            <summary>
+            Joystick ID, [0..15].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.DeviceInfo.Name">
+            <summary>
+            Joystick name.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.DeviceInfo.Axes">
+            <summary>
+            Number of joystick axes.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.DeviceInfo.Buttons">
+            <summary>
+            Number of joystick buttons.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Joystick.GetAvailableDevices">
+            <summary>
+            Get list of available joysticks connected to the system.
+            </summary>
+            
+            <returns>Returns list containing information about available joysticks connected to
+            the system.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.Joystick.#ctor">
+             <summary>
+             Initializes a new instance of the <see cref="T:Accord.Controls.Joystick"/> class.
+             </summary>
+             
+             <remarks><para>This constructor does not make initialization of any joystick
+             device, so <see cref="M:Accord.Controls.Joystick.Init(System.Int32)"/> method should be used before querying joystick
+             status or properties.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Joystick.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.Joystick"/> class.
+            </summary>
+            
+            <param name="id">Joystick ID to initialize, [0, 15].</param>
+            
+            <remarks><para>This constructor initializes joystick with specified ID using
+            <see cref="M:Accord.Controls.Joystick.Init(System.Int32)"/> method, so the object becomes ready for querying joystick's
+            status.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Joystick.Init(System.Int32)">
+            <summary>
+            Initialize joystick with the specified ID.
+            </summary>
+            
+            <param name="id">Joystick's ID to initialize, [0, 15].</param>
+            
+            <remarks><para></para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Invalid joystick ID was specified. It must be in [0, 15] range.</exception>
+            <exception cref="T:Accord.NotConnectedException">The requested joystick is not connected to the system.</exception>
+            
+        </member>
+        <member name="M:Accord.Controls.Joystick.GetCurrentStatus">
+             <summary>
+             Get joystick's status.
+             </summary>
+             
+             <returns>Returns current status of initialized joystick, which provides information
+             about current state of all axes, buttons and point of view.</returns>
+             
+             <remarks><para><note>Before using this method the joystick object needs to be initialized
+             using <see cref="M:Accord.Controls.Joystick.Init(System.Int32)"/> method or <see cref="M:Accord.Controls.Joystick.#ctor(System.Int32)"/> constructor.</note></para></remarks>
+             
+             <exception cref="T:Accord.NotConnectedException">The requested joystick is not connected to the system.</exception>
+             <exception cref="T:System.ApplicationException">Joystick was not initialized.</exception>
+            
+        </member>
+        <member name="T:Accord.Controls.Joystick.Status">
+             <summary>
+             Class describing current joystick's status.
+             </summary>
+            
+             <remarks><para><note>All joystick axes' positions are measured in [-1, 1] range, where
+             0 corresponds to center position - axis is not deflected (directed) to any side.</note></para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.XAxis">
+            <summary>
+            Position of X axis, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.YAxis">
+            <summary>
+            Position of Y axis, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.ZAxis">
+            <summary>
+            Position of Z axis, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.RAxis">
+            <summary>
+            Position of R axis - 4th joystick's axes, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.UAxis">
+            <summary>
+            Position of U axis - 5th joystick's axes, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.VAxis">
+            <summary>
+            Position of V axis - 6th joystick's axes, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.Buttons">
+            <summary>
+            Joystick buttons' state.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Joystick.Status.PointOfView">
+            <summary>
+            Current point of view state, [0, 359].
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Joystick.Status.IsButtonPressed(Accord.Controls.Joystick.Buttons)">
+             <summary>
+             Check if certain button (or combination of buttons) is pressed.
+             </summary>
+             
+             <param name="button">Button to check state of.</param>
+             
+             <returns>Returns <see langword="true"/> if the specified button is pressed or
+             <see langword="false"/> otherwise.</returns>
+            
+        </member>
+        <member name="T:Accord.Controls.Joystick.Buttons">
+            <summary>
+            Flags enumeration of joystick buttons.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button1">
+            <summary>
+            1st button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button2">
+            <summary>
+            2nd button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button3">
+            <summary>
+            3rd button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button4">
+            <summary>
+            4th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button5">
+            <summary>
+            5th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button6">
+            <summary>
+            6th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button7">
+            <summary>
+            7th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button8">
+            <summary>
+            8th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button9">
+            <summary>
+            9th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button10">
+            <summary>
+            10th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button11">
+            <summary>
+            11th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button12">
+            <summary>
+            12th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button13">
+            <summary>
+            13th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button14">
+            <summary>
+            14th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button15">
+            <summary>
+            15th button.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Joystick.Buttons.Button16">
+            <summary>
+            16th button.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ArrayDataType">
+            <summary>
+              Array data type (i.e. jagged or multidimensional).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ArrayDataType.Simple">
+            <summary>
+              Simple array type (i.e. double[]).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ArrayDataType.Jagged">
+            <summary>
+             Jagged array type (i.e. double[][]).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ArrayDataType.Multidimensional">
+            <summary>
+             Multidimensional array type (i.e. double[,])
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.ArrayDataView">
+            <summary>
+            Represents a data bondable, customized view of two dimensional array
+            </summary>
+            
+        </member>
+        <member name="E:Accord.Controls.ArrayDataView.ListChanged">
+            <summary> Raised when the list changes. </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.#ctor(System.Array)">
+            <summary>
+              Initializes a new ArrayDataView from array.
+            </summary>
+            
+            <param name="array">array of data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.#ctor(System.Array,System.String[])">
+            <summary>
+              Initializes a new ArrayDataView from array with custom column names.
+            </summary>
+            
+            <param name="array">array of data.</param>
+            <param name="columnNames">collection of column names.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.#ctor(System.Array,System.Object[])">
+            <summary>
+              Initializes a new ArrayDataView from array with custom column names.
+            </summary>
+            
+            <param name="array">array of data.</param>
+            <param name="columnNames">collection of column names.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.#ctor(System.Array,System.String[],System.String[])">
+            <summary>
+              Initializes a new ArrayDataView from array with custom column names.
+            </summary>
+            
+            <param name="array">Array of data.</param>
+            <param name="columnNames">Collection of column names.</param>
+            <param name="rowNames">Collection of row names.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.#ctor(System.Array,System.Object[],System.Object[])">
+            <summary>
+              Initializes a new ArrayDataView from array with custom column names.
+            </summary>
+            
+            <param name="array">Array of data.</param>
+            <param name="columnNames">Collection of column names.</param>
+            <param name="rowNames">Collection of row names.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.ColumnNames">
+            <summary>
+              Gets the column names for the array currently bound.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.RowNames">
+            <summary>
+              Gets the row names for the array currently bound.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.ArrayData">
+            <summary>
+              Gets or sets the array currently bound.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.ArrayType">
+            <summary>
+              Gets the type of the array currently bound.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.RowCount">
+            <summary>
+              Gets the number of rows in the data-bound array.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.ColumnsCount">
+            <summary>
+              Gets the number of columns in the data-bound array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Reset">
+            <summary>
+              Resets the data binding.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.AddIndex(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.AllowNew">
+            <summary>
+              Arrays do not allow for member insertion.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.ApplySort(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SortProperty">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Find(System.ComponentModel.PropertyDescriptor,System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SupportsSorting">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.IsSorted">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.AllowRemove">
+            <summary>
+              Arrays do not allow member removal.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SupportsSearching">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SortDirection">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SupportsChangeNotification">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.RemoveSort">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.AddNew">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.AllowEdit">
+            <summary>
+              Gets whether this view allows editing. Always true.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.RemoveIndex(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.IsReadOnly">
+            <summary>
+              This view is read only.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.Item(System.Int32)">
+            <summary>
+              Gets a row from this view.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.RemoveAt(System.Int32)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Insert(System.Int32,System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Remove(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Contains(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Clear">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.IndexOf(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.Add(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.IsFixedSize">
+            <summary>
+              Arrays are always fixed size.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.IsSynchronized">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.Count">
+            <summary>
+              Gets the length of the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.CopyTo(System.Array,System.Int32)">
+            <summary>
+              Multidimensional arrays do not support Array copying.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayDataView.SyncRoot">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayDataView.GetEnumerator">
+            <summary>
+              Gets the array enumerator.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.ArrayPropertyDescriptor">
+            <summary>
+              Provides an abstraction of array values.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.#ctor(System.String,System.Type,System.Int32)">
+            <summary>
+              Constructs a new Array Property Descriptor.
+            </summary>
+            
+            <param name="name">A title for the array.</param>
+            <param name="type">The type of the property being displayed.</param>
+            <param name="index">The index to display.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayPropertyDescriptor.DisplayName">
+            <summary>
+              Returns the name of the array.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayPropertyDescriptor.ComponentType">
+            <summary>
+              Returns the type of ArrayRowView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayPropertyDescriptor.IsReadOnly">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayPropertyDescriptor.PropertyType">
+            <summary>
+              Gets the type of the underlying multidimensional array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.GetValue(System.Object)">
+            <summary>
+              Gets a value from the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.SetValue(System.Object,System.Object)">
+            <summary>
+              Sets a value to the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.CanResetValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.ResetValue(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayPropertyDescriptor.ShouldSerializeValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+            <param name="component"></param>
+            
+        </member>
+        <member name="T:Accord.Controls.ArrayRowView">
+            <summary>
+              Represents a row from array view.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.#ctor(Accord.Controls.ArrayDataView,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ArrayRowView"/> class.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayRowView.Name">
+            <summary>
+              Gets the row name.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetColumn(System.Int32)">
+            <summary>
+              Gets the value at the specified position of this row.
+            </summary>
+            
+            <param name="index">The column index of the element to get.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.SetColumnValue(System.Int32,System.Object)">
+            <summary>
+              Sets a value to the element at the specified position of this row.
+            </summary>
+            
+            <param name="index">The index of the element to set.</param>
+            <param name="value">The new value for the specified element.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetConverter">
+            <summary>
+              Returns null.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetEvents(System.Attribute[])">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.System#ComponentModel#ICustomTypeDescriptor#GetEvents">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetComponentName">
+            <summary>
+              Returns null.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetPropertyOwner(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Gets the owner ArrayDataView.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetAttributes">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetProperties(System.Attribute[])">
+            <summary>
+              Gets the values of the multidimensional array as properties.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetEditor(System.Type)">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetDefaultProperty">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetDefaultEvent">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.GetClassName">
+            <summary>
+              Gets the name of this class.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.EndEdit">
+            <summary>
+              Does nothing.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.CancelEdit">
+            <summary>
+              Does nothing.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ArrayRowView.BeginEdit">
+            <summary>
+              Does nothing.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.ArrayRowView.Item(System.String)">
+            <summary>
+              Gets the error message for the property with the given name.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ArrayRowView.Error">
+            <summary>
+              Gets an error message indicating what is wrong with this object.
+            </summary>
+            
+            <returns>
+              An error message indicating what is wrong with this object. The default is an empty string ("").
+            </returns>
+            
+        </member>
+        <member name="T:Accord.Controls.ConfusionMatrixPropertyDescriptor">
+            <summary>
+              Provides an abstraction of the confusion matrix values.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixPropertyDescriptor.ColumnIndex">
+            <summary>
+              Gets the index of the column being represented.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.#ctor(System.String,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ConfusionMatrixPropertyDescriptor"/> class.
+            </summary>
+            
+            <param name="name">The name for the column.</param>
+            <param name="columnIndex">Index of the column.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixPropertyDescriptor.DisplayName">
+            <summary>
+              Returns the name of the array.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixPropertyDescriptor.ComponentType">
+            <summary>
+              Returns the type of ArrayRowView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixPropertyDescriptor.IsReadOnly">
+            <summary>
+              Returns true.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixPropertyDescriptor.PropertyType">
+            <summary>
+              Returns System.Double.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.GetValue(System.Object)">
+            <summary>
+              Gets a value from the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.SetValue(System.Object,System.Object)">
+            <summary>
+              Not supported.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.CanResetValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.ResetValue(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixPropertyDescriptor.ShouldSerializeValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+            <param name="component"></param>
+            
+        </member>
+        <member name="T:Accord.Controls.ConfusionMatrixRowView">
+            <summary>
+              Represents a row from a <see cref="T:Accord.Controls.ConfusionMatrixView"/>.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixRowView.Owner">
+            <summary>
+              Gets the owner of this row.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixRowView.RowIndex">
+            <summary>
+              Gets the index for this row.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixRowView.Header">
+            <summary>
+              Gets the row's header.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetConverter">
+            <summary>
+              Returns null.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetEvents(System.Attribute[])">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.System#ComponentModel#ICustomTypeDescriptor#GetEvents">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetComponentName">
+            <summary>
+              Returns null.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetPropertyOwner(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Gets the owner ArrayDataView.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetAttributes">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetProperties(System.Attribute[])">
+            <summary>
+              Gets the values of the multidimensional array as properties.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetValue(System.Int32)">
+            <summary>
+              Gets the value for a given element in this row.
+            </summary>
+            
+            <param name="columnIndex">The column index of an element.</param>
+            
+            <returns>The element at this row located at position <paramref name="columnIndex"/>.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetEditor(System.Type)">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetDefaultProperty">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetDefaultEvent">
+            <summary>
+              Returns null.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixRowView.GetClassName">
+            <summary>
+              Gets the name of this class.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ConfusionMatrixView">
+            <summary>
+              Represents a data bondable, customized view of a
+              <see cref="T:Accord.Statistics.Analysis.GeneralConfusionMatrix">confusion matrix</see>.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.Matrix">
+            <summary>
+              Gets the Confusion Matrix being shown.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.Proportions">
+            <summary>
+              Gets or sets whether the control should
+              display proportions instead of counts.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.ColumnNames">
+            <summary>
+              Gets the names for the columns in the matrix.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.RowNames">
+            <summary>
+              Gets the names for the rows in the matrix.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.Controls.ConfusionMatrixView.ListChanged">
+            <summary>
+              Occurs when the list changes or an item in the list changes.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.#ctor(Accord.Statistics.Analysis.ConfusionMatrix)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ConfusionMatrixView"/> class.
+            </summary>
+            
+            <param name="matrix">The confusion matrix.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.#ctor(Accord.Statistics.Analysis.GeneralConfusionMatrix)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ConfusionMatrixView"/> class.
+            </summary>
+            
+            <param name="matrix">The confusion matrix.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Reset">
+            <summary>
+              Resets the data binding.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.AddIndex(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.AllowNew">
+            <summary>
+              Arrays do not allow for member insertion.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.ApplySort(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SortProperty">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Find(System.ComponentModel.PropertyDescriptor,System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SupportsSorting">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.IsSorted">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.AllowRemove">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SupportsSearching">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SortDirection">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SupportsChangeNotification">
+            <summary>
+              Returns true.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.RemoveSort">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.AddNew">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.AllowEdit">
+            <summary>
+              Gets whether this view allows editing. Always true.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.RemoveIndex(System.ComponentModel.PropertyDescriptor)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.IsReadOnly">
+            <summary>
+              This view is read only.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.Item(System.Int32)">
+            <summary>
+              Gets a row from this view.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.RemoveAt(System.Int32)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Insert(System.Int32,System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Remove(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Contains(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Clear">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.IndexOf(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.Add(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.IsFixedSize">
+            <summary>
+              Arrays are always fixed size.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.IsSynchronized">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.Count">
+            <summary>
+              Gets the length of the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.CopyTo(System.Array,System.Int32)">
+            <summary>
+              Multidimensional arrays do not support Array copying.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.CopyTo(Accord.Controls.ConfusionMatrixRowView[],System.Int32)">
+            <summary>
+              Multidimensional arrays do not support Array copying.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ConfusionMatrixView.SyncRoot">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ConfusionMatrixView.GetEnumerator">
+            <summary>
+              Gets the array enumerator.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.RowNamePropertyDescriptor">
+            <summary>
+              Provides an abstraction for array names.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.#ctor(System.String)">
+            <summary>
+              Constructs a new Array Property Descriptor.
+            </summary>
+            
+            <param name="name">A title for the array.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.RowNamePropertyDescriptor.DisplayName">
+            <summary>
+              Returns the name of the array.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.RowNamePropertyDescriptor.ComponentType">
+            <summary>
+              Returns the type of ArrayRowView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.RowNamePropertyDescriptor.IsReadOnly">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.RowNamePropertyDescriptor.PropertyType">
+            <summary>
+              Gets the type of the underlying multidimensional array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.GetValue(System.Object)">
+            <summary>
+              Gets a value from the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.SetValue(System.Object,System.Object)">
+            <summary>
+              Sets a value to the array.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.CanResetValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.ResetValue(System.Object)">
+            <summary>
+              Does nothing.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RowNamePropertyDescriptor.ShouldSerializeValue(System.Object)">
+            <summary>
+              Returns false.
+            </summary>
+            
+            <param name="component"></param>
+            
+        </member>
+        <member name="T:Accord.Controls.DataBarBox">
+            <summary>
+              Data Series Box for quickly displaying a form with a time
+              series plot on it in the same spirit as System.Windows.Forms.MessageBox.
+            </summary>
+            
+            <example>
+            <code>
+            // Create some data
+            string[] labels = {  "1",   "2",   "3" };
+            double[] data =   { 100.0, 150.0, 42.0 };
+            
+            // Display it onscreen
+            DataBarBox.Show(labels, data).Hold();
+            </code>
+              
+            <img src="../images/visualizations/databar-box.png"/>
+            </example>
+            
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the data series box.
+            </summary>
+            
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.SetGraph(System.Action{ZedGraph.GraphPane})">
+            <summary>
+              Sets properties for the graph being shown.
+            </summary>
+            
+            <param name="pane">The actions to be performed to the graph pane.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.Show(System.Collections.Generic.IEnumerable{System.String},System.Double[][])">
+            <summary>
+              Displays a bar plot.
+            </summary>
+            
+            <param name="labels">The text labels for the bars.</param>
+            <param name="values">The value at each bar.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.DataBarBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.DataBarBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.HistogramBox">
+            <summary>
+              Histogram Box for quickly displaying a form with a histogram 
+              on it in the same spirit as System.Windows.Forms.MessageBox.
+            </summary>
+            
+            <example>
+            <code>
+            // Generate some normally distributed samples
+            double[] data = NormalDistribution.Standard.Generate(100);
+              
+            // Display it onscreen
+            HistogramBox.Show(data).Hold();
+            </code>
+              
+            <img src="../images/visualizations/histogram-box.png"/>
+            </example>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.WaitForClose">
+            <summary>
+              Blocks the caller until the form is closed.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramBox.HistogramView">
+            <summary>
+              Gets the <see cref="P:Accord.Controls.HistogramBox.HistogramView"/>
+              control used to display data in this box.
+            </summary>
+            
+            <value>The histogram view control.</value>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.SetSize(System.Int32,System.Int32)">
+            <summary>
+              Sets size of the scatter plot window.
+            </summary>
+            
+            <param name="width">The desired width.</param>
+            <param name="height">The desired height.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the histogram box.
+              
+            </summary>
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.SetBinWidth(System.Double)">
+            <summary>
+              Sets the bins width in the histogram.
+            </summary>
+            
+            <param name="width">The bin width to be used.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.SetNumberOfBins(System.Int32)">
+            <summary>
+              Sets the number of bins in the histogram.
+            </summary>
+            
+            <param name="number">The number of bins to be used.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.Show(System.Double[],System.String)">
+            <summary>
+              Displays a histogram with the specified data.
+            </summary>
+            
+            <param name="title">The title for the histogram window.</param>
+            <param name="values">The histogram values.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.Show(Accord.Statistics.Visualizations.Histogram,System.String)">
+            <summary>
+              Displays a histogram.
+            </summary>
+            
+            <param name="title">The title for the histogram window.</param>
+            <param name="histogram">The histogram to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.HistogramBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.HistogramBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ColorSequenceCollection">
+             <summary>
+               Color sequence for displaying categorical images.
+             </summary>
+             
+             <remarks>
+             <para>
+               References:
+               <list type="bullet">
+                 <item><description>
+                   C.A. Glasbey, G.W.A.M. van der Heijden, V.F.K. Toh, A.J. Gray. (2007).
+               Color displays for categorical images, Color Research and Application, 32, 304-309
+               Available in: http://www.bioss.ac.uk/staff/chris/colorpaper.pdf </description></item>
+              </list></para>  
+             </remarks>
+            
+        </member>
+        <member name="F:Accord.Controls.ColorSequenceCollection.Colors">
+            <summary>
+              Gets a list of the first 32 perceptually distinct
+              colors as detected in the investigation by [Glasbey et al].
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ColorSequenceCollection"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.#ctor(System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ColorSequenceCollection"/> class.
+            </summary>
+            
+            <param name="number">The number of colors to generate.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.#ctor(System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ColorSequenceCollection"/> class.
+            </summary>
+            <param name="number">The number of colors to generate.</param>
+            <param name="skipWhite">If set to <c>true</c> white color is skipped.</param>
+            <param name="random">If set to <c>true</c> generates a sequence of random colors.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSequenceCollection.Item(System.Int32)">
+            <summary>
+              Gets the <see cref="T:System.Drawing.Color"/> with specified index.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.GetColor(System.Int32)">
+            <summary>
+              Gets the <see cref="T:System.Drawing.Color"/> with specified index.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.GetEnumerator">
+            <summary>
+              Returns an enumerator that iterates through the color collection.
+            </summary>
+            <returns>
+              An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Accord.Controls.ColorSequenceCollection.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+              Returns an enumerator that iterates through the color collection.
+            </summary>
+            <returns>
+              An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="P:Accord.Controls.ColorSequenceCollection.Count">
+            <summary>
+              Gets the number of colors in this sequence.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.RangeTypeConverter">
+            <summary>
+              Type converter for <see cref="T:Accord.DoubleRange"/>
+              and <see cref="T:Accord.IntRange"/> objects.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.GetCreateInstanceSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+              Returns true.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.CreateInstance(System.ComponentModel.ITypeDescriptorContext,System.Collections.IDictionary)">
+            <summary>
+              Creates an instance of the type that this <see cref="T:System.ComponentModel.TypeConverter"/> is associated with, using the specified context, given a set of property values for the object.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="propertyValues">An <see cref="T:System.Collections.IDictionary"/> of new property values.</param>
+            
+            <returns>
+            An <see cref="T:System.Object"/> representing the given <see cref="T:System.Collections.IDictionary"/>, or null if the object cannot be created. This method always returns null.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+              Returns true.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext,System.Object,System.Attribute[])">
+            <summary>
+            Returns a collection of properties for the type of array specified by the value parameter, using the specified context and attributes.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="value">An <see cref="T:System.Object"/> that specifies the type of array for which to get properties.</param>
+            <param name="attributes">An array of type <see cref="T:System.Attribute"/> that is used as a filter.</param>
+            
+            <returns>
+            A <see cref="T:System.ComponentModel.PropertyDescriptorCollection"/> with the properties that are exposed for this data type, or null if there are no properties.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="sourceType">A <see cref="T:System.Type"/> that represents the type you want to convert from.</param>
+            
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert the object to the specified type, using the specified context.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="destinationType">A <see cref="T:System.Type"/> that represents the type you want to convert to.</param>
+            
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts the given value object to the specified type, using the specified context and culture information.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"/>. If null is passed, the current culture is assumed.</param>
+            <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+            <param name="destinationType">The <see cref="T:System.Type"/> to convert the <paramref name="value"/> parameter to.</param>
+            
+            <returns>
+            An <see cref="T:System.Object"/> that represents the converted value.
+            </returns>
+            
+            <exception cref="T:System.ArgumentNullException">
+            The <paramref name="destinationType"/> parameter is null.
+            </exception>
+            
+            <exception cref="T:System.NotSupportedException">
+            The conversion cannot be performed.
+            </exception>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+              Converts the given object to the type of this converter, using the specified context and culture information.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/> to use as the current culture.</param>
+            <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+            
+            <returns>
+            An <see cref="T:System.Object"/> that represents the converted value.
+            </returns>
+            
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+            
+        </member>
+        <member name="M:Accord.Controls.RangeTypeConverter.Assign">
+            <summary>
+              Assign this converter to the AForge types. This method
+              should be called before an AForge range type can be
+              bound to controls such as the PropertyGrid.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.DataSeriesBox">
+            <summary>
+              Data Series Box for quickly displaying a form with a time
+              series plot on it in the same spirit as System.Windows.Forms.MessageBox.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the data series box.
+              
+            </summary>
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.SetGraph(System.Action{ZedGraph.GraphPane})">
+            <summary>
+              Sets properties for the graph being shown.
+            </summary>
+            
+            <param name="pane">The actions to be performed to the graph pane.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.SetLabels(System.String[],System.Single)">
+            <summary>
+              Sets the data labels for the values being shown.
+            </summary>
+            
+            <param name="labels">The text labels.</param>
+            <param name="size">The text size.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Collections.Generic.IEnumerable{System.Double}[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the data.</param>
+            <param name="series">The data series.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.Collections.Generic.IEnumerable{System.Double},System.Collections.Generic.IEnumerable{System.Double}[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="values">The x-values for the data series.</param>
+            <param name="series">The data series.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.Collections.Generic.IEnumerable{System.DateTime},System.Collections.Generic.IEnumerable{System.Double}[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="values">The x-values for the data series.</param>
+            <param name="series">The data series.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Func{System.Double,System.Double},Accord.DoubleRange)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="range">The functions argument range to be plotted.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Func{System.Double,System.Double},System.Int32)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="npoints">The number of points to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Func{System.Double,System.Double},System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Func{System.Double,System.Double})">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Show(System.String,System.Func{System.Double,System.Double},System.Double,System.Double,System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="max">The maximum value for the functions argument parameter.</param>
+            <param name="min">The minimum value for the functions argument parameter.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.DataSeriesBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.DataSeriesBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.DataGridBox">
+            <summary>
+              Data Grid Box for quickly displaying a form with a DataGridView
+              on it in the same spirit as System.Windows.Forms.MessageBox.
+            </summary>
+            
+            <example>
+            <code>
+            // Create some data
+            double[,] data = Matrix.Identity(5);
+              
+            // Display it onscreen
+            DataGridBox.Show(data).Hold();
+            </code>
+              
+            <img src="../images/visualizations/datagrid-box.png"/>
+            </example>
+            
+        </member>
+        <member name="P:Accord.Controls.DataGridBox.DataGridView">
+            <summary>
+              Gets the <see cref="P:Accord.Controls.DataGridBox.DataGridView"/> control contained
+              in this box. As it runs on a different thread, any 
+              operations needs to be invoked on the control's thread.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetDefaultFontSize(System.Single)">
+            <summary>
+              Sets the cell font size.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetColumnHeadersVisible(System.Boolean)">
+            <summary>
+              Sets the visibility of the column headers.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetRowHeadersVisible(System.Boolean)">
+            <summary>
+              Sets the visibility of the row headers.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetAutoSizeColumns(System.Windows.Forms.DataGridViewAutoSizeColumnsMode)">
+            <summary>
+              Sets the auto-size mode for the columns.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetAutoSizeRows(System.Windows.Forms.DataGridViewAutoSizeRowsMode)">
+            <summary>
+              Sets the auto-size mode for the rows.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.WaitForClose">
+            <summary>
+              Blocks the caller until the form is closed.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Close">
+            <summary>
+              Closes the form.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the data grid box.
+              
+            </summary>
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Show(System.Object,System.String)">
+            <summary>
+              Displays a Data Grid View with the specified data.
+            </summary>
+            
+            <param name="source">The source object to display.</param>
+            <param name="title">The title for the data window.</param>
+            
+            <returns>The Data Grid Box being shown.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Show(System.Data.DataTable)">
+            <summary>
+              Displays a Data Grid View with the specified data.
+            </summary>
+            
+            <param name="table">The source table to display.</param>
+            
+            <returns>The Data Grid Box being shown.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Show(System.Array,System.String,System.Object[],System.Object[])">
+            <summary>
+              Displays a Data Grid View with the specified data.
+            </summary>
+            
+            <param name="array">The array to be displayed.</param>
+            <param name="colNames">A collection of column names to be displayed.</param>
+            <param name="rowNames">A collection of row names to be displayed.</param>
+            <param name="title">The title for the data window.</param>
+            
+            <returns>The Data Grid Box being shown.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.DataGridBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.DataGridBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.DenavitHartenbergViewer">
+            <summary>
+              Denavit Hartenberg Viewer.
+            </summary>
+            
+            <remarks>
+              This class can be used to visualize a D-H model as bitmaps.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.LinksColor">
+            <summary>
+              Gets or sets the color of the links between joints
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.JointsColor">
+            <summary>
+              Gets or sets the color of the joints
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.EndJointColor">
+            <summary>
+              Gets or sets the color of the last joint of a model
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.BaseJointColor">
+            <summary>
+              Gets or sets the color of the first joint of a model
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.BackColor">
+            <summary>
+              Gets or sets the color of the rendering surface background
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.Scale">
+            <summary>
+              Gets or sets the value to scale the drawing of the model to fit the window. Default is 1.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.JointRadius">
+            <summary>
+              Gets or sets the radius of the joints circles. Default is 8.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.ArrowsBoundingBox">
+            <summary>
+              Gets or sets the arrows indicating the axes on each drawing represented as a Rectangle object.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.#ctor(System.Int32,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.DenavitHartenbergViewer"/> class.
+            </summary>
+            
+            <param name="width">Width of the drawing window</param>
+            <param name="height">Height of the drawing window</param>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.PlaneXY">
+            <summary>
+              Image of the model viewed on the XY plane.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.PlaneYZ">
+            <summary>
+              Image of the model viewed on the YZ plane.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DenavitHartenbergViewer.PlaneXZ">
+            <summary>
+              Image of the model viewed on the XZ plane.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.GetAllModels(Accord.Math.Kinematics.DenavitHartenbergNode,System.Collections.Generic.List{Accord.Math.Kinematics.DenavitHartenbergModel})">
+            <summary>
+              Makes a list of all the models contained on a
+              ModelCombinator. This function is recursive.
+            </summary>
+            
+            <param name="model">
+              ModelCombinator model in which to extract all the models. </param>
+            <param name="models">
+              List of already extracted models. It accumulates all the 
+              models at each call of this function.</param>
+              
+            <returns>Returns a list of all the models contained in the 
+            ModelCombinator 'model' plus all previously extracted models</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.ComputeImages(Accord.Math.Kinematics.DenavitHartenbergNode[])">
+            <summary>
+              Computes the three images of a list of ModelCombinator
+            </summary>
+            
+            <param name="model">List of arguments of models to be drawn</param>
+            
+            <remarks>This function assumes that the models have already been calculated.</remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.ComputeImages(Accord.Math.Kinematics.DenavitHartenbergModel[])">
+            <summary>
+              Computes the three images of a list of models
+            </summary>
+            
+            <param name="model">List of arguments of models</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.DrawArrows(System.Drawing.Graphics@,System.String,System.String)">
+            <summary>
+              Method to draw arrows to indicate the axis.
+            </summary>
+            
+            <param name="g">Graphics variable to use to draw.</param>
+            <param name="topArrowText">Text to draw on the top of the arrow.</param>
+            <param name="rightArrowText">Text to draw on the right arrow.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.Controls.DenavitHartenbergViewer"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DenavitHartenbergViewer.Dispose(System.Boolean)">
+             <summary>
+               Releases unmanaged and - optionally - managed resources
+             </summary>
+             
+             <param name="disposing"><c>true</c> to release both managed
+             and unmanaged resources; <c>false</c> to release only unmanaged
+             resources.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.NumericCollectionEditor">
+            <summary>
+              Type editor for numeric collections.
+            </summary>
+            
+            <remarks>
+              This class can be used to edit numeric collections
+              more easily in property grids.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.NumericCollectionEditor.CollectionItemType">
+            <summary>
+              Gets the type of the items contained in the collection.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.NumericCollectionEditor.CollectionType">
+            <summary>
+              Gets the type of the collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditor.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.NumericCollectionEditor"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditor.EditValue(System.ComponentModel.ITypeDescriptorContext,System.IServiceProvider,System.Object)">
+            <summary>
+              Edits the specified object's value using the editor style indicated by the <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> method.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
+            <param name="provider">An <see cref="T:System.IServiceProvider"/> that this editor can use to obtain services.</param>
+            <param name="value">The object to edit.</param>
+            
+            <returns>
+              The new value of the object. If the value of the object has not changed, this should return the same object it was passed.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditor.GetEditStyle(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+              Gets the editor style used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"/> method.
+            </summary>
+            
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
+            
+            <returns>
+            A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle"/> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"/> method. If the <see cref="T:System.Drawing.Design.UITypeEditor"/> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None"/>.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditor.GetItems(System.Object)">
+            <summary>
+              Gets the items in the collection as a <see cref="T:object[]"/>.
+            </summary>
+            
+            <param name="editValue">The collection object being edited.</param>
+            
+            <returns>The items contained in <paramref name="editValue"/>.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditor.SetItems(System.Object,System.Object[])">
+            <summary>
+              Sets the items in the collection.
+            </summary>
+            
+            <param name="editValue">The collection object being edited.</param>
+            <param name="values">The objects to be added in the collection.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.NumericCollectionEditorForm">
+            <summary>
+              Numeric collection editor.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditorForm.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.NumericCollectionEditorForm"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditorForm.#ctor(Accord.Controls.NumericCollectionEditor,System.Object)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.NumericCollectionEditorForm"/> class.
+            </summary>
+            
+            <param name="editor">The editor.</param>
+            <param name="value">The value.</param>
+            
+        </member>
+        <member name="F:Accord.Controls.NumericCollectionEditorForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditorForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.NumericCollectionEditorForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ComponentView">
+            <summary>
+              Component visualization control.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ComponentView.#ctor">
+            <summary>
+              Constructs a new instance of the ScatterplotView.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ComponentView.#ctor(System.Collections.Generic.ICollection{Accord.Statistics.Analysis.IAnalysisComponent})">
+            <summary>
+              Constructs a new instance of the ScatterplotView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ComponentView.DataSource">
+            <summary>
+              Gets the underlying scatter plot being shown by this control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ComponentView.Graph">
+            <summary>
+              Gets a reference to the underlying ZedGraph
+              control used to draw the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ComponentView.Cumulative">
+            <summary>
+              Gets or sets whether this control should present
+              the individual proportion for each component, or
+              the cumulative proportion in a single line curve.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ComponentView.UpdateGraph">
+            <summary>
+              Forces a update of the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ComponentView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ComponentView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.ComponentView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.DecisionTreeView">
+            <summary>
+              Decision Tree (DT) Viewer.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.DecisionTreeView.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.DecisionTreeView"/> class.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.DecisionTreeView.TreeSource">
+            <summary>
+              Gets or sets the currently displayed
+              <see cref="T:Accord.MachineLearning.DecisionTrees.DecisionTree">Decision Tree</see>.
+            </summary>
+            
+            <value>The decision tree being displayed.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.DecisionTreeView.Codebook">
+            <summary>
+              Gets or sets the codebook to be used when
+              displaying the tree. Using a codebook avoids
+              showing integer labels which may be difficult
+              to interpret.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.DecisionTreeView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.DecisionTreeView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.DecisionTreeView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.Extensions">
+            <summary>
+              Extension methods for Windows Forms' controls.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Extensions.AllowNestedProperties(System.Windows.Forms.DataGridView,System.Boolean)">
+            <summary>
+              Enables the display of recursively nested properties 
+              in the Windows.Forms' DataGridView control.
+            </summary>
+            
+            <param name="dataGridView">The <see cref="T:System.Windows.Forms.DataGridView"/> to enable nested properties.</param>
+            <param name="value">True to use nested properties, false otherwise.</param>
+            
+            <remarks>
+              This method will register a custom cell formatting event in the DataGridView and
+              retrieve any nested property specified in the column's DataPropertyName property
+              using reflection. This method is based on th idea by Antonio Bello, originally 
+              shared in:
+              
+               http://www.developer-corner.com/2007/07/datagridview-how-to-bind-nested-objects_18.html
+               
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.HistogramView">
+            <summary>
+              Histogram visualization control.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramView.#ctor">
+            <summary>
+              Constructs a new instance of the HistogramView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.Graph">
+            <summary>
+              Gets a reference to the underlying ZedGraph
+              control used to draw the histogram.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.TrackBar">
+            <summary>
+              Gets the trackbar which controls 
+              the histogram bins' width.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.BinWidth">
+            <summary>
+              Gets or sets a fixed bin width to be used by
+              the histogram view. Setting this value to null
+              will set the histogram to the default position.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.NumberOfBins">
+            <summary>
+              Gets or sets a fixed number of bins to be used by
+              the histogram view. Setting this value to null
+              will set the histogram to the default position.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.Histogram">
+            <summary>
+              Gets the underlying histogram being shown by this control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.DataSource">
+            <summary>
+              Gets or sets a data source for this control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.DataMember">
+            <summary>
+              Gets or sets the member of the data source 
+              to be shown, if applicable.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.DisplayMember">
+            <summary>
+              Gets or sets the member of the data source
+              to be displayed, if applicable.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramView.Format">
+            <summary>
+              Gets or sets the format used to display
+              the histogram values on screen.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramView.UpdateGraph(System.String)">
+            <summary>
+              Forces a update of the Histogram bins.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramView.UpdateTrackbar">
+            <summary>
+              Forces the update of the trackbar control.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramView.Reset">
+            <summary>
+              Resets custom settings for a fixed number of bins or bin width.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.HistogramView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.HistogramView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.HistogramView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ScatterplotBox">
+            <summary>
+              Scatter plot Box for quickly displaying a form with a scatter 
+              plot on it in the same spirit as System.Windows.Forms.MessageBox.
+            </summary>
+            
+            <example>
+            <code>
+            // Create unlabeled (x,y) points
+            double[,] points = 
+            {
+                { 1, 1 }, { 1, 4 },
+                { 4, 1 }, { 4, 4 },
+            };
+            
+            // Display them onscreen
+            ScatterplotBox.Show(points).Hold();
+            
+            // Create labels for the points
+            int[] classes = { 0, 1, 0, 1 };
+            
+            // Display it onscreen with labels
+            ScatterplotBox.Show(points, classes).Hold();
+            </code>
+              
+            <img src="../images/visualizations/scatterplot-box-1.png"/>
+            <img src="../images/visualizations/scatterplot-box-2.png"/>
+            
+            </example>
+                       
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.WaitForClose">
+            <summary>
+              Blocks the caller until the form is closed.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotBox.ScatterplotView">
+            <summary>
+              Gets the <see cref="P:Accord.Controls.ScatterplotBox.ScatterplotView"/>
+              control used to display data in this box.
+            </summary>
+            
+            <value>The scatter plot view control.</value>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.SetSymbolSize(System.Single)">
+            <summary>
+              Sets the size of the symbols in the scatter plot.
+            </summary>
+            
+            <param name="size">The desired symbol size.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the scatterplot box.
+              
+            </summary>
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.SetSize(System.Int32,System.Int32)">
+            <summary>
+              Sets size of the scatter plot window.
+            </summary>
+            
+            <param name="width">The desired width.</param>
+            <param name="height">The desired height.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.SetLinesVisible(System.Boolean)">
+            <summary>
+              Sets whether to show lines connecting
+              sequential points in the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.SetScaleTight(System.Boolean)">
+            <summary>
+             Sets whether to remove the grace space
+             between the axis labels and points.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Double[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="x">The x-values for the data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[],System.Double[],System.Int32[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">The x-values for the data.</param>
+            <param name="y">The y-values for the data.</param>
+            <param name="z">The corresponding labels for the (x,y) pairs.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[],System.Double[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">The x-values for the data.</param>
+            <param name="y">The y-values for the data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">The x-values for the data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Double[0:,0:],System.Int32[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            <param name="z">The corresponding labels for the (x,y) pairs.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Double[0:,0:])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[0:,0:],System.Int32[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            <param name="z">The corresponding labels for the (x,y) pairs.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[0:,0:])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Double[][],System.Int32[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            <param name="z">The corresponding labels for the (x,y) pairs.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Double[][])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[][])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Double[][],System.Int32[])">
+            <summary>
+              Displays a scatter plot with the specified data.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="x">A two column matrix containing the (x,y) data pairs as rows.</param>
+            <param name="z">The corresponding labels for the (x,y) pairs.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(Accord.Statistics.Visualizations.Scatterplot)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="scatterplot">The scatter plot to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Func{System.Double,System.Double},System.Double,System.Double,System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="function">The function to plot.</param>
+            <param name="max">The maximum value for the functions argument parameter.</param>
+            <param name="min">The minimum value for the functions argument parameter.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Func{System.Double,System.Double},Accord.DoubleRange,System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="function">The function to plot.</param>
+            <param name="range">The functions argument range to be plotted.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.Func{System.Double,System.Double},Accord.DoubleRange)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="function">The function to plot.</param>
+            <param name="range">The functions argument range to be plotted.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Func{System.Double,System.Double},Accord.DoubleRange)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="range">The functions argument range to be plotted.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Func{System.Double,System.Double},System.Int32)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="npoints">The number of points to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Func{System.Double,System.Double},System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Func{System.Double,System.Double})">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Show(System.String,System.Func{System.Double,System.Double},System.Double,System.Double,System.Double)">
+            <summary>
+              Displays a scatter plot.
+            </summary>
+            
+            <param name="title">The title for the plot window.</param>
+            <param name="function">The function to plot.</param>
+            <param name="max">The maximum value for the functions argument parameter.</param>
+            <param name="min">The minimum value for the functions argument parameter.</param>
+            <param name="step">The step size to use during plotting.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ScatterplotBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.ScatterplotBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ScatterplotView">
+            <summary>
+              Scatter plot visualization control.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotView.#ctor">
+            <summary>
+              Constructs a new instance of the ScatterplotView.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotView.#ctor(Accord.Statistics.Visualizations.Scatterplot)">
+            <summary>
+              Constructs a new instance of the ScatterplotView.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.Scatterplot">
+            <summary>
+              Gets the underlying scatter plot being shown by this control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.DataSource">
+            <summary>
+              Gets or sets a data source for this control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.DataMemberX">
+            <summary>
+              Gets or sets the member of the data source 
+              to be shown, if applicable.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.DataMemberY">
+            <summary>
+              Gets or sets the member of the data source 
+              to be shown, if applicable.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.DataMemberLabels">
+            <summary>
+              Gets or sets the member of the data source 
+              to be shown, if applicable.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.Graph">
+            <summary>
+              Gets a reference to the underlying ZedGraph
+              control used to draw the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.LinesVisible">
+            <summary>
+              Gets or sets whether to show lines connecting
+              sequential points in the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.SymbolSize">
+            <summary>
+              Gets or sets the size of the symbols displayed
+              on each point. Setting to zero hides the symbols.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ScatterplotView.ScaleTight">
+            <summary>
+              Gets or sets whether to remove the grace
+              space between the axis labels and points.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ScatterplotView.UpdateGraph">
+            <summary>
+              Forces a update of the scatter plot.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ScatterplotView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ScatterplotView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.ScatterplotView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.PropertyComparer`1">
+            <summary>
+              Property comparer.
+            </summary>
+            <typeparam name="T">The type of the elements to compare.</typeparam>
+        </member>
+        <member name="M:Accord.Controls.PropertyComparer`1.#ctor(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)">
+            <summary>
+              Constructs a new property comparer.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.PropertyComparer`1.Compare(`0,`0)">
+            <summary>
+              Compares two values.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.PropertyComparer`1.SetPropertyAndDirection(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)">
+            <summary>
+              Sets the property being sorted and the sorting direction.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.SortableBindingList`1">
+            <summary>
+              Sortable binding list.
+            </summary>
+            <typeparam name="T">The type of the elements in the list.</typeparam>
+            
+        </member>
+        <member name="M:Accord.Controls.SortableBindingList`1.#ctor">
+            <summary>
+              Constructs a new SortableBindingList.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SortableBindingList`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+              Constructs a new SortableBindingList.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.SortableBindingList`1.SupportsSortingCore">
+            <summary>
+              Returns true.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.SortableBindingList`1.IsSortedCore">
+            <summary>
+              Gets whether this list is sorted.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.SortableBindingList`1.SortPropertyCore">
+            <summary>
+              Gets the current property being sorted.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.SortableBindingList`1.SortDirectionCore">
+            <summary>
+              Gets the sort order direction.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.SortableBindingList`1.SupportsSearchingCore">
+            <summary>
+              Returns true.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SortableBindingList`1.ApplySortCore(System.ComponentModel.PropertyDescriptor,System.ComponentModel.ListSortDirection)">
+            <summary>
+              Sorts the items.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SortableBindingList`1.RemoveSortCore">
+            <summary>
+              Removes any sort applied. 
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SortableBindingList`1.FindCore(System.ComponentModel.PropertyDescriptor,System.Object)">
+            <summary>
+              Searches for the index of a item with a specific property descriptor and value
+            </summary>
+        </member>
+    </members>
+</doc>

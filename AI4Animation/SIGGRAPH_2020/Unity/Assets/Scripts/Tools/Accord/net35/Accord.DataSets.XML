@@ -1,0 +1,1090 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.DataSets</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.DataSets.Base.WebDataSet">
+            <summary>
+              Base class for sparse datasets that can be downloaded from LIBSVM website.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Base.WebDataSet.Path">
+            <summary>
+            Gets the path to the directory where the datasets will be stored.
+            </summary>
+            
+            <value>The path to a directory.</value>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.WebDataSet.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DataSets.Base.WebDataSet"/> class.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+              will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.WebDataSet.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.DataSets.Base.WebDataSet" /> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.WebDataSet.Download(System.String,System.String,System.String@)">
+            <summary>
+              Downloads a file from the specified <paramref name="url"/>, 
+              storing in <paramref name="localPath"/>, under name <paramref name="uncompressedFileName"/>.
+            </summary>
+            
+            <param name="url">The URL where the file should be downloaded from.</param>
+            <param name="localPath">The path where the file will be stored localy.</param>
+            <param name="uncompressedFileName">The generated name of the uncompressed file.</param>
+            
+            <returns><c>true</c> if the download succeeded, <c>false</c> otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.WebDataSet.Download(System.String,System.String,System.String,System.String@)">
+            <summary>
+              Downloads a file from the specified <paramref name="url"/>, 
+              storing in <paramref name="localPath"/>, under name <paramref name="uncompressedFileName"/>.
+            </summary>
+            
+            <param name="url">The URL where the file should be downloaded from.</param>
+            <param name="localPath">The path where the file will be stored localy.</param>
+            <param name="localFileName">The local file name to be used for the download.</param>
+            <param name="uncompressedFileName">The generated name of the uncompressed file.</param>
+            
+            <returns><c>true</c> if the download succeeded, <c>false</c> otherwise.</returns>
+            
+        </member>
+        <member name="T:Accord.DataSets.Base.SparseDataSet">
+            <summary>
+              Base class for sparse datasets that can be downloaded from LIBSVM website.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.SparseDataSet.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DataSets.Base.SparseDataSet"/> class.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+              will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.SparseDataSet.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.DataSets.Base.SparseDataSet" /> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Base.SparseDataSet.Download(System.String)">
+            <summary>
+            Downloads the dataset from a specified URL, saving it to disk, and returning
+            it as a set of <see cref="T:Accord.Math.Sparse`1">sparse vectors</see>>. If the dataset
+            already exists in the disk, it will not be redownloaded again.
+            </summary>
+            
+            <param name="url">The URL where the dataset resides.</param>
+            
+            <returns>System.Tuple&lt;Accord.Math.Sparse&lt;System.Double&gt;[], System.Double[]&gt;.</returns>
+            
+        </member>
+        <member name="T:Accord.DataSets.Chunking">
+            <summary>
+              Chunking data set used in CoNLL-2000's shared task session. This is 
+              a part-of-speech (POS) tagging dataset created from the WSJ corpus. 
+            </summary>
+            
+            <remarks>
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://www.cnts.ua.ac.be/conll2000/chunking/">
+                  CoNLL-2000 Organizers. "Chunking." Conference on Computational Natural Language Learning (CoNLL-2000). </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.Training">
+            <summary>
+            Gets the training set of the Chunking dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.Testing">
+            <summary>
+            Gets the testing set of the Chunking dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.Words">
+            <summary>
+              Gets the vocabulary of all words used in the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.TrainingWords">
+            <summary>
+              Gets the vocabulary of all words used in training set of the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.TestingWords">
+            <summary>
+              Gets the vocabulary of all words used in testing set of the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Chunking.Tags">
+            <summary>
+              Gets the list of all tags used in this dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Chunking.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the Chunking dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Nursery">
+            <summary>
+              Nursery Dataset.
+            </summary>
+            
+            <remarks>
+            <para>
+              The Nursery Database was derived from a hierarchical decision model originally developed to 
+              rank applications for nursery schools. It was used during several years in 1980's when there
+              was excessive enrollment to these schools in Ljubljana, Slovenia, and the rejected applications 
+              frequently needed an objective explanation. The final decision depended on three subproblems:
+              occupation of parents and child's nursery, family structure and financial standing, and social
+              and health picture of the family. The model was developed within expert system shell for decision
+              making DEX (M. Bohanec, V. Rajkovic: Expert system for decision making. Sistemica 1(1), pp. 145-157, 1990.). </para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://rexa.info/paper/97376fa474590bb12af93ddee9b23120f8854446">
+                  M. Olave, V. Rajkovic, M. Bohanec: An application for admission in public school systems. 
+                  In (I. Th. M. Snellen and W. B. H. J. van de Donk and J.-P. Baquiast, editors) Expert Systems 
+                  in Public Administration, pages 145-160. Elsevier Science Publishers (North Holland), 1989. </a>
+                  </description></item>
+                <item><description><a href="http://rexa.info/paper/0f23f96c4a89bbb221a151f5db381924c17a6eaa">
+                  B. Zupan, M. Bohanec, I. Bratko, J. Demsar: Machine learning by function decomposition.ICML-97,
+                  Nashville, TN. 1997.</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.Nursery.Instances">
+            <summary>
+              Gets the data instances contained in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Nursery.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.Nursery.Instances">instance</see>
+              in the Nursery dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Nursery.ClassNames">
+            <summary>
+              Gets the class labels in the Nursery dataset:
+              "not_recom", "recommend", "very_recom", "priority", "spec_prior".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Nursery.VariableNames">
+            <summary>
+              Gets the variable names in the Nursery dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Nursery.#ctor(System.String)">
+            <summary>
+              Prepares the Nursery dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Servo">
+            <summary>
+              Servo Data
+            </summary>
+            
+            <remarks>
+            <para>
+              This is the dataset described in <a href="http://archive.ics.uci.edu/ml/datasets/Servo">
+              http://archive.ics.uci.edu/ml/datasets/Servo</a>. There is no much information about this
+              dataset except what has been described in a recollection by their authors:</para>
+              
+            <para>
+              - Ross Quinlan: "This data was given to me by Karl Ulrich at MIT in 1986. I didn't record his description
+                at the time, but here's his subsequent(1992) recollection:"
+                'I seem to remember that the data was from a simulation of a servo system involving a servo amplifier, 
+                a motor, a lead screw/nut, and a sliding carriage of some sort. It may have been on of the translational 
+                axes of a robot on the 9th floor of the AI lab. In any case, the output value is almost certainly a rise 
+                time, or the time required for the system to respond to a step change in a position set point.'"</para>
+              - (Quinlan, ML'93) 
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://archive.ics.uci.edu/ml/datasets/Servo">
+                  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA:
+                  University of California, School of Information and Computer Science. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.Servo.VariableNames">
+            <summary>
+              Gets the name of each variable in the Servo dataset: motor, screw, pgain, vgain
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Servo.Instances">
+            <summary>
+              Gets the training instances in the Servo dataset. The first
+              two columns contain strings and the last two columns contain
+              discrete numbers. 
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Servo.Output">
+            <summary>
+              Gets the regression output for the <see cref="P:Accord.DataSets.Servo.Instances">data in the Servo dataset</see>.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Servo.#ctor">
+            <summary>
+              Prepares the Servo dataset from UCI's Irvine Repository.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.YinYang">
+            <summary>
+              Yin Yang non-linear classification dataset.
+            </summary>
+            
+            <remarks>
+            <para>
+              The Yin Yang dataset is a simple 2D binary classification dataset
+              where the data points for the two classes resemble a yin yang symbol
+              from Chinese culture.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.YinYang.Instances">
+            <summary>
+              Gets the data instances contained in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.YinYang.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.YinYang.Instances">instance</see>
+              in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.YinYang.ClassNames">
+            <summary>
+              Gets the class labels in the Yin Yang dataset: "Yin", "Yang".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.YinYang.VariableNames">
+            <summary>
+              Gets the variable names in the Yin Yang dataset: "X", "Y".
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.YinYang.#ctor">
+            <summary>
+              Prepares the Yin-Yang dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Parkinsons">
+            <summary>
+              Oxford Parkinson's Disease Detection Dataset.
+            </summary>
+            
+            <remarks>
+            <para>
+              This dataset is composed of a range of biomedical voice measurements from 
+              31 people, 23 with Parkinson's disease (PD). Each column in the table is a 
+              particular voice measure, and each row corresponds one of 195 voice
+              recording from these individuals("name" column). The main aim of the data
+              is to discriminate healthy people from those with PD, according to "status" 
+              column which is set to 0 for healthy and 1 for PD. </para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://archive.ics.uci.edu/ml/datasets/parkinsons">
+                  Lichman, M. "UCI Machine Learning Repository - Parkinsons Data Set."
+                  Irvine, CA: University of California, School of Information and Computer Science, 2013</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.Features">
+            <summary>
+              Gets the data instance features contained in Oxford Parkinson's Disease Detection Dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.InstanceIds">
+            <summary>
+              Gets identifiers for each of the instances contained in Oxford Parkinson's Disease Detection Dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.Parkinsons.Features">instance</see>
+              in Oxford Parkinson's Disease Detection Dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.ClassNames">
+            <summary>
+              Gets the class labels in Wisconsin's (Diagnostic) Breast Cancer dataset.
+              "Benign", "Malignant".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.VariableNames">
+            <summary>
+              Gets the variable names in Oxford Parkinson's Disease Detection data set: 
+              MDVP:Fo(Hz) - Average vocal fundamental frequency,
+              MDVP:Fhi(Hz) - Maximum vocal fundamental frequency,
+              MDVP:Flo(Hz) - Minimum vocal fundamental frequency,
+              MDVP:Jitter(%) - Measures of variation in fundamental frequency,
+              MDVP:Jitter(Abs) - Measures of variation in fundamental frequency,
+              MDVP:RAP - Measures of variation in fundamental frequency,
+              MDVP:PPQ - Measures of variation in fundamental frequency,
+              Jitter:DDP - Measures of variation in fundamental frequency,
+              MDVP:Shimmer - Several measures of variation in amplitude,
+              MDVP:Shimmer(dB) - Several measures of variation in amplitude,
+              Shimmer:APQ3 - Several measures of variation in amplitude,
+              Shimmer:APQ5 - Several measures of variation in amplitude,
+              MDVP:APQ - Several measures of variation in amplitude,
+              Shimmer:DDA - Several measures of variation in amplitude,
+              NHR,HNR - Two measures of ratio of noise to tonal components in the voice,
+              RPDE,D2 - Two nonlinear dynamical complexity measures,
+              DFA - Signal fractal scaling exponent,
+              spread1 - Nonlinear measures of fundamental frequency variation,
+              spread2 - Nonlinear measures of fundamental frequency variation,
+              PPE - Nonlinear measures of fundamental frequency variation,
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.NumberOfInputs">
+            <summary>
+              Gets the number of inputs (input dimension) in this dataset (should be 22).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Parkinsons.NumberOfClasses">
+            <summary>
+              Gets the number of classes in this dataset (should be 2).
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Parkinsons.#ctor">
+            <summary>
+              Prepares the Oxford Parkinson's Disease Detection data set.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.WisconsinPrognosticBreastCancer">
+            <summary>
+              University of Wisconsin's (Prognostic) Breast Cancer data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              Each record represents follow-up data for one breast cancer case. These are consecutive 
+              patients seen by Dr. Wolberg since 1984, and include only those cases exhibiting invasive
+              breast cancer and no evidence of distant metastases at the time of diagnosis. </para>
+            <para>
+              The first 30 features are computed from a digitized image of a fine needle aspirate (FNA) 
+              of a breast mass.They describe characteristics of the cell nuclei present in the image. A
+              few of the images can be found at http://www.cs.wisc.edu/~street/images/ </para>
+            <para>
+              The separation described above was obtained using Multisurface Method-Tree(MSM-T) [K.P.Bennett, 
+              "Decision Tree Construction Via Linear Programming." Proceedings of the 4th Midwest Artificial 
+              Intelligence and Cognitive Science Society, pp. 97-101, 1992], a classification method which uses
+              linear programming to construct a decision tree. Relevant features were selected using an exhaustive
+              search in the space of 1-4 features and 1-3 separating planes.</para>
+            <para>
+              The actual linear program used to obtain the separating plane in the 3-dimensional space is that 
+              described in: [K.P.Bennett and O.L.Mangasarian: "Robust Linear Programming Discrimination of Two 
+              Linearly Inseparable Sets", Optimization Methods and Software 1, 1992, 23-34]. </para>
+            <para>
+              The Recurrence Surface Approximation (RSA) method is a linear programming model which predicts Time
+              To Recur using both recurrent and nonrecurrent cases.See references (i) and (ii) above for details 
+              of the RSA method.</para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Prognostic)">
+                  Lichman, M. "UCI Machine Learning Repository - Breast Cancer Wisconsin (Prognostic) Data Set."
+                  Irvine, CA: University of California, School of Information and Computer Science, 2013</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Features">
+            <summary>
+              Gets the data instance features contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.InstanceIds">
+            <summary>
+              Gets identifiers for each of the instances contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Outcome">
+            <summary>
+              Gets the outcome for each of the data instances in the dataset. The outcomes can be either
+              0 (Recurring) or 1 (Non-recurring) depending on what happened at the time instants stored 
+              in <see cref="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Time"/>.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Time">
+            <summary>
+              Gets the time until a possible <see cref="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Outcome"/> has been detected. If the outcome has been
+              ruled as recurring (0), it means that the cancer reocurred after the given number of days after 
+              the initial treatment performed for this patient. If the outcome is marker as non-recurring (1), 
+              it means the cancer has not been observed until the given number of days marked in this array.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.WisconsinPrognosticBreastCancer.Features">instance</see>
+              in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.ClassNames">
+            <summary>
+              Gets the outcome labels in Wiscosin's Prognostic Breast Cancer dataset:
+              "Recurring" (cancer has re-orcurred during observation period), "Nonrecurring" (disease-free during observation period).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinPrognosticBreastCancer.VariableNames">
+            <summary>
+              Gets the variable names in Wisconsin's Breast Cancer dataset: 
+             "radius" (mean of distances from center to points on the perimeter),
+             "texture" (standard deviation of gray-scale values),
+             "perimeter",
+             "area",
+             "smoothness" (local variation in radius lengths),
+             "compactness" (perimeter^2 / area - 1.0),
+             "concavity" (severity of concave portions of the contour),
+             "concave points" (number of concave portions of the contour),
+             "symmetry",
+             "fractal dimension" ("coastline approximation" - 1)
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.WisconsinPrognosticBreastCancer.#ctor">
+            <summary>
+              Prepares the Wisconsin's (Diagnostic) Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.WisconsinDiagnosticBreastCancer">
+            <summary>
+              University of Wisconsin's (Diagnostic) Breast Cancer data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              Features are computed from a digitized image of a fine needle aspirate 
+              (FNA) of a breast mass. They describe characteristics of the cell nuclei
+              present in the image. A few of the images can be found at http://www.cs.wisc.edu/~street/images/</para>
+            <para>
+              Separating plane described above was obtained using Multisurface Method-Tree (MSM-T) 
+              [K. P. Bennett, "Decision Tree Construction Via Linear Programming." Proceedings of the 4th 
+              Midwest Artificial Intelligence and Cognitive Science Society, pp. 97-101, 1992], a classification 
+              method which uses linear programming to construct a decision tree. Relevant features were selected 
+              using an exhaustive search in the space of 1-4 features and 1-3 separating planes. </para>
+            <para>
+              The actual linear program used to obtain the separating plane in the 3-dimensional space is 
+              that described in: [K. P. Bennett and O. L. Mangasarian: "Robust Linear Programming Discrimination
+              of Two Linearly Inseparable Sets", Optimization Methods and Software 1, 1992, 23-34]. </para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)">
+                  Lichman, M. "UCI Machine Learning Repository - Breast Cancer Wisconsin (Diagnostic) Data Set."
+                  Irvine, CA: University of California, School of Information and Computer Science, 2013</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.Features">
+            <summary>
+              Gets the data instance features contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.InstanceIds">
+            <summary>
+              Gets identifiers for each of the instances contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.Features">instance</see>
+              in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.ClassNames">
+            <summary>
+              Gets the class labels in Wisconsin's (Diagnostic) Breast Cancer dataset.
+              "Benign", "Malignant".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinDiagnosticBreastCancer.VariableNames">
+            <summary>
+              Gets the variable names in Wisconsin's Breast Cancer dataset: 
+              "radius" (mean of distances from center to points on the perimeter),
+              "texture" (standard deviation of gray-scale values),
+              "perimeter",
+              "area",
+              "smoothness" (local variation in radius lengths),
+              "compactness" (perimeter^2 / area - 1.0),
+              "concavity" (severity of concave portions of the contour),
+              "concave points" (number of concave portions of the contour),
+              "symmetry",
+              "fractal dimension" ("coastline approximation" - 1)
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.WisconsinDiagnosticBreastCancer.#ctor">
+            <summary>
+              Prepares the Wisconsin's (Diagnostic) Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.WisconsinOriginalBreastCancer">
+            <summary>
+              University of Wisconsin's (Original) Breast Cancer data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              This breast cancer databases was obtained from the University of Wisconsin
+              Hospitals, Madison from Dr. William H. Wolberg.  If you publish results
+              when using this database, then please include this information in your
+              acknowledgements. Also, please cite one or more of:
+              
+              1. O. L. Mangasarian and W. H. Wolberg: "Cancer diagnosis via linear 
+              programming", SIAM News, Volume 23, Number 5, September 1990, pp 1-18.
+              
+              2. William H. Wolberg and O.L. Mangasarian: "Multisurface method of 
+              pattern separation for medical diagnosis applied to breast cytology", 
+              Proceedings of the National Academy of Sciences, U.S.A., Volume 87, 
+              December 1990, pp 9193-9196.
+              
+              3. O. L. Mangasarian, R. Setiono, and W.H. Wolberg: "Pattern recognition 
+              via linear programming: Theory and application to medical diagnosis", 
+              in: "Large-scale numerical optimization", Thomas F. Coleman and Yuying
+              Li, editors, SIAM Publications, Philadelphia 1990, pp 22-30.
+              
+              4. K. P. Bennett and O. L. Mangasarian: "Robust linear programming 
+              discrimination of two linearly inseparable sets", Optimization Methods
+              and Software 1, 1992, 23-34 (Gordon and Breach Science Publishers).
+            </para>
+             
+            <para>
+              Each instance has one of 2 possible classes: benign or malignant.</para>
+            
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)">
+                  Lichman, M. "UCI Machine Learning Repository - Breast Cancer Wisconsin (Diagnostic) Data Set."
+                  Irvine, CA: University of California, School of Information and Computer Science, 2013</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinOriginalBreastCancer.Features">
+            <summary>
+              Gets the data instances contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinOriginalBreastCancer.InstanceIds">
+            <summary>
+              Gets identifiers for each of the instances contained in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinOriginalBreastCancer.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.WisconsinOriginalBreastCancer.Features">instance</see>
+              in Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinOriginalBreastCancer.ClassNames">
+            <summary>
+              Gets the class labels in Wisconsin's (Original) Breast Cancer dataset:
+              "Benign", "Malignant".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.WisconsinOriginalBreastCancer.VariableNames">
+            <summary>
+              Gets the variable names in Wisconsin's Breast Cancer dataset: 
+              "Sample code number", "Clump Thickness", "Uniformity of Cell Size", 
+              "Uniformity of Cell Shape", "Marginal Adhesion", "Single Epithelial Cell Size",
+              "Bare Nuclei", "Bland Chromatin", "Normal Nucleoli", "Mitoses".
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.WisconsinOriginalBreastCancer.#ctor">
+            <summary>
+              Prepares the Wisconsin's Breast Cancer dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Pendigits">
+            <summary>
+              Pendigits data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">
+                  Wikipedia contributors. "Iris flower data set." Wikipedia, The Free Encyclopedia. 
+                  Wikipedia, The Free Encyclopedia, 14 Nov. 2016. Web. 14 Nov. 2016. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <seealso cref="T:Accord.DataSets.SparseIris" />
+            
+        </member>
+        <member name="P:Accord.DataSets.Pendigits.Training">
+            <summary>
+            Gets the training set of the Pendigits dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Pendigits.Testing">
+            <summary>
+            Gets the testing set of the Pendigits dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Pendigits.ClassNames">
+            <summary>
+              Gets the names of the classes contained in the Pendigits dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Pendigits.VariableNames">
+            <summary>
+              Gets the names of the variables contained in the Pendigits dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Pendigits.NumberOfClasses">
+            <summary>
+              Gets the number of classes in this dataset (10).
+            </summary>
+            
+            <value>Returns 10 (since there are 10 digits).</value>
+            
+        </member>
+        <member name="M:Accord.DataSets.Pendigits.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the Pendigits dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Iris">
+            <summary>
+              Fisher's Iris flower data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              The Iris flower data set or Fisher's Iris data set is a multivariate data set 
+              introduced by Ronald Fisher in his 1936 paper The use of multiple measurements 
+              in taxonomic problems as an example of linear discriminant analysis. It is
+              sometimes called Anderson's Iris data set because Edgar Anderson collected the 
+              data to quantify the morphologic variation of Iris flowers of three related species.
+              Two of the three species were collected in the Gaspé Peninsula "all from the same
+              pasture, and picked on the same day and measured at the same time by the same person
+              with the same apparatus".</para>
+              
+            <para>
+              The data set consists of 50 samples from each of three species of Iris(Iris setosa, 
+              Iris virginica and Iris versicolor). Four features were measured from each sample: 
+              the length and the width of the sepals and petals, in centimetres. Based on the 
+              combination of these four features, Fisher developed a linear discriminant model to
+              distinguish the species from each other.</para>
+            
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">
+                  Wikipedia contributors. "Iris flower data set." Wikipedia, The Free Encyclopedia. 
+                  Wikipedia, The Free Encyclopedia, 14 Nov. 2016. Web. 14 Nov. 2016. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <example>
+            <para>
+              The following example shows how to download and train a classifier (SVM) in the Iris dataset:</para>
+              <code source="Unit Tests\Accord.Tests.MachineLearning\VectorMachines\MulticlassSupportVectorLearningTest.cs" region="doc_learn_iris_confusion_matrix" />
+              
+            <para>
+              The next example shows how to learn a mini-batch classifier for the Iris dataset:</para>
+              <code source="Unit Tests\Accord.Tests.MachineLearning\VectorMachines\AveragedStochasticGradientDescentTest.cs" region="doc_learn_multiclass" />
+            </example>
+            
+            <seealso cref="T:Accord.DataSets.SparseIris" />
+            
+        </member>
+        <member name="P:Accord.DataSets.Iris.Instances">
+            <summary>
+              Gets the data instances contained in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Iris.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.Iris.Instances">instance</see>
+              in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Iris.ClassNames">
+            <summary>
+              Gets the class labels in Fisher's Iris flower dataset:
+              "Iris - setosa", "Iris - versicolor", and "Iris - virginica".
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Iris.VariableNames">
+            <summary>
+              Gets the variable names in Fisher's Iris flower dataset: 
+              "Sepal length", "Sepal width", "Petal length", and "Petal width".
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Iris.#ctor">
+            <summary>
+              Prepares the Iris dataset.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.Wine">
+            <summary>
+              Wine Recognition Data
+            </summary>
+            
+            <remarks>
+            <para>
+              These data are the results of a chemical analysis of wines grown in the same region in Italy but derived from three
+              different cultivars. The analysis determined the quantities of 13 constituents found in each of the three types of
+              wines.</para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://archive.ics.uci.edu/ml/datasets/wine">
+                  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA:
+                  University of California, School of Information and Computer Science. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <seealso cref="T:Accord.DataSets.Base.SparseDataSet" />
+            
+        </member>
+        <member name="P:Accord.DataSets.Wine.VariableNames">
+            <summary>
+              Gets the name of each variable in the Wine dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Wine.Instances">
+            <summary>
+              Gets the training instances in the Wine dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.Wine.ClassLabels">
+            <summary>
+              Gets the class labels for the <see cref="P:Accord.DataSets.Wine.Instances">data in the Wine dataset</see>.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.Wine.#ctor">
+            <summary>
+              Prepares the Wine dataset from UCI's Irvine Repository.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DataSets.RCV1v2">
+            <summary>
+              RCV1-v2/LYRL2004, a text categorization test collection originally 
+              distributed as a set of on-line appendices to a JMLR journal article.
+            </summary>
+            
+            <remarks>
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://jmlr.csail.mit.edu/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm">
+                  Lewis, D. D.  RCV1-v2/LYRL2004: The LYRL2004 Distribution of the RCV1-v2 Text Categorization
+                  Test Collection (5-Mar-2015 Version). http://www.jmlr.org/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm.  </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.Classes">
+            <summary>
+              Gets the document class labels in this dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.ClassLabelToDocument">
+            <summary>
+              Gets a mapping giving a list of all document labels 
+              that have been labelled with a given class label.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.DocumentToClassLabel">
+            <summary>
+              Gets a mapping giving a list of all class labels that
+              a document has been labelled with.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.Documents">
+            <summary>
+              Gets a mapping of a document identifier and all the words it contains.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.Training">
+            <summary>
+            Gets the training set of the RCV1-v2 dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.RCV1v2.Testing">
+            <summary>
+            Gets the testiong set of the RCV1-v2 dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.RCV1v2.#ctor(System.String,System.Boolean,System.Boolean)">
+            <summary>
+              Downloads and prepares the RCV1-v2 dataset.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+              will be saved on a subfolder called "data" in the current working directory.</param>
+            <param name="downloadTrainingSet">Pass true to download the training set; false otherwise.</param>
+            <param name="downloadTestingSet">Pass true to download the testing set; false otherwise.</param>
+            
+        </member>
+        <member name="T:Accord.DataSets.News20">
+            <summary>
+              20 Newsgroups dataset.
+            </summary>
+            
+            <remarks>
+            The 20 Newsgroups data set is a collection of approximately 20,000 newsgroup documents,
+            partitioned (nearly) evenly across 20 different newsgroups. 
+            
+            http://qwone.com/~jason/20Newsgroups/
+            </remarks>
+            
+            <seealso cref="T:Accord.DataSets.MNIST" />
+            <seealso cref="T:Accord.DataSets.SparseIris" />
+            <seealso cref="T:Accord.DataSets.Base.SparseDataSet" />
+            
+        </member>
+        <member name="P:Accord.DataSets.News20.Training">
+            <summary>
+            Gets the training set of the News20 dataset.
+            </summary>
+        </member>
+        <member name="P:Accord.DataSets.News20.Testing">
+            <summary>
+            Gets the testing set of the News20 dataset.
+            </summary>
+        </member>
+        <member name="M:Accord.DataSets.News20.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the News20 dataset.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+            will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="T:Accord.DataSets.MNIST">
+            <summary>
+              MNIST Dataset of handwritten digits.
+            </summary>
+            
+            <remarks>
+            <para>
+              The MNIST database (Mixed National Institute of Standards and Technology database) is a large database
+              of handwritten digits that is commonly used for training various image processing systems. The database 
+              is also widely used for training and testing in the field of machine learning. It was created by
+              "re-mixing" the samples from NIST's original datasets. The creators felt that since NIST's training 
+              dataset was taken from American Census Bureau employees, while the testing dataset was taken from 
+              American high school students, it was not well-suited for machine learning experiments. Furthermore, 
+              the black and white images from NIST were normalized to fit into a 20x20 pixel bounding box and 
+              anti-aliased, which introduced grayscale levels.</para>
+              
+            <para>
+              The MNIST database contains 60,000 training images and 10,000 testing images. Half of the training set 
+              and half of the test set were taken from NIST's training dataset, while the other half of the training
+              set and the other half of the test set were taken from NIST's testing dataset. There have been a number 
+              of scientific papers on attempts to achieve the lowest error rate; one paper, using a hierarchical system 
+              of convolutional neural networks, manages to get an error rate on the MNIST database of 0.23 percent. The 
+              original creators of the database keep a list of some of the methods tested on it. In their original paper,
+              they use a support vector machine to get an error rate of 0.8 percent.</para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://en.wikipedia.org/wiki/MNIST_database">
+                  Wikipedia contributors. "MNIST database." Wikipedia, The Free Encyclopedia. 
+                  Wikipedia, The Free Encyclopedia, 14 Nov. 2016. Web. 14 Nov. 2016. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <seealso cref="T:Accord.DataSets.Base.SparseDataSet" />
+            
+        </member>
+        <member name="P:Accord.DataSets.MNIST.Training">
+            <summary>
+            Gets the training set of the MNIST dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.MNIST.Testing">
+            <summary>
+            Gets the testing set of the MNIST dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.MNIST.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the MNIST dataset.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+            will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="T:Accord.DataSets.SparseIris">
+            <summary>
+              Fisher's Iris flower data set.
+            </summary>
+            
+            <remarks>
+            <para>
+              The Iris flower data set or Fisher's Iris data set is a multivariate data set 
+              introduced by Ronald Fisher in his 1936 paper The use of multiple measurements 
+              in taxonomic problems as an example of linear discriminant analysis. It is
+              sometimes called Anderson's Iris data set because Edgar Anderson collected the 
+              data to quantify the morphologic variation of Iris flowers of three related species.
+              Two of the three species were collected in the Gaspé Peninsula "all from the same
+              pasture, and picked on the same day and measured at the same time by the same person
+              with the same apparatus".</para>
+              
+            <para>
+              The data set consists of 50 samples from each of three species of Iris(Iris setosa, 
+              Iris virginica and Iris versicolor). Four features were measured from each sample: 
+              the length and the width of the sepals and petals, in centimetres. Based on the 
+              combination of these four features, Fisher developed a linear discriminant model to
+              distinguish the species from each other.</para>
+            
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">
+                  Wikipedia contributors. "Iris flower data set." Wikipedia, The Free Encyclopedia. 
+                  Wikipedia, The Free Encyclopedia, 14 Nov. 2016. Web. 14 Nov. 2016. </a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <seealso cref="T:Accord.DataSets.MNIST" />
+            <seealso cref="T:Accord.DataSets.Base.SparseDataSet" />
+            
+        </member>
+        <member name="P:Accord.DataSets.SparseIris.Instances">
+            <summary>
+              Gets the data instances contained in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.SparseIris.ClassLabels">
+            <summary>
+              Gets the class labels associated with each <see cref="P:Accord.DataSets.SparseIris.Instances">instance</see>
+              in Fisher's Iris flower dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.SparseIris.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the Iris dataset.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+            will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+    </members>
+</doc>

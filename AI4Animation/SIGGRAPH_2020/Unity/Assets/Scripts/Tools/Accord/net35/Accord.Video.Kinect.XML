@@ -1,0 +1,612 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Video.Kinect</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Video.Kinect.LedColorOption">
+            <summary>
+              Kinect's LED color options.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.Off">
+            <summary>
+              The LED is off.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.Green">
+            <summary>
+              The LED is on and has green color.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.Red">
+            <summary>
+              The LED is on and has red color.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.Yellow">
+            <summary>
+              The LED is on and has yellow color.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.BlinkGreen">
+            <summary>
+              The LED is blinking with green color.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Kinect.LedColorOption.BlinkRedYellow">
+            <summary>
+              The LED is blinking from red to yellow color.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.Kinect.CameraResolution">
+            <summary>
+            Kinect's resolutions of video and depth cameras.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.CameraResolution.Low">
+            <summary>
+            Low resolution.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.CameraResolution.Medium">
+            <summary>
+            Medium resolution.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.CameraResolution.High">
+            <summary>
+            Hight resolution.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Kinect.Kinect">
+             <summary>
+             The class provides access to Microsoft's Xbox <a href="http://en.wikipedia.org/wiki/Kinect">Kinect</a>
+             controller.
+             </summary>
+             
+             <remarks><para>The class allows to manipulate Kinec device by changing its LED color, setting motor's
+             tilt value and accessing its camera. See <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/> and <see cref="T:Accord.Video.Kinect.KinectDepthCamera"/>
+             classes, which provide access to actual video.</para>
+             
+             <para><img src="..\images\video\kinect.jpg" width="320" height="140" /></para>
+             
+             <para><note>In order to run correctly the class requires <i>freenect.dll</i> library
+             to be put into solution's output folder. This can be found within the AForge.NET framework's
+             distribution in Externals folder.</note></para>
+            
+             <para>Sample usage:</para>
+             <code>
+             // get Kinect device
+             Kinect kinectDevice = Kinect.GetDevice( 0 );
+             // change LED color
+             kinectDevice.LedColor = LedColorOption.Yellow;
+             // set motor tilt angle to -10 degrees
+             kinectDevice.SetMotorTilt( -10 );
+             // get video camera
+             KinectVideoCamera videoCamera = kinectDevice.GetVideoCamera( );
+             
+             // see example for video camera also
+             </code>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.Kinect.DeviceID">
+            <summary>
+            ID of the opened Kinect device.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.Kinect.DeviceCount">
+            <summary>
+            Number of Kinect devices available in the system.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.GetDevice(System.Int32)">
+            <summary>
+            Get initialized instance of the Kinect device.
+            </summary>
+            
+            <param name="deviceID">ID of the Kinect device to get instance of, [0, <see cref="P:Accord.Video.Kinect.Kinect.DeviceCount"/>),</param>
+            
+            <returns>Returns initialized Kinect device. Use <see cref="M:Accord.Video.Kinect.Kinect.Dispose"/> method
+            when the device is no longer required.</returns>
+            
+            <exception cref="T:System.ArgumentException">There is no Kinect device with specified ID connected to the system.</exception>
+            <exception cref="T:Accord.ConnectionFailedException">Failed connecting to the Kinect device specified ID.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.Finalize">
+            <summary>
+            Object finalizer/destructor makes sure unmanaged resource are freed if user did not call <see cref="M:Accord.Video.Kinect.Kinect.Dispose"/>.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.Dispose">
+            <summary>
+              Dispose device freeing all associated unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.SetLedColor(Accord.Video.Kinect.LedColorOption)">
+            <summary>
+            Set color of Kinect's LED.
+            </summary>
+            
+            <param name="ledColor">LED color to set.</param>
+            
+            <exception cref="T:Accord.DeviceErrorException">Some error occurred with the device. Check error message.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.SetMotorTilt(System.Int32)">
+             <summary>
+             Set motor's tilt value.
+             </summary>
+             
+             <param name="angle">Tilt value to set, [-31, 30] degrees.</param>
+             
+             <exception cref="T:System.ArgumentOutOfRangeException">Motor tilt has to be in the [-31, 31] range.</exception>
+             <exception cref="T:Accord.DeviceErrorException">Some error occurred with the device. Check error message.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.GetAccelerometerValues(System.Double@,System.Double@,System.Double@)">
+            <summary>
+            Get accelerometer values for 3 axes.
+            </summary>
+            
+            <param name="x">X axis value on the accelerometer.</param>
+            <param name="y">Y axis value on the accelerometer.</param>
+            <param name="z">Z axis value on the accelerometer.</param>
+            
+            <remarks><para>Units of all 3 values are m/s<sup>2</sup>. The <b>g</b> value used
+            for calculations is taken as 9.80665 m/s<sup>2</sup>.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.GetVideoCamera">
+            <summary>
+            Get Kinect's video camera.
+            </summary>
+            
+            <returns>Returns Kinect's video camera.</returns>
+            
+            <remarks><para>The method simply creates instance of the <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/> class
+            by calling its appropriate constructor. Use <see cref="M:Accord.Video.Kinect.KinectVideoCamera.Start"/> method
+            to start the video then.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.Kinect.GetDepthCamera">
+            <summary>
+            Get Kinect's depth camera.
+            </summary>
+            
+            <returns>Returns Kinect's depth camera.</returns>
+            
+            <remarks><para>The method simply creates instance of the <see cref="T:Accord.Video.Kinect.KinectDepthCamera"/> class
+            by calling its appropriate constructor. Use <see cref="M:Accord.Video.Kinect.KinectDepthCamera.Start"/> method
+            to start the video then.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Video.Kinect.KinectDepthCamera">
+             <summary>
+             Video source for Microsoft Kinect's depth sensor.
+             </summary>
+             
+             <remarks><para>The video source captures depth data from Microsoft <a href="http://en.wikipedia.org/wiki/Kinect">Kinect</a>
+             depth sensor, which is aimed originally as a gaming device for XBox 360 platform.</para>
+             
+             <para><note>Prior to using the class, make sure you've installed Kinect's drivers
+             as described on <a href="http://openkinect.org/wiki/Getting_Started#Windows">Open Kinect</a>
+             project's page.</note></para>
+            
+             <para><note>In order to run correctly the class requires <i>freenect.dll</i> library
+             to be put into solution's output folder. This can be found within the AForge.NET framework's
+             distribution in Externals folder.</note></para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // create video source
+             KinectDepthCamera videoSource = new KinectDepthCamera( 0 );
+             // set NewFrame event handler
+             videoSource.NewFrame += new NewFrameEventHandler( video_NewFrame );
+             // start the video source
+             videoSource.Start( );
+             // ...
+             
+             private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+             {
+                 // get new frame
+                 Bitmap bitmap = eventArgs.Frame;
+                 // process the frame
+             }
+             </code>
+             </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectDepthCamera.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frames from the video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectDepthCamera.VideoSourceError">
+             <summary>
+             Video source error event.
+             </summary>
+             
+             <remarks>This event is used to notify clients about any type of errors occurred in
+             video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectDepthCamera.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.ProvideOriginalDepthImage">
+            <summary>
+            Provide original depth image or colored depth map.
+            </summary>
+            
+            <remarks><para>The property specifies if the video source should provide original data
+            provided by Kinect's depth sensor or provide colored depth map. If the property is set to
+            <see langword="true"/>, then the video source will provide 16 bpp grayscale images, where
+            11 least significant bits represent data provided by the sensor. If the property is
+            set to <see langword="false"/>, then the video source will provide 24 bpp color images,
+            which represents depth map. In this case depth is encoded by color gradient:
+            white->red->yellow->green->cyan->blue->black. So colors which are closer to white represent
+            objects which are closer to the Kinect sensor, but colors which are closer to black represent
+            objects which are further away from Kinect.</para>
+            
+            <para><note>The property must be set before running the video source to take effect.</note></para>
+            
+            <para>Default value is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.Resolution">
+            <summary>
+            Resolution of depth sensor to set.
+            </summary>
+            
+            <remarks><para><note>The property must be set before running the video source to take effect.</note></para>
+            
+            <para>Default value of the property is set to <see cref="F:Accord.Video.Kinect.CameraResolution.Medium"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.Source">
+            <summary>
+            A string identifying the video source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectDepthCamera.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectDepthCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.#ctor(System.Int32,Accord.Video.Kinect.CameraResolution)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectDepthCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            <param name="resolution">Resolution of depth sensor to set.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.#ctor(System.Int32,Accord.Video.Kinect.CameraResolution,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectDepthCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            <param name="resolution">Resolution of depth sensor to set.</param>
+            <param name="provideOriginalDepthImage">Provide original depth image or colored depth map
+            (see <see cref="P:Accord.Video.Kinect.KinectDepthCamera.ProvideOriginalDepthImage"/> property).</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and returns execution to caller. Video camera will be started
+            and will provide new video frames through the <see cref="E:Accord.Video.Kinect.KinectDepthCamera.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">The specified resolution is not supported for the selected
+            mode of the Kinect depth sensor.</exception>
+            <exception cref="T:Accord.ConnectionFailedException">Could not connect to Kinect's depth sensor.</exception>
+            <exception cref="T:Accord.DeviceBusyException">Another connection to the specified depth sensor is already running.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks><para><note>Calling this method is equivalent to calling <see cref="M:Accord.Video.Kinect.KinectDepthCamera.Stop"/>
+            for Kinect video camera.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks><para><note>Calling this method is equivalent to calling <see cref="M:Accord.Video.Kinect.KinectDepthCamera.Stop"/>
+            for Kinect video camera.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectDepthCamera.Stop">
+             <summary>
+             Stop video source.
+             </summary>
+             
+             <remarks><para>The method stop the video source, so it no longer provides new video frames
+             and does not consume any resources.</para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Video.Kinect.VideoCameraMode">
+            <summary>
+            Enumeration of video camera modes for the <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/>.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.VideoCameraMode.Color">
+            <summary>
+            24 bit per pixel RGB mode.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.VideoCameraMode.Bayer">
+            <summary>
+            8 bit per pixel Bayer mode.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Kinect.VideoCameraMode.InfraRed">
+            <summary>
+            8 bit per pixel Infra Red mode.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Kinect.KinectVideoCamera">
+             <summary>
+             Video source for Microsoft Kinect's video camera.
+             </summary>
+             
+             <remarks><para>The video source captures video data from Microsoft <a href="http://en.wikipedia.org/wiki/Kinect">Kinect</a>
+             video camera, which is aimed originally as a gaming device for XBox 360 platform.</para>
+             
+             <para><note>Prior to using the class, make sure you've installed Kinect's drivers
+             as described on <a href="http://openkinect.org/wiki/Getting_Started#Windows">Open Kinect</a>
+             project's page.</note></para>
+            
+             <para><note>In order to run correctly the class requires <i>freenect.dll</i> library
+             to be put into solution's output folder. This can be found within the AForge.NET framework's
+             distribution in Externals folder.</note></para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // create video source
+             KinectVideoCamera videoSource = new KinectVideoCamera( 0 );
+             // set NewFrame event handler
+             videoSource.NewFrame += new NewFrameEventHandler( video_NewFrame );
+             // start the video source
+             videoSource.Start( );
+             // ...
+             
+             private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+             {
+                 // get new frame
+                 Bitmap bitmap = eventArgs.Frame;
+                 // process the frame
+             }
+             </code>
+             </remarks>
+             
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectVideoCamera.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frames from the video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectVideoCamera.VideoSourceError">
+             <summary>
+             Video source error event.
+             </summary>
+             
+             <remarks>This event is used to notify clients about any type of errors occurred in
+             video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Kinect.KinectVideoCamera.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.CameraMode">
+            <summary>
+            Specifies video mode for the camera.
+            </summary>
+            
+            <remarks>
+            <para><note>The property must be set before running the video source to take effect.</note></para>
+            
+            <para>Default value of the property is set to <see cref="F:Accord.Video.Kinect.VideoCameraMode.Color"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.Resolution">
+            <summary>
+            Resolution of video camera to set.
+            </summary>
+            
+            <remarks><para><note>The property must be set before running the video source to take effect.</note></para>
+            
+            <para>Default value of the property is set to <see cref="F:Accord.Video.Kinect.CameraResolution.Medium"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.Source">
+            <summary>
+            A string identifying the video source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Kinect.KinectVideoCamera.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.#ctor(System.Int32,Accord.Video.Kinect.CameraResolution)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            <param name="resolution">Resolution of video camera to set.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.#ctor(System.Int32,Accord.Video.Kinect.CameraResolution,Accord.Video.Kinect.VideoCameraMode)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Kinect.KinectVideoCamera"/> class.
+            </summary>
+            
+            <param name="deviceID">Kinect's device ID (index) to connect to.</param>
+            <param name="resolution">Resolution of video camera to set.</param>
+            <param name="cameraMode">Sets video camera mode.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and returns execution to caller. Video camera will be started
+            and will provide new video frames through the <see cref="E:Accord.Video.Kinect.KinectVideoCamera.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">The specified resolution is not supported for the selected
+            mode of the Kinect video camera.</exception>
+            <exception cref="T:Accord.ConnectionFailedException">Could not connect to Kinect's video camera.</exception>
+            <exception cref="T:Accord.DeviceBusyException">Another connection to the specified video camera is already running.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks><para><note>Calling this method is equivalent to calling <see cref="M:Accord.Video.Kinect.KinectVideoCamera.Stop"/>
+            for Kinect video camera.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks><para><note>Calling this method is equivalent to calling <see cref="M:Accord.Video.Kinect.KinectVideoCamera.Stop"/>
+            for Kinect video camera.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Kinect.KinectVideoCamera.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>The method stops the video source, so it no longer provides new video frames
+            and does not consume any resources.</para>
+            </remarks>
+            
+        </member>
+    </members>
+</doc>

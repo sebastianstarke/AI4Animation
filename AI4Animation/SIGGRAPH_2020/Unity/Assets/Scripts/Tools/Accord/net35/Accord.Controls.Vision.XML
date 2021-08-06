@@ -1,0 +1,740 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Controls.Vision</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Controls.Vision.FaceMovement">
+            <summary>
+              Head movements.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.FaceMovement.Left">
+            <summary>
+              Moving head to the left.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.FaceMovement.Right">
+            <summary>
+              Moving head to the right.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.FaceMovement.Up">
+            <summary>
+              Moving head up.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.FaceMovement.Down">
+            <summary>
+              Moving head down.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.Vision.FaceEventArgs">
+            <summary>
+              Provides data to face movement events.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceEventArgs.X">
+            <summary>
+              Gets or sets the x-coordinate of the face's center.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceEventArgs.Y">
+            <summary>
+              Gets or sets the y-coordinate of the face's center.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceEventArgs.#ctor(System.Single,System.Single)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.FaceEventArgs"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceEventArgs.#ctor(System.Drawing.PointF)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.FaceEventArgs"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceEventArgs.#ctor(Accord.IntPoint)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.FaceEventArgs"/> class.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.Vision.FaceController">
+            <summary>
+              Face-based tracking controller.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.SynchronizingObject">
+            <summary>
+              Gets or sets the object used to marshal event-handler calls that
+              are issued when the head object position has been updated.
+            </summary>
+            
+            <value>The <see cref="T:System.ComponentModel.ISynchronizeInvoke"/> representing the object
+            used to marshal the event-handler calls that are issued when the head
+            position has been updated. The default is null.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.Device">
+            <summary>
+              Gets or sets the video device used to track objects.
+            </summary>
+            
+            <value>The <see cref="T:Accord.Video.IVideoSource"/> used to track objects.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.Tracker">
+            <summary>
+              Gets the <see cref="T:Accord.Vision.Tracking.IObjectTracker"/> used to
+              track the head object in the video stream.
+            </summary>
+            
+            <value>The active object tracker.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.Detector">
+            <summary>
+              Gets the <see cref="T:Accord.Vision.Detection.IObjectDetector"/> used to
+              detect the head object in the video stream.
+            </summary>
+            
+            <value>The active object detector.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.FacePosition">
+            <summary>
+              Gets the current face's center point.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.XAxisMax">
+            <summary>
+              Gets or sets the maximum position
+              for horizontal scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.XAxisMin">
+            <summary>
+              Gets or sets the minimum position
+              for horizontal scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.YAxisMax">
+            <summary>
+              Gets or sets the maximum position
+              for vertical scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.YAxisMin">
+            <summary>
+              Gets or sets the minimum position
+              for vertical scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.IsDetecting">
+            <summary>
+              Gets a value indicating whether this instance is
+              attempting to detect faces in the video stream.
+            </summary>
+            
+            <value>
+            	<c>true</c> if this instance is detecting; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.IsTracking">
+            <summary>
+              Gets a value indicating whether this instance is
+              actually tracking an object in the video stream.
+            </summary>
+            
+            <value>
+            	<c>true</c> if this instance is tracking; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.IsRunning">
+            <summary>
+              Gets a value indicating whether this instance
+              is currently processing and sending events.
+            </summary>
+            
+            <value>
+            	<c>true</c> if this instance is processing
+            	and sending events; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.FaceController.FaceMove">
+            <summary>
+              Occurs when the face moves in the video scene.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.FaceController.FaceEnter">
+            <summary>
+              Occurs when a face enters the video scene.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.FaceController.FaceLeave">
+            <summary>
+              Occurs when a face leaves the video scene.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.FaceController"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.Calibrate(Accord.Controls.Vision.FaceMovement)">
+            <summary>
+              Calibrates the specified movement using current positions.
+            </summary>
+            
+            <param name="movement">The movement to be calibrated.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.Start">
+            <summary>
+              Starts processing the source 
+              stream and sending events.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.Stop">
+            <summary>
+              Stops sending events.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.Reset">
+            <summary>
+              Resets the controller.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.OnFaceLeave(System.EventArgs)">
+            <summary>
+              Called when the face being tracked leaves the scene.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.OnFaceEnter(Accord.Controls.Vision.FaceEventArgs)">
+            <summary>
+              Called when a face enters the scene.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.OnFaceMove(Accord.Controls.Vision.FaceEventArgs)">
+            <summary>
+              Called when a head movement is detected.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.BindingContext">
+            <summary>
+              Gets or sets the collection of currency managers for the <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </summary>
+            
+            <returns>
+              The collection of <see cref="T:System.Windows.Forms.BindingManagerBase"/>
+              objects for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </returns>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.FaceController.DataBindings">
+            <summary>
+              Gets the collection of data-binding objects for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </summary>
+            
+            <returns>
+              The <see cref="T:System.Windows.Forms.ControlBindingsCollection"/> for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </returns>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.FaceController.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.OnPropertyChanged(System.String)">
+            <summary>
+            Called when [property changed].
+            </summary>
+            <param name="name">The name.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.FaceController.Dispose(System.Boolean)">
+            <summary>
+              Releases the unmanaged resources used by the 
+              <see cref="T:System.ComponentModel.Component"/> 
+              and optionally releases the managed resources.
+            </summary>
+            
+            <param name="disposing">true to release both managed and unmanaged 
+              resources; false to release only unmanaged resources.</param>
+              
+        </member>
+        <member name="T:Accord.Controls.Vision.HeadController">
+            <summary>
+              Head-based tracking controller.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.Tracker">
+            <summary>
+              Gets the <see cref="T:Accord.Vision.Tracking.IObjectTracker"/> used to
+              track the head object in the video stream.
+            </summary>
+            
+            <value>The active object tracker.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.Detector">
+            <summary>
+              Gets the <see cref="T:Accord.Vision.Detection.IObjectDetector"/> used to
+              detect the head object in the video stream.
+            </summary>
+            
+            <value>The active object detector.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.HeadPosition">
+            <summary>
+              Gets the current head position.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.HeadAngle">
+            <summary>
+              Gets the current head tilting angle.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.HeadScale">
+            <summary>
+              Gets the current head scale.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.XAxisMax">
+            <summary>
+              Gets or sets the maximum position
+              for horizontal scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.XAxisMin">
+            <summary>
+              Gets or sets the minimum position
+              for horizontal scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.YAxisMax">
+            <summary>
+              Gets or sets the maximum position
+              for vertical scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.YAxisMin">
+            <summary>
+              Gets or sets the minimum position
+              for vertical scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.ScaleMax">
+            <summary>
+              Gets or sets the maximum area
+              for proximity scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.ScaleMin">
+            <summary>
+              Gets or sets the minimum area
+              for proximity scale calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.AngleMax">
+            <summary>
+               Gets or sets the maximum angle
+               for head tilting calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.AngleMin">
+            <summary>
+               Gets or sets the minimum angle
+               for head tilting calibration.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.SynchronizingObject">
+            <summary>
+              Gets or sets the object used to marshal event-handler calls that
+              are issued when the head object position has been updated.
+            </summary>
+            
+            <value>The <see cref="T:System.ComponentModel.ISynchronizeInvoke"/> representing the object
+            used to marshal the event-handler calls that are issued when the head
+            position has been updated. The default is null.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.Device">
+            <summary>
+              Gets or sets the video device used to track objects.
+            </summary>
+            
+            <value>The <see cref="T:Accord.Video.IVideoSource"/> used to track objects.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.IsDetecting">
+            <summary>
+              Gets a value indicating whether this instance is
+              attempting to detect faces in the video stream.
+            </summary>
+            
+            <value>
+            	<c>true</c> if this instance is detecting; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.IsTracking">
+            <summary>
+              Gets a value indicating whether this instance is
+              actually tracking an object in the video stream.
+            </summary>
+            
+            <value>
+            	<c>true</c> if this instance is tracking; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.HeadMove">
+            <summary>
+              Occurs when the head moves in the video scene.
+            </summary>
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.HeadEnter">
+            <summary>
+              Occurs when a head enters the video scene.
+            </summary>
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.HeadLeave">
+            <summary>
+              Occurs when a head leaves the video scene.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.HeadController"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.Reset">
+            <summary>
+              Resets the controller.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.Start">
+            <summary>
+              Starts processing the video source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.IsRunning">
+            <summary>
+              Gets a value indicating whether this instance
+              is currently processing and sending events.
+            </summary>
+            <value>
+            	<c>true</c> if this instance is processing
+            	and sending events; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.Stop">
+            <summary>
+              Stops the video source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.SignalToStop">
+            <summary>
+              Signal the video source to stop.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.WaitForStop">
+            <summary>
+              Waits until the video source has stopped.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.Calibrate(Accord.Controls.Vision.HeadMovement)">
+            <summary>
+              Calibrates the specified movement using current positions.
+            </summary>
+            <param name="movement">The movement to be calibrated.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.OnHeadMove(Accord.Controls.Vision.HeadEventArgs)">
+            <summary>
+              Called when a head movement is detected.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.OnHeadLeave(System.EventArgs)">
+            <summary>
+              Called when the face being tracked leaves the scene.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.OnHeadEnter(Accord.Controls.Vision.HeadEventArgs)">
+            <summary>
+              Called when a face enters the scene.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.BindingContext">
+            <summary>
+            Gets or sets the collection of currency managers for the <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </summary>
+            <value></value>
+            <returns>
+            The collection of <see cref="T:System.Windows.Forms.BindingManagerBase"/> objects for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </returns>
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.DataBindings">
+            <summary>
+            Gets the collection of data-binding objects for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </summary>
+            <value></value>
+            <returns>
+            The <see cref="T:System.Windows.Forms.ControlBindingsCollection"/> for this <see cref="T:System.Windows.Forms.IBindableComponent"/>.
+            </returns>
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.OnPropertyChanged(System.String)">
+            <summary>
+            Called when [property changed].
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            <value></value>
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            <value></value>
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadController.Source">
+            <summary>
+            Video source.
+            </summary>
+            <value></value>
+            <remarks>The meaning of the property depends on particular video source.
+            Depending on video source it may be a file name, URL or any other string
+            describing the video source.</remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            <remarks>
+            This event is used to notify clients that the video playing has finished.
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.Vision.HeadController.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            <remarks><para>This event is used to notify clients about new available video frame.</para>
+            	<para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, but video source is responsible for
+            disposing its own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadController.Dispose(System.Boolean)">
+            <summary>
+              Releases the unmanaged resources used by the 
+              <see cref="T:System.ComponentModel.Component"/> 
+              and optionally releases the managed resources.
+            </summary>
+            
+            <param name="disposing">true to release both managed and unmanaged 
+              resources; false to release only unmanaged resources.</param>
+              
+        </member>
+        <member name="T:Accord.Controls.Vision.HeadEventArgs">
+            <summary>
+              Provides data to head movement events.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadEventArgs.X">
+            <summary>
+              Gets or sets the x-coordinate of the head.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadEventArgs.Y">
+            <summary>
+              Gets or sets the y-coordinate of the head.
+            </summary>
+            
+            <value>The Y.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadEventArgs.Scale">
+            <summary>
+              Gets or sets the scale of the head.
+            </summary>
+            
+            <value>The scale.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.Vision.HeadEventArgs.Angle">
+            <summary>
+              Gets or sets the tilting angle of the head.
+            </summary>
+            
+            <value>The angle.</value>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadEventArgs.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.HeadEventArgs"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Vision.HeadEventArgs.#ctor(System.Drawing.PointF,System.Single,System.Single)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.Vision.HeadEventArgs"/> class.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.Vision.HeadMovement">
+            <summary>
+              Head movements.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Left">
+            <summary>
+              Moving head to the left.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Right">
+            <summary>
+              Moving head to the right.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Up">
+            <summary>
+              Moving head up.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Down">
+            <summary>
+              Moving head down.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Forward">
+            <summary>
+              Moving head forward.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.Backward">
+            <summary>
+              Moving head backward.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.TiltLeft">
+            <summary>
+              Tilting head to the left.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.Vision.HeadMovement.TiltRight">
+            <summary>
+              Tilting head to the right.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.Vision.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Vision.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Vision.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

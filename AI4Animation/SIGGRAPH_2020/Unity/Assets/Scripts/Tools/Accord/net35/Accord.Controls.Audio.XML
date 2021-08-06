@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Controls.Audio</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Controls.WavechartBox">
+            <summary>
+              Wavechart Box.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.WavechartBox.WaitForClose">
+            <summary>
+              Blocks the caller until the form is closed.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.WavechartBox.Show(Accord.Audio.Signal,System.Int32,System.String,System.Boolean)">
+            <summary>
+              Displays a Wavechart with the specified signal.
+            </summary>
+            
+            <param name="signal">The signal object to display.</param>
+            <param name="channel">The channel to be displayed.</param>
+            <param name="nonBlocking">If set to <c>true</c>, the caller will continue
+            executing while the form is shown on screen. If set to <c>false</c>,
+            the caller will be blocked until the user closes the form. Default
+            is <c>false</c>.</param>
+            <param name="title">The title for the data window.</param>
+            
+            <returns>The Data Grid Box being shown.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.WavechartBox.Show(System.Single[],System.String,System.Boolean)">
+            <summary>
+              Displays a Wavechart with the specified signal.
+            </summary>
+            
+            <param name="nonBlocking">If set to <c>true</c>, the caller will continue
+            executing while the form is shown on screen. If set to <c>false</c>,
+            the caller will be blocked until the user closes the form. Default
+            is <c>false</c>.</param>
+            
+            <param name="array">The signal to be displayed.</param>
+            <param name="title">The title for the data window.</param>
+            
+            <returns>The Data Grid Box being shown.</returns>
+            
+        </member>
+        <member name="F:Accord.Controls.WavechartBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.WavechartBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.WavechartBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.Wavechart">
+            <summary>
+              Waveform chart control.
+            </summary>
+            
+            <remarks><para>The Waveform chart control allows to display multiple
+            waveforms at time.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create data series array
+            float[] testValues = new float[128];
+            // fill data series
+            for ( int i = 0; i &lt; 128; i++ )
+            {
+                testValues[i] = Math.Sin( i / 18.0 * Math.PI );
+            }
+            // add new waveform to the chart
+            chart.AddWaveform( "Test", Color.DarkGreen, 3 );
+            // update the chart
+            chart.UpdateWaveform( "Test", testValues );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Wavechart.BackColor">
+            <summary>
+              Gets or sets the background color for the control.
+            </summary>
+            
+            <returns>A <see cref="T:System.Drawing.Color"/> that represents the 
+              background color of the control. The default is the value of the 
+              <see cref="P:System.Windows.Forms.Control.DefaultBackColor"/> 
+              property.
+            </returns>
+            
+            <PermissionSet>
+            	<IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+            </PermissionSet>
+            
+        </member>
+        <member name="P:Accord.Controls.Wavechart.RangeX">
+            <summary>
+              Chart's X range.
+            </summary>
+            
+            <remarks><para>The value sets the X range of data to be displayed on the chart.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Wavechart.RangeY">
+             <summary>
+               Chart's Y range.
+             </summary>
+             
+             <remarks>The value sets the Y range of data to be displayed on the chart.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Wavechart.SimpleMode">
+            <summary>
+              Gets or sets a value indicating whether to
+              create a simple wave chart only (no scaling).
+            </summary>
+            
+            <value><c>true</c> to enable simple mode; otherwise, <c>false</c>.</value>
+            
+        </member>
+        <member name="F:Accord.Controls.Wavechart.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Wavechart.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.Wavechart"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.Dispose(System.Boolean)">
+            <summary>
+              Dispose the object.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.Wavechart.OnPaintBackground(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+              Paints the background of the control.
+            </summary>
+            
+            <param name="pevent">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains information about the control to paint.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+              Paints the control.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.OnBackColorChanged(System.EventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.BackColorChanged"/> event.
+            </summary>
+            
+            <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.AddWaveform(System.String,System.Drawing.Color,System.Int32)">
+            <summary>
+              Add Waveform to the chart.
+            </summary>
+            
+            <param name="name">Waveform name.</param>
+            <param name="color">Waveform color.</param>
+            <param name="width">Waveform width.</param>
+            
+            <remarks><para>Adds new empty waveform to the collection of waves. To update this
+            wave the <see cref="M:Accord.Controls.Wavechart.UpdateWaveform(System.String,System.Single[])"/> method should be used.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.AddWaveform(System.String,System.Drawing.Color,System.Int32,System.Boolean)">
+            <summary>
+              Add Waveform to the chart.
+            </summary>
+            
+            <param name="name">Waveform name.</param>
+            <param name="color">Waveform color.</param>
+            <param name="width">Waveform width.</param>
+            <param name="updateYRange">Specifies if <see cref="P:Accord.Controls.Wavechart.RangeY"/> should be updated.</param>
+            
+            <remarks><para>Adds new empty waveform to the collection of waves. To update this
+            wave the <see cref="M:Accord.Controls.Wavechart.UpdateWaveform(System.String,System.Single[])"/> method should be used.</para>
+            </remarks>
+            
+            <remarks><para>Adds new empty data series to the collection of data series.</para>
+            
+            <para>The <b>updateYRange</b> parameter specifies if the waveform may affect displayable
+            Y range. If the value is set to false, then displayable Y range is not updated, but used the
+            range, which was specified by user (see <see cref="P:Accord.Controls.Wavechart.RangeY"/> property). In the case if the
+            value is set to true, the displayable Y range is recalculated to fully fit the new data
+            series.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.UpdateWaveform(System.String,System.Single[])">
+            <summary>
+              Update Waveform on the chart.
+            </summary>
+            
+            <param name="name">Data series name to update.</param>
+            <param name="data">Data series values.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.UpdateWaveform(System.String,System.Single[],System.Int32)">
+            <summary>
+              Update Waveform on the chart.
+            </summary>
+            
+            <param name="name">Data series name to update.</param>
+            <param name="data">Data series values.</param>
+            <param name="samples">The number of samples in the <paramref name="data"/> array.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.RemoveWaveform(System.String)">
+            <summary>
+              Remove a Waveform from the chart.
+            </summary>
+            
+            <param name="name">Waveform name to remove.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.RemoveAllWaveforms">
+            <summary>
+              Remove all waveforms from the chart.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Wavechart.UpdateYRange">
+            <summary>
+              Update Y range.
+            </summary>
+            
+        </member>
+    </members>
+</doc>

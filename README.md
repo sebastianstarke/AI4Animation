@@ -1,4 +1,4 @@
-AI4Animation: Deep Learning, Character Animation, Control
+AI4Animation: Deep Learning for Character Control
 ============
 
 This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a comprehensive framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository demonstrates using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games. Further advances on this research will continue being added to this project.
@@ -77,7 +77,11 @@ multiple locomotion modes as well as different character and object interactions
 -
 <a href="Media/SIGGRAPH_2020/Paper.pdf">Paper</a>
 -
-Code (finally working on it now)
+<a href="AI4Animation/SIGGRAPH_2020">Code</a>
+-
+<a href="AI4Animation/SIGGRAPH_2020">Windows Demo</a>
+-
+<a href="AI4Animation/SIGGRAPH_2020/ReadMe.md">ReadMe</a>
 -
 </p>
 
@@ -115,6 +119,8 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 <a href="AI4Animation/SIGGRAPH_Asia_2019">Code & Demo</a>
 -
 <a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip">Mocap Data</a>
+-
+<a href="AI4Animation/SIGGRAPH_Asia_2019/ReadMe.md">ReadMe</a>
 -
 </p>
 
@@ -159,7 +165,7 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
-<a href="AI4Animation/SIGGRAPH_2018/Unity/Assets/Demo/ReadMe.txt">ReadMe</a>
+<a href="AI4Animation/SIGGRAPH_2018/ReadMe.md">ReadMe</a>
 -
 </p>
 

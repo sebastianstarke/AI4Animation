@@ -1,0 +1,4162 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Video.DirectShow</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Video.DirectShow.CameraControlProperty">
+            <summary>
+            The enumeration specifies a setting on a camera.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Pan">
+            <summary>
+            Pan control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Tilt">
+            <summary>
+            Tilt control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Roll">
+            <summary>
+            Roll control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Zoom">
+            <summary>
+            Zoom control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Exposure">
+            <summary>
+            Exposure control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Iris">
+            <summary>
+            Iris control.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlProperty.Focus">
+            <summary>
+            Focus control.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.CameraControlFlags">
+            <summary>
+            The enumeration defines whether a camera setting is controlled manually or automatically.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlFlags.None">
+            <summary>
+            No control flag.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlFlags.Auto">
+            <summary>
+            Auto control Flag.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.CameraControlFlags.Manual">
+            <summary>
+            Manual control Flag.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.FileVideoSource">
+            <summary>
+            Video source for video files.
+            </summary>
+            
+            <remarks><para>The video source provides access to video files. DirectShow is used to access video
+            files.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create video source
+            FileVideoSource videoSource = new FileVideoSource( fileName );
+            // set NewFrame event handler
+            videoSource.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            videoSource.Start( );
+            // ...
+            // signal to stop
+            videoSource.SignalToStop( );
+            // ...
+            
+            // New frame event handler, which is invoked on each new available video frame
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.FileVideoSource.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.FileVideoSource.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.FileVideoSource.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks>Video source is represented by video file name.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.PreventFreezing">
+            <summary>
+            Prevent video freezing after screen saver and workstation lock or not.
+            </summary>
+            
+            <remarks>
+            <para>The value specifies if the class should prevent video freezing during and
+            after screen saver or workstation lock. To prevent freezing the <i>DirectShow</i> graph
+            should not contain <i>Renderer</i> filter, which is added by <i>Render()</i> method
+            of graph. However, in some cases it may be required to call <i>Render()</i> method of graph, since
+            it may add some more filters, which may be required for playing video. So, the property is
+            a trade off - it is possible to prevent video freezing skipping adding renderer filter or
+            it is possible to keep renderer filter, but video may freeze during screen saver.</para>
+            
+            <para><note>The property may become obsolete in the future when approach to disable freezing
+            and adding all required filters is found.</note></para>
+            
+            <para><note>The property should be set before calling <see cref="M:Accord.Video.DirectShow.FileVideoSource.Start"/> method
+            of the class to have effect.</note></para>
+            
+            <para>Default value of this property is set to <b>false</b>.</para>
+            
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FileVideoSource.ReferenceClockEnabled">
+            <summary>
+            Enables/disables reference clock on the graph.
+            </summary>
+            
+            <remarks><para>Disabling reference clocks causes DirectShow graph to run as fast as
+            it can process data. When enabled, it will process frames according to presentation
+            time of a video file.</para>
+            
+            <para><note>The property should be set before calling <see cref="M:Accord.Video.DirectShow.FileVideoSource.Start"/> method
+            of the class to have effect.</note></para>
+            
+            <para>Default value of this property is set to <b>true</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.FileVideoSource"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.FileVideoSource"/> class.
+            </summary>
+            
+            <param name="fileName">Video file name.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.DirectShow.FileVideoSource.NewFrame"/> event.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.DirectShow.FileVideoSource.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.DirectShow.FileVideoSource.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.DirectShow.FileVideoSource.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.Free">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.WorkerThread">
+            <summary>
+            Worker thread.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FileVideoSource.OnNewFrame(System.Drawing.Bitmap)">
+            <summary>
+            Notifies client about new frame.
+            </summary>
+            
+            <param name="image">New frame's image.</param>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IAMCameraControl">
+            <summary>
+            The IAMCameraControl interface controls camera settings such as zoom, pan, aperture adjustment,
+            or shutter speed. To obtain this interface, query the filter that controls the camera.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCameraControl.GetRange(Accord.Video.DirectShow.CameraControlProperty,System.Int32@,System.Int32@,System.Int32@,System.Int32@,Accord.Video.DirectShow.CameraControlFlags@)">
+            <summary>
+            Gets the range and default value of a specified camera property.
+            </summary>
+            
+            <param name="Property">Specifies the property to query.</param>
+            <param name="pMin">Receives the minimum value of the property.</param>
+            <param name="pMax">Receives the maximum value of the property.</param>
+            <param name="pSteppingDelta">Receives the step size for the property.</param>
+            <param name="pDefault">Receives the default value of the property. </param>
+            <param name="pCapsFlags">Receives a member of the CameraControlFlags enumeration, indicating whether the property is controlled automatically or manually.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCameraControl.Set(Accord.Video.DirectShow.CameraControlProperty,System.Int32,Accord.Video.DirectShow.CameraControlFlags)">
+            <summary>
+            Sets a specified property on the camera.
+            </summary>
+            
+            <param name="Property">Specifies the property to set.</param>
+            <param name="lValue">Specifies the new value of the property.</param>
+            <param name="Flags">Specifies the desired control setting, as a member of the CameraControlFlags enumeration.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCameraControl.Get(Accord.Video.DirectShow.CameraControlProperty,System.Int32@,Accord.Video.DirectShow.CameraControlFlags@)">
+            <summary>
+            Gets the current setting of a camera property.
+            </summary>
+            
+            <param name="Property">Specifies the property to retrieve.</param>
+            <param name="lValue">Receives the value of the property.</param>
+            <param name="Flags">Receives a member of the CameraControlFlags enumeration.
+            The returned value indicates whether the setting is controlled manually or automatically.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IAMCrossbar">
+            <summary>
+            The IAMCrossbar interface routes signals from an analog or digital source to a video capture filter.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCrossbar.get_PinCounts(System.Int32@,System.Int32@)">
+            <summary>
+            Retrieves the number of input and output pins on the crossbar filter.
+            </summary>
+            
+            <param name="outputPinCount">Variable that receives the number of output pins.</param>
+            <param name="inputPinCount">Variable that receives the number of input pins.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCrossbar.CanRoute(System.Int32,System.Int32)">
+            <summary>
+            Queries whether a specified input pin can be routed to a specified output pin.
+            </summary>
+            
+            <param name="outputPinIndex">Specifies the index of the output pin.</param>
+            <param name="inputPinIndex">Specifies the index of input pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCrossbar.Route(System.Int32,System.Int32)">
+            <summary>
+            Routes an input pin to an output pin.
+            </summary>
+            
+            <param name="outputPinIndex">Specifies the index of the output pin.</param>
+            <param name="inputPinIndex">Specifies the index of the input pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCrossbar.get_IsRoutedTo(System.Int32,System.Int32@)">
+            <summary>
+            Retrieves the input pin that is currently routed to the specified output pin.
+            </summary>
+            
+            <param name="outputPinIndex">Specifies the index of the output pin.</param>
+            <param name="inputPinIndex">Variable that receives the index of the input pin, or -1 if no input pin is routed to this output pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMCrossbar.get_CrossbarPinInfo(System.Boolean,System.Int32,System.Int32@,Accord.Video.DirectShow.PhysicalConnectorType@)">
+            <summary>
+            Retrieves information about a specified pin.
+            </summary>
+            
+            <param name="isInputPin">Specifies the direction of the pin. Use one of the following values.</param>
+            <param name="pinIndex">Specifies the index of the pin.</param>
+            <param name="pinIndexRelated">Variable that receives the index of the related pin, or –1 if no pin is related to this pin.</param>
+            <param name="physicalType">Variable that receives a member of the PhysicalConnectorType enumeration, indicating the pin's physical type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IAMStreamConfig">
+            <summary>
+            This interface sets the output format on certain capture and compression filters,
+            for both audio and video.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.SetFormat(Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Set the output format on the pin.
+            </summary>
+            
+            <param name="mediaType">Media type to set.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.GetFormat(Accord.Video.DirectShow.Internals.AMMediaType@)">
+            <summary>
+            Retrieves the audio or video stream's format.
+            </summary>
+            
+            <param name="mediaType">Retrieved media type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.GetNumberOfCapabilities(System.Int32@,System.Int32@)">
+            <summary>
+            Retrieve the number of format capabilities that this pin supports.
+            </summary>
+            
+            <param name="count">Variable that receives the number of format capabilities.</param>
+            <param name="size">Variable that receives the size of the configuration structure in bytes.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.GetStreamCaps(System.Int32,Accord.Video.DirectShow.Internals.AMMediaType@,Accord.Video.DirectShow.Internals.VideoStreamConfigCaps)">
+            <summary>
+            Retrieve a set of format capabilities.
+            </summary>
+            
+            <param name="index">Specifies the format capability to retrieve, indexed from zero.</param>
+            <param name="mediaType">Retrieved media type.</param>
+            <param name="streamConfigCaps">Byte array, which receives information about capabilities.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IAMVideoControl">
+            <summary>
+            The interface controls certain video capture operations such as enumerating available
+            frame rates and image orientation.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.GetCaps(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.VideoControlFlags@)">
+            <summary>
+            Retrieves the capabilities of the underlying hardware.
+            </summary>
+            
+            <param name="pin">Pin to query capabilities from.</param>
+            <param name="flags">Get capabilities of the specified pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.SetMode(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.VideoControlFlags)">
+            <summary>
+            Sets the video control mode of operation.
+            </summary>
+            
+            <param name="pin">The pin to set the video control mode on.</param>
+            <param name="mode">Value specifying a combination of the flags to set the video control mode.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.GetMode(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.VideoControlFlags@)">
+            <summary>
+            Retrieves the video control mode of operation.
+            </summary>
+            
+            <param name="pin">The pin to retrieve the video control mode from.</param>
+            <param name="mode">Gets combination of flags, which specify the video control mode.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.GetCurrentActualFrameRate(Accord.Video.DirectShow.Internals.IPin,System.Int64@)">
+            <summary>
+            The method retrieves the actual frame rate, expressed as a frame duration in 100-nanosecond units.
+            USB (Universal Serial Bus) and IEEE 1394 cameras may provide lower frame rates than requested
+            because of bandwidth availability. This is only available during video streaming.
+            </summary>
+            
+            <param name="pin">The pin to retrieve the frame rate from.</param>
+            <param name="actualFrameRate">Gets frame rate in frame duration in 100-nanosecond units.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.GetMaxAvailableFrameRate(Accord.Video.DirectShow.Internals.IPin,System.Int32,System.Drawing.Size,System.Int64@)">
+            <summary>
+            Retrieves the maximum frame rate currently available based on bus bandwidth usage for connections
+            such as USB and IEEE 1394 camera devices where the maximum frame rate can be limited by bandwidth
+            availability.
+            </summary>
+            
+            <param name="pin">The pin to retrieve the maximum frame rate from.</param>
+            <param name="index">Index of the format to query for maximum frame rate. This index corresponds
+            to the order in which formats are enumerated by <see cref="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.GetStreamCaps(System.Int32,Accord.Video.DirectShow.Internals.AMMediaType@,Accord.Video.DirectShow.Internals.VideoStreamConfigCaps)"/>.</param>
+            <param name="dimensions">Frame image size (width and height) in pixels.</param>
+            <param name="maxAvailableFrameRate">Gets maximum available frame rate. The frame rate is expressed as frame duration in 100-nanosecond units.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IAMVideoControl.GetFrameRateList(Accord.Video.DirectShow.Internals.IPin,System.Int32,System.Drawing.Size,System.Int32@,System.IntPtr@)">
+            <summary>
+            Retrieves a list of available frame rates.
+            </summary>
+            
+            <param name="pin">The pin to retrieve the maximum frame rate from.</param>
+            <param name="index">Index of the format to query for maximum frame rate. This index corresponds
+            to the order in which formats are enumerated by <see cref="M:Accord.Video.DirectShow.Internals.IAMStreamConfig.GetStreamCaps(System.Int32,Accord.Video.DirectShow.Internals.AMMediaType@,Accord.Video.DirectShow.Internals.VideoStreamConfigCaps)"/>.</param>
+            <param name="dimensions">Frame image size (width and height) in pixels.</param>
+            <param name="listSize">Number of elements in the list of frame rates.</param>
+            <param name="frameRate">Array of frame rates in 100-nanosecond units.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IBaseFilter">
+            <summary>
+            The IBaseFilter interface provides methods for controlling a filter.
+            All DirectShow filters expose this interface
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.GetClassID(System.Guid@)">
+            <summary>
+            Returns the class identifier (CLSID) for the component object.
+            </summary>
+            
+            <param name="ClassID">Points to the location of the CLSID on return.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.Stop">
+            <summary>
+            Stops the filter.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.Pause">
+            <summary>
+            Pauses the filter.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.Run(System.Int64)">
+            <summary>
+            Runs the filter.
+            </summary>
+            
+            <param name="start">Reference time corresponding to stream time 0.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.GetState(System.Int32,System.Int32@)">
+            <summary>
+            Retrieves the state of the filter (running, stopped, or paused).
+            </summary>
+            
+            <param name="milliSecsTimeout">Time-out interval, in milliseconds.</param>
+            <param name="filterState">Pointer to a variable that receives filter's state.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.SetSyncSource(System.IntPtr)">
+            <summary>
+            Sets the reference clock for the filter or the filter graph.
+            </summary>
+            
+            <param name="clock">Pointer to the clock's <b>IReferenceClock</b> interface, or NULL. </param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.GetSyncSource(System.IntPtr@)">
+            <summary>
+            Retrieves the current reference clock.
+            </summary>
+            
+            <param name="clock">Address of a variable that receives a pointer to the clock's IReferenceClock interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.EnumPins(Accord.Video.DirectShow.Internals.IEnumPins@)">
+            <summary>
+            Enumerates the pins on this filter.
+            </summary>
+            
+            <param name="enumPins">Address of a variable that receives a pointer to the IEnumPins interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.FindPin(System.String,Accord.Video.DirectShow.Internals.IPin@)">
+            <summary>
+            Retrieves the pin with the specified identifier.
+            </summary>
+            
+            <param name="id">Pointer to a constant wide-character string that identifies the pin.</param>
+            <param name="pin">Address of a variable that receives a pointer to the pin's IPin interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.QueryFilterInfo(Accord.Video.DirectShow.Internals.FilterInfo@)">
+            <summary>
+            Retrieves information about the filter.
+            </summary>
+            
+            <param name="filterInfo">Pointer to <b>FilterInfo</b> structure.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.JoinFilterGraph(Accord.Video.DirectShow.Internals.IFilterGraph,System.String)">
+            <summary>
+            Notifies the filter that it has joined or left the filter graph.
+            </summary>
+            
+            <param name="graph">Pointer to the Filter Graph Manager's <b>IFilterGraph</b> interface, or NULL
+            if the filter is leaving the graph.</param>
+            <param name="name">String that specifies a name for the filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IBaseFilter.QueryVendorInfo(System.String@)">
+            <summary>
+            Retrieves a string containing vendor information.
+            </summary>
+            
+            <param name="vendorInfo">Receives a string containing the vendor information.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2">
+            <summary>
+            This interface builds capture graphs and other custom filter graphs. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.SetFiltergraph(Accord.Video.DirectShow.Internals.IGraphBuilder)">
+            <summary>
+            Specify filter graph for the capture graph builder to use.
+            </summary>
+            
+            <param name="graphBuilder">Filter graph's interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.GetFiltergraph(Accord.Video.DirectShow.Internals.IGraphBuilder@)">
+            <summary>
+            Retrieve the filter graph that the builder is using.
+            </summary>
+            
+            <param name="graphBuilder">Filter graph's interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.SetOutputFileName(System.Guid,System.String,Accord.Video.DirectShow.Internals.IBaseFilter@,System.IntPtr@)">
+            <summary>
+            Create file writing section of the filter graph.
+            </summary>
+            
+            <param name="type">GUID that represents either the media subtype of the output or the
+            class identifier (CLSID) of a multiplexer filter or file writer filter.</param>
+            <param name="fileName">Output file name.</param>
+            <param name="baseFilter">Receives the multiplexer's <see cref="T:Accord.Video.DirectShow.Internals.IBaseFilter"/> interface.</param>
+            <param name="fileSinkFilter">Receives the file writer's IFileSinkFilter interface. Can be NULL.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.FindInterface(System.Guid,System.Guid,Accord.Video.DirectShow.Internals.IBaseFilter,System.Guid,System.Object@)">
+            <summary>
+            Searche the graph for a specified interface, starting from a specified filter.
+            </summary>
+            
+            <param name="category">GUID that specifies the search criteria.</param>
+            <param name="type">GUID that specifies the major media type of an output pin, or NULL.</param>
+            <param name="baseFilter"><see cref="T:Accord.Video.DirectShow.Internals.IBaseFilter"/> interface of the filter. The method begins searching from this filter.</param>
+            <param name="interfaceID">Interface identifier (IID) of the interface to locate.</param>
+            <param name="retInterface">Receives found interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.RenderStream(System.Guid,System.Guid,System.Object,Accord.Video.DirectShow.Internals.IBaseFilter,Accord.Video.DirectShow.Internals.IBaseFilter)">
+            <summary>
+            Connect an output pin on a source filter to a rendering filter, optionally through a compression filter.
+            </summary>
+            
+            <param name="category">Pin category.</param>
+            <param name="mediaType">Major-type GUID that specifies the media type of the output pin.</param>
+            <param name="source">Starting filter for the connection.</param>
+            <param name="compressor">Interface of an intermediate filter, such as a compression filter. Can be NULL.</param>
+            <param name="renderer">Sink filter, such as a renderer or mux filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.ControlStream(System.Guid,System.Guid,Accord.Video.DirectShow.Internals.IBaseFilter,System.Int64,System.Int64,System.Int16,System.Int16)">
+            <summary>
+            Set the start and stop times for one or more streams of captured data.
+            </summary>
+            
+            <param name="category">Pin category.</param>
+            <param name="mediaType">Major-type GUID that specifies the media type.</param>
+            <param name="filter"><see cref="T:Accord.Video.DirectShow.Internals.IBaseFilter"/> interface that specifies which filter to control.</param>
+            <param name="start">Start time.</param>
+            <param name="stop">Stop time.</param>
+            <param name="startCookie">Value that is sent as the second parameter of the
+            EC_STREAM_CONTROL_STARTED event notification.</param>
+            <param name="stopCookie">Value that is sent as the second parameter of the
+            EC_STREAM_CONTROL_STOPPED event notification.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.AllocCapFile(System.String,System.Int64)">
+            <summary>
+            Preallocate a capture file to a specified size.
+            </summary>
+            
+            <param name="fileName">File name to create or resize.</param>
+            <param name="size">Size of the file to allocate, in bytes.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.CopyCaptureFile(System.String,System.String,System.Boolean,System.IntPtr)">
+            <summary>
+            Copy the valid media data from a capture file.
+            </summary>
+            
+            <param name="oldFileName">Old file name.</param>
+            <param name="newFileName">New file name.</param>
+            <param name="allowEscAbort">Boolean value that specifies whether pressing the ESC key cancels the copy operation.</param>
+            <param name="callback">IAMCopyCaptureFileProgress interface to display progress information, or NULL.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICaptureGraphBuilder2.FindPin(System.Object,Accord.Video.DirectShow.Internals.PinDirection,System.Guid,System.Guid,System.Boolean,System.Int32,Accord.Video.DirectShow.Internals.IPin@)">
+            <summary>
+            
+            </summary>
+            
+            <param name="source">Interface on a filter, or to an interface on a pin.</param>
+            <param name="pinDirection">Pin direction (input or output).</param>
+            <param name="category">Pin category.</param>
+            <param name="mediaType">Media type.</param>
+            <param name="unconnected">Boolean value that specifies whether the pin must be unconnected.</param>
+            <param name="index">Zero-based index of the pin to retrieve, from the set of matching pins.</param>
+            <param name="pin">Interface of the matching pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.ICreateDevEnum">
+            <summary>
+            The <b>ICreateDevEnum</b> interface creates an enumerator for devices within a particular category,
+            such as video capture devices, audio capture devices, video compressors, and so forth.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ICreateDevEnum.CreateClassEnumerator(System.Guid@,System.Runtime.InteropServices.ComTypes.IEnumMoniker@,System.Int32)">
+            <summary>
+            Creates a class enumerator for a specified device category.
+            </summary>
+            
+            <param name="type">Specifies the class identifier of the device category.</param>
+            <param name="enumMoniker">Address of a variable that receives an <b>IEnumMoniker</b> interface pointer</param>
+            <param name="flags">Bitwise combination of zero or more flags. If zero, the method enumerates every filter in the category.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IEnumFilters">
+            <summary>
+            This interface is used by applications or other filters to determine
+            what filters exist in the filter graph.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumFilters.Next(System.Int32,Accord.Video.DirectShow.Internals.IBaseFilter[],System.Int32@)">
+            <summary>
+            Retrieves the specified number of filters in the enumeration sequence.
+            </summary>
+            
+            <param name="cFilters">Number of filters to retrieve.</param>
+            <param name="filters">Array in which to place <see cref="T:Accord.Video.DirectShow.Internals.IBaseFilter"/> interfaces.</param>
+            <param name="filtersFetched">Actual number of filters placed in the array.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumFilters.Skip(System.Int32)">
+            <summary>
+            Skips a specified number of filters in the enumeration sequence.
+            </summary>
+            
+            <param name="cFilters">Number of filters to skip.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumFilters.Reset">
+            <summary>
+            Resets the enumeration sequence to the beginning.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumFilters.Clone(Accord.Video.DirectShow.Internals.IEnumFilters@)">
+            <summary>
+            Makes a copy of the enumerator with the same enumeration state.
+            </summary>
+            
+            <param name="enumFilters">Duplicate of the enumerator.</param>
+            
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IEnumPins">
+            <summary>
+            Enumerates pins on a filter.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumPins.Next(System.Int32,Accord.Video.DirectShow.Internals.IPin[],System.Int32@)">
+            <summary>
+            Retrieves a specified number of pins.
+            </summary>
+            
+            <param name="cPins">Number of pins to retrieve.</param>
+            <param name="pins">Array of size <b>cPins</b> that is filled with <b>IPin</b> pointers.</param>
+            <param name="pinsFetched">Receives the number of pins retrieved.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumPins.Skip(System.Int32)">
+            <summary>
+            Skips a specified number of pins in the enumeration sequence.
+            </summary>
+            
+            <param name="cPins">Number of pins to skip.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumPins.Reset">
+            <summary>
+            Resets the enumeration sequence to the beginning.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IEnumPins.Clone(Accord.Video.DirectShow.Internals.IEnumPins@)">
+            <summary>
+            Makes a copy of the enumerator with the same enumeration state. 
+            </summary>
+            
+            <param name="enumPins">Duplicate of the enumerator.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IFileSourceFilter">
+            <summary>
+            The interface is exposed by source filters to set the file name and media type of the media file that they are to render.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFileSourceFilter.Load(System.String,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Loads the source filter with the file.
+            </summary>
+            
+            <param name="fileName">The name of the file to open.</param>
+            <param name="mediaType">Media type of the file. This can be null.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFileSourceFilter.GetCurFile(System.String@,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Retrieves the current file.
+            </summary>
+            
+            <param name="fileName">Name of media file.</param>
+            <param name="mediaType">Receives media type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IFilterGraph">
+            <summary>
+            The interface provides methods for building a filter graph. An application can use it to add filters to
+            the graph, connect or disconnect filters, remove filters, and perform other basic operations. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.AddFilter(Accord.Video.DirectShow.Internals.IBaseFilter,System.String)">
+            <summary>
+            Adds a filter to the graph and gives it a name.
+            </summary>
+            
+            <param name="filter">Filter to add to the graph.</param>
+            <param name="name">Name of the filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.RemoveFilter(Accord.Video.DirectShow.Internals.IBaseFilter)">
+            <summary>
+            Removes a filter from the graph.
+            </summary>
+            
+            <param name="filter">Filter to be removed from the graph.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.EnumFilters(System.IntPtr@)">
+            <summary>
+            Provides an enumerator for all filters in the graph.
+            </summary>
+            
+            <param name="enumerator">Filter enumerator.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.FindFilterByName(System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            Finds a filter that was added with a specified name.
+            </summary>
+            
+            <param name="name">Name of filter to search for.</param>
+            <param name="filter">Interface of found filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.ConnectDirect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Connects two pins directly (without intervening filters).
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            <param name="pinIn">Input pin.</param>
+            <param name="mediaType">Media type to use for the connection.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.Reconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Breaks the existing pin connection and reconnects it to the same pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect and reconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.Disconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Disconnects a specified pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph.SetDefaultSyncSource">
+            <summary>
+            Sets the reference clock to the default clock.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IFilterGraph2">
+            <summary>
+            This interface extends the <see cref="T:Accord.Video.DirectShow.Internals.IFilterGraph"/> and <see cref="T:Accord.Video.DirectShow.Internals.IGraphBuilder"/>
+            interfaces, which contain methods for building filter graphs.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.AddFilter(Accord.Video.DirectShow.Internals.IBaseFilter,System.String)">
+            <summary>
+            Adds a filter to the graph and gives it a name.
+            </summary>
+            
+            <param name="filter">Filter to add to the graph.</param>
+            <param name="name">Name of the filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.RemoveFilter(Accord.Video.DirectShow.Internals.IBaseFilter)">
+            <summary>
+            Removes a filter from the graph.
+            </summary>
+            
+            <param name="filter">Filter to be removed from the graph.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.EnumFilters(Accord.Video.DirectShow.Internals.IEnumFilters@)">
+            <summary>
+            Provides an enumerator for all filters in the graph.
+            </summary>
+            
+            <param name="enumerator">Filter enumerator.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.FindFilterByName(System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            Finds a filter that was added with a specified name.
+            </summary>
+            
+            <param name="name">Name of filter to search for.</param>
+            <param name="filter">Interface of found filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.ConnectDirect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Connects two pins directly (without intervening filters).
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            <param name="pinIn">Input pin.</param>
+            <param name="mediaType">Media type to use for the connection.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.Reconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Breaks the existing pin connection and reconnects it to the same pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect and reconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.Disconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Disconnects a specified pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.SetDefaultSyncSource">
+            <summary>
+            Sets the reference clock to the default clock.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.Connect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Connects two pins. If they will not connect directly, this method connects them with intervening transforms.
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            <param name="pinIn">Input pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.Render(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Adds a chain of filters to a specified output pin to render it.
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.RenderFile(System.String,System.String)">
+            <summary>
+            Builds a filter graph that renders the specified file.
+            </summary>
+            
+            <param name="file">Specifies a string that contains file name or device moniker.</param>
+            <param name="playList">Reserved.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.AddSourceFilter(System.String,System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            Adds a source filter to the filter graph for a specific file.
+            </summary>
+            
+            <param name="fileName">Specifies the name of the file to load.</param>
+            <param name="filterName">Specifies a name for the source filter.</param>
+            <param name="filter">Variable that receives the interface of the source filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.SetLogFile(System.IntPtr)">
+            <summary>
+            Sets the file for logging actions taken when attempting to perform an operation.
+            </summary>
+            
+            <param name="hFile">Handle to the log file.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.Abort">
+            <summary>
+            Requests that the graph builder return as soon as possible from its current task.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.ShouldOperationContinue">
+            <summary>
+            Queries whether the current operation should continue.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.AddSourceFilterForMoniker(System.Runtime.InteropServices.ComTypes.IMoniker,System.Runtime.InteropServices.ComTypes.IBindCtx,System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            
+            </summary>
+            
+            <param name="moniker">Moniker interface.</param>
+            <param name="bindContext">Bind context interface.</param>
+            <param name="filterName">Name for the filter.</param>
+            <param name="filter"> Receives source filter's IBaseFilter interface.
+            The caller must release the interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.ReconnectEx(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Breaks the existing pin connection and reconnects it to the same pin,
+            using a specified media type.
+            </summary>
+            
+            <param name="pin">Pin to disconnect and reconnect.</param>
+            <param name="mediaType">Media type to reconnect with.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IFilterGraph2.RenderEx(Accord.Video.DirectShow.Internals.IPin,System.Int32,System.IntPtr)">
+            <summary>
+            Render an output pin, with an option to use existing renderers only.
+            </summary>
+            
+            <param name="outputPin">Interface of the output pin.</param>
+            <param name="flags">Flag that specifies how to render the pin.</param>
+            <param name="context">Reserved.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IGraphBuilder">
+            <summary>
+            This interface provides methods that enable an application to build a filter graph.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.AddFilter(Accord.Video.DirectShow.Internals.IBaseFilter,System.String)">
+            <summary>
+            Adds a filter to the graph and gives it a name.
+            </summary>
+            
+            <param name="filter">Filter to add to the graph.</param>
+            <param name="name">Name of the filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.RemoveFilter(Accord.Video.DirectShow.Internals.IBaseFilter)">
+            <summary>
+            Removes a filter from the graph.
+            </summary>
+            
+            <param name="filter">Filter to be removed from the graph.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.EnumFilters(Accord.Video.DirectShow.Internals.IEnumFilters@)">
+            <summary>
+            Provides an enumerator for all filters in the graph.
+            </summary>
+            
+            <param name="enumerator">Filter enumerator.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.FindFilterByName(System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            Finds a filter that was added with a specified name.
+            </summary>
+            
+            <param name="name">Name of filter to search for.</param>
+            <param name="filter">Interface of found filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.ConnectDirect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Connects two pins directly (without intervening filters).
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            <param name="pinIn">Input pin.</param>
+            <param name="mediaType">Media type to use for the connection.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.Reconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Breaks the existing pin connection and reconnects it to the same pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect and reconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.Disconnect(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Disconnects a specified pin.
+            </summary>
+            
+            <param name="pin">Pin to disconnect.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.SetDefaultSyncSource">
+            <summary>
+            Sets the reference clock to the default clock.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.Connect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Connects two pins. If they will not connect directly, this method connects them with intervening transforms.
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            <param name="pinIn">Input pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.Render(Accord.Video.DirectShow.Internals.IPin)">
+            <summary>
+            Adds a chain of filters to a specified output pin to render it.
+            </summary>
+            
+            <param name="pinOut">Output pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.RenderFile(System.String,System.String)">
+            <summary>
+            Builds a filter graph that renders the specified file.
+            </summary>
+            
+            <param name="file">Specifies a string that contains file name or device moniker.</param>
+            <param name="playList">Reserved.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.AddSourceFilter(System.String,System.String,Accord.Video.DirectShow.Internals.IBaseFilter@)">
+            <summary>
+            Adds a source filter to the filter graph for a specific file.
+            </summary>
+            
+            <param name="fileName">Specifies the name of the file to load.</param>
+            <param name="filterName">Specifies a name for the source filter.</param>
+            <param name="filter">Variable that receives the interface of the source filter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.SetLogFile(System.IntPtr)">
+            <summary>
+            Sets the file for logging actions taken when attempting to perform an operation.
+            </summary>
+            
+            <param name="hFile">Handle to the log file.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.Abort">
+            <summary>
+            Requests that the graph builder return as soon as possible from its current task.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IGraphBuilder.ShouldOperationContinue">
+            <summary>
+            Queries whether the current operation should continue.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IMediaControl">
+            <summary>
+            The interface provides methods for controlling the flow of data through the filter graph.
+            It includes methods for running, pausing, and stopping the graph.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.Run">
+            <summary>
+            Runs all the filters in the filter graph.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.Pause">
+            <summary>
+            Pauses all filters in the filter graph.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.Stop">
+            <summary>
+            Stops all the filters in the filter graph.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.GetState(System.Int32,System.Int32@)">
+            <summary>
+            Retrieves the state of the filter graph.
+            </summary>
+            
+            <param name="timeout">Duration of the time-out, in milliseconds, or INFINITE to specify an infinite time-out.</param>
+            <param name="filterState">Ìariable that receives a member of the <b>FILTER_STATE</b> enumeration.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.RenderFile(System.String)">
+            <summary>
+            Builds a filter graph that renders the specified file.
+            </summary>
+            
+            <param name="fileName">Name of the file to render</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.AddSourceFilter(System.String,System.Object@)">
+            <summary>
+            Adds a source filter to the filter graph, for a specified file.
+            </summary>
+            
+            <param name="fileName">Name of the file containing the source video.</param>
+            <param name="filterInfo">Receives interface of filter information object.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.get_FilterCollection(System.Object@)">
+            <summary>
+            Retrieves a collection of the filters in the filter graph.
+            </summary>
+            
+            <param name="collection">Receives the <b>IAMCollection</b> interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.get_RegFilterCollection(System.Object@)">
+            <summary>
+            Retrieves a collection of all the filters listed in the registry.
+            </summary>
+            
+            <param name="collection">Receives the <b>IDispatch</b> interface of <b>IAMCollection</b> object.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaControl.StopWhenReady">
+            <summary>
+            Pauses the filter graph, allowing filters to queue data, and then stops the filter graph.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IMediaEventEx">
+            <summary>
+            The interface inherits contains methods for retrieving event notifications and for overriding the
+            filter graph's default handling of events.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.GetEventHandle(System.IntPtr@)">
+            <summary>
+            Retrieves a handle to a manual-reset event that remains signaled while the queue contains event notifications.
+            </summary>
+            <param name="hEvent">Pointer to a variable that receives the event handle.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.GetEvent(Accord.Video.DirectShow.Internals.DsEvCode@,System.IntPtr@,System.IntPtr@,System.Int32)">
+            <summary>
+            Retrieves the next event notification from the event queue.
+            </summary>
+            
+            <param name="lEventCode">Variable that receives the event code.</param>
+            <param name="lParam1">Pointer to a variable that receives the first event parameter.</param>
+            <param name="lParam2">Pointer to a variable that receives the second event parameter.</param>
+            <param name="msTimeout">Time-out interval, in milliseconds.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.WaitForCompletion(System.Int32,System.Int32@)">
+            <summary>
+            Waits for the filter graph to render all available data.
+            </summary>
+            
+            <param name="msTimeout">Time-out interval, in milliseconds. Pass zero to return immediately.</param>
+            <param name="pEvCode">Pointer to a variable that receives an event code.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.CancelDefaultHandling(System.Int32)">
+            <summary>
+            Cancels the Filter Graph Manager's default handling for a specified event.
+            </summary>
+            
+            <param name="lEvCode">Event code for which to cancel default handling.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.RestoreDefaultHandling(System.Int32)">
+            <summary>
+            Restores the Filter Graph Manager's default handling for a specified event.
+            </summary>
+            <param name="lEvCode">Event code for which to restore default handling.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.FreeEventParams(Accord.Video.DirectShow.Internals.DsEvCode,System.IntPtr,System.IntPtr)">
+            <summary>
+            Frees resources associated with the parameters of an event.
+            </summary>
+            <param name="lEvCode">Event code.</param>
+            <param name="lParam1">First event parameter.</param>
+            <param name="lParam2">Second event parameter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.SetNotifyWindow(System.IntPtr,System.Int32,System.IntPtr)">
+            <summary>
+            Registers a window to process event notifications.
+            </summary>
+            
+            <param name="hwnd">Handle to the window, or <see cref="F:System.IntPtr.Zero"/> to stop receiving event messages.</param>
+            <param name="lMsg">Window message to be passed as the notification.</param>
+            <param name="lInstanceData">Value to be passed as the <i>lParam</i> parameter for the <i>lMsg</i> message.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.SetNotifyFlags(System.Int32)">
+            <summary>
+            Enables or disables event notifications.
+            </summary>
+            
+            <param name="lNoNotifyFlags">Value indicating whether to enable or disable event notifications.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaEventEx.GetNotifyFlags(System.Int32@)">
+            <summary>
+            Determines whether event notifications are enabled.
+            </summary>
+            
+            <param name="lplNoNotifyFlags">Variable that receives current notification status.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IMediaFilter">
+            <summary>
+            The interface provides methods for controlling the flow of data through the filter graph.
+            It includes methods for running, pausing, and stopping the graph.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.Stop">
+            <summary>
+            This method informs the filter to transition to the new state. 
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.Pause">
+            <summary>
+            This method informs the filter to transition to the new state. 
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.Run(System.Int64)">
+            <summary>
+            This method informs the filter to transition to the new (running) state. Passes a time value to synchronize independent streams. 
+            </summary>
+            
+            <param name="tStart">Time value of the reference clock.  The amount to be added to the IMediaSample  time stamp to determine the time at which that sample should be rendered according to the reference clock. That is, it is the reference time at which a sample with a stream time of zero should be rendered.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.GetState(System.Int32,Accord.Video.DirectShow.Internals.FilterState@)">
+            <summary>
+            This method determines the filter's state. 
+            </summary>
+            
+            <param name="dwMilliSecsTimeout">Duration of the time-out, in milliseconds. To block indefinitely, pass INFINITE. </param>
+            <param name="filtState">Returned state of the filter. States include stopped, paused, running, or intermediate (in the process of changing). </param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.SetSyncSource(Accord.Video.DirectShow.Internals.IReferenceClock)">
+            <summary>
+            This method identifies the reference clock to which the filter should synchronize activity.
+            </summary>
+            
+            <param name="pClock">Pointer to the IReferenceClock  interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IMediaFilter.GetSyncSource(Accord.Video.DirectShow.Internals.IReferenceClock@)">
+            <summary>
+            This method retrieves the current reference clock in use by this filter. 
+            </summary>
+            
+            <param name="pClock">Pointer to a reference clock; it will be set to the IReferenceClock  interface. </param>
+            
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IPersist">
+            <summary>
+            Provides the CLSID of an object that can be stored persistently in the system. Allows the object to specify which object 
+            handler to use in the client process, as it is used in the default implementation of marshaling.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPersist.GetClassID(System.Guid@)">
+            <summary>
+            Retrieves the class identifier (CLSID) of the object.
+            </summary>
+            <param name="pClassID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IPin">
+            <summary>
+            This interface is exposed by all input and output pins of DirectShow filters.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.Connect(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Connects the pin to another pin.
+            </summary>
+            
+            <param name="receivePin">Other pin to connect to.</param>
+            <param name="mediaType">Type to use for the connections (optional).</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.ReceiveConnection(Accord.Video.DirectShow.Internals.IPin,Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Makes a connection to this pin and is called by a connecting pin.
+            </summary>
+            
+            <param name="receivePin">Connecting pin.</param>
+            <param name="mediaType">Media type of the samples to be streamed.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.Disconnect">
+            <summary>
+            Breaks the current pin connection.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.ConnectedTo(Accord.Video.DirectShow.Internals.IPin@)">
+            <summary>
+            Returns a pointer to the connecting pin.
+            </summary>
+            
+            <param name="pin">Receives <b>IPin</b> interface of connected pin (if any).</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.ConnectionMediaType(Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Returns the media type of this pin's connection.
+            </summary>
+            
+            <param name="mediaType">Pointer to an <see cref="T:Accord.Video.DirectShow.Internals.AMMediaType"/> structure. If the pin is connected,
+            the media type is returned. Otherwise, the structure is initialized to a default state in which
+            all elements are 0, with the exception of <b>lSampleSize</b>, which is set to 1, and
+            <b>FixedSizeSamples</b>, which is set to <b>true</b>.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.QueryPinInfo(Accord.Video.DirectShow.Internals.PinInfo@)">
+            <summary>
+            Retrieves information about this pin (for example, the name, owning filter, and direction).
+            </summary>
+            
+            <param name="pinInfo"><see cref="T:Accord.Video.DirectShow.Internals.PinInfo"/> structure that receives the pin information.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.QueryDirection(Accord.Video.DirectShow.Internals.PinDirection@)">
+            <summary>
+            Retrieves the direction for this pin.
+            </summary>
+            
+            <param name="pinDirection">Receives direction of the pin.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.QueryId(System.String@)">
+            <summary>
+            Retrieves an identifier for the pin.
+            </summary>
+            
+            <param name="id">Pin identifier.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.QueryAccept(Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Queries whether a given media type is acceptable by the pin.
+            </summary>
+            
+            <param name="mediaType"><see cref="T:Accord.Video.DirectShow.Internals.AMMediaType"/> structure that specifies the media type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.EnumMediaTypes(System.IntPtr)">
+            <summary>
+            Provides an enumerator for this pin's preferred media types.
+            </summary>
+            
+            <param name="enumerator">Address of a variable that receives a pointer to the <b>IEnumMediaTypes</b> interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.QueryInternalConnections(System.IntPtr,System.Int32@)">
+            <summary>
+            Provides an array of the pins to which this pin internally connects.
+            </summary>
+            
+            <param name="apPin">Address of an array of <b>IPin</b> pointers.</param>
+            <param name="nPin">On input, specifies the size of the array. When the method returns,
+            the value is set to the number of pointers returned in the array.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.EndOfStream">
+            <summary>
+            Notifies the pin that no additional data is expected.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.BeginFlush">
+            <summary>
+            Begins a flush operation.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.EndFlush">
+            <summary>
+            Ends a flush operation.
+            </summary>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPin.NewSegment(System.Int64,System.Int64,System.Double)">
+            <summary>
+            Specifies that samples following this call are grouped as a segment with a given start time, stop time, and rate.
+            </summary>
+            
+            <param name="start">Start time of the segment, relative to the original source, in 100-nanosecond units.</param>
+            <param name="stop">End time of the segment, relative to the original source, in 100-nanosecond units.</param>
+            <param name="rate">Rate at which this segment should be processed, as a percentage of the original rate.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IPropertyBag">
+            <summary>
+            The <b>IPropertyBag</b> interface provides an object with a property bag in
+            which the object can persistently save its properties. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPropertyBag.Read(System.String,System.Object@,System.IntPtr)">
+            <summary>
+            Read a property from property bag.
+            </summary>
+            
+            <param name="propertyName">Property name to read.</param>
+            <param name="pVar">Property value.</param>
+            <param name="pErrorLog">Caller's error log.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IPropertyBag.Write(System.String,System.Object@)">
+            <summary>
+            Write property to property bag.
+            </summary>
+            
+            <param name="propertyName">Property name to read.</param>
+            <param name="pVar">Property value.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IReferenceClock">
+             <summary>
+             The IReferenceClock interface provides the reference time for the filter graph.
+            
+             Filters that can act as a reference clock can expose this interface. It is also exposed by the System Reference Clock. 
+             The filter graph manager uses this interface to synchronize the filter graph. Applications can use this interface to 
+             retrieve the current reference time, or to request notification of an elapsed time.
+             </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IReferenceClock.GetTime(System.Int64@)">
+            <summary>
+            The GetTime method retrieves the current reference time.
+            </summary>
+            
+            <param name="pTime">Pointer to a variable that receives the current time, in 100-nanosecond units.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IReferenceClock.AdviseTime(System.Int64,System.Int64,System.IntPtr,System.Int32@)">
+            <summary>
+            The AdviseTime method creates a one-shot advise request.
+            </summary>
+            
+            <param name="baseTime">Base reference time, in 100-nanosecond units. See Remarks.</param>
+            <param name="streamTime">Stream offset time, in 100-nanosecond units. See Remarks.</param>
+            <param name="hEvent">Handle to an event, created by the caller.</param>
+            <param name="pdwAdviseCookie">Pointer to a variable that receives an identifier for the advise request.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IReferenceClock.AdvisePeriodic(System.Int64,System.Int64,System.IntPtr,System.Int32@)">
+            <summary>
+            The AdvisePeriodic method creates a periodic advise request.
+            </summary>
+            
+            <param name="startTime">Time of the first notification, in 100-nanosecond units. Must be greater than zero and less than MAX_TIME.</param>
+            <param name="periodTime">Time between notifications, in 100-nanosecond units. Must be greater than zero.</param>
+            <param name="hSemaphore">Handle to a semaphore, created by the caller.</param>
+            <param name="pdwAdviseCookie">Pointer to a variable that receives an identifier for the advise request.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IReferenceClock.Unadvise(System.Int32)">
+            <summary>
+            The Unadvise method removes a pending advise request.
+            </summary>
+            
+            <param name="dwAdviseCookie">Identifier of the request to remove. Use the value returned by IReferenceClock::AdviseTime  or IReferenceClock::AdvisePeriodic  in the pdwAdviseToken parameter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.ISampleGrabber">
+            <summary>
+            The interface is exposed by the Sample Grabber Filter. It enables an application to retrieve
+            individual media samples as they move through the filter graph.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.SetOneShot(System.Boolean)">
+            <summary>
+            Specifies whether the filter should stop the graph after receiving one sample.
+            </summary>
+            
+            <param name="oneShot">Boolean value specifying whether the filter should stop the graph after receiving one sample.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.SetMediaType(Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Specifies the media type for the connection on the Sample Grabber's input pin.
+            </summary>
+            
+            <param name="mediaType">Specifies the required media type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.GetConnectedMediaType(Accord.Video.DirectShow.Internals.AMMediaType)">
+            <summary>
+            Retrieves the media type for the connection on the Sample Grabber's input pin.
+            </summary>
+            
+            <param name="mediaType"><see cref="T:Accord.Video.DirectShow.Internals.AMMediaType"/> structure, which receives media type.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.SetBufferSamples(System.Boolean)">
+            <summary>
+            Specifies whether to copy sample data into a buffer as it goes through the filter.
+            </summary>
+            
+            <param name="bufferThem">Boolean value specifying whether to buffer sample data.
+            If <b>true</b>, the filter copies sample data into an internal buffer.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.GetCurrentBuffer(System.Int32@,System.IntPtr)">
+            <summary>
+            Retrieves a copy of the sample that the filter received most recently.
+            </summary>
+            
+            <param name="bufferSize">Pointer to the size of the buffer. If pBuffer is NULL, this parameter receives the required size.</param>
+            <param name="buffer">Pointer to a buffer to receive a copy of the sample, or NULL.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.GetCurrentSample(System.IntPtr)">
+            <summary>
+            Not currently implemented.
+            </summary>
+            
+            <param name="sample"></param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabber.SetCallback(Accord.Video.DirectShow.Internals.ISampleGrabberCB,System.Int32)">
+            <summary>
+            Specifies a callback method to call on incoming samples.
+            </summary>
+            
+            <param name="callback"><see cref="T:Accord.Video.DirectShow.Internals.ISampleGrabberCB"/> interface containing the callback method, or NULL to cancel the callback.</param>
+            <param name="whichMethodToCallback">Index specifying the callback method.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.ISampleGrabberCB">
+            <summary>
+            The interface provides callback methods for the <see cref="M:Accord.Video.DirectShow.Internals.ISampleGrabber.SetCallback(Accord.Video.DirectShow.Internals.ISampleGrabberCB,System.Int32)"/> method.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabberCB.SampleCB(System.Double,System.IntPtr)">
+            <summary>
+            Callback method that receives a pointer to the media sample.
+            </summary>
+            
+            <param name="sampleTime">Starting time of the sample, in seconds.</param>
+            <param name="sample">Pointer to the sample's <b>IMediaSample</b> interface.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISampleGrabberCB.BufferCB(System.Double,System.IntPtr,System.Int32)">
+            <summary>
+            Callback method that receives a pointer to the sample bufferþ
+            </summary>
+            
+            <param name="sampleTime">Starting time of the sample, in seconds.</param>
+            <param name="buffer">Pointer to a buffer that contains the sample data.</param>
+            <param name="bufferLen">Length of the buffer pointed to by <b>buffer</b>, in bytes</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.ISpecifyPropertyPages">
+            <summary>
+            The interface indicates that an object supports property pages.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.ISpecifyPropertyPages.GetPages(Accord.Video.DirectShow.Internals.CAUUID@)">
+            <summary>
+            Fills a counted array of GUID values where each GUID specifies the
+            CLSID of each property page that can be displayed in the property
+            sheet for this object.
+            </summary>
+            
+            <param name="pPages">Pointer to a CAUUID structure that must be initialized
+            and filled before returning.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.IVideoWindow">
+            <summary>
+            The interface sets properties on the video window.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Caption(System.String)">
+            <summary>
+            Sets the video window caption.
+            </summary>
+            
+            <param name="caption">Caption.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Caption(System.String@)">
+            <summary>
+            Retrieves the video window caption.
+            </summary>
+            
+            <param name="caption">Caption.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_WindowStyle(System.Int32)">
+            <summary>
+            Sets the window style on the video window.
+            </summary>
+            
+            <param name="windowStyle">Window style flags.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_WindowStyle(System.Int32@)">
+            <summary>
+            Retrieves the window style on the video window.
+            </summary>
+            
+            <param name="windowStyle">Window style flags.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_WindowStyleEx(System.Int32)">
+            <summary>
+            Sets the extended window style on the video window.
+            </summary>
+            
+            <param name="windowStyleEx">Window extended style flags.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_WindowStyleEx(System.Int32@)">
+            <summary>
+            Retrieves the extended window style on the video window.
+            </summary>
+            
+            <param name="windowStyleEx">Window extended style flags.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_AutoShow(System.Boolean)">
+            <summary>
+            Specifies whether the video renderer automatically shows the video window when it receives video data.
+            </summary>
+            
+            <param name="autoShow">Specifies whether the video renderer automatically shows the video window.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_AutoShow(System.Boolean@)">
+            <summary>
+            Queries whether the video renderer automatically shows the video window when it receives video data.
+            </summary>
+            
+            <param name="autoShow">REceives window auto show flag.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_WindowState(System.Int32)">
+            <summary>
+            Shows, hides, minimizes, or maximizes the video window.
+            </summary>
+            
+            <param name="windowState">Window state.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_WindowState(System.Int32@)">
+            <summary>
+            Queries whether the video window is visible, hidden, minimized, or maximized.
+            </summary>
+            
+            <param name="windowState">Window state.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_BackgroundPalette(System.Boolean)">
+            <summary>
+            Specifies whether the video window realizes its palette in the background.
+            </summary>
+            
+            <param name="backgroundPalette">Value that specifies whether the video renderer realizes it palette in the background.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_BackgroundPalette(System.Boolean@)">
+            <summary>
+            Queries whether the video window realizes its palette in the background.
+            </summary>
+            
+            <param name="backgroundPalette">Receives state of background palette flag.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Visible(System.Boolean)">
+            <summary>
+            Shows or hides the video window.
+            </summary>
+            
+            <param name="visible">Value that specifies whether to show or hide the window.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Visible(System.Boolean@)">
+            <summary>
+            Queries whether the video window is visible.
+            </summary>
+            
+            <param name="visible">Visibility flag.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Left(System.Int32)">
+            <summary>
+            Sets the video window's x-coordinate.
+            </summary>
+            
+            <param name="left">Specifies the x-coordinate, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Left(System.Int32@)">
+            <summary>
+            Retrieves the video window's x-coordinate.
+            </summary>
+            
+            <param name="left">x-coordinate, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Width(System.Int32)">
+            <summary>
+            Sets the width of the video window.
+            </summary>
+            
+            <param name="width">Specifies the width, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Width(System.Int32@)">
+            <summary>
+            Retrieves the width of the video window.
+            </summary>
+            
+            <param name="width">Width, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Top(System.Int32)">
+            <summary>
+            Sets the video window's y-coordinate.
+            </summary>
+            
+            <param name="top">Specifies the y-coordinate, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Top(System.Int32@)">
+            <summary>
+            Retrieves the video window's y-coordinate.
+            </summary>
+            
+            <param name="top">y-coordinate, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Height(System.Int32)">
+            <summary>
+            Sets the height of the video window.
+            </summary>
+            
+            <param name="height">Specifies the height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Height(System.Int32@)">
+            <summary>
+            Retrieves the height of the video window.
+            </summary>
+            
+            <param name="height">Height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_Owner(System.IntPtr)">
+            <summary>
+            Specifies a parent window for the video windowþ
+            </summary>
+            
+            <param name="owner">Specifies a handle to the parent window.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_Owner(System.IntPtr@)">
+            <summary>
+            Retrieves the video window's parent window, if anyþ
+            </summary>
+            
+            <param name="owner">Parent window's handle.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_MessageDrain(System.IntPtr)">
+            <summary>
+            Specifies a window to receive mouse and keyboard messages from the video window.
+            </summary>
+            
+            <param name="drain">Specifies a handle to the window.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_MessageDrain(System.IntPtr@)">
+            <summary>
+            Retrieves the window that receives mouse and keyboard messages from the video window, if any.
+            </summary>
+            
+            <param name="drain">Window's handle.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_BorderColor(System.Int32@)">
+            <summary>
+            Retrieves the color that appears around the edges of the destination rectangle.
+            </summary>
+            
+            <param name="color">Border's color.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_BorderColor(System.Int32)">
+            <summary>
+            Sets the color that appears around the edges of the destination rectangle.
+            </summary>
+            
+            <param name="color">Specifies the border color.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.get_FullScreenMode(System.Boolean@)">
+            <summary>
+            Queries whether the video renderer is in full-screen mode.
+            </summary>
+            
+            <param name="fullScreenMode">Full-screen mode.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.put_FullScreenMode(System.Boolean)">
+            <summary>
+            Enables or disables full-screen mode.
+            </summary>
+            
+            <param name="fullScreenMode">Boolean value that specifies whether to enable or disable full-screen mode.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.SetWindowForeground(System.Int32)">
+            <summary>
+            Places the video window at the top of the Z order.
+            </summary>
+            
+            <param name="focus">Value that specifies whether to give the window focus.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.NotifyOwnerMessage(System.IntPtr,System.Int32,System.IntPtr,System.IntPtr)">
+            <summary>
+            Forwards a message to the video window.
+            </summary>
+            
+            <param name="hwnd">Handle to the window.</param>
+            <param name="msg">Specifies the message.</param>
+            <param name="wParam">Message parameter.</param>
+            <param name="lParam">Message parameter.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.SetWindowPosition(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Sets the position of the video windowþ
+            </summary>
+            
+            <param name="left">Specifies the x-coordinate, in pixels.</param>
+            <param name="top">Specifies the y-coordinate, in pixels.</param>
+            <param name="width">Specifies the width, in pixels.</param>
+            <param name="height">Specifies the height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.GetWindowPosition(System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Retrieves the position of the video window.
+            </summary>
+            
+            <param name="left">x-coordinate, in pixels.</param>
+            <param name="top">y-coordinate, in pixels.</param>
+            <param name="width">Width, in pixels.</param>
+            <param name="height">Height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.GetMinIdealImageSize(System.Int32@,System.Int32@)">
+            <summary>
+            Retrieves the minimum ideal size for the video image.
+            </summary>
+            
+            <param name="width">Receives the minimum ideal width, in pixels.</param>
+            <param name="height">Receives the minimum ideal height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.GetMaxIdealImageSize(System.Int32@,System.Int32@)">
+            <summary>
+            Retrieves the maximum ideal size for the video image.
+            </summary>
+            
+            <param name="width">Receives the maximum ideal width, in pixels.</param>
+            <param name="height">Receives the maximum ideal height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.GetRestorePosition(System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Retrieves the restored window position.
+            </summary>
+            
+            <param name="left">x-coordinate, in pixels.</param>
+            <param name="top">y-coordinate, in pixels.</param>
+            <param name="width">Width, in pixels.</param>
+            <param name="height">Height, in pixels.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.HideCursor(System.Boolean)">
+            <summary>
+            Hides the cursor.
+            </summary>
+            
+            <param name="hideCursor">Specifies whether to hide or display the cursor.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.IVideoWindow.IsCursorHidden(System.Boolean@)">
+            <summary>
+            Queries whether the cursor is hidden.
+            </summary>
+            
+            <param name="hideCursor">Specifies if cursor is hidden or not.</param>
+            
+            <returns>Return's <b>HRESULT</b> error code.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.PinDirection">
+            <summary>
+            This enumeration indicates a pin's direction.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinDirection.Input">
+            <summary>
+            Input pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinDirection.Output">
+            <summary>
+            Output pin.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.AMMediaType">
+            <summary>
+            The structure describes the format of a media sample.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.MajorType">
+            <summary>
+            Globally unique identifier (GUID) that specifies the major type of the media sample.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.SubType">
+            <summary>
+            GUID that specifies the subtype of the media sample.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.FixedSizeSamples">
+            <summary>
+            If <b>true</b>, samples are of a fixed size.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.TemporalCompression">
+            <summary>
+            If <b>true</b>, samples are compressed using temporal (interframe) compression.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.SampleSize">
+            <summary>
+            Size of the sample in bytes. For compressed data, the value can be zero.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.FormatType">
+            <summary>
+            GUID that specifies the structure used for the format block.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.unkPtr">
+            <summary>
+            Not used.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.FormatSize">
+            <summary>
+            Size of the format block, in bytes.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.AMMediaType.FormatPtr">
+            <summary>
+            Pointer to the format block.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.AMMediaType.Finalize">
+            <summary>
+            Destroys the instance of the <see cref="T:Accord.Video.DirectShow.Internals.AMMediaType"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.AMMediaType.Dispose">
+             <summary>
+             Dispose the object.
+             </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.AMMediaType.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object
+            </summary>
+            
+            <param name="disposing">Indicates if disposing was initiated manually.</param>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.PinInfo">
+            <summary>
+            The structure contains information about a pin.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinInfo.Filter">
+            <summary>
+            Owning filter.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinInfo.Direction">
+            <summary>
+            Direction of the pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinInfo.Name">
+            <summary>
+            Name of the pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FilterInfo.Name">
+            <summary>
+            Filter's name.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FilterInfo.FilterGraph">
+            <summary>
+            Owning graph.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.VideoInfoHeader">
+            <summary>
+            The structure describes the bitmap and color information for a video image.
+            </summary>
+            
+            <remarks>
+              See https://msdn.microsoft.com/en-us/library/windows/desktop/dd407325(v=vs.85).aspx
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.SrcRect">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.RECT"/> structure that specifies the source video window.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.TargetRect">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.RECT"/> structure that specifies the destination video window.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.BitRate">
+            <summary>
+            Approximate data rate of the video stream, in bits per second.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.BitErrorRate">
+            <summary>
+            Data error rate, in bit errors per second.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.AverageTimePerFrame">
+            <summary>
+            The desired average display time of the video frames, in 100-nanosecond units.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader.BmiHeader">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.BitmapInfoHeader"/> structure that contains color and dimension information for the video image bitmap.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.VideoInfoHeader2">
+            <summary>
+            The structure describes the bitmap and color information for a video image (v2).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.SrcRect">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.RECT"/> structure that specifies the source video window.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.TargetRect">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.RECT"/> structure that specifies the destination video window.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.BitRate">
+            <summary>
+            Approximate data rate of the video stream, in bits per second.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.BitErrorRate">
+            <summary>
+            Data error rate, in bit errors per second.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.AverageTimePerFrame">
+            <summary>
+            The desired average display time of the video frames, in 100-nanosecond units.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.InterlaceFlags">
+            <summary>
+            Flags that specify how the video is interlaced.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.CopyProtectFlags">
+            <summary>
+            Flag set to indicate that the duplication of the stream should be restricted.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.PictAspectRatioX">
+            <summary>
+            The X dimension of picture aspect ratio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.PictAspectRatioY">
+            <summary>
+            The Y dimension of picture aspect ratio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.Reserved1">
+            <summary>
+            Reserved for future use.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.Reserved2">
+            <summary>
+            Reserved for future use. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.VideoInfoHeader2.BmiHeader">
+            <summary>
+            <see cref="T:Accord.Video.DirectShow.Internals.BitmapInfoHeader"/> structure that contains color and dimension information for the video image bitmap.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.BitmapInfoHeader">
+            <summary>
+            The structure contains information about the dimensions and color format of a device-independent bitmap (DIB).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.Size">
+            <summary>
+            Specifies the number of bytes required by the structure.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.Width">
+            <summary>
+            Specifies the width of the bitmap.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.Height">
+            <summary>
+            Specifies the height of the bitmap, in pixels.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.Planes">
+            <summary>
+            Specifies the number of planes for the target device. This value must be set to 1.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.BitCount">
+            <summary>
+            Specifies the number of bits per pixel.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.Compression">
+            <summary>
+            If the bitmap is compressed, this member is a <b>FOURCC</b> the specifies the compression.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.ImageSize">
+            <summary>
+            Specifies the size, in bytes, of the image.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.XPelsPerMeter">
+            <summary>
+            Specifies the horizontal resolution, in pixels per meter, of the target device for the bitmap.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.YPelsPerMeter">
+            <summary>
+            Specifies the vertical resolution, in pixels per meter, of the target device for the bitmap.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.ColorsUsed">
+            <summary>
+            Specifies the number of color indices in the color table that are actually used by the bitmap.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.BitmapInfoHeader.ColorsImportant">
+            <summary>
+            Specifies the number of color indices that are considered important for displaying the bitmap.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.RECT">
+            <summary>
+            The structure defines the coordinates of the upper-left and lower-right corners of a rectangle.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.RECT.Left">
+            <summary>
+            Specifies the x-coordinate of the upper-left corner of the rectangle.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.RECT.Top">
+            <summary>
+            Specifies the y-coordinate of the upper-left corner of the rectangle. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.RECT.Right">
+            <summary>
+            Specifies the x-coordinate of the lower-right corner of the rectangle.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.RECT.Bottom">
+            <summary>
+            Specifies the y-coordinate of the lower-right corner of the rectangle.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.CAUUID">
+            <summary>
+            The CAUUID structure is a Counted Array of UUID or GUID types.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.CAUUID.cElems">
+            <summary>
+            Size of the array pointed to by <b>pElems</b>.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.CAUUID.pElems">
+            <summary>
+            Pointer to an array of UUID values, each of which specifies UUID.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.CAUUID.ToGuidArray">
+            <summary>
+            Performs manual marshaling of <b>pElems</b> to retrieve an array of Guid objects.
+            </summary>
+            
+            <returns>A managed representation of <b>pElems</b>.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.DsEvCode">
+            <summary>
+            Enumeration of DirectShow event codes.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.FilterState">
+            <summary>
+            Specifies a filter's state or the state of the filter graph.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FilterState.State_Stopped">
+            <summary>
+            Stopped. The filter is not processing data.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FilterState.State_Paused">
+            <summary>
+            Paused. The filter is processing data, but not rendering it.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FilterState.State_Running">
+            <summary>
+            Running. The filter is processing and rendering data.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.Tools">
+            <summary>
+            Some miscellaneous functions.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Tools.GetPin(Accord.Video.DirectShow.Internals.IBaseFilter,Accord.Video.DirectShow.Internals.PinDirection,System.Int32)">
+            <summary>
+            Get filter's pin.
+            </summary>
+            
+            <param name="filter">Filter to get pin of.</param>
+            <param name="dir">Pin's direction.</param>
+            <param name="num">Pin's number.</param>
+            
+            <returns>Returns filter's pin.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Tools.GetInPin(Accord.Video.DirectShow.Internals.IBaseFilter,System.Int32)">
+            <summary>
+            Get filter's input pin.
+            </summary>
+            
+            <param name="filter">Filter to get pin of.</param>
+            <param name="num">Pin's number.</param>
+            
+            <returns>Returns filter's pin.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Tools.GetOutPin(Accord.Video.DirectShow.Internals.IBaseFilter,System.Int32)">
+            <summary>
+            Get filter's output pin.
+            </summary>
+            
+            <param name="filter">Filter to get pin of.</param>
+            <param name="num">Pin's number.</param>
+            
+            <returns>Returns filter's pin.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.Clsid">
+            <summary>
+            DirectShow class IDs.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.Clsid.SystemDeviceEnum">
+            <summary>
+            System device enumerator.
+            </summary>
+            
+            <remarks>Equals to CLSID_SystemDeviceEnum.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.Clsid.FilterGraph">
+            <summary>
+            Filter graph.
+            </summary>
+            
+            <remarks>Equals to CLSID_FilterGraph.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.Clsid.SampleGrabber">
+            <summary>
+            Sample grabber.
+            </summary>
+            
+            <remarks>Equals to CLSID_SampleGrabber.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.Clsid.CaptureGraphBuilder2">
+            <summary>
+            Capture graph builder.
+            </summary>
+            
+            <remarks>Equals to CLSID_CaptureGraphBuilder2.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.Clsid.AsyncReader">
+            <summary>
+            Async reader.
+            </summary>
+            
+            <remarks>Equals to CLSID_AsyncReader.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.FormatType">
+            <summary>
+            DirectShow format types.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FormatType.VideoInfo">
+            <summary>
+            VideoInfo.
+            </summary>
+            
+            <remarks>Equals to FORMAT_VideoInfo.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FormatType.VideoInfo2">
+            <summary>
+            VideoInfo2.
+            </summary>
+            
+            <remarks>Equals to FORMAT_VideoInfo2.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.MediaType">
+            <summary>
+            DirectShow media types.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaType.Video">
+            <summary>
+            Video.
+            </summary>
+            
+            <remarks>Equals to MEDIATYPE_Video.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaType.Interleaved">
+            <summary>
+            Interleaved. Used by Digital Video (DV).
+            </summary>
+            
+            <remarks>Equals to MEDIATYPE_Interleaved.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaType.Audio">
+            <summary>
+            Audio.
+            </summary>
+            
+            <remarks>Equals to MEDIATYPE_Audio.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaType.Text">
+            <summary>
+            Text.
+            </summary>
+            
+            <remarks>Equals to MEDIATYPE_Text.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaType.Stream">
+            <summary>
+            Byte stream with no time stamps.
+            </summary>
+            
+            <remarks>Equals to MEDIATYPE_Stream.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.MediaSubType">
+            <summary>
+            DirectShow media subtypes.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.YUYV">
+            <summary>
+            YUY2 (packed 4:2:2).
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_YUYV.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.IYUV">
+            <summary>
+            IYUV.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_IYUV.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.DVSD">
+            <summary>
+            A DV encoding format. (FOURCC 'DVSD')
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_DVSD.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB1">
+            <summary>
+            RGB, 1 bit per pixel (bpp), palettized.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB1.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB4">
+            <summary>
+            RGB, 4 bpp, palettized.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB4.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB8">
+            <summary>
+            RGB, 8 bpp.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB8.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB565">
+            <summary>
+            RGB 565, 16 bpp.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB565.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB555">
+            <summary>
+            RGB 555, 16 bpp.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB555.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB24">
+            <summary>
+            RGB, 24 bpp.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB24.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.RGB32">
+            <summary>
+            RGB, 32 bpp, no alpha channel.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_RGB32.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.Avi">
+            <summary>
+            Data from AVI file.
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_Avi.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.MediaSubType.Asf">
+            <summary>
+            Advanced Streaming Format (ASF).
+            </summary>
+            
+            <remarks>Equals to MEDIASUBTYPE_Asf.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.MediaSubType.ConvertFrom(System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            Convert to MediaSubType from System.Drawing.Imaging.PixelFormat
+            </summary>
+            <param name="pixelFormat"></param>
+            <returns>MediaSubType value</returns>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.PinCategory">
+            <summary>
+            DirectShow pin categories.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinCategory.Capture">
+            <summary>
+            Capture pin.
+            </summary>
+            
+            <remarks>Equals to PIN_CATEGORY_CAPTURE.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.PinCategory.StillImage">
+            <summary>
+            Still image pin.
+            </summary>
+            
+            <remarks>Equals to PIN_CATEGORY_STILL.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FindDirection.UpstreamOnly">
+            <summary>Equals to LOOK_UPSTREAM_ONLY.</summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.Internals.FindDirection.DownstreamOnly">
+            <summary>Equals to LOOK_DOWNSTREAM_ONLY.</summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Internals.Win32">
+            <summary>
+            Some Win32 API used internally.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Win32.CreateBindCtx(System.Int32,System.Runtime.InteropServices.ComTypes.IBindCtx@)">
+            <summary>
+            Supplies a pointer to an implementation of <b>IBindCtx</b> (a bind context object).
+            This object stores information about a particular moniker-binding operation.
+            </summary>
+            
+            <param name="reserved">Reserved for future use; must be zero.</param>
+            <param name="ppbc">Address of <b>IBindCtx*</b> pointer variable that receives the
+            interface pointer to the new bind context object.</param>
+            
+            <returns>Returns <b>S_OK</b> on success.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Win32.MkParseDisplayName(System.Runtime.InteropServices.ComTypes.IBindCtx,System.String,System.Int32@,System.Runtime.InteropServices.ComTypes.IMoniker@)">
+            <summary>
+            Converts a string into a moniker that identifies the object named by the string.
+            </summary>
+            
+            <param name="pbc">Pointer to the IBindCtx interface on the bind context object to be used in this binding operation.</param>
+            <param name="szUserName">Pointer to a zero-terminated wide character string containing the display name to be parsed. </param>
+            <param name="pchEaten">Pointer to the number of characters of szUserName that were consumed.</param>
+            <param name="ppmk">Address of <b>IMoniker*</b> pointer variable that receives the interface pointer
+            to the moniker that was built from <b>szUserName</b>.</param>
+            
+            <returns>Returns <b>S_OK</b> on success.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Win32.memcpy(System.Byte*,System.Byte*,System.Int32)">
+            <summary>
+            Copy a block of memory.
+            </summary>
+            
+            <param name="dst">Destination pointer.</param>
+            <param name="src">Source pointer.</param>
+            <param name="count">Memory block's length to copy.</param>
+            
+            <returns>Return's the value of <b>dst</b> - pointer to destination.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Win32.OleCreatePropertyFrame(System.IntPtr,System.Int32,System.Int32,System.String,System.Int32,System.Object@,System.Int32,System.IntPtr,System.Int32,System.Int32,System.IntPtr)">
+            <summary>
+            Invokes a new property frame, that is, a property sheet dialog box.
+            </summary>
+            
+            <param name="hwndOwner">Parent window of property sheet dialog box.</param>
+            <param name="x">Horizontal position for dialog box.</param>
+            <param name="y">Vertical position for dialog box.</param>
+            <param name="caption">Dialog box caption.</param>
+            <param name="cObjects">Number of object pointers in <b>ppUnk</b>.</param>
+            <param name="ppUnk">Pointer to the objects for property sheet.</param>
+            <param name="cPages">Number of property pages in <b>lpPageClsID</b>.</param>
+            <param name="lpPageClsID">Array of CLSIDs for each property page.</param>
+            <param name="lcid">Locale identifier for property sheet locale.</param>
+            <param name="dwReserved">Reserved.</param>
+            <param name="lpvReserved">Reserved.</param>
+            
+            <returns>Returns <b>S_OK</b> on success.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.Internals.Win32.ProgIDFromCLSID(System.Guid@)">
+            <summary>
+            Gets a string name for a CLSID.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.FilterInfo">
+            <summary>
+            DirectShow filter information.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.FilterInfo.Name">
+            <summary>
+            Filter name.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.FilterInfo.MonikerString">
+            <summary>
+            Filters's moniker string.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.FilterInfo"/> class.
+            </summary>
+            
+            <param name="monikerString">Filters's moniker string.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.#ctor(System.Runtime.InteropServices.ComTypes.IMoniker)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.FilterInfo"/> class.
+            </summary>
+            
+            <param name="moniker">Filter's moniker object.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.CompareTo(System.Object)">
+            <summary>
+            Compare the object with another instance of this class.
+            </summary>
+            
+            <param name="value">Object to compare with.</param>
+            
+            <returns>A signed number indicating the relative values of this instance and <b>value</b>.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.CreateFilter(System.String)">
+            <summary>
+            Create an instance of the filter.
+            </summary>
+            
+            <param name="filterMoniker">Filter's moniker string.</param>
+            
+            <returns>Returns filter's object, which implements <b>IBaseFilter</b> interface.</returns>
+            
+            <remarks>The returned filter's object should be released using <b>Marshal.ReleaseComObject()</b>.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.GetPropertyPages(System.String)">
+            <summary>
+              Gets the supported property pages for the filter, if any.
+            </summary>
+            
+            <param name="filterMoniker">The filter moniker.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfo.ToString">
+            <summary>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+            <returns>A <see cref="T:System.String" /> that represents this instance.</returns>
+        </member>
+        <member name="T:Accord.Video.DirectShow.FilterInfoCollection">
+            <summary>
+            Collection of filters' information objects.
+            </summary>
+            
+            <remarks>
+            <para>
+              The class allows to enumerate DirectShow filters of specified category. For
+              a list of categories see <see cref="T:Accord.Video.DirectShow.FilterCategory"/>.</para>
+            </remarks>
+            
+            <example>
+            <code>
+            // enumerate video devices
+            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            
+            // list devices
+            foreach (FilterInfo device in videoDevices)
+            {
+                // ...
+            }
+            </code>
+            </example>
+            
+            <seealso cref="T:Accord.Video.DirectShow.VideoCaptureDevice"/>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.FilterInfoCollection.#ctor(System.Guid)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.FilterInfoCollection"/> class.
+            </summary>
+            
+            <param name="category">Guid of DirectShow filter category. See <see cref="T:Accord.Video.DirectShow.FilterCategory"/>.</param>
+            
+            <remarks>Build collection of filters' information objects for the
+            specified filter category.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.PhysicalConnectorType">
+            <summary>
+            Specifies the physical type of pin (audio or video).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.Default">
+            <summary>
+            Default value of connection type. Physically it does not exist, but just either to specify that
+            connection type should not be changed (input) or was not determined (output).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoTuner">
+            <summary>
+            Specifies a tuner pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoComposite">
+            <summary>
+            Specifies a composite pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoSVideo">
+            <summary>
+            Specifies an S-Video (Y/C video) pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoRGB">
+            <summary>
+            Specifies an RGB pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoYRYBY">
+            <summary>
+            Specifies a YRYBY (Y, R–Y, B–Y) pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoSerialDigital">
+            <summary>
+            Specifies a serial digital pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoParallelDigital">
+            <summary>
+            Specifies a parallel digital pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoSCSI">
+            <summary>
+            Specifies a SCSI (Small Computer System Interface) pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoAUX">
+            <summary>
+            Specifies an AUX (auxiliary) pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.Video1394">
+            <summary>
+            Specifies an IEEE 1394 pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoUSB">
+            <summary>
+            Specifies a USB (Universal Serial Bus) pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoDecoder">
+            <summary>
+            Specifies a video decoder pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoEncoder">
+            <summary>
+            Specifies a video encoder pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoSCART">
+            <summary>
+            Specifies a SCART (Peritel) pin for video.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.VideoBlack">
+            <summary>
+            Not used.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioTuner">
+            <summary>
+            Specifies a tuner pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioLine">
+            <summary>
+            Specifies a line pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioMic">
+            <summary>
+            Specifies a microphone pin.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioAESDigital">
+            <summary>
+            Specifies an AES/EBU (Audio Engineering Society/European Broadcast Union) digital pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioSPDIFDigital">
+            <summary>
+            Specifies an S/PDIF (Sony/Philips Digital Interface Format) digital pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioSCSI">
+            <summary>
+            Specifies a SCSI pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioAUX">
+            <summary>
+            Specifies an AUX pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.Audio1394">
+            <summary>
+            Specifies an IEEE 1394 pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioUSB">
+            <summary>
+            Specifies a USB pin for audio.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.PhysicalConnectorType.AudioDecoder">
+            <summary>
+            Specifies an audio decoder pin.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.Properties.Resources.camera">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.FilterCategory">
+            <summary>
+            DirectShow filter categories.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.FilterCategory.AudioInputDevice">
+            <summary>
+            Audio input device category.
+            </summary>
+            
+            <remarks>Equals to CLSID_AudioInputDeviceCategory.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.FilterCategory.VideoInputDevice">
+            <summary>
+            Video input device category.
+            </summary>
+            
+            <remarks>Equals to CLSID_VideoInputDeviceCategory.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.FilterCategory.VideoCompressorCategory">
+            <summary>
+            Video compressor category.
+            </summary>
+            
+            <remarks>Equals to CLSID_VideoCompressorCategory.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.FilterCategory.AudioCompressorCategory">
+            <summary>
+            Audio compressor category
+            </summary>
+            
+            <remarks>Equals to CLSID_AudioCompressorCategory.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.VideoCapabilities">
+            <summary>
+            Capabilities of video device such as frame size and frame rate.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoCapabilities.FrameSize">
+            <summary>
+            Frame size supported by video device.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCapabilities.FrameRate">
+            <summary>
+            Frame rate supported by video device for corresponding <see cref="F:Accord.Video.DirectShow.VideoCapabilities.FrameSize">frame size</see>.
+            </summary>
+            
+            <remarks><para><note>This field is depricated - should not be used.
+            Its value equals to <see cref="F:Accord.Video.DirectShow.VideoCapabilities.AverageFrameRate"/>.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoCapabilities.AverageFrameRate">
+            <summary>
+            Average frame rate of video device for corresponding <see cref="F:Accord.Video.DirectShow.VideoCapabilities.FrameSize">frame size</see>.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoCapabilities.MaximumFrameRate">
+            <summary>
+            Maximum frame rate of video device for corresponding <see cref="F:Accord.Video.DirectShow.VideoCapabilities.FrameSize">frame size</see>.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoCapabilities.BitCount">
+            <summary>
+            Number of bits per pixel provided by the camera.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.Equals(System.Object)">
+            <summary>
+            Check if the video capability equals to the specified object.
+            </summary>
+            
+            <param name="obj">Object to compare with.</param>
+            
+            <returns>Returns true if both are equal are equal or false otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.Equals(Accord.Video.DirectShow.VideoCapabilities)">
+            <summary>
+            Check if two video capabilities are equal.
+            </summary>
+            
+            <param name="vc2">Second video capability to compare with.</param>
+            
+            <returns>Returns true if both video capabilities are equal or false otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.GetHashCode">
+            <summary>
+            Get hash code of the object.
+            </summary>
+            
+            <returns>Returns hash code ot the object </returns>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.op_Equality(Accord.Video.DirectShow.VideoCapabilities,Accord.Video.DirectShow.VideoCapabilities)">
+            <summary>
+            Equality operator.
+            </summary>
+            
+            <param name="a">First object to check.</param>
+            <param name="b">Seconds object to check.</param>
+            
+            <returns>Return true if both objects are equal or false otherwise.</returns>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.op_Inequality(Accord.Video.DirectShow.VideoCapabilities,Accord.Video.DirectShow.VideoCapabilities)">
+            <summary>
+            Inequality operator.
+            </summary>
+            
+            <param name="a">First object to check.</param>
+            <param name="b">Seconds object to check.</param>
+            
+            <returns>Return true if both objects are not equal or false otherwise.</returns>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCapabilities.ToString">
+            <summary>
+            Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+            <returns>A <see cref="T:System.String" /> that represents this instance.</returns>
+        </member>
+        <member name="T:Accord.Video.DirectShow.VideoCaptureDevice">
+            <summary>
+            Video source for local video capture device (for example USB webcam).
+            </summary>
+            
+            <remarks>
+              <para>This video source class captures video data from local video capture device,
+              like USB web camera (or internal), frame grabber, capture board - anything which
+              supports <b>DirectShow</b> interface. For devices which has a shutter button or
+              support external software triggering, the class also allows to do snapshots. Both
+              video size and snapshot size can be configured.</para>
+            </remarks>
+            
+            <example>
+            <code source="Unit Tests\Accord.Tests.Video\VideoCaptureDeviceTest.cs" region="doc_part_1" />
+            <para>
+              The video_NewFrame event could have been defined as in any of the following examples:</para>
+            <code source="Unit Tests\Accord.Tests.Video\VideoCaptureDeviceTest.cs" region="doc_part_2" />
+            <code source="Unit Tests\Accord.Tests.Video\VideoCaptureDeviceTest.cs" region="doc_part_3" />
+            </example>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.CrossbarVideoInput">
+            <summary>
+            Current video input of capture card.
+            </summary>
+            
+            <remarks><para>The property specifies video input to use for video devices like capture cards
+            (those which provide crossbar configuration). List of available video inputs can be obtained
+            from <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.AvailableCrossbarVideoInputs"/> property.</para>
+            
+            <para>To check if the video device supports crossbar configuration, the <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.CheckIfCrossbarAvailable"/>
+            method can be used.</para>
+            
+            <para><note>This property can be set as before running video device, as while running it.</note></para>
+            
+            <para>By default this property is set to <see cref="P:Accord.Video.DirectShow.VideoInput.Default"/>, which means video input
+            will not be set when running video device, but currently configured will be used. After video device
+            is started this property will be updated anyway to tell current video input.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.AvailableCrossbarVideoInputs">
+            <summary>
+            Available inputs of the video capture card.
+            </summary>
+            
+            <remarks><para>The property provides list of video inputs for devices like video capture cards.
+            Such devices usually provide several video inputs, which can be selected using crossbar.
+            If video device represented by the object of this class supports crossbar, then this property
+            will list all video inputs. However if it is a regular USB camera, for example, which does not
+            provide crossbar configuration, the property will provide zero length array.</para>
+            
+            <para>Video input to be used can be selected using <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.CrossbarVideoInput"/>. See also
+            <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.DisplayCrossbarPropertyPage(System.IntPtr)"/> method, which provides crossbar configuration dialog.</para>
+            
+            <para><note>It is recomended not to call this property immediately after <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.Start"/> method, since
+            device may not start yet and provide its information. It is better to call the property
+            before starting device or a bit after (but not immediately after).</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots">
+             <summary>
+             Specifies if snapshots should be provided or not.
+             </summary>
+             
+             <remarks><para>Some USB cameras/devices may have a shutter button, which may result into snapshot if it
+             is pressed. So the property specifies if the video source will try providing snapshots or not - it will
+             check if the camera supports providing still image snapshots. If camera supports snapshots and the property
+             is set to <see langword="true"/>, then snapshots will be provided through <see cref="E:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotFrame"/>
+             event.</para>
+             
+             <para>Check supported sizes of snapshots using <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotCapabilities"/> property and set the
+             desired size using <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotResolution"/> property.</para>
+             
+             <para><note>The property must be set before running the video source to take effect.</note></para>
+             
+             <para>Default value of the property is set to <see langword="false"/>.</para>
+             </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.VideoCaptureDevice.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotFrame">
+            <summary>
+            Snapshot frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available snapshot frame - the one which comes when
+            camera's snapshot/shutter button is pressed.</para>
+            
+            <para>See documentation to <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/> for additional information.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed snapshot frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+            <seealso cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.VideoCaptureDevice.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.DirectShow.VideoCaptureDevice.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks>Video source is represented by moniker string of video capture device.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.DesiredFrameSize">
+            <summary>
+            Obsolete - no longer in use
+            </summary>
+            
+            <remarks><para>The property is obsolete. Use <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.VideoResolution"/> property instead.
+            Setting this property does not have any effect.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.DesiredSnapshotSize">
+            <summary>
+            Obsolete - no longer in use
+            </summary>
+            
+            <remarks><para>The property is obsolete. Use <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotResolution"/> property instead.
+            Setting this property does not have any effect.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.DesiredFrameRate">
+            <summary>
+            Obsolete - no longer in use.
+            </summary>
+            
+            <remarks><para>The property is obsolete. Setting this property does not have any effect.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.DesiredAverageTimePerFrame">
+            <summary>
+              The desired average display time of the video frames, in 100-nanosecond units.
+              There is no guarantee that the device will actually respect this setting, however
+              some devices will not work unless this property is set. See remarks for details.
+            </summary>
+            
+            <remarks>
+            <para>
+              This property controls the initialization of the AvgTimePerFrame member of the 
+              <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dd407325(v=vs.85).aspx">
+              DirectShow's VideoInfoHeader structure</a>. In normal situations this property
+              does not need to be set, but some combinations of hardware and DirectShow filters
+              might require this property to be set to 0 to achieve a good frame rate. If this
+              property is set to -1, the AvgTimePerFrame member will not be initialized at all.</para>  
+              
+            <para>
+              The default value for this property is 0 (AvgTimePerFrame will be initialized with 0).</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.VideoResolution">
+            <summary>
+            Video resolution to set.
+            </summary>
+            
+            <remarks><para>The property allows to set one of the video resolutions supported by the camera.
+            Use <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.VideoCapabilities"/> property to get the list of supported video resolutions.</para>
+            
+            <para><note>The property must be set before camera is started to make any effect.</note></para>
+            
+            <para>Default value of the property is set to <see langword="null"/>, which means default video
+            resolution is used.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotResolution">
+            <summary>
+            Snapshot resolution to set.
+            </summary>
+            
+            <remarks><para>The property allows to set one of the snapshot resolutions supported by the camera.
+            Use <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotCapabilities"/> property to get the list of supported snapshot resolutions.</para>
+            
+            <para><note>The property must be set before camera is started to make any effect.</note></para>
+            
+            <para>Default value of the property is set to <see langword="null"/>, which means default snapshot
+            resolution is used.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.VideoCapabilities">
+            <summary>
+            Video capabilities of the device.
+            </summary>
+            
+            <remarks><para>The property provides list of device's video capabilities.</para>
+            
+            <para><note>It is recomended not to call this property immediately after <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.Start"/> method, since
+            device may not start yet and provide its information. It is better to call the property
+            before starting device or a bit after (but not immediately after).</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotCapabilities">
+            <summary>
+            Snapshot capabilities of the device.
+            </summary>
+            
+            <remarks><para>The property provides list of device's snapshot capabilities.</para>
+            
+            <para>If the array has zero length, then it means that this device does not support making
+            snapshots.</para>
+            
+            <para>See documentation to <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/> for additional information.</para>
+            
+            <para><note>It is recomended not to call this property immediately after <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.Start"/> method, since
+            device may not start yet and provide its information. It is better to call the property
+            before starting device or a bit after (but not immediately after).</note></para>
+            </remarks>
+            
+            <seealso cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDevice.SourceObject">
+            <summary>
+            Source COM object of camera capture device.
+            </summary>
+            
+            <remarks><para>The source COM object of camera capture device is exposed for the
+            case when user may need get direct access to the object for making some custom
+            configuration of camera through DirectShow interface, for example.
+            </para>
+            
+            <para>If camera is not running, the property is set to <see langword="null"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.VideoCaptureDevice"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.VideoCaptureDevice"/> class.
+            </summary>
+            
+            <param name="deviceMoniker">Moniker string of video capture device.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.#ctor(System.String,System.Drawing.Imaging.PixelFormat)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.VideoCaptureDevice"/> class.
+            </summary>
+            
+            <param name="deviceMoniker">Moniker string of video capture device.</param>
+            <param name="pixelFormat">Pixel format of video.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.DirectShow.VideoCaptureDevice.NewFrame"/> event.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.Free">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.DisplayPropertyPage(System.IntPtr)">
+            <summary>
+            Display property window for the video capture device providing its configuration
+            capabilities.
+            </summary>
+            
+            <param name="parentWindow">Handle of parent window.</param>
+            
+            <remarks><para><note>If you pass parent window's handle to this method, then the
+            displayed property page will become modal window and none of the controls from the
+            parent window will be accessible. In order to make it modeless it is required
+            to pass <see cref="F:System.IntPtr.Zero"/> as parent window's handle.
+            </note></para>
+            </remarks>
+            
+            <exception cref="T:System.NotSupportedException">The video source does not support configuration property page.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.DisplayCrossbarPropertyPage(System.IntPtr)">
+            <summary>
+            Display property page of video crossbar (Analog Video Crossbar filter).
+            </summary>
+            
+            <param name="parentWindow">Handle of parent window.</param>
+            
+            <remarks><para>The Analog Video Crossbar filter is modeled after a general switching matrix,
+            with n inputs and m outputs. For example, a video card might have two external connectors:
+            a coaxial connector for TV, and an S-video input. These would be represented as input pins on
+            the filter. The displayed property page allows to configure the crossbar by selecting input
+            of a video card to use.</para>
+            
+            <para><note>This method can be invoked only when video source is running (<see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.IsRunning"/> is
+            <see langword="true"/>). Otherwise it generates exception.</note></para>
+            
+            <para>Use <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.CheckIfCrossbarAvailable"/> method to check if running video source provides
+            crossbar configuration.</para>
+            </remarks>
+            
+            <exception cref="T:System.ApplicationException">The video source must be running in order to display crossbar property page.</exception>
+            <exception cref="T:System.NotSupportedException">Crossbar configuration is not supported by currently running video source.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.CheckIfCrossbarAvailable">
+             <summary>
+             Check if running video source provides crossbar for configuration.
+             </summary>
+             
+             <returns>Returns <see langword="true"/> if crossbar configuration is available or
+             <see langword="false"/> otherwise.</returns>
+             
+             <remarks><para>The method reports if the video source provides crossbar configuration
+             using <see cref="M:Accord.Video.DirectShow.VideoCaptureDevice.DisplayCrossbarPropertyPage(System.IntPtr)"/>.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.SimulateTrigger">
+            <summary>
+            Simulates an external trigger.
+            </summary>
+            
+            <remarks><para>The method simulates external trigger for video cameras, which support
+            providing still image snapshots. The effect is equivalent as pressing camera's shutter
+            button - a snapshot will be provided through <see cref="E:Accord.Video.DirectShow.VideoCaptureDevice.SnapshotFrame"/> event.</para>
+            
+            <para><note>The <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/> property must be set to <see langword="true"/>
+            to enable receiving snapshots.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.SetCameraProperty(Accord.Video.DirectShow.CameraControlProperty,System.Int32,Accord.Video.DirectShow.CameraControlFlags)">
+            <summary>
+            Sets a specified property on the camera.
+            </summary>
+            
+            <param name="property">Specifies the property to set.</param>
+            <param name="value">Specifies the new value of the property.</param>
+            <param name="controlFlags">Specifies the desired control setting.</param>
+            
+            <returns>Returns true on sucee or false otherwise.</returns>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified - device moniker is not set.</exception>
+            <exception cref="T:System.ApplicationException">Failed creating device object for moniker.</exception>
+            <exception cref="T:System.NotSupportedException">The video source does not support camera control.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.GetCameraProperty(Accord.Video.DirectShow.CameraControlProperty,System.Int32@,Accord.Video.DirectShow.CameraControlFlags@)">
+            <summary>
+            Gets the current setting of a camera property.
+            </summary>
+            
+            <param name="property">Specifies the property to retrieve.</param>
+            <param name="value">Receives the value of the property.</param>
+            <param name="controlFlags">Receives the value indicating whether the setting is controlled manually or automatically</param>
+            
+            <returns>Returns true on sucee or false otherwise.</returns>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified - device moniker is not set.</exception>
+            <exception cref="T:System.ApplicationException">Failed creating device object for moniker.</exception>
+            <exception cref="T:System.NotSupportedException">The video source does not support camera control.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.GetCameraPropertyRange(Accord.Video.DirectShow.CameraControlProperty,System.Int32@,System.Int32@,System.Int32@,System.Int32@,Accord.Video.DirectShow.CameraControlFlags@)">
+            <summary>
+            Gets the range and default value of a specified camera property.
+            </summary>
+            
+            <param name="property">Specifies the property to query.</param>
+            <param name="minValue">Receives the minimum value of the property.</param>
+            <param name="maxValue">Receives the maximum value of the property.</param>
+            <param name="stepSize">Receives the step size for the property.</param>
+            <param name="defaultValue">Receives the default value of the property.</param>
+            <param name="controlFlags">Receives a member of the <see cref="T:Accord.Video.DirectShow.CameraControlFlags"/> enumeration, indicating whether the property is controlled automatically or manually.</param>
+            
+            <returns>Returns true on sucee or false otherwise.</returns>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified - device moniker is not set.</exception>
+            <exception cref="T:System.ApplicationException">Failed creating device object for moniker.</exception>
+            <exception cref="T:System.NotSupportedException">The video source does not support camera control.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.WorkerThread">
+            <summary>
+            Worker thread.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.OnNewFrame(System.Drawing.Bitmap)">
+            <summary>
+            Notifies clients about new frame.
+            </summary>
+            
+            <param name="image">New frame's image.</param>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDevice.OnSnapshotFrame(System.Drawing.Bitmap)">
+            <summary>
+            Notifies clients about new snapshot frame.
+            </summary>
+            
+            <param name="image">New snapshot's image.</param>
+            
+        </member>
+        <member name="T:Accord.Video.DirectShow.VideoCaptureDeviceForm">
+            <summary>
+            Local video device selection form.
+            </summary>
+            
+            <remarks><para>The form provides a standard way of selecting local video
+            device (USB web camera, capture board, etc. - anything supporting DirectShow
+            interface), which can be reused across applications. It allows selecting video
+            device, video size and snapshots size (if device supports snapshots and
+            <see cref="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.ConfigureSnapshots">user needs them</see>).</para>
+            
+            <para><img src="..\images\video\VideoCaptureDeviceForm.png" width="478" height="205" /></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.ConfigureSnapshots">
+            <summary>
+            Specifies if snapshot configuration should be done or not.
+            </summary>
+            
+            <remarks><para>The property specifies if the dialog form should
+            allow configuration of snapshot sizes (if selected video source supports
+            snapshots). If the property is set to <see langword="true"/>, then
+            the form will provide additional combo box enumerating supported
+            snapshot sizes. Otherwise the combo boxes will be hidden.
+            </para>
+            
+            <para>If the property is set to <see langword="true"/> and selected
+            device supports snapshots, then <see cref="P:Accord.Video.DirectShow.VideoCaptureDevice.ProvideSnapshots"/>
+            property of the <see cref="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.VideoDevice">configured device</see> is set to
+            <see langword="true"/>.</para>
+            
+            <para>Default value of the property is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.VideoDevice">
+            <summary>
+            Provides configured video device.
+            </summary>
+            
+            <remarks><para>The property provides configured video device if user confirmed
+            the dialog using "OK" button. If user canceled the dialog, the property is
+            set to <see langword="null"/>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.VideoDeviceMoniker">
+            <summary>
+            Moniker string of the selected video device.
+            </summary>
+            
+            <remarks><para>The property allows to get moniker string of the selected device
+            on form completion or set video device which should be selected by default on
+            form loading.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.CaptureSize">
+            <summary>
+            Video frame size of the selected device.
+            </summary>
+            
+            <remarks><para>The property allows to get video size of the selected device
+            on form completion or set the size to be selected by default on form loading.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.SnapshotSize">
+            <summary>
+            Snapshot frame size of the selected device.
+            </summary>
+            
+            <remarks><para>The property allows to get snapshot size of the selected device
+            on form completion or set the size to be selected by default on form loading
+            (if <see cref="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.ConfigureSnapshots"/> property is set <see langword="true"/>).</para>
+            </remarks>
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoCaptureDeviceForm.VideoInput">
+            <summary>
+            Video input to use with video capture card.
+            </summary>
+            
+            <remarks><para>The property allows to get video input of the selected device
+            on form completion or set it to be selected by default on form loading.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDeviceForm.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.DirectShow.VideoCaptureDeviceForm"/> class.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoCaptureDeviceForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDeviceForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Video.DirectShow.VideoCaptureDeviceForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.DirectShow.VideoInput">
+            <summary>
+            Video input of a capture board.
+            </summary>
+            
+            <remarks><para>The class is used to describe video input of devices like video capture boards,
+            which usually provide several inputs.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoInput.Index">
+            <summary>
+            Index of the video input.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.DirectShow.VideoInput.Type">
+            <summary>
+            Type of the video input.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.DirectShow.VideoInput.Default">
+            <summary>
+            Default video input. Used to specify that it should not be changed.
+            </summary>
+        </member>
+    </members>
+</doc>
