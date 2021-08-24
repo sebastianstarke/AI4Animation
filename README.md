@@ -79,7 +79,7 @@ multiple locomotion modes as well as different character and object interactions
 -
 <a href="AI4Animation/SIGGRAPH_2020">Code</a>
 -
-<a href="AI4Animation/SIGGRAPH_2020">Windows Demo</a>
+<a href="http://www.starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip">Windows Demo</a>
 -
 <a href="AI4Animation/SIGGRAPH_2020/ReadMe.md">ReadMe</a>
 -
