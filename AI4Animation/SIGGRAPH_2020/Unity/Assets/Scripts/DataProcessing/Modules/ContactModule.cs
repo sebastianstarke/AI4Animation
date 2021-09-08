@@ -389,13 +389,21 @@ public class ContactModule : Module {
 				return Contacts[frame.Index-1];
 			}
 			if(MirrorSensor == null) {
-				MirrorSensor = Module.GetSensor(Module.Data.Source.Bones[Module.Data.Symmetry[Module.Data.Source.FindBone(ID).Index]].Name);
+				MotionData.Hierarchy.Bone bone = Module.Data.Source.FindBone(ID);
+				if(bone != null) {
+					MirrorSensor = Module.GetSensor(Module.Data.Source.Bones[Module.Data.Symmetry[bone.Index]].Name);
+				}
 			}
 			return MirrorSensor == null ? 0f : MirrorSensor.Contacts[frame.Index-1];
 		}
 
 		public void SetName(string name) {
-			ID = name;
+			if(ID != name) {
+				ID = name;
+				foreach(Sensor s in Module.Sensors) {
+					s.MirrorSensor = null;
+				}
+			}
 		}
 
 		public void SetBone(int index, int bone) {
@@ -471,7 +479,7 @@ public class ContactModule : Module {
 				if(Utility.GUIButton("+", UltiDraw.DarkGrey, UltiDraw.White, 20f, 20f)) {
 					AddBone(0);
 				}
-				EditorGUILayout.LabelField("Name", GUILayout.Width(40f));
+				EditorGUILayout.LabelField("Group", GUILayout.Width(40f));
 				SetName(EditorGUILayout.TextField(ID, GUILayout.Width(100f)));
 				EditorGUILayout.LabelField("Mask", GUILayout.Width(40));
 				Mask = InternalEditorUtility.ConcatenatedLayersMaskToLayerMask(EditorGUILayout.MaskField(InternalEditorUtility.LayerMaskToConcatenatedLayersMask(Mask), InternalEditorUtility.layers, GUILayout.Width(100f)));
