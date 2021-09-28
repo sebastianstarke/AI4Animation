@@ -29,7 +29,7 @@ The generated weights are automatically saved inside the Tensorflow/trained fold
 
 If you wish to start from raw motion capture data, it can be downloaded from this link:
 
-http://www.starke-consult.de/UoE/GitHub/SIGGRAPH_2018/MotionCapture.zip
+http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip
 
 You will then need to use the developed motion capture editor tools inside Unity to pre-process the data as you wish, i.e. adding modules and assigning motion labels as mentioned in the paper.
 
