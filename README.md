@@ -10,6 +10,42 @@ This project explores the opportunities of deep learning for character animation
 </p>
 
 ------------
+**SIGGRAPH 2022**<br />
+**DeepPhase: Periodic Autoencoders for Learning Motion Phase Manifolds**<br >
+<sub>
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
+<a href="https://www.linkedin.com/in/ian-mason-134197105/">Ian Mason</a>, 
+<a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
+ACM Trans. Graph. 41, 4.
+<sub>
+------------
+<img src ="Media/SIGGRAPH_2022/Teaser.png" width="100%">
+
+<p align="center">
+Learning the spatial-temporal structure of body movements is a fundamental problem for character motion synthesis. In this work, we propose a novel neural network architecture called the Periodic Autoencoder that can learn periodic features from large unstructured motion datasets in an unsupervised manner. The character movements are decomposed into multiple latent channels that capture the non-linear periodicity of different body segments while progressing forward in time. Our method extracts a multi-dimensional phase space from full-body motion data, which effectively clusters animations and produces a manifold in which computed feature distances provide a better similarity measure than in the original motion space to achieve better temporal and spatial alignment. We demonstrate that the learned periodic embedding can significantly help to improve neural motion synthesis in a number of tasks, including diverse locomotion skills, style-based movements, dance motion synthesis from music, synthesis of dribbling motions in football, and motion query for matching poses within large animation databases.
+</p>
+
+<p align="center">
+<img src ="Media/SIGGRAPH_2022/Manifolds.png" width="100%">
+</p>
+
+<p align="center">
+-
+<a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">Video</a>
+-
+<a href="Media/SIGGRAPH_2022/Paper.pdf">Paper</a>
+-
+Code (coming soon)
+-
+</p>
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">
+<img width="60%" src="Media/SIGGRAPH_2022/Thumbnail.png">
+</a>
+</p>
+
+------------
 **SIGGRAPH 2021**<br />
 **Neural Animation Layering for Synthesizing Martial Arts Movements**<br >
 <sub>
