@@ -35,7 +35,9 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 -
 <a href="Media/SIGGRAPH_2022/Paper.pdf">Paper</a>
 -
-Code (coming soon)
+<a href="AI4Animation/SIGGRAPH_2020">PAE Code & Demo</a>
+-
+Animation Code & Demo (coming soon)
 -
 </p>
 
