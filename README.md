@@ -16,7 +16,7 @@ This project explores the opportunities of deep learning for character animation
 <a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
 <a href="https://www.linkedin.com/in/ian-mason-134197105/">Ian Mason</a>, 
 <a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>, 
-ACM Trans. Graph. 41, 4.
+ACM Trans. Graph. 41, 4, Article 136.
 <sub>
 ------------
 <img src ="Media/SIGGRAPH_2022/Teaser.png" width="100%">
