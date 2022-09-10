@@ -39,6 +39,8 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 -
 Animation Code & Demo (coming soon)
 -
+<a href="https://www.ianxmason.com/posts/PAE/">Explanation and Addendum</a>
+-
 </p>
 
 <p align="center">
