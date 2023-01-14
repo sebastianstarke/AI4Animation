@@ -37,7 +37,7 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 -
 <a href="AI4Animation/SIGGRAPH_2022/PyTorch">PAE Code & Demo</a>
 -
-Animation Code & Demo (coming soon)
+<a href="AI4Animation/SIGGRAPH_2022/Unity">Animation Code & Demo</a>
 -
 <a href="https://www.ianxmason.com/posts/PAE/">Explanation and Addendum</a>
 -
