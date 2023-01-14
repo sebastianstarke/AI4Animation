@@ -1,0 +1,2530 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Genetic</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Genetic.BinaryChromosome">
+            <summary>
+            Binary chromosome, which supports length from 2 till 64.
+            </summary>
+            
+            <remarks><para>The binary chromosome is the simplest type of chromosomes,
+            which is represented by a set of bits. Maximum number of bits comprising
+            the chromosome is 64.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.BinaryChromosome.length">
+            <summary>
+            Chromosome's length in bits.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.BinaryChromosome.val">
+            <summary>
+            Numerical chromosome's value.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.BinaryChromosome.MaxLength">
+            <summary>
+            Chromosome's maximum length.
+            </summary>
+            
+            <remarks><para>Maxim chromosome's length in bits, which is supported
+            by the class</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.BinaryChromosome.Length">
+            <summary>
+            Chromosome's length.
+            </summary>
+            
+            <remarks><para>Length of the chromosome in bits.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.BinaryChromosome.Value">
+            <summary>
+            Chromosome's value.
+            </summary>
+            
+            <remarks><para>Current numerical value of the chromosome.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.BinaryChromosome.MaxValue">
+            <summary>
+            Max possible chromosome's value.
+            </summary>
+            
+            <remarks><para>Maximum possible numerical value, which may be represented
+            by the chromosome of current length.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.BinaryChromosome"/> class.
+            </summary>
+            
+            <param name="length">Chromosome's length in bits, [2, <see cref="F:Accord.Genetic.BinaryChromosome.MaxLength"/>].</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.#ctor(Accord.Genetic.BinaryChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.BinaryChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source chromosome to copy.</param>
+            
+            <remarks><para>This is a copy constructor, which creates the exact copy
+            of specified chromosome.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.ToString">
+            <summary>
+            Get string representation of the chromosome.
+            </summary>
+            
+            <returns>Returns string representation of the chromosome.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.Generate">
+            <summary>
+            Generate random chromosome value.
+            </summary>
+            
+            <remarks><para>Regenerates chromosome's value using random number generator.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.CreateNew">
+            <summary>
+            Create new random chromosome with same parameters (factory method).
+            </summary>
+            
+            <remarks><para>The method creates new chromosome of the same type, but randomly
+            initialized. The method is useful as factory method for those classes, which work
+            with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation, changing randomly
+            one of its bits.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.BinaryChromosome.Crossover(Accord.Genetic.IChromosome)">
+             <summary>
+             Crossover operator.
+             </summary>
+             
+             <param name="pair">Pair chromosome to crossover with.</param>
+             
+             <remarks><para>The method performs crossover between two chromosomes – interchanging
+             range of bits between these chromosomes.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.ChromosomeBase">
+            <summary>
+            Chromosomes' base class.
+            </summary>
+            
+            <remarks><para>The base class provides implementation of some <see cref="T:Accord.Genetic.IChromosome"/>
+            methods and properties, which are identical to all types of chromosomes.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.ChromosomeBase.fitness">
+            <summary>
+            Chromosome's fitness value.
+            </summary>
+        </member>
+        <member name="P:Accord.Genetic.ChromosomeBase.Fitness">
+            <summary>
+            Chromosome's fitness value.
+            </summary>
+            
+            <remarks><para>Fitness value (usefulness) of the chromosome calculate by calling
+            <see cref="M:Accord.Genetic.ChromosomeBase.Evaluate(Accord.Genetic.IFitnessFunction)"/> method. The greater the value, the more useful the chromosome.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.Generate">
+            <summary>
+            Generate random chromosome value.
+            </summary>
+            
+            <remarks><para>Regenerates chromosome's value using random number generator.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.CreateNew">
+            <summary>
+            Create new random chromosome with same parameters (factory method).
+            </summary>
+            
+            <remarks><para>The method creates new chromosome of the same type, but randomly
+            initialized. The method is useful as factory method for those classes, which work
+            with chromosome's interface, but not with particular chromosome class.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.Clone">
+            <summary>
+            Clone the chromosome.
+            </summary>
+            
+            <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation, changing its part randomly.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.Crossover(Accord.Genetic.IChromosome)">
+            <summary>
+            Crossover operator.
+            </summary>
+            
+            <param name="pair">Pair chromosome to crossover with.</param>
+            
+            <remarks><para>The method performs crossover between two chromosomes – interchanging some parts of chromosomes.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.Evaluate(Accord.Genetic.IFitnessFunction)">
+             <summary>
+             Evaluate chromosome with specified fitness function.
+             </summary>
+             
+             <param name="function">Fitness function to use for evaluation of the chromosome.</param>
+             
+             <remarks><para>Calculates chromosome's fitness using the specifed fitness function.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ChromosomeBase.CompareTo(System.Object)">
+            <summary>
+            Compare two chromosomes.
+            </summary>
+            
+            <param name="o">Binary chromosome to compare to.</param>
+            
+            <returns>Returns comparison result, which equals to 0 if fitness values
+            of both chromosomes are equal, 1 if fitness value of this chromosome
+            is less than fitness value of the specified chromosome, -1 otherwise.</returns>
+            
+        </member>
+        <member name="T:Accord.Genetic.DoubleArrayChromosome">
+            <summary>
+            Double array chromosome.
+            </summary>
+            
+            <remarks><para>Double array chromosome represents array of double values.
+            Array length is in the range of [2, 65536].
+            </para>
+            
+            <para>See documentation to <see cref="M:Accord.Genetic.DoubleArrayChromosome.Mutate"/> and <see cref="M:Accord.Genetic.DoubleArrayChromosome.Crossover(Accord.Genetic.IChromosome)"/> methods
+            for information regarding implemented mutation and crossover operators.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.chromosomeGenerator">
+            <summary>
+            Chromosome generator.
+            </summary>
+            
+            <remarks><para>This random number generator is used to initialize chromosome's genes,
+            which is done by calling <see cref="M:Accord.Genetic.DoubleArrayChromosome.Generate"/> method.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.mutationMultiplierGenerator">
+            <summary>
+            Mutation multiplier generator.
+            </summary>
+            
+            <remarks><para>This random number generator is used to generate random multiplier values,
+            which are used to multiply chromosome's genes during mutation.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.mutationAdditionGenerator">
+            <summary>
+            Mutation addition generator.
+            </summary>
+            
+            <remarks><para>This random number generator is used to generate random addition values,
+            which are used to add to chromosome's genes during mutation.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.MaxLength">
+            <summary>
+            Chromosome's maximum length.
+            </summary>
+            
+            <remarks><para>Maxim chromosome's length in array elements.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.length">
+            <summary>
+            Chromosome's length in number of elements.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.DoubleArrayChromosome.val">
+            <summary>
+            Chromosome's value.
+            </summary>
+        </member>
+        <member name="P:Accord.Genetic.DoubleArrayChromosome.Length">
+             <summary>
+             Chromosome's length.
+             </summary>
+             
+             <remarks><para>Length of the chromosome in array elements.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.DoubleArrayChromosome.Value">
+             <summary>
+             Chromosome's value.
+             </summary>
+             
+             <remarks><para>Current value of the chromosome.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.DoubleArrayChromosome.MutationBalancer">
+            <summary>
+            Mutation balancer to control mutation type, [0, 1].
+            </summary>
+            
+            <remarks><para>The property controls type of mutation, which is used more
+            frequently. A random number is generated each time before doing mutation -
+            if the random number is smaller than the specified balance value, then one
+            mutation type is used, otherwse another. See <see cref="M:Accord.Genetic.DoubleArrayChromosome.Mutate"/> method
+            for more information.</para>
+            
+            <para>Default value is set to <b>0.5</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.DoubleArrayChromosome.CrossoverBalancer">
+            <summary>
+            Crossover balancer to control crossover type, [0, 1].
+            </summary>
+            
+            <remarks><para>The property controls type of crossover, which is used more
+            frequently. A random number is generated each time before doing crossover -
+            if the random number is smaller than the specified balance value, then one
+            crossover type is used, otherwse another. See <see cref="M:Accord.Genetic.DoubleArrayChromosome.Crossover(Accord.Genetic.IChromosome)"/> method
+            for more information.</para>
+            
+            <para>Default value is set to <b>0.5</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.#ctor(Accord.Math.Random.IRandomNumberGenerator{System.Double},Accord.Math.Random.IRandomNumberGenerator{System.Double},Accord.Math.Random.IRandomNumberGenerator{System.Double},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.DoubleArrayChromosome"/> class.
+            </summary>
+            
+            <param name="chromosomeGenerator">Chromosome generator - random number generator, which is 
+            used to initialize chromosome's genes, which is done by calling <see cref="M:Accord.Genetic.DoubleArrayChromosome.Generate"/> method
+            or in class constructor.</param>
+            <param name="mutationMultiplierGenerator">Mutation multiplier generator - random number
+            generator, which is used to generate random multiplier values, which are used to
+            multiply chromosome's genes during mutation.</param>
+            <param name="mutationAdditionGenerator">Mutation addition generator - random number
+            generator, which is used to generate random addition values, which are used to
+            add to chromosome's genes during mutation.</param>
+            <param name="length">Chromosome's length in array elements, [2, <see cref="F:Accord.Genetic.DoubleArrayChromosome.MaxLength"/>].</param>
+            
+            <remarks><para>The constructor initializes the new chromosome randomly by calling
+            <see cref="M:Accord.Genetic.DoubleArrayChromosome.Generate"/> method.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.#ctor(Accord.Math.Random.IRandomNumberGenerator{System.Double},Accord.Math.Random.IRandomNumberGenerator{System.Double},Accord.Math.Random.IRandomNumberGenerator{System.Double},System.Double[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.DoubleArrayChromosome"/> class.
+            </summary>
+            
+            <param name="chromosomeGenerator">Chromosome generator - random number generator, which is 
+            used to initialize chromosome's genes, which is done by calling <see cref="M:Accord.Genetic.DoubleArrayChromosome.Generate"/> method
+            or in class constructor.</param>
+            <param name="mutationMultiplierGenerator">Mutation multiplier generator - random number
+            generator, which is used to generate random multiplier values, which are used to
+            multiply chromosome's genes during mutation.</param>
+            <param name="mutationAdditionGenerator">Mutation addition generator - random number
+            generator, which is used to generate random addition values, which are used to
+            add to chromosome's genes during mutation.</param>
+            <param name="values">Values used to initialize the chromosome.</param>
+            
+            <remarks><para>The constructor initializes the new chromosome with specified <paramref name="values">values</paramref>.
+            </para></remarks>
+            
+            <exception cref="T:System.ArgumentOutOfRangeException">Invalid length of values array.</exception>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.#ctor(Accord.Genetic.DoubleArrayChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.DoubleArrayChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source chromosome to copy.</param>
+            
+            <remarks><para>This is a copy constructor, which creates the exact copy
+            of specified chromosome.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.ToString">
+            <summary>
+            Get string representation of the chromosome.
+            </summary>
+            
+            <returns>Returns string representation of the chromosome.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.Generate">
+             <summary>
+             Generate random chromosome value.
+             </summary>
+             
+             <remarks><para>Regenerates chromosome's value using random number generator.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.CreateNew">
+             <summary>
+             Create new random chromosome with same parameters (factory method).
+             </summary>
+             
+             <remarks><para>The method creates new chromosome of the same type, but randomly
+             initialized. The method is useful as factory method for those classes, which work
+             with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation, adding random number
+            to chromosome's gene or multiplying the gene by random number. These random
+            numbers are generated with help of <see cref="F:Accord.Genetic.DoubleArrayChromosome.mutationMultiplierGenerator">mutation
+            multiplier</see> and <see cref="F:Accord.Genetic.DoubleArrayChromosome.mutationAdditionGenerator">mutation
+            addition</see> generators.</para>
+            
+            <para>The exact type of mutation applied to the particular gene
+            is selected randomly each time and depends on <see cref="P:Accord.Genetic.DoubleArrayChromosome.MutationBalancer"/>.
+            Before mutation is done a random number is generated in [0, 1] range - if the
+            random number is smaller than <see cref="P:Accord.Genetic.DoubleArrayChromosome.MutationBalancer"/>, then multiplication
+            mutation is done, otherwise addition mutation.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.DoubleArrayChromosome.Crossover(Accord.Genetic.IChromosome)">
+             <summary>
+             Crossover operator.
+             </summary>
+             
+             <param name="pair">Pair chromosome to crossover with.</param>
+             
+             <remarks><para>The method performs crossover between two chromosomes, selecting
+             randomly the exact type of crossover to perform, which depends on <see cref="P:Accord.Genetic.DoubleArrayChromosome.CrossoverBalancer"/>.
+             Before crossover is done a random number is generated in [0, 1] range - if the
+             random number is smaller than <see cref="P:Accord.Genetic.DoubleArrayChromosome.CrossoverBalancer"/>, then the first crossover
+             type is used, otherwise second type is used.</para>
+             
+             <para>The <b>first crossover type</b> is based on interchanging
+             range of genes (array elements) between these chromosomes and is known
+             as one point crossover. A crossover point is selected randomly and chromosomes
+             interchange genes, which start from the selected point.</para>
+             
+             <para>The <b>second crossover type</b> is aimed to produce one child, which genes'
+             values are between corresponding genes of parents, and another child, which genes'
+             values are outside of the range formed by corresponding genes of parents. 
+             Let take, for example, two genes with 1.0 and 3.0 valueû (of course chromosomes have
+             more genes, but for simplicity lets think about one). First of all we randomly choose
+             a factor in the [0, 1] range, let's take 0.4. Then, for each pair of genes (we have
+             one pair) we calculate difference value, which is 2.0 in our case. In the result we’ll
+             have two children – one between and one outside of the range formed by parents genes' values.
+             We may have 1.8 and 3.8 children, or we may have 0.2 and 2.2 children. As we can see
+             we add/subtract (chosen randomly) <i>difference * factor</i>. So, this gives us exploration
+             in between and in near outside. The randomly chosen factor is applied to all genes
+             of the chromosomes participating in crossover.</para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.ExtendedGeneFunction">
+             <summary>
+             Genetic programming gene, which represents arithmetic functions, common mathematical functions
+             and arguments.
+             </summary>
+            
+             <remarks><para>Extended gene function may represent arithmetic functions (+, -, *, /),
+             some common mathematical functions (sin, cos, ln, exp, sqrt) or an argument to functions.
+             This class is used by Genetic Programming (or Gene Expression Programming)
+             chromosomes to build arbitrary expressions with help of genetic operators.</para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.ExtendedGeneFunction.Functions">
+            <summary>
+            Enumeration of supported functions.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Add">
+            <summary>
+            Addition operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Subtract">
+            <summary>
+            Suntraction operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Multiply">
+            <summary>
+            Multiplication operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Divide">
+            <summary>
+            Division operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Sin">
+            <summary>
+            Sine function.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Cos">
+            <summary>
+            Cosine function.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Ln">
+            <summary>
+            Natural logarithm function.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Exp">
+            <summary>
+            Exponent function.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.Functions.Sqrt">
+            <summary>
+            Square root function.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ExtendedGeneFunction.FunctionsCount">
+            <summary>
+            Number of different functions supported by the class.
+            </summary>
+        </member>
+        <member name="P:Accord.Genetic.ExtendedGeneFunction.GeneType">
+            <summary>
+            Gene type.
+            </summary>
+            
+            <remarks><para>The property represents type of a gene - function, argument, etc.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.ExtendedGeneFunction.ArgumentsCount">
+            <summary>
+            Arguments count.
+            </summary>
+            
+            <remarks><para>Arguments count of a particular function gene.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.ExtendedGeneFunction.MaxArgumentsCount">
+            <summary>
+            Maximum arguments count.
+            </summary>
+            
+            <remarks><para>Maximum arguments count of a function gene supported by the class.
+            The property may be used by chromosomes' classes to allocate correctly memory for
+            functions' arguments, for example.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.ExtendedGeneFunction"/> class.
+            </summary>
+            
+            <param name="variablesCount">Total amount of variables in the task which is supposed
+            to be solved.</param>
+            
+            <remarks><para>The constructor creates randomly initialized gene with random type
+            and value by calling <see cref="M:Accord.Genetic.ExtendedGeneFunction.Generate"/> method.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.#ctor(System.Int32,Accord.Genetic.GPGeneType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.ExtendedGeneFunction"/> class.
+            </summary>
+            
+            <param name="variablesCount">Total amount of variables in the task which is supposed
+            to be solved.</param>
+            <param name="type">Gene type to set.</param>
+            
+            <remarks><para>The constructor creates randomly initialized gene with random
+            value and preset gene type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.ToString">
+             <summary>
+             Get string representation of the gene.
+             </summary>
+             
+             <returns>Returns string representation of the gene.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.Clone">
+            <summary>
+            Clone the gene.
+            </summary>
+            
+            <remarks><para>The method clones the chromosome returning the exact copy of it.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.Generate">
+            <summary>
+            Randomize gene with random type and value.
+            </summary>
+            
+            <remarks><para>The method randomizes the gene, setting its type and value randomly.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.Generate(Accord.Genetic.GPGeneType)">
+             <summary>
+             Randomize gene with random value.
+             </summary>
+             
+             <param name="type">Gene type to set.</param>
+             
+             <remarks><para>The method randomizes a gene, setting its value randomly, but type
+             is set to the specified one.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.CreateNew">
+             <summary>
+             Creates new gene with random type and value.
+             </summary>
+             
+             <remarks><para>The method creates new randomly initialized gene .
+             The method is useful as factory method for those classes, which work with gene's interface,
+             but not with particular gene class.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ExtendedGeneFunction.CreateNew(Accord.Genetic.GPGeneType)">
+             <summary>
+             Creates new gene with certain type and random value.
+             </summary>
+             
+             <param name="type">Gene type to create.</param>
+             
+             <remarks><para>The method creates new gene with specified type, but random value.
+             The method is useful as factory method for those classes, which work with gene's interface,
+             but not with particular gene class.</para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.GEPChromosome">
+            <summary>
+            The chromosome represents a Gene Expression, which is used for
+            different tasks of Genetic Expression Programming (GEP).
+            </summary>
+            
+            <remarks><para>This type of chromosome represents combination of ideas taken from
+            Genetic Algorithms (GA), where chromosomes are linear structures of fixed length, and
+            Genetic Programming (GP), where chromosomes are expression trees. The GEP chromosome
+            is also a fixed length linear structure, but with some additional features which
+            make it possible to generate valid expression tree from any GEP chromosome.</para>
+            
+            <para>The theory of Gene Expression Programming is well described in the next paper:
+            <b>Ferreira, C., 2001. Gene Expression Programming: A New Adaptive Algorithm for Solving
+            Problems. Complex Systems, Vol. 13, issue 2: 87-129</b>. A copy of the paper may be
+            obtained on the
+            <a href="http://www.gene-expression-programming.com/">gene expression programming</a> web site.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.GEPChromosome.headLength">
+            <summary>
+            Length of GEP chromosome's head.
+            </summary>
+            
+            <remarks><para>GEP chromosome's head is a part of chromosome, which may contain both
+            functions' and arguments' nodes. The rest of chromosome (tail) may contain only arguments' nodes.
+            </para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.GEPChromosome.length">
+            <summary>
+            GEP chromosome's length.
+            </summary>
+            
+            <remarks><para><note>The variable keeps chromosome's length, but not expression length represented by the
+            chromosome.</note></para></remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.GEPChromosome.genes">
+            <summary>
+            Array of chromosome's genes.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.#ctor(Accord.Genetic.IGPGene,System.Int32)">
+             <summary>
+             Initializes a new instance of the <see cref="T:Accord.Genetic.GEPChromosome"/> class.
+             </summary>
+             
+             <param name="ancestor">A gene, which is used as generator for the genetic tree.</param>
+             <param name="headLength">Length of GEP chromosome's head (see <see cref="F:Accord.Genetic.GEPChromosome.headLength"/>).</param>
+             
+             <remarks><para>This constructor creates a randomly generated GEP chromosome,
+             which has all genes of the same type and properties as the specified <paramref name="ancestor"/>.
+             </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.#ctor(Accord.Genetic.GEPChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.GEPChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source GEP chromosome to clone from.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.ToString">
+            <summary>
+            Get string representation of the chromosome by providing its expression in
+            reverse polish notation (postfix notation).
+            </summary>
+            
+            <returns>Returns string representation of the expression represented by the GEP
+            chromosome.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.ToStringNative">
+            <summary>
+            Get string representation of the chromosome. 
+            </summary>
+            
+            <returns>Returns the chromosome in native linear representation.</returns>
+            
+            <remarks><para><note>The method is used for debugging mostly.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.Generate">
+             <summary>
+             Generate random chromosome value.
+             </summary>
+             
+             <remarks><para>Regenerates chromosome's value using random number generator.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.GetTree">
+            <summary>
+            Get tree representation of the chromosome.
+            </summary>
+            
+            <returns>Returns expression's tree represented by the chromosome.</returns>
+            
+            <remarks><para>The method builds expression's tree for the native linear representation
+            of the GEP chromosome.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.CreateNew">
+            <summary>
+            Create new random chromosome with same parameters (factory method).
+            </summary>
+            
+            <remarks><para>The method creates new chromosome of the same type, but randomly
+            initialized. The method is useful as factory method for those classes, which work
+            with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation by calling on of the methods
+            randomly: <see cref="M:Accord.Genetic.GEPChromosome.MutateGene"/>, <see cref="M:Accord.Genetic.GEPChromosome.TransposeIS"/>, <see cref="M:Accord.Genetic.GEPChromosome.TransposeRoot"/>.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.MutateGene">
+            <summary>
+            Usual gene mutation.
+            </summary>
+            
+            <remarks><para>The method performs usual gene mutation by randomly changing randomly selected
+            gene.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.TransposeIS">
+            <summary>
+            Transposition of IS elements (insertion sequence).
+            </summary>
+            
+            <remarks><para>The method performs transposition of IS elements by copying randomly selected region
+            of genes into chromosome's head (into randomly selected position). First gene of the chromosome's head 
+            is not affected - can not be selected as target point.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.TransposeRoot">
+             <summary>
+             Root transposition.
+             </summary>
+            
+             <remarks><para>The method performs root transposition of the GEP chromosome - inserting
+             new root of the chromosome and shifting existing one. The method first of all randomly selects
+             a function gene in chromosome's head - starting point of the sequence to put into chromosome's
+             head. Then it randomly selects the length of the sequence making sure that the entire sequence is
+             located within head. Once the starting point and the length of the sequence are known, it is copied
+             into chromosome's head shifting existing elements in the head.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.Crossover(Accord.Genetic.IChromosome)">
+            <summary>
+            Crossover operator.
+            </summary>
+            
+            <param name="pair">Pair chromosome to crossover with.</param>
+            
+            <remarks><para>The method performs one-point or two-point crossover selecting
+            them randomly with equal probability.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.RecombinationOnePoint(Accord.Genetic.GEPChromosome)">
+            <summary>
+            One-point recombination (crossover).
+            </summary>
+            
+            <param name="pair">Pair chromosome to crossover with.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.RecombinationTwoPoint(Accord.Genetic.GEPChromosome)">
+            <summary>
+            Two point recombination (crossover).
+            </summary>
+            
+            <param name="pair">Pair chromosome to crossover with.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.GEPChromosome.Recombine(Accord.Genetic.IGPGene[],Accord.Genetic.IGPGene[],System.Int32,System.Int32)">
+             <summary>
+             Swap parts of two chromosomes.
+             </summary>
+             
+             <param name="src1">First chromosome participating in genes' interchange.</param>
+             <param name="src2">Second chromosome participating in genes' interchange.</param>
+             <param name="point">Index of the first gene in the interchange sequence.</param>
+             <param name="length">Length of the interchange sequence - number of genes
+             to interchange.</param>
+            
+             <remarks><para>The method performs interchanging of genes between two chromosomes
+             starting from the <paramref name="point"/> position.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.GPTreeChromosome">
+            <summary>
+            Tree chromosome represents a tree of genes, which is is used for
+            different tasks of Genetic Programming (GP).
+            </summary>
+            
+            <remarks><para>This type of chromosome represents a tree, where each node
+            is represented by <see cref="T:Accord.Genetic.GPTreeNode"/> containing <see cref="T:Accord.Genetic.IGPGene"/>.
+            Depending on type of genes used to build the tree, it may represent different
+            types of expressions aimed to solve different type of tasks. For example, a
+            particular implementation of <see cref="T:Accord.Genetic.IGPGene"/> interface may represent
+            simple algebraic operations and their arguments.
+            </para>
+            
+            <para>See documentation to <see cref="T:Accord.Genetic.IGPGene"/> implementations for additional
+            information about possible Genetic Programming trees.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.GPTreeChromosome.MaxInitialLevel">
+             <summary>
+             Maximum initial level of genetic trees, [1, 25].
+             </summary>
+             
+             <remarks><para>The property sets maximum possible initial depth of new
+             genetic programming tree. For example, if it is set to 1, then largest initial
+             tree may have a root and one level of children.</para>
+             
+             <para>Default value is set to <b>3</b>.</para>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.GPTreeChromosome.MaxLevel">
+             <summary>
+             Maximum level of genetic trees, [1, 50].
+             </summary>
+             
+             <remarks><para>The property sets maximum possible depth of 
+             genetic programming tree, which may be created with mutation and crossover operators.
+             This property guarantees that genetic programmin tree will never have
+             higher depth, than the specified value.</para>
+             
+             <para>Default value is set to <b>5</b>.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.#ctor(Accord.Genetic.IGPGene)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.GPTreeChromosome"/> class.
+            </summary>
+            
+            <param name="ancestor">A gene, which is used as generator for the genetic tree.</param>
+            
+            <remarks><para>This constructor creates a randomly generated genetic tree,
+            which has all genes of the same type and properties as the specified <paramref name="ancestor"/>.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.#ctor(Accord.Genetic.GPTreeChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.GPTreeChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source genetic tree to clone from.</param>
+            
+            <remarks><para>This constructor creates new genetic tree as a copy of the
+            specified <paramref name="source"/> tree.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.ToString">
+             <summary>
+             Get string representation of the chromosome by providing its expression in
+             reverse polish notation (postfix notation).
+             </summary>
+             
+             <returns>Returns string representation of the genetic tree.</returns>
+             
+             <remarks><para>The method returns string representation of the tree's root node
+             (see <see cref="M:Accord.Genetic.GPTreeNode.ToString"/>).</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Generate">
+             <summary>
+             Generate random chromosome value.
+             </summary>
+             
+             <remarks><para>Regenerates chromosome's value using random number generator.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Generate(Accord.Genetic.GPTreeNode,System.Int32)">
+            <summary>
+            Generate chromosome's subtree of specified level.
+            </summary>
+            
+            <param name="node">Sub tree's node to generate.</param>
+            <param name="level">Sub tree's level to generate.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.CreateNew">
+            <summary>
+            Create new random chromosome with same parameters (factory method).
+            </summary>
+            
+            <remarks><para>The method creates new chromosome of the same type, but randomly
+            initialized. The method is useful as factory method for those classes, which work
+            with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Mutate">
+             <summary>
+             Mutation operator.
+             </summary>
+             
+             <remarks><para>The method performs chromosome's mutation by regenerating tree's
+             randomly selected node.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Crossover(Accord.Genetic.IChromosome)">
+             <summary>
+             Crossover operator.
+             </summary>
+             
+             <param name="pair">Pair chromosome to crossover with.</param>
+             
+             <remarks><para>The method performs crossover between two chromosomes – interchanging
+             randomly selected sub trees.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.RandomSwap(Accord.Genetic.GPTreeNode)">
+            <summary>
+            Crossover helper routine - selects random node of chromosomes tree and
+            swaps it with specified node.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.GPTreeChromosome.Trim(Accord.Genetic.GPTreeNode,System.Int32)">
+            <summary>
+            Trim tree node, so its depth does not exceed specified level.
+            </summary>
+        </member>
+        <member name="T:Accord.Genetic.GPTreeNode">
+            <summary>
+            Represents tree node of genetic programming tree.
+            </summary>
+            
+            <remarks><para>In genetic programming a chromosome is represented by a tree, which
+            is represented by <see cref="T:Accord.Genetic.GPTreeChromosome"/> class. The <see cref="T:Accord.Genetic.GPTreeNode"/>
+            class represents single node of such genetic programming tree.</para>
+            
+            <para>Each node may or may not have children. This means that particular node of a genetic
+            programming tree may represent its sub tree or even entire tree.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Genetic.GPTreeNode.Gene">
+            <summary>
+            Gene represented by the chromosome.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.GPTreeNode.Children">
+            <summary>
+            List of node's children.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.GPTreeNode.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.GPTreeNode"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeNode.#ctor(Accord.Genetic.IGPGene)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.GPTreeNode"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeNode.ToString">
+            <summary>
+            Get string representation of the node.
+            </summary>
+            
+            <returns>Returns string representation of the node.</returns>
+            
+            <remarks><para>String representation of the node lists all node's children and
+            then the node itself. Such node's string representations equals to
+            its reverse polish notation.</para>
+            
+            <para>For example, if nodes value is '+' and its children are '3' and '5', then
+            nodes string representation is "3 5 +".</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.GPTreeNode.Clone">
+            <summary>
+            Clone the tree node.
+            </summary>
+            
+            <returns>Returns exact clone of the node.</returns>
+            
+        </member>
+        <member name="T:Accord.Genetic.GPGeneType">
+            <summary>
+            Types of genes in Genetic Programming.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.GPGeneType.Function">
+            <summary>
+            Function gene - represents function to be executed.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.GPGeneType.Argument">
+            <summary>
+            Argument gene - represents argument of function.
+            </summary>
+        </member>
+        <member name="T:Accord.Genetic.IGPGene">
+            <summary>
+            Genetic Programming's gene interface.
+            </summary>
+            
+            <remarks><para>This is a gene interface, which is used for building chromosomes
+            in Genetic Programming (GP) and Gene Expression Programming (GEP).
+            </para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.IGPGene.GeneType">
+            <summary>
+            Gene type.
+            </summary>
+            
+            <remarks><para>The property represents type of a gene - function, argument, etc.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.IGPGene.ArgumentsCount">
+            <summary>
+            Arguments count.
+            </summary>
+            
+            <remarks><para>Arguments count of a particular function gene.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.IGPGene.MaxArgumentsCount">
+            <summary>
+            Maximum arguments count.
+            </summary>
+            
+            <remarks><para>Maximum arguments count of a function gene. The property may be used
+            by chromosomes' classes to allocate correctly memory for functions' arguments,
+            for example.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IGPGene.Clone">
+            <summary>
+            Clone gene.
+            </summary>
+            
+            <remarks><para>The method clones gene returning the exact copy of it.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IGPGene.Generate">
+            <summary>
+            Randomize gene with random type and value.
+            </summary>
+            
+            <remarks><para>The method randomizes a gene, setting its type and value randomly.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IGPGene.Generate(Accord.Genetic.GPGeneType)">
+            <summary>
+            Randomize gene with random value.
+            </summary>
+            
+            <param name="type">Gene type to set.</param>
+            
+            <remarks><para>The method randomizes a gene, setting its value randomly, but type
+            is set to the specified one.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IGPGene.CreateNew">
+            <summary>
+            Creates new gene with random type and value.
+            </summary>
+            
+            <remarks><para>The method creates new randomly initialized gene .
+            The method is useful as factory method for those classes, which work with gene's interface,
+            but not with particular gene class.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IGPGene.CreateNew(Accord.Genetic.GPGeneType)">
+            <summary>
+            Creates new gene with certain type and random value.
+            </summary>
+            
+            <param name="type">Gene type to create.</param>
+            
+            <remarks><para>The method creates new gene with specified type, but random value.
+            The method is useful as factory method for those classes, which work with gene's interface,
+            but not with particular gene class.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.SimpleGeneFunction">
+             <summary>
+             Genetic programming gene, which represents simple arithmetic functions and arguments.
+             </summary>
+            
+             <remarks><para>Simple gene function may represent an arithmetic function (+, -, *, /) or
+             an argument to function. This class is used by Genetic Programming (or Gene Expression Programming)
+             chromosomes to build arbitrary expressions with help of genetic operators.</para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.SimpleGeneFunction.Functions">
+            <summary>
+            Enumeration of supported functions.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.SimpleGeneFunction.Functions.Add">
+            <summary>
+            Addition operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.SimpleGeneFunction.Functions.Subtract">
+            <summary>
+            Suntraction operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.SimpleGeneFunction.Functions.Multiply">
+            <summary>
+            Multiplication operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.SimpleGeneFunction.Functions.Divide">
+            <summary>
+            Division operator.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.SimpleGeneFunction.FunctionsCount">
+            <summary>
+            Number of different functions supported by the class.
+            </summary>
+        </member>
+        <member name="P:Accord.Genetic.SimpleGeneFunction.GeneType">
+            <summary>
+            Gene type.
+            </summary>
+            
+            <remarks><para>The property represents type of a gene - function, argument, etc.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.SimpleGeneFunction.ArgumentsCount">
+            <summary>
+            Arguments count.
+            </summary>
+            
+            <remarks><para>Arguments count of a particular function gene.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.SimpleGeneFunction.MaxArgumentsCount">
+            <summary>
+            Maximum arguments count.
+            </summary>
+            
+            <remarks><para>Maximum arguments count of a function gene supported by the class.
+            The property may be used by chromosomes' classes to allocate correctly memory for
+            functions' arguments, for example.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.SimpleGeneFunction"/> class.
+            </summary>
+            
+            <param name="variablesCount">Total amount of variables in the task which is supposed
+            to be solved.</param>
+            
+            <remarks><para>The constructor creates randomly initialized gene with random type
+            and value by calling <see cref="M:Accord.Genetic.SimpleGeneFunction.Generate"/> method.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.#ctor(System.Int32,Accord.Genetic.GPGeneType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.SimpleGeneFunction"/> class.
+            </summary>
+            
+            <param name="variablesCount">Total amount of variables in the task which is supposed
+            to be solved.</param>
+            <param name="type">Gene type to set.</param>
+            
+            <remarks><para>The constructor creates randomly initialized gene with random
+            value and preset gene type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.ToString">
+            <summary>
+            Get string representation of the gene.
+            </summary>
+            
+            <returns>Returns string representation of the gene.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.Clone">
+            <summary>
+            Clone the gene.
+            </summary>
+            
+            <remarks><para>The method clones the chromosome returning the exact copy of it.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.Generate">
+            <summary>
+            Randomize gene with random type and value.
+            </summary>
+            
+            <remarks><para>The method randomizes the gene, setting its type and value randomly.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.Generate(Accord.Genetic.GPGeneType)">
+             <summary>
+             Randomize gene with random value.
+             </summary>
+             
+             <param name="type">Gene type to set.</param>
+             
+             <remarks><para>The method randomizes a gene, setting its value randomly, but type
+             is set to the specified one.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.CreateNew">
+            <summary>
+            Creates new gene with random type and value.
+            </summary>
+            
+            <remarks><para>The method creates new randomly initialized gene .
+            The method is useful as factory method for those classes, which work with gene's interface,
+            but not with particular gene class.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SimpleGeneFunction.CreateNew(Accord.Genetic.GPGeneType)">
+            <summary>
+            Creates new gene with certain type and random value.
+            </summary>
+            
+            <param name="type">Gene type to create.</param>
+            
+            <remarks><para>The method creates new gene with specified type, but random value.
+            The method is useful as factory method for those classes, which work with gene's interface,
+            but not with particular gene class.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.IChromosome">
+            <summary>
+            Chromosome interface.
+            </summary>
+            
+            <remarks><para>The interfase should be implemented by all classes, which implement
+            particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.IChromosome.Fitness">
+            <summary>
+            Chromosome's fitness value.
+            </summary>
+            
+            <remarks><para>The fitness value represents chromosome's usefulness - the greater the
+            value, the more useful it is.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.Generate">
+            <summary>
+            Generate random chromosome value.
+            </summary>
+            
+            <remarks><para>Regenerates chromosome's value using random number generator.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.CreateNew">
+            <summary>
+            Create new random chromosome with same parameters (factory method).
+            </summary>
+            
+            <remarks><para>The method creates new chromosome of the same type, but randomly
+            initialized. The method is useful as factory method for those classes, which work
+            with chromosome's interface, but not with particular chromosome class.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.Clone">
+            <summary>
+            Clone the chromosome.
+            </summary>
+            
+            <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation, changing its part randomly.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.Crossover(Accord.Genetic.IChromosome)">
+            <summary>
+            Crossover operator.
+            </summary>
+            
+            <param name="pair">Pair chromosome to crossover with.</param>
+            
+            <remarks><para>The method performs crossover between two chromosomes – interchanging some parts of chromosomes.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.IChromosome.Evaluate(Accord.Genetic.IFitnessFunction)">
+            <summary>
+            Evaluate chromosome with specified fitness function.
+            </summary>
+            
+            <param name="function">Fitness function to use for evaluation of the chromosome.</param>
+            
+            <remarks><para>Calculates chromosome's fitness using the specifed fitness function.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.PermutationChromosome">
+            <summary>
+            Permutation chromosome.
+            </summary>
+            
+            <remarks><para>Permutation chromosome is based on short array chromosome,
+            but has two features:</para>
+            <list type="bullet">
+            <item>all genes are unique within chromosome, i.e. there are no two genes
+            with the same value;</item>
+            <item>maximum value of each gene is equal to chromosome length minus 1.</item>
+            </list>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.PermutationChromosome"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.#ctor(Accord.Genetic.PermutationChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.PermutationChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source chromosome to copy.</param>
+            
+            <remarks><para>This is a copy constructor, which creates the exact copy
+            of specified chromosome.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.Generate">
+             <summary>
+             Generate random chromosome value.
+             </summary>
+             
+             <remarks><para>Regenerates chromosome's value using random number generator.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.CreateNew">
+             <summary>
+             Create new random chromosome with same parameters (factory method).
+             </summary>
+             
+             <remarks><para>The method creates new chromosome of the same type, but randomly
+             initialized. The method is useful as factory method for those classes, which work
+             with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.Mutate">
+             <summary>
+             Mutation operator.
+             </summary>
+             
+             <remarks><para>The method performs chromosome's mutation, swapping two randomly
+             chosen genes (array elements).</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.PermutationChromosome.Crossover(Accord.Genetic.IChromosome)">
+             <summary>
+             Crossover operator.
+             </summary>
+             
+             <param name="pair">Pair chromosome to crossover with.</param>
+             
+             <remarks><para>The method performs crossover between two chromosomes – interchanging
+             some parts between these chromosomes.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.ShortArrayChromosome">
+            <summary>
+            Short array chromosome.
+            </summary>
+            
+            <remarks><para>Short array chromosome represents array of unsigned short values.
+            Array length is in the range of [2, 65536].
+            </para></remarks>
+        </member>
+        <member name="F:Accord.Genetic.ShortArrayChromosome.length">
+            <summary>
+            Chromosome's length in number of elements.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ShortArrayChromosome.maxValue">
+            <summary>
+            Maximum value of chromosome's gene (element).
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ShortArrayChromosome.val">
+            <summary>
+            Chromosome's value.
+            </summary>
+        </member>
+        <member name="F:Accord.Genetic.ShortArrayChromosome.MaxLength">
+            <summary>
+            Chromosome's maximum length.
+            </summary>
+            
+            <remarks><para>Maxim chromosome's length in array elements.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.ShortArrayChromosome.Length">
+             <summary>
+             Chromosome's length.
+             </summary>
+             
+             <remarks><para>Length of the chromosome in array elements.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.ShortArrayChromosome.Value">
+             <summary>
+             Chromosome's value.
+             </summary>
+             
+             <remarks><para>Current value of the chromosome.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.ShortArrayChromosome.MaxValue">
+            <summary>
+            Max possible value of single chromosomes element - gene.
+            </summary>
+            
+            <remarks><para>Maximum possible numerical value, which may be represented
+            by single chromosome's gene (array element).</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.ShortArrayChromosome"/> class.
+            </summary>
+            
+            <param name="length">Chromosome's length in array elements, [2, <see cref="F:Accord.Genetic.ShortArrayChromosome.MaxLength"/>].</param>
+            
+            <remarks>This constructor initializes chromosome setting genes' maximum value to
+            maximum posible value of <see langword="ushort"/> type.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.ShortArrayChromosome"/> class.
+            </summary>
+            
+            <param name="length">Chromosome's length in array elements, [2, <see cref="F:Accord.Genetic.ShortArrayChromosome.MaxLength"/>].</param>
+            <param name="maxValue">Maximum value of chromosome's gene (array element).</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.#ctor(Accord.Genetic.ShortArrayChromosome)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.ShortArrayChromosome"/> class.
+            </summary>
+            
+            <param name="source">Source chromosome to copy.</param>
+            
+            <remarks><para>This is a copy constructor, which creates the exact copy
+            of specified chromosome.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.ToString">
+             <summary>
+             Get string representation of the chromosome.
+             </summary>
+             
+             <returns>Returns string representation of the chromosome.</returns>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.Generate">
+            <summary>
+            Generate random chromosome value.
+            </summary>
+            
+            <remarks><para>Regenerates chromosome's value using random number generator.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.CreateNew">
+             <summary>
+             Create new random chromosome with same parameters (factory method).
+             </summary>
+             
+             <remarks><para>The method creates new chromosome of the same type, but randomly
+             initialized. The method is useful as factory method for those classes, which work
+             with chromosome's interface, but not with particular chromosome type.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.Clone">
+             <summary>
+             Clone the chromosome.
+             </summary>
+             
+             <returns>Return's clone of the chromosome.</returns>
+             
+             <remarks><para>The method clones the chromosome returning the exact copy of it.</para>
+             </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.Mutate">
+            <summary>
+            Mutation operator.
+            </summary>
+            
+            <remarks><para>The method performs chromosome's mutation, changing randomly
+            one of its genes (array elements).</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ShortArrayChromosome.Crossover(Accord.Genetic.IChromosome)">
+             <summary>
+             Crossover operator.
+             </summary>
+             
+             <param name="pair">Pair chromosome to crossover with.</param>
+             
+             <remarks><para>The method performs crossover between two chromosomes – interchanging
+             range of genes (array elements) between these chromosomes.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.IFitnessFunction">
+            <summary>
+            Fitness function interface.
+            </summary>
+            
+            <remarks>The interface should be implemented by all fitness function
+            classes, which are supposed to be used for calculation of chromosomes
+            fitness values. All fitness functions should return positive (<b>greater
+            then zero</b>) value, which indicates how good is the evaluated chromosome - 
+            the greater the value, the better the chromosome.
+            </remarks>
+        </member>
+        <member name="M:Accord.Genetic.IFitnessFunction.Evaluate(Accord.Genetic.IChromosome)">
+             <summary>
+             Evaluates chromosome.
+             </summary>
+             
+             <param name="chromosome">Chromosome to evaluate.</param>
+             
+             <returns>Returns chromosome's fitness value.</returns>
+            
+             <remarks>The method calculates fitness value of the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.OptimizationFunction1D">
+             <summary>Base class for one dimensional function optimizations.</summary>
+             
+             <remarks><para>The class is aimed to be used for one dimensional function
+             optimization problems. It implements all methods of <see cref="T:Accord.Genetic.IFitnessFunction"/>
+             interface and requires overriding only one method -
+             <see cref="M:Accord.Genetic.OptimizationFunction1D.OptimizationFunction(System.Double)"/>, which represents the
+             function to optimize.</para>
+             
+             <para><note>The optimization function should be greater
+             than 0 on the specified optimization range.</note></para>
+             
+             <para>The class works only with binary chromosomes (<see cref="T:Accord.Genetic.BinaryChromosome"/>).</para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // define optimization function
+             public class UserFunction : OptimizationFunction1D
+             {
+            	    public UserFunction( ) :
+                     base( new Range( 0, 255 ) ) { }
+            
+             	public override double OptimizationFunction( double x )
+            		{
+            			return Math.Cos( x / 23 ) * Math.Sin( x / 50 ) + 2;
+            		}
+             }
+             ...
+             // create genetic population
+             Population population = new Population( 40,
+            		new BinaryChromosome( 32 ),
+            		new UserFunction( ),
+            		new EliteSelection( ) );
+            	
+             while ( true )
+             {
+            	    // run one epoch of the population
+                 population.RunEpoch( );
+                 // ...
+             }
+             </code>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.OptimizationFunction1D.Modes">
+             <summary>
+               Optimization modes.
+             </summary>
+            
+             <remarks>
+               The enumeration defines optimization modes for
+               the one dimensional function optimization.</remarks> 
+            
+        </member>
+        <member name="F:Accord.Genetic.OptimizationFunction1D.Modes.Maximization">
+            <summary>
+            Search for function's maximum value.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Genetic.OptimizationFunction1D.Modes.Minimization">
+            <summary>
+            Search for function's minimum value.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Genetic.OptimizationFunction1D.Range">
+            <summary>
+            Optimization range.
+            </summary>
+            
+            <remarks>Defines function's input range. The function's extreme point will
+            be searched in this range only.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.OptimizationFunction1D.Mode">
+             <summary>
+             Optimization mode.
+             </summary>
+            
+             <remarks>Defines optimization mode - what kind of extreme point to search.</remarks> 
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction1D.#ctor(Accord.Range)">
+             <summary>
+             Initializes a new instance of the <see cref="T:Accord.Genetic.OptimizationFunction1D"/> class.
+             </summary>
+            
+             <param name="range">Specifies range for optimization.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction1D.Evaluate(Accord.Genetic.IChromosome)">
+             <summary>
+             Evaluates chromosome.
+             </summary>
+             
+             <param name="chromosome">Chromosome to evaluate.</param>
+             
+             <returns>Returns chromosome's fitness value.</returns>
+            
+             <remarks>The method calculates fitness value of the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction1D.Translate(Accord.Genetic.IChromosome)">
+             <summary>
+             Translates genotype to phenotype.
+             </summary>
+             
+             <param name="chromosome">Chromosome, which genoteype should be
+             translated to phenotype.</param>
+            
+             <returns>Returns chromosome's fenotype - the actual solution
+             encoded by the chromosome.</returns> 
+             
+             <remarks>The method returns double value, which represents function's
+             input point encoded by the specified chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction1D.OptimizationFunction(System.Double)">
+             <summary>
+             Function to optimize.
+             </summary>
+            
+             <param name="x">Function's input value.</param>
+             
+             <returns>Returns function output value.</returns>
+             
+             <remarks>The method should be overloaded by inherited class to
+             specify the optimization function.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.OptimizationFunction2D">
+             <summary>Base class for two dimenstional function optimization.</summary>
+            
+             <remarks><para>The class is aimed to be used for two dimensional function
+             optimization problems. It implements all methods of <see cref="T:Accord.Genetic.IFitnessFunction"/>
+             interface and requires overriding only one method -
+             <see cref="M:Accord.Genetic.OptimizationFunction2D.OptimizationFunction(System.Double,System.Double)"/>, which represents the
+             function to optimize.</para>
+             
+             <para><note>The optimization function should be greater
+             than 0 on the specified optimization range.</note></para>
+             
+             <para>The class works only with binary chromosomes (<see cref="T:Accord.Genetic.BinaryChromosome"/>).</para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // define optimization function
+             public class UserFunction : OptimizationFunction2D
+             {
+            		public UserFunction( ) :
+            			base( new Range( -4, 4 ), new Range( -4, 4 ) ) { }
+            
+             	public override double OptimizationFunction( double x, double y )
+            		{
+            			return ( Math.Cos( y ) * x * y ) / ( 2 - Math.Sin( x ) );
+            		}
+             }
+             ...
+             // create genetic population
+             Population population = new Population( 40,
+            		new BinaryChromosome( 32 ),
+            		new UserFunction( ),
+            		new EliteSelection( ) );
+            	// run one epoch of the population
+            	population.RunEpoch( );
+             </code>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.OptimizationFunction2D.Modes">
+             <summary>
+             Optimization modes.
+             </summary>
+            
+             <remarks>The enumeration defines optimization modes for
+             the two dimensional function optimization.</remarks> 
+            
+        </member>
+        <member name="F:Accord.Genetic.OptimizationFunction2D.Modes.Maximization">
+            <summary>
+              Search for function's maximum value.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Genetic.OptimizationFunction2D.Modes.Minimization">
+            <summary>
+              Search for function's minimum value.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Genetic.OptimizationFunction2D.RangeX">
+            <summary>
+            X variable's optimization range.
+            </summary>
+            
+            <remarks>Defines function's X range. The function's extreme will
+            be searched in this range only.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.OptimizationFunction2D.RangeY">
+            <summary>
+            Y variable's optimization range.
+            </summary>
+            
+            <remarks>Defines function's Y range. The function's extreme will
+            be searched in this range only.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.OptimizationFunction2D.Mode">
+             <summary>
+             Optimization mode.
+             </summary>
+            
+             <remarks>Defines optimization mode - what kind of extreme to search.</remarks> 
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction2D.#ctor(Accord.Range,Accord.Range)">
+             <summary>
+             Initializes a new instance of the <see cref="T:Accord.Genetic.OptimizationFunction2D"/> class.
+             </summary>
+            
+             <param name="rangeX">Specifies X variable's range.</param>
+             <param name="rangeY">Specifies Y variable's range.</param>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction2D.Evaluate(Accord.Genetic.IChromosome)">
+             <summary>
+             Evaluates chromosome.
+             </summary>
+             
+             <param name="chromosome">Chromosome to evaluate.</param>
+             
+             <returns>Returns chromosome's fitness value.</returns>
+            
+             <remarks>The method calculates fitness value of the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction2D.Translate(Accord.Genetic.IChromosome)">
+             <summary>
+             Translates genotype to phenotype 
+             </summary>
+             
+             <param name="chromosome">Chromosome, which genoteype should be
+             translated to phenotype</param>
+            
+             <returns>Returns chromosome's fenotype - the actual solution
+             encoded by the chromosome</returns> 
+             
+             <remarks>The method returns array of two double values, which
+             represent function's input point (X and Y) encoded by the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.OptimizationFunction2D.OptimizationFunction(System.Double,System.Double)">
+             <summary>
+             Function to optimize.
+             </summary>
+            
+             <param name="x">Function X input value.</param>
+             <param name="y">Function Y input value.</param>
+             
+             <returns>Returns function output value.</returns>
+             
+             <remarks>The method should be overloaded by inherited class to
+             specify the optimization function.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.SymbolicRegressionFitness">
+            <summary>
+            Fitness function for symbolic regression (function approximation) problem
+            </summary>
+            
+            <remarks><para>The fitness function calculates fitness value of
+            <see cref="T:Accord.Genetic.GPTreeChromosome">GP</see> and <see cref="T:Accord.Genetic.GEPChromosome">GEP</see>
+            chromosomes with the aim of solving symbolic regression problem. The fitness function's
+            value is computed as:
+            <code>100.0 / ( error + 1 )</code>
+            where <b>error</b> equals to the sum of absolute differences between function values (computed using
+            the function encoded by chromosome) and input values (function to be approximated).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // constants
+            double[] constants = new double[5] { 1, 2, 3, 5, 7 };
+            // function to be approximated
+            double[,] data = new double[5, 2] {
+            	{1, 1}, {2, 3}, {3, 6}, {4, 10}, {5, 15} };
+            // create population
+            Population population = new Population( 100,
+            	new GPTreeChromosome( new SimpleGeneFunction( 1 + constants.Length ) ),
+            	new SymbolicRegressionFitness( data, constants ),
+            	new EliteSelection( ) );
+            // run one epoch of the population
+            population.RunEpoch( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SymbolicRegressionFitness.#ctor(System.Double[0:,0:],System.Double[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.SymbolicRegressionFitness"/> class.
+            </summary>
+            
+            <param name="data">Function to be approximated.</param>
+            <param name="constants">Array of constants to be used as additional
+            paramters for genetic expression.</param>
+            
+            <remarks><para>The <paramref name="data"/> parameter defines the function to be approximated and
+            represents a two dimensional array of (x, y) points.</para>
+            
+            <para>The <paramref name="constants"/> parameter is an array of constants, which can be used as
+            additional variables for a genetic expression. The actual amount of variables for
+            genetic expression equals to the amount of constants plus one - the <b>x</b> variable.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SymbolicRegressionFitness.Evaluate(Accord.Genetic.IChromosome)">
+             <summary>
+             Evaluates chromosome.
+             </summary>
+             
+             <param name="chromosome">Chromosome to evaluate.</param>
+             
+             <returns>Returns chromosome's fitness value.</returns>
+            
+             <remarks>The method calculates fitness value of the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.SymbolicRegressionFitness.Translate(Accord.Genetic.IChromosome)">
+             <summary>
+             Translates genotype to phenotype .
+             </summary>
+             
+             <param name="chromosome">Chromosome, which genoteype should be
+             translated to phenotype.</param>
+            
+             <returns>Returns chromosome's fenotype - the actual solution
+             encoded by the chromosome.</returns> 
+             
+             <remarks>The method returns string value, which represents approximation
+             expression written in polish postfix notation.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.TimeSeriesPredictionFitness">
+            <summary>
+            Fitness function for times series prediction problem
+            </summary>
+            
+            <remarks><para>The fitness function calculates fitness value of
+            <see cref="T:Accord.Genetic.GPTreeChromosome">GP</see> and <see cref="T:Accord.Genetic.GEPChromosome">GEP</see>
+            chromosomes with the aim of solving times series prediction problem using
+            sliding window method. The fitness function's value is computed as:
+            <code>100.0 / ( error + 1 )</code>
+            where <b>error</b> equals to the sum of absolute differences between predicted value
+            and actual future value.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // number of points from the past used to predict new one
+            int windowSize = 5;
+            // time series to predict
+            double[] data = new double[13] { 1, 2, 4, 7, 11, 16, 22, 29, 37, 46, 56, 67, 79 };
+            // constants
+            double[] constants = new double[10] { 1, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+            // create population
+            Population population = new Population( 100,
+            new GPTreeChromosome( new SimpleGeneFunction( windowSize + constants.Length ) ),
+            new TimeSeriesPredictionFitness( data, windowSize, 1, constants ),
+            new EliteSelection( ) );
+            // run one epoch of the population
+            population.RunEpoch( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.TimeSeriesPredictionFitness.#ctor(System.Double[],System.Int32,System.Int32,System.Double[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.TimeSeriesPredictionFitness"/> class.
+            </summary>
+            
+            <param name="data">Time series to be predicted.</param>
+            <param name="windowSize">Window size - number of past samples used
+            to predict future value.</param>
+            <param name="predictionSize">Prediction size - number of values to be predicted. These
+            values are excluded from training set.</param>
+            <param name="constants">Array of constants to be used as additional
+            paramters for genetic expression.</param>
+            
+            <remarks><para>The <paramref name="data"/> parameter is a one dimensional array, which defines times
+            series to predict. The amount of learning samples is equal to the number of samples
+            in the provided time series, minus window size, minus prediction size.</para>
+            
+            <para>The <paramref name="predictionSize"/> parameter specifies the amount of samples, which should
+            be excluded from training set. This set of samples may be used for future verification
+            of the prediction model.</para>
+            
+            <para>The <paramref name="constants"/> parameter is an array of constants, which can be used as
+            additional variables for a genetic expression. The actual amount of variables for
+            genetic expression equals to the amount of constants plus the window size.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.TimeSeriesPredictionFitness.Evaluate(Accord.Genetic.IChromosome)">
+             <summary>
+             Evaluates chromosome.
+             </summary>
+             
+             <param name="chromosome">Chromosome to evaluate.</param>
+             
+             <returns>Returns chromosome's fitness value.</returns>
+            
+             <remarks>The method calculates fitness value of the specified
+             chromosome.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.TimeSeriesPredictionFitness.Translate(Accord.Genetic.IChromosome)">
+             <summary>
+             Translates genotype to phenotype.
+             </summary>
+             
+             <param name="chromosome">Chromosome, which genoteype should be
+             translated to phenotype.</param>
+            
+             <returns>Returns chromosome's fenotype - the actual solution
+             encoded by the chromosome.</returns> 
+             
+             <remarks><para>The method returns string value, which represents prediction
+             expression written in polish postfix notation.</para>
+             
+             <para>The interpretation of the prediction expression is very simple. For example, let's
+             take a look at sample expression, which was received with window size equal to 5:
+             <code lang="none">$0 $1 - $5 / $2 *</code>
+             The above expression in postfix polish notation should be interpreted as a next expression:
+             <code lang="none">( ( x[t - 1] - x[t - 2] ) / const1 ) * x[t - 3]</code>
+             </para>
+             </remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.Population">
+            <summary>
+            Population of chromosomes.
+            </summary>
+            
+            <remarks><para>The class represents population - collection of individuals (chromosomes)
+            and provides functionality for common population's life cycle - population growing
+            with help of genetic operators and selection of chromosomes to new generation
+            with help of selection algorithm. The class may work with any type of chromosomes
+            implementing <see cref="T:Accord.Genetic.IChromosome"/> interface, use any type of fitness functions
+            implementing <see cref="T:Accord.Genetic.IFitnessFunction"/> interface and use any type of selection
+            algorithms implementing <see cref="T:Accord.Genetic.ISelectionMethod"/> interface.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.CrossoverRate">
+            <summary>
+            Crossover rate, [0.1, 1].
+            </summary>
+            
+            <remarks><para>The value determines the amount of chromosomes which participate
+            in crossover.</para>
+            
+            <para>Default value is set to <b>0.75</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.MutationRate">
+            <summary>
+            Mutation rate, [0.1, 1].
+            </summary>
+            
+            <remarks><para>The value determines the amount of chromosomes which participate
+            in mutation.</para>
+            
+            <para>Defaul value is set to <b>0.1</b>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.RandomSelectionPortion">
+            <summary>
+            Random selection portion, [0, 0.9].
+            </summary>
+            
+            <remarks><para>The value determines the amount of chromosomes which will be
+            randomly generated for the new population. The property controls the amount
+            of chromosomes, which are selected to a new population using
+            <see cref="P:Accord.Genetic.Population.SelectionMethod">selection operator</see>, and amount of random
+            chromosomes added to the new population.</para>
+            
+            <para>Default value is set to <b>0</b>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.AutoShuffling">
+            <summary>
+            Determines of auto shuffling is on or off.
+            </summary>
+            
+            <remarks><para>The property specifies if automatic shuffling needs to be done
+            on each <see cref="M:Accord.Genetic.Population.RunEpoch">epoch</see> by calling <see cref="M:Accord.Genetic.Population.Shuffle"/>
+            method.</para>
+            
+            <para>Default value is set to <see langword="false"/>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.SelectionMethod">
+            <summary>
+            Selection method to use with the population.
+            </summary>
+            
+            <remarks><para>The property sets selection method which is used to select
+            population members for a new population - filter population after reproduction
+            was done with operators like crossover and mutations.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.FitnessFunction">
+            <summary>
+            Fitness function to apply to the population.
+            </summary>
+            
+            <remarks><para>The property sets fitness function, which is used to evaluate
+            usefulness of population's chromosomes. Setting new fitness function causes recalculation
+            of fitness values for all population's members and new best member will be found.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.FitnessMax">
+            <summary>
+            Maximum fitness of the population.
+            </summary>
+            
+            <remarks><para>The property keeps maximum fitness of chromosomes currently existing
+            in the population.</para>
+            
+            <para><note>The property is recalculate only after <see cref="M:Accord.Genetic.Population.Selection">selection</see>
+            or <see cref="M:Accord.Genetic.Population.Migrate(Accord.Genetic.Population,System.Int32,Accord.Genetic.ISelectionMethod)">migration</see> was done.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.FitnessSum">
+             <summary>
+             Summary fitness of the population.
+             </summary>
+            
+             <remarks><para>The property keeps summary fitness of all chromosome existing in the
+             population.</para>
+             
+             <para><note>The property is recalculate only after <see cref="M:Accord.Genetic.Population.Selection">selection</see>
+             or <see cref="M:Accord.Genetic.Population.Migrate(Accord.Genetic.Population,System.Int32,Accord.Genetic.ISelectionMethod)">migration</see> was done.</note></para>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.FitnessAvg">
+             <summary>
+             Average fitness of the population.
+             </summary>
+             
+             <remarks><para>The property keeps average fitness of all chromosome existing in the
+             population.</para>
+             
+             <para><note>The property is recalculate only after <see cref="M:Accord.Genetic.Population.Selection">selection</see>
+             or <see cref="M:Accord.Genetic.Population.Migrate(Accord.Genetic.Population,System.Int32,Accord.Genetic.ISelectionMethod)">migration</see> was done.</note></para>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.BestChromosome">
+            <summary>
+            Best chromosome of the population.
+            </summary>
+            
+            <remarks><para>The property keeps the best chromosome existing in the population
+            or <see langword="null"/> if all chromosomes have 0 fitness.</para>
+            
+            <para><note>The property is recalculate only after <see cref="M:Accord.Genetic.Population.Selection">selection</see>
+            or <see cref="M:Accord.Genetic.Population.Migrate(Accord.Genetic.Population,System.Int32,Accord.Genetic.ISelectionMethod)">migration</see> was done.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.Size">
+            <summary>
+            Size of the population.
+            </summary>
+            
+            <remarks>The property keeps initial (minimal) size of population.
+            Population always returns to this size after selection operator was applied,
+            which happens after <see cref="M:Accord.Genetic.Population.Selection"/> or <see cref="M:Accord.Genetic.Population.RunEpoch"/> methods
+            call.</remarks>
+            
+        </member>
+        <member name="P:Accord.Genetic.Population.Item(System.Int32)">
+            <summary>
+            Get chromosome with specified index.
+            </summary>
+            
+            <param name="index">Chromosome's index to retrieve.</param>
+            
+            <remarks>Allows to access individuals of the population.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.#ctor(System.Int32,Accord.Genetic.IChromosome,Accord.Genetic.IFitnessFunction,Accord.Genetic.ISelectionMethod)">
+             <summary>
+             Initializes a new instance of the <see cref="T:Accord.Genetic.Population"/> class.
+             </summary>
+             
+             <param name="size">Initial size of population.</param>
+             <param name="ancestor">Ancestor chromosome to use for population creatioin.</param>
+             <param name="fitnessFunction">Fitness function to use for calculating
+             chromosome's fitness values.</param>
+             <param name="selectionMethod">Selection algorithm to use for selection
+             chromosome's to new generation.</param>
+             
+             <remarks>Creates new population of specified size. The specified ancestor
+             becomes first member of the population and is used to create other members
+             with same parameters, which were used for ancestor's creation.</remarks>
+             
+             <exception cref="T:System.ArgumentException">Too small population's size was specified. The
+             exception is thrown in the case if <paramref name="size"/> is smaller than 2.</exception>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Regenerate">
+            <summary>
+            Regenerate population.
+            </summary>
+            
+            <remarks>The method regenerates population filling it with random chromosomes.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Crossover">
+            <summary>
+            Do crossover in the population.
+            </summary>
+            
+            <remarks>The method walks through the population and performs crossover operator
+            taking each two chromosomes in the order of their presence in the population.
+            The total amount of paired chromosomes is determined by
+            <see cref="P:Accord.Genetic.Population.CrossoverRate">crossover rate</see>.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Mutate">
+            <summary>
+            Do mutation in the population.
+            </summary>
+            
+            <remarks>The method walks through the population and performs mutation operator
+            taking each chromosome one by one. The total amount of mutated chromosomes is
+            determined by <see cref="P:Accord.Genetic.Population.MutationRate">mutation rate</see>.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Selection">
+            <summary>
+            Do selection.
+            </summary>
+            
+            <remarks>The method applies selection operator to the current population. Using
+            specified selection algorithm it selects members to the new generation from current
+            generates and adds certain amount of random members, if is required
+            (see <see cref="P:Accord.Genetic.Population.RandomSelectionPortion"/>).</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.RunEpoch">
+            <summary>
+            Run one epoch of the population.
+            </summary>
+            
+            <remarks>The method runs one epoch of the population, doing crossover, mutation
+            and selection by calling <see cref="M:Accord.Genetic.Population.Crossover"/>, <see cref="M:Accord.Genetic.Population.Mutate"/> and
+            <see cref="M:Accord.Genetic.Population.Selection"/>.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Shuffle">
+            <summary>
+            Shuffle randomly current population.
+            </summary>
+            
+            <remarks><para>Population shuffling may be useful in cases when selection
+            operator results in not random order of chromosomes (for example, after elite
+            selection population may be ordered in ascending/descending order).</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.AddChromosome(Accord.Genetic.IChromosome)">
+            <summary>
+            Add chromosome to the population.
+            </summary>
+            
+            <param name="chromosome">Chromosome to add to the population.</param>
+            
+            <remarks><para>The method adds specified chromosome to the current population.
+            Manual adding of chromosome maybe useful, when it is required to add some initialized
+            chromosomes instead of random.</para>
+            
+            <para><note>Adding chromosome manually should be done very carefully, since it
+            may break the population. The manually added chromosome must have the same type
+            and initialization parameters as the ancestor passed to constructor.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Migrate(Accord.Genetic.Population,System.Int32,Accord.Genetic.ISelectionMethod)">
+            <summary>
+            Perform migration between two populations.
+            </summary>
+            
+            <param name="anotherPopulation">Population to do migration with.</param>
+            <param name="numberOfMigrants">Number of chromosomes from each population to migrate.</param>
+            <param name="migrantsSelector">Selection algorithm used to select chromosomes to migrate.</param>
+            
+            <remarks><para>The method performs migration between two populations - current and the
+            <paramref name="anotherPopulation">specified one</paramref>. During migration
+            <paramref name="numberOfMigrants">specified number</paramref> of chromosomes is choosen from
+            each population using <paramref name="migrantsSelector">specified selection algorithms</paramref>
+            and put into another population replacing worst members there.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Resize(System.Int32)">
+            <summary>
+            Resize population to the new specified size.
+            </summary>
+            
+            <param name="newPopulationSize">New size of population.</param>
+            
+            <remarks><para>The method does resizing of population. In the case if population
+            should grow, it just adds missing number of random members. In the case if
+            population should get smaller, the <see cref="P:Accord.Genetic.Population.SelectionMethod">population's
+            selection method</see> is used to reduce the population.</para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Too small population's size was specified. The
+            exception is thrown in the case if <paramref name="newPopulationSize"/> is smaller than 2.</exception>
+            
+        </member>
+        <member name="M:Accord.Genetic.Population.Resize(System.Int32,Accord.Genetic.ISelectionMethod)">
+             <summary>
+             Resize population to the new specified size.
+             </summary>
+             
+             <param name="newPopulationSize">New size of population.</param>
+             <param name="membersSelector">Selection algorithm to use in the case
+             if population should get smaller.</param>
+             
+             <remarks><para>The method does resizing of population. In the case if population
+             should grow, it just adds missing number of random members. In the case if
+             population should get smaller, the specified selection method is used to
+             reduce the population.</para></remarks>
+             
+             <exception cref="T:System.ArgumentException">Too small population's size was specified. The
+             exception is thrown in the case if <paramref name="newPopulationSize"/> is smaller than 2.</exception>
+            
+        </member>
+        <member name="T:Accord.Genetic.EliteSelection">
+            <summary>
+            Elite selection method.
+            </summary>
+            
+            <remarks>Elite selection method selects specified amount of
+            best chromosomes to the next generation.</remarks> 
+            
+        </member>
+        <member name="M:Accord.Genetic.EliteSelection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.EliteSelection"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.EliteSelection.ApplySelection(System.Collections.Generic.List{Accord.Genetic.IChromosome},System.Int32)">
+            <summary>
+            Apply selection to the specified population.
+            </summary>
+            
+            <param name="chromosomes">Population, which should be filtered.</param>
+            <param name="size">The amount of chromosomes to keep.</param>
+            
+            <remarks>Filters specified population keeping only specified amount of best
+            chromosomes.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.ISelectionMethod">
+            <summary>
+            Genetic selection method interface.
+            </summary>
+            
+            <remarks>The interface should be implemented by all classes, which
+            implement genetic selection algorithm. These algorithms select members of
+            current generation, which should be kept in the new generation. Basically,
+            these algorithms filter provided population keeping only specified amount of
+            members.</remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.ISelectionMethod.ApplySelection(System.Collections.Generic.List{Accord.Genetic.IChromosome},System.Int32)">
+            <summary>
+            Apply selection to the specified population.
+            </summary>
+            
+            <param name="chromosomes">Population, which should be filtered.</param>
+            <param name="size">The amount of chromosomes to keep.</param>
+            
+            <remarks>Filters specified population according to the implemented
+            selection algorithm.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.RankSelection">
+            <summary>
+            Rank selection method.
+            </summary>
+            
+            <remarks><para>The algorithm selects chromosomes to the new generation depending on
+            their fitness values - the better fitness value chromosome has, the more chances
+            it has to become member of the new generation. Each chromosome can be selected
+            several times to the new generation.</para>
+            
+            <para>This algorithm is similar to <see cref="T:Accord.Genetic.RouletteWheelSelection">Roulette Wheel
+            Selection</see> algorithm, but the difference is in "wheel" and its sectors' size
+            calculation method. The size of the wheel equals to <b>size * ( size + 1 ) / 2</b>,
+            where <b>size</b> is the current size of population. The worst chromosome has its sector's
+            size equal to 1, the next chromosome has its sector's size equal to 2, etc.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.RankSelection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.RankSelection"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.Genetic.RankSelection.ApplySelection(System.Collections.Generic.List{Accord.Genetic.IChromosome},System.Int32)">
+            <summary>
+            Apply selection to the specified population.
+            </summary>
+            
+            <param name="chromosomes">Population, which should be filtered.</param>
+            <param name="size">The amount of chromosomes to keep.</param>
+            
+            <remarks>Filters specified population keeping only those chromosomes, which
+            won "roulette" game.</remarks>
+            
+        </member>
+        <member name="T:Accord.Genetic.RouletteWheelSelection">
+            <summary>
+            Roulette wheel selection method.
+            </summary>
+            
+            <remarks><para>The algorithm selects chromosomes to the new generation according to
+            their fitness values - the more fitness value chromosome has, the more chances
+            it has to become member of new generation. Each chromosome can be selected
+            several times to the new generation.</para>
+            
+            <para>The "roulette's wheel" is divided into sectors, which size is proportional to
+            the fitness values of chromosomes - the  size of the wheel is the sum of all fitness
+            values, size of each sector equals to fitness value of chromosome.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Genetic.RouletteWheelSelection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Genetic.RouletteWheelSelection"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Genetic.RouletteWheelSelection.ApplySelection(System.Collections.Generic.List{Accord.Genetic.IChromosome},System.Int32)">
+            <summary>
+            Apply selection to the specified population.
+            </summary>
+            
+            <param name="chromosomes">Population, which should be filtered.</param>
+            <param name="size">The amount of chromosomes to keep.</param>
+            
+            <remarks>Filters specified population keeping only those chromosomes, which
+            won "roulette" game.</remarks>
+            
+        </member>
+    </members>
+</doc>

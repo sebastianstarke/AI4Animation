@@ -1,0 +1,234 @@
+fileFormatVersion: 2
+guid: f878bdd568efcea4b91d0f219ef65974
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: GermanShepherd_M_LOD0
+    100004: GermanShepherd_M_LOD1
+    100006: GermanShepherd_M_LOD2
+    100008: GermanShepherd_M_LOD3
+    100010: GermanShepherd_M_LOD4
+    100012: RigChest
+    100014: RigHead
+    100016: RigJaw1
+    100018: RigLBLeg1
+    100020: RigLBLeg2
+    100022: RigLBLeg3
+    100024: RigLBLegAnkle
+    100026: RigLBLegDigit11
+    100028: RigLEar1
+    100030: RigLEye1
+    100032: RigLEyelid1
+    100034: RigLFLeg1
+    100036: RigLFLeg2
+    100038: RigLFLeg3
+    100040: RigLFLegAnkle
+    100042: RigLFLegCollarbone
+    100044: RigLFLegDigit11
+    100046: RigLShoulderBlade
+    100048: RigNeck1
+    100050: RigNeck2
+    100052: RigNeck3
+    100054: RigNeck4
+    100056: RigPelvis
+    100058: RigRBLeg1
+    100060: RigRBLeg2
+    100062: RigRBLeg3
+    100064: RigRBLegAnkle
+    100066: RigRBLegDigit11
+    100068: RigREar1
+    100070: RigREye1
+    100072: RigREyelid1
+    100074: RigRFLeg1
+    100076: RigRFLeg2
+    100078: RigRFLeg3
+    100080: RigRFLegAnkle
+    100082: RigRFLegCollarbone
+    100084: RigRFLegDigit11
+    100086: RigRoot
+    100088: RigRShoulderBlade
+    100090: RigSpine1
+    100092: RigSpine2
+    100094: RigSpine3
+    100096: RigTail1
+    100098: RigTail2
+    100100: RigTail3
+    100102: RigTail4
+    100104: RigTail5
+    100106: RigTail6
+    100108: RigTongue1
+    100110: RigTongue2
+    100112: RigTongue3
+    400000: //RootNode
+    400002: GermanShepherd_M_LOD0
+    400004: GermanShepherd_M_LOD1
+    400006: GermanShepherd_M_LOD2
+    400008: GermanShepherd_M_LOD3
+    400010: GermanShepherd_M_LOD4
+    400012: RigChest
+    400014: RigHead
+    400016: RigJaw1
+    400018: RigLBLeg1
+    400020: RigLBLeg2
+    400022: RigLBLeg3
+    400024: RigLBLegAnkle
+    400026: RigLBLegDigit11
+    400028: RigLEar1
+    400030: RigLEye1
+    400032: RigLEyelid1
+    400034: RigLFLeg1
+    400036: RigLFLeg2
+    400038: RigLFLeg3
+    400040: RigLFLegAnkle
+    400042: RigLFLegCollarbone
+    400044: RigLFLegDigit11
+    400046: RigLShoulderBlade
+    400048: RigNeck1
+    400050: RigNeck2
+    400052: RigNeck3
+    400054: RigNeck4
+    400056: RigPelvis
+    400058: RigRBLeg1
+    400060: RigRBLeg2
+    400062: RigRBLeg3
+    400064: RigRBLegAnkle
+    400066: RigRBLegDigit11
+    400068: RigREar1
+    400070: RigREye1
+    400072: RigREyelid1
+    400074: RigRFLeg1
+    400076: RigRFLeg2
+    400078: RigRFLeg3
+    400080: RigRFLegAnkle
+    400082: RigRFLegCollarbone
+    400084: RigRFLegDigit11
+    400086: RigRoot
+    400088: RigRShoulderBlade
+    400090: RigSpine1
+    400092: RigSpine2
+    400094: RigSpine3
+    400096: RigTail1
+    400098: RigTail2
+    400100: RigTail3
+    400102: RigTail4
+    400104: RigTail5
+    400106: RigTail6
+    400108: RigTongue1
+    400110: RigTongue2
+    400112: RigTongue3
+    2100000: GermanShepherd
+    2100002: GermanShepherd_Eye
+    4300000: GermanShepherd_M_LOD0
+    4300002: GermanShepherd_M_LOD1
+    4300004: GermanShepherd_M_LOD2
+    4300006: GermanShepherd_M_LOD3
+    4300008: GermanShepherd_M_LOD4
+    9500000: //RootNode
+    13700000: GermanShepherd_M_LOD0
+    13700002: GermanShepherd_M_LOD1
+    13700004: GermanShepherd_M_LOD2
+    13700006: GermanShepherd_M_LOD3
+    13700008: GermanShepherd_M_LOD4
+    20500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GermanShepherd
+    second: {fileID: 2100000, guid: 3b829b4695c0d954c920ebd972446ae5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GermanShepherd_Eye
+    second: {fileID: 2100000, guid: 232133b2cf0391e4b8ed0b55557a9ce0, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages:
+    - 0.25
+    - 0.125
+    - 0.0625
+    - 0.03125
+    - 0.01
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: RigRoot
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

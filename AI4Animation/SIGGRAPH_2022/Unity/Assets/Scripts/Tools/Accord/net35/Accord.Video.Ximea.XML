@@ -1,0 +1,1122 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Video.Ximea</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Video.Ximea.CameraParameter">
+            <summary>
+            Set of available configuration options for XIMEA cameras.
+            </summary>
+            
+            <remarks><para>The class defines list of parameters, which are available
+            to set/get using corresponding methods of <see cref="T:Accord.Video.Ximea.XimeaCamera"/> and
+            <see cref="T:Accord.Video.Ximea.XimeaVideoSource"/> classes.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.DeviceName">
+            <summary>
+            Get camera model name. Type string.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.DeviceSerialNumber">
+            <summary>
+            Get device serial number in decimal format. Type string, integer, float
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.DeviceType">
+            <summary>
+            Returns device type (1394, USB2.0, CURRERA…..). Type string.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Exposure">
+            <summary>
+            Set/Get exposure time in microseconds. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ExposureMax">
+            <summary>
+            Get longest possible exposure to be set on camera in microseconds. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ExposureMin">
+            <summary>
+            Get shortest possible exposure to be set on camera in microseconds. Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Gain">
+            <summary>
+            Set/Get camera gain in dB. Type float. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GainMax">
+            <summary>
+            Get highest possible camera gain in dB. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GainMin">
+            <summary>
+            Get lowest possible camera gain in dB. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Width">
+            <summary>
+            Set/Get width of the image provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.WidthMax">
+            <summary>
+            Get maximal image width provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.WidthMin">
+            <summary>
+            Get minimum image width provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Height">
+            <summary>
+            Set/Get height of the image provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.HeightMax">
+            <summary>
+            Get maximal image height provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.HeightMin">
+            <summary>
+            Get minimum image height provided by the camera (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Downsampling">
+            <summary>
+            Set/Get image resolution by binning or skipping. Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.DownsamplingMax">
+            <summary>
+            Get highest value for binning or skipping. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.DownsamplingMin">
+            <summary>
+            Get lowest value for binning or skipping. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Framerate">
+            <summary>
+            Get frames per second. Type float. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.FramerateMax">
+            <summary>
+            Get highest possible framerate for current camera settings. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.FramerateMin">
+            <summary>
+            Get lowest framerate for current camera settings. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetX">
+            <summary>
+            Set/Get horizontal offset from the origin to the area of interest (in pixels). Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetXMax">
+            <summary>
+            Get maximum horizontal offset from the origin to the area of interest (in pixels). Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetXMin">
+            <summary>
+            Get minimum horizontal offset from the origin to the area of interest (in pixels). Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetY">
+            <summary>
+            Set/Get vertical offset from the origin to the area of interest (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetYMax">
+            <summary>
+            Get maximum vertical offset from the origin to the area of interest (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.OffsetYMin">
+            <summary>
+            Get minimal vertical offset from the origin to the area of interest (in pixels). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.WhiteBalanceBlue">
+            <summary>
+            Set/Get white balance blue coefficient. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.WhiteBalanceRed">
+            <summary>
+            Set/Get white balance red coefficient. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.WhiteBalanceGreen">
+            <summary>
+            Set/Get white balance green coefficient. Type float.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Sharpness">
+            <summary>
+            Set/Get sharpness strenght. Type float. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GammaY">
+            <summary>
+            Set/Get luminosity gamma value. Type float. By default 1.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GammaC">
+            <summary>
+            Set/Get chromaticity gamma value. Type float. By default 0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.SetDefaultColorCorrectonMatrix">
+            <summary>
+            Set default color correction matrx. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ImageFormat">
+            <summary>
+            Set/Get image format provided by the camera. Type integer. Use <see cref="F:Accord.Video.Ximea.CameraParameter.ImageFormat"/>
+            enumeraton for possible values.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.Trigger">
+            <summary>
+            Set/Get camera's trigger mode. Type integer. Use <see cref="T:Accord.Video.Ximea.TriggerSource"/>
+            enumeration for possible values.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.SoftwareTrigger">
+            <summary>
+            Generates an internal trigger. <see cref="F:Accord.Video.Ximea.CameraParameter.Trigger"/> must be set to <see cref="F:Accord.Video.Ximea.TriggerSource.Software"/>.
+            Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.CalculateWhiteBalance">
+            <summary>
+            Calculates white balance. Takes white balance from image center (should be white/grey object
+            in the center of scene). Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AutoWhiteBalance">
+            <summary>
+            Enable/disable automatic white balance. Type integer. By default 0.
+            </summary>
+            
+            <remarks><para>Set 0 to disable automatic white balance or 1 to enable.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.BadPixelsCorrection">
+            <summary>
+            Enable/disable bad pixels correction. Type integer. By default 0.
+            </summary>
+            
+            <remarks><para>Set 0 to disable bad pixels correction or 1 to enable.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AcquisitionBufferSize">
+            <summary>
+            Set/Get acquisition buffer size in bytes. Type integer. By default 53248000. 
+            </summary>
+            
+            <remarks><para>Defines acquisition buffer size in bytes. This buffer contains images'
+            data from sensor. This parameter can be set only when acquisition is stopped.</para>
+            
+            <para>See <see cref="F:Accord.Video.Ximea.CameraParameter.BufferQueueSize"/> for additional information.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.BufferQueueSize">
+            <summary>
+            Set/Get maximum number of images to store in queue. Type integer. By default 4.
+            </summary>
+            
+            <remarks><para><img src="..\images\video\HW_SW_buffers.png" width="500" height="317" />
+            </para>
+            
+            <para>See also <see cref="F:Accord.Video.Ximea.CameraParameter.AcquisitionBufferSize"/> for additional information.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.AEAG">
+            <summary>
+            Set of configuration options to configure Automatic Exposure/Gain (AEAG) parameters.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AEAG.Enable">
+            <summary>
+            Enable/disable automatic exposure/gain control. Type integer. By default 0.
+            </summary>
+            
+            <remarks><para>Set 0 to disable automatic exposure/gain control or 1 to enable.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AEAG.ExposureMaxLimit">
+            <summary>
+            Set/Get maximum limit of exposure in AEAG procedure. Type integer. By default 100. Units - ms.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AEAG.GainMaxLimit">
+            <summary>
+            Set/Get maximum limit of gain in AEAG procedure. Type float. Default depends on camera type. Units - dB.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AEAG.ExposurePriority">
+            <summary>
+            Set/Get exposure priority, [0, 1]. Type float. By default 0.8.
+            </summary>
+            
+            <remarks><para>Setting the value to 0.5, for example, set exposure priority to 50%
+            and gain priority to 50%.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.AEAG.Level">
+            <summary>
+            Set/Get average intensity of output signal AEAG should achieve (in %). Type float. By default 40.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.LED">
+            <summary>
+            Set of configuration options to configure camera's LEDs. Currently supported only for Currera-R cameras.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LED.Selector">
+            <summary>
+            Selects camera LED to be used. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LED.Max">
+            <summary>
+            Get highest LED number on camera. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LED.Min">
+            <summary>
+            Get lowest LED number on camera. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LED.Mode">
+            <summary>
+            Set/Get LED functionality. Select LED by using <see cref="F:Accord.Video.Ximea.CameraParameter.LED.Selector"/> parameter.
+            Use <see cref="T:Accord.Video.Ximea.LedMode"/> enumeration for possible parameter values. Type integer.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.GPO">
+            <summary>
+            Set of configuration options to configure GPO (General Purpose Output) ports.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPO.Selector">
+            <summary>
+            Select camera GPO port. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPO.Max">
+            <summary>
+            Get highest GPO port number on camera. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPO.Min">
+            <summary>
+            Get lowest GPO port number on camera. Type integer
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPO.Mode">
+            <summary>
+            Set/Get GPO port functionality. Select port by using <see cref="F:Accord.Video.Ximea.CameraParameter.GPO.Selector"/> parameter.
+            Use <see cref="T:Accord.Video.Ximea.GpoMode"/> enumeration to set mode. Type integer.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.GPI">
+            <summary>
+            Set of configuration options to access/configure GPI (General Purpose Input) ports.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPI.Selector">
+            <summary>
+            Select camera GPI port. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPI.Max">
+            <summary>
+            Get highest GPI port number on camera. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPI.Min">
+            <summary>
+            Get lowest GPI port number on camera. Type integer
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPI.Mode">
+            <summary>
+            Set/Get GPI port functionality. Select port by using <see cref="F:Accord.Video.Ximea.CameraParameter.GPI.Selector"/> parameter.
+            Use <see cref="T:Accord.Video.Ximea.GpiMode"/> enumeration to set mode. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.GPI.Level">
+            <summary>
+            Get current GPI level. Type integer.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.LUT">
+            <summary>
+            Set of configuration options to configure camera's LUT - Look-Up-Table.
+            Currently available only for Currera-R cameras.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.Enable">
+            <summary>
+            Enable/Disable LUT. Type integer. Default 0.
+            </summary>
+            
+            <remarks><para>Set 0 to disable LUT - sensor pixels are transferred directly.
+            Set 1 to enable LUT - sensor pixels are mapped through LUT.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.Index">
+            <summary>
+            Set/Get the index (offset) of the coefficient to access in the LUT. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.IndexMin">
+            <summary>
+            Get lowest LUT index (offset) of the coefficient to access in the LUT. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.IndexMax">
+            <summary>
+            Get highest LUT index (offset) of the coefficient to access in the LUT. Type integer.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.Value">
+            <summary>
+            Set/Get value in the LUT. Index of the value must be selected using <see cref="F:Accord.Video.Ximea.CameraParameter.LUT.Index"/>
+            parameter. Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.ValueMin">
+            <summary>
+            Get highest value to be set in LUT. Type integer. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.LUT.ValueMax">
+            <summary>
+            Get lowest value to be set in LUT. Type integer. 
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix">
+            <summary>
+            Set of configuration options to access elements of Color Correction Matrix.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V00">
+            <summary>
+            Set/Get color correction matrix element [0][0]. Type float. By default 1.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V01">
+            <summary>
+            Set/Get color correction matrix element [0][1]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V02">
+            <summary>
+            Set/Get color correction matrix element [0][2]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V03">
+            <summary>
+            Set/Get color correction matrix element [0][3]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V10">
+            <summary>
+            Set/Get color correction matrix element [1][0]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V11">
+            <summary>
+            Set/Get color correction matrix element [1][1]. Type float. By default 1.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V12">
+            <summary>
+            Set/Get color correction matrix element [1][2]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V13">
+            <summary>
+            Set/Get color correction matrix element [1][3]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V20">
+            <summary>
+            Set/Get color correction matrix element [2][0]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V21">
+            <summary>
+            Set/Get color correction matrix element [2][1]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V22">
+            <summary>
+            Set/Get color correction matrix element [2][2]. Type float. By default 1.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V23">
+            <summary>
+            Set/Get color correction matrix element [2][3]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V30">
+            <summary>
+            Set/Get color correction matrix element [3][0]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V31">
+            <summary>
+            Set/Get color correction matrix element [3][1]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V32">
+            <summary>
+            Set/Get color correction matrix element [3][2]. Type float. By default 0.0.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.CameraParameter.ColorCorrectionMatrix.V33">
+            <summary>
+            Set/Get color correction matrix element [3][3]. Type float. By default 1.0.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.GpiMode">
+            <summary>
+            XIMEA camera's GPI port modes.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpiMode.Off">
+            <summary>
+            Input is off.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpiMode.Trigger">
+            <summary>
+            Trigger input.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpiMode.ExternalEvent">
+            <summary>
+            External signal input.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.GpoMode">
+            <summary>
+            XIMEA camera's GPO port modes.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.Off">
+            <summary>
+            Output off.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.On">
+            <summary>
+            Logical level.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.FrameActive">
+            <summary>
+            High during exposure (integration) time + readout time + data transfer time.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.FrameActiveNew">
+            <summary>
+            Low during exposure (integration) time + readout time + data trasnfer time. 
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.ExposureActive">
+            <summary>
+            High during exposure(integration) time.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.GpoMode.ExposureActiveNeg">
+            <summary>
+            Low during exposure(integration) time.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.ImageFormat">
+            <summary>
+            Enumeration of image formats supported by XIMEA cameras.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.ImageFormat.Grayscale8">
+            <summary>
+            8 bits per pixel.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.ImageFormat.Grayscale16">
+            <summary>
+            16 bits per pixel.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.ImageFormat.RGB24">
+            <summary>
+            RGB data format.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.ImageFormat.RGB32">
+            <summary>
+            RGBA data format.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.LedMode">
+            <summary>
+            XIMEA camera's LED state options.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.Heartbeat">
+            <summary>
+            Blink if link is ok (led 1), heartbeat mode (led 2).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.TriggerActive">
+            <summary>
+            Blink led if trigger detected.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.ExternalEventActive">
+            <summary>
+            Blink led if external signal detected.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.Acquisition">
+            <summary>
+            Blink led during data streaming.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.ExposureActive">
+            <summary>
+            Blink led during sensor integration time.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.FrameActive">
+            <summary>
+            Blink if device busy/not busy.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.Link">
+            <summary>
+            Blink led if link is OK.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.Off">
+            <summary>
+            Turn off LED.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.LedMode.On">
+            <summary>
+            Turn on LED.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.TriggerSource">
+            <summary>
+            Enumeration of camera's trigger modes.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.TriggerSource.Off">
+            <summary>
+            Camera works in free run mode.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.TriggerSource.EdgeRising">
+            <summary>
+            External trigger (rising edge).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.TriggerSource.EdgeFalling">
+            <summary>
+            External trigger (falling edge).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.Ximea.TriggerSource.Software">
+            <summary>
+            Software (manual) trigger.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.Ximea.XimeaCamera">
+            <summary>
+            The class provides access to XIMEA cameras.
+            </summary>
+            
+            <remarks><para>The class allows to perform image acquisition from <a href="http://www.ximea.com/">XIMEA</a> cameras.
+            It wraps XIMEA'a xiAPI, which means that users of this class will also require <b>m3api.dll</b> and a correct
+            TM file for the camera model connected to the system (both are provided with XIMEA API software package).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            XimeaCamera camera = new XimeaCamera( );
+            
+            // open camera and start data acquisition
+            camera.Open( 0 );
+            camera.StartAcquisition( );
+            
+            // set exposure time to 10 milliseconds
+            camera.SetParam( CameraParameter.Exposure, 10 * 1000 );
+            
+            // get image from the camera
+            Bitmap bitmap = camera.GetImage( );
+            // process the image
+            // ...
+            
+            // dispose the image when it is no longer needed
+            bitmap.Dispose( );
+            
+            // stop data acquisition and close the camera
+            camera.StopAcquisition( );
+            camera.Close( );
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Video.Ximea.XimeaVideoSource"/>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaCamera.CamerasCount">
+            <summary>
+            Get number of XIMEA camera connected to the system.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaCamera.IsAcquisitionStarted">
+            <summary>
+            Specifies if camera's data acquisition is currently active for the opened camera (if any).
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaCamera.IsDeviceOpen">
+            <summary>
+            Specifies if a camera is currently opened by the instance of the class.
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaCamera.DeviceID">
+            <summary>
+            ID of the the recently opened XIMEA camera.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.Open(System.Int32)">
+             <summary>
+             Open XIMEA camera.
+             </summary>
+             
+             <param name="deviceID">Camera ID to open.</param>
+             
+             <remarks><para>Opens the specified XIMEA camera preparing it for starting video acquisition
+             which is done using <see cref="M:Accord.Video.Ximea.XimeaCamera.StartAcquisition"/> method. The <see cref="P:Accord.Video.Ximea.XimeaCamera.IsDeviceOpen"/>
+             property can be used at any time to find if a camera was opened or not.</para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.Close">
+             <summary>
+             Close opened camera (if any) and release allocated resources.
+             </summary>
+             
+             <remarks><para><note>The method also calls <see cref="M:Accord.Video.Ximea.XimeaCamera.StopAcquisition"/> method if it was not
+             done by user.</note></para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.StartAcquisition">
+            <summary>
+            Begin camera's work cycle and start data acquisition from it.
+            </summary>
+            
+            <remarks><para>The <see cref="P:Accord.Video.Ximea.XimeaCamera.IsAcquisitionStarted"/> property can be used at any time to find if the
+            acquisition was started or not.</para></remarks>
+            
+            <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+            message for additional information.</exception>
+            <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.StopAcquisition">
+            <summary>
+            End camera's work cycle and stops data acquisition.
+            </summary>
+            
+            <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+            message for additional information.</exception>
+            <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.SetParam(System.String,System.Int32)">
+             <summary>
+             Set camera's parameter.
+             </summary>
+             
+             <param name="parameterName">Parameter name.</param>
+             <param name="value">Integer parameter value.</param>
+             
+             <remarks><para>The method allows to control different camera's parameters, like exposure time, gain value, etc.
+             See <see cref="T:Accord.Video.Ximea.CameraParameter"/> class for the list of some possible configuration parameters. See
+             XIMEA documentation for the complete list of supported parameters.
+             </para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.SetParam(System.String,System.Single)">
+             <summary>
+             Set camera's parameter.
+             </summary>
+             
+             <param name="parameterName">Parameter name.</param>
+             <param name="value">Float parameter value.</param>
+             
+             <remarks><para>The method allows to control different camera's parameters, like exposure time, gain value, etc.
+             See <see cref="T:Accord.Video.Ximea.CameraParameter"/> class for the list of some possible configuration parameters. See
+             XIMEA documentation for the complete list of supported parameters.
+             </para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetParamInt(System.String)">
+             <summary>
+             Get camera's parameter as integer value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns integer value of the requested parameter.</returns>
+             
+             <remarks><para>See <see cref="T:Accord.Video.Ximea.CameraParameter"/> class for the list of some possible configuration parameters. See
+             XIMEA documentation for the complete list of supported parameters.</para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetParamFloat(System.String)">
+             <summary>
+             Get camera's parameter as float value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns float value of the requested parameter.</returns>
+             
+             <remarks><para>See <see cref="T:Accord.Video.Ximea.CameraParameter"/> class for the list of some possible configuration parameters. See
+             XIMEA documentation for the complete list of supported parameters.</para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetParamString(System.String)">
+             <summary>
+             Get camera's parameter as string value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns string value of the requested parameter.</returns>
+             
+             <remarks><para>See <see cref="T:Accord.Video.Ximea.CameraParameter"/> class for the list of some possible configuration parameters. See
+             XIMEA documentation for the complete list of supported parameters.</para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetImage">
+             <summary>
+             Get image from the opened XIMEA camera.
+             </summary>
+             
+             <returns>Returns image retrieved from the camera.</returns>
+             
+             <remarks><para>The method calls <see cref="M:Accord.Video.Ximea.XimeaCamera.GetImage(System.Int32)"/> method specifying 5000 as the timeout
+             value.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetImage(System.Int32)">
+             <summary>
+             Get image from the opened XIMEA camera.
+             </summary>
+             
+             <param name="timeout">Maximum time to wait in milliseconds till image becomes available.</param>
+             
+             <returns>Returns image retrieved from the camera.</returns>
+             
+             <remarks><para>The method calls <see cref="M:Accord.Video.Ximea.XimeaCamera.GetImage(System.Int32,System.Boolean)"/> method specifying <see langword="true"/>
+             the <b>makeCopy</b> parameter.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaCamera.GetImage(System.Int32,System.Boolean)">
+             <summary>
+             Get image from the opened XIMEA camera.
+             </summary>
+             
+             <param name="timeout">Maximum time to wait in milliseconds till image becomes available.</param>
+             <param name="makeCopy">Make a copy of the camera's image or not.</param>
+             
+             <returns>Returns image retrieved from the camera.</returns>
+             
+             <remarks><para>If the <paramref name="makeCopy"/> is set to <see langword="true"/>, then the method
+             creates a managed copy of the camera's image, so the managed image stays valid even when the camera
+             is closed. However, setting this parameter to <see langword="false"/> creates a managed image which is
+             just a wrapper around camera's unmanaged image. So if camera is closed and its resources are freed, the
+             managed image becomes no longer valid and accessing it will generate an exception.</para></remarks>
+             
+             <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+             message for additional information.</exception>
+             <exception cref="T:Accord.NotConnectedException">No camera was opened, so can not access its methods.</exception>
+             <exception cref="T:System.TimeoutException">Time out value reached - no image is available within specified time value.</exception>
+            
+        </member>
+        <member name="T:Accord.Video.Ximea.XimeaVideoSource">
+            <summary>
+            The class provides continues access to XIMEA cameras.
+            </summary>
+            
+            <remarks><para>The video source class is aimed to provide continues access to XIMEA camera, when
+            images are continuosly acquired from camera and provided throw the <see cref="E:Accord.Video.Ximea.XimeaVideoSource.NewFrame"/> event.
+            It just creates a background thread and gets new images from <see cref="T:Accord.Video.Ximea.XimeaCamera">XIMEA camera</see>
+            keeping the <see cref="P:Accord.Video.Ximea.XimeaVideoSource.FrameInterval">specified time interval</see> between image acquisition.
+            Essentially it is a wrapper class around <see cref="T:Accord.Video.Ximea.XimeaCamera"/> providing <see cref="T:Accord.Video.IVideoSource"/> interface.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create video source for the XIMEA camera with ID 0
+            XimeaVideoSource videoSource = new XimeaVideoSource( 0 );
+            // set event handlers
+            videoSource.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            videoSource.Start( );
+            
+            // set exposure time to 10 milliseconds
+            videoSource.SetParam( CameraParameter.Exposure, 10 * 1000 );
+            
+            // ...
+            
+            // New frame event handler, which is invoked on each new available video frame
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Video.Ximea.XimeaCamera"/>
+            
+        </member>
+        <member name="E:Accord.Video.Ximea.XimeaVideoSource.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frames from the video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Ximea.XimeaVideoSource.VideoSourceError">
+             <summary>
+             Video source error event.
+             </summary>
+             
+             <remarks>This event is used to notify clients about any type of errors occurred in
+             video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.Ximea.XimeaVideoSource.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaVideoSource.Source">
+            <summary>
+            A string identifying the video source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaVideoSource.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaVideoSource.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaVideoSource.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.Ximea.XimeaVideoSource.FrameInterval">
+            <summary>
+            Time interval between frames.
+            </summary>
+            
+            <remarks><para>The property sets the interval in milliseconds between getting new frames from the camera.
+            If the property is set to 100, then the desired frame rate should be about 10 frames per second.</para>
+            
+            <para><note>Setting this property to 0 leads to no delay between video frames - frames
+            are read as fast as possible.</note></para>
+            
+            <para>Default value is set to <b>200</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.Ximea.XimeaVideoSource"/> class.
+            </summary>
+            
+            <param name="deviceID">XIMEA camera ID (index) to connect to.</param>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and returns execution to caller. Video camera will be started
+            and will provide new video frames through the <see cref="E:Accord.Video.Ximea.XimeaVideoSource.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">There is no XIMEA camera with specified ID connected to the system.</exception>
+            <exception cref="T:Accord.Video.VideoException">An error occurred while communicating with a camera. See error
+            message for additional information.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks><para></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks><para></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>The method stops the video source, so it no longer provides new video frames
+            and does not consume any resources.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.SetParam(System.String,System.Int32)">
+             <summary>
+             Set camera's parameter.
+             </summary>
+             
+             <param name="parameterName">Parameter name.</param>
+             <param name="value">Integer parameter value.</param>
+             
+             <remarks><para><note>The call is redirected to <see cref="M:Accord.Video.Ximea.XimeaCamera.SetParam(System.String,System.Int32)"/>.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.SetParam(System.String,System.Single)">
+             <summary>
+             Set camera's parameter.
+             </summary>
+             
+             <param name="parameterName">Parameter name.</param>
+             <param name="value">Float parameter value.</param>
+             
+             <remarks><para><note>The call is redirected to <see cref="M:Accord.Video.Ximea.XimeaCamera.GetParamFloat(System.String)"/>.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.GetParamInt(System.String)">
+             <summary>
+             Get camera's parameter as integer value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns integer value of the requested parameter.</returns>
+             
+             <remarks><para><note>The call is redirected to <see cref="M:Accord.Video.Ximea.XimeaCamera.GetParamFloat(System.String)"/>.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.GetParamFloat(System.String)">
+             <summary>
+             Get camera's parameter as float value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns float value of the requested parameter.</returns>
+             
+             <remarks><para><note>The call is redirected to <see cref="M:Accord.Video.Ximea.XimeaCamera.GetParamFloat(System.String)"/>.</note></para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.Ximea.XimeaVideoSource.GetParamString(System.String)">
+             <summary>
+             Get camera's parameter as string value.
+             </summary>
+             
+             <param name="parameterName">Parameter name to get from camera.</param>
+             
+             <returns>Returns string value of the requested parameter.</returns>
+             
+             <remarks><para><note>The call is redirected to <see cref="M:Accord.Video.Ximea.XimeaCamera.GetParamString(System.String)"/>.</note></para></remarks>
+            
+        </member>
+    </members>
+</doc>

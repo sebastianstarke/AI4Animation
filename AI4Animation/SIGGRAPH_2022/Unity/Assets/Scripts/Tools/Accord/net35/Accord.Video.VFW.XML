@@ -1,0 +1,1098 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Video.VFW</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Video.VFW.AVIFileVideoSource">
+            <summary>
+            AVI file video source.
+            </summary>
+            
+            <remarks><para>The video source reads AVI files using Video for Windows.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create AVI file video source
+            AVIFileVideoSource source = new AVIFileVideoSource( "some file" );
+            // set event handlers
+            source.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            source.Start( );
+            // ...
+            // signal to stop
+            source.SignalToStop( );
+            
+            // New frame event handler, which is invoked on each new available video frame
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.VFW.AVIFileVideoSource.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.VFW.AVIFileVideoSource.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.VFW.AVIFileVideoSource.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.FrameInterval">
+            <summary>
+            Frame interval.
+            </summary>
+            
+            <remarks><para>The property sets the interval in milliseconds between frames. If the property is
+            set to 100, then the desired frame rate will be 10 frames per second.</para>
+            
+            <para><note>Setting this property to 0 leads to no delay between video frames - frames
+            are read as fast as possible.</note></para>
+            
+            <para>Default value is set to <b>0</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.FrameIntervalFromSource">
+            <summary>
+            Get frame interval from source or use manually specified.
+            </summary>
+            
+            <remarks><para>The property specifies which frame rate to use for video playing.
+            If the property is set to <see langword="true"/>, then video is played
+            with original frame rate, which is set in source AVI file. If the property is
+            set to <see langword="false"/>, then custom frame rate is used, which is
+            calculated based on the manually specified <see cref="P:Accord.Video.VFW.AVIFileVideoSource.FrameInterval">frame interval</see>.</para>
+            
+            <para>Default value is set to <see langword="true"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks><para>Video file name to play.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIFileVideoSource.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VFW.AVIFileVideoSource"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VFW.AVIFileVideoSource"/> class.
+            </summary>
+            
+            <param name="source">Video file name.</param>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.VFW.AVIFileVideoSource.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.VFW.AVIFileVideoSource.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.VFW.AVIFileVideoSource.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.VFW.AVIFileVideoSource.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.Free">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIFileVideoSource.WorkerThread">
+            <summary>
+            Worker thread.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.AVIReader">
+            <summary>
+            AVI files reading using Video for Windows.
+            </summary>
+            
+            <remarks><para>The class allows to read AVI files using Video for Windows API.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // instantiate AVI reader
+            AVIReader reader = new AVIReader( );
+            // open video file
+            reader.Open( "test.avi" );
+            // read the video file
+            while ( reader.Position - reader.Start &lt; reader.Length )
+            {
+                // get next frame
+                Bitmap image = reader.GetNextFrame( );
+                // .. process the frame somehow or display it
+            }
+            reader.Close( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Width">
+            <summary>
+            Width of video frames.
+            </summary>
+            
+            <remarks><para>The property specifies the width of video frames within the opened video
+            file.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Height">
+            <summary>
+            Height of video frames.
+            </summary>
+            
+            <remarks><para>The property specifies the height of video frames within the opened video
+            file.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Position">
+            <summary>
+            Current position in video stream.
+            </summary>
+            
+            <remarks>Setting position outside of video range, will lead to reseting position to the start.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Start">
+            <summary>
+            Starting position of video stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Length">
+            <summary>
+            Video stream length.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.FrameRate">
+            <summary>
+            Desired playing frame rate.
+            </summary>
+            
+            <remarks><para>The property specifies the frame rate, which should be used to play the opened video
+            file.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIReader.Codec">
+            <summary>
+            Codec used for video compression.
+            </summary>
+            
+            <remarks><para>The property tells about which codec was used to encode the opened video file.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VFW.AVIReader"/> class.
+            </summary>
+            
+            <remarks>Initializes Video for Windows library.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.Finalize">
+            <summary>
+            Destroys the instance of the <see cref="T:Accord.Video.VFW.AVIReader"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.Dispose">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <remarks>Frees unmanaged resources used by the object. The object becomes unusable
+            after that.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <param name="disposing">Indicates if disposing was initiated manually.</param>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.Open(System.String)">
+             <summary>
+             Open AVI file.
+             </summary>
+             
+             <param name="fileName">AVI file name to open.</param>
+             
+             <remarks><para>The method opens a video file and prepares the stream and decoder for
+             reading video frames with the help of <see cref="M:Accord.Video.VFW.AVIReader.GetNextFrame"/> method.</para>
+             </remarks>
+             
+             <exception cref="T:System.IO.IOException">Failed opening the specified file.</exception>
+             <exception cref="T:Accord.Video.VideoException">A error occurred while opening the video file. See exception message.</exception>
+            
+             
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.Close">
+            <summary>
+            Close video file.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIReader.GetNextFrame">
+            <summary>
+            Get next frame of opened video stream.
+            </summary>
+            
+            <returns>Returns next frame as a bitmap.</returns>
+            
+            <remarks><para>The method reads and returns the next video frame in the opened video stream
+            at the position, which is set in <see cref="P:Accord.Video.VFW.AVIReader.Position"/> property.</para></remarks>
+            
+            <exception cref="T:System.IO.IOException">Thrown if no video file was open.</exception>
+            <exception cref="T:Accord.Video.VideoException">A error occurred while reading next video frame. See exception message.</exception>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.AVIWriter">
+            <summary>
+            AVI files writing using Video for Windows interface.
+            </summary>
+            
+            <remarks><para>The class allows to write AVI files using Video for Windows API.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // instantiate AVI writer, use WMV3 codec
+            AVIWriter writer = new AVIWriter( "wmv3" );
+            // create new AVI file and open it
+            writer.Open( "test.avi", 320, 240 );
+            // create frame image
+            Bitmap image = new Bitmap( 320, 240 );
+            
+            for ( int i = 0; i &lt; 240; i++ )
+            {
+                // update image
+                image.SetPixel( i, i, Color.Red );
+                // add the image as a new frame of video file
+                writer.AddFrame( image );
+            }
+            writer.Close( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.Width">
+            <summary>
+            Width of video frames.
+            </summary>
+            
+            <remarks><para>The property specifies the width of video frames, which are acceptable
+            by <see cref="M:Accord.Video.VFW.AVIWriter.AddFrame(System.Drawing.Bitmap)"/> method for saving, which is set in <see cref="M:Accord.Video.VFW.AVIWriter.Open(System.String,System.Int32,System.Int32)"/>
+            method.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.Height">
+            <summary>
+            Height of video frames.
+            </summary>
+            
+            <remarks><para>The property specifies the height of video frames, which are acceptable
+            by <see cref="M:Accord.Video.VFW.AVIWriter.AddFrame(System.Drawing.Bitmap)"/> method for saving, which is set in <see cref="M:Accord.Video.VFW.AVIWriter.Open(System.String,System.Int32,System.Int32)"/>
+            method.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.Position">
+            <summary>
+            Current position in video stream.
+            </summary>
+            
+            <remarks><para>The property tell current position in video stream, which actually equals
+            to the amount of frames added using <see cref="M:Accord.Video.VFW.AVIWriter.AddFrame(System.Drawing.Bitmap)"/> method.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.FrameRate">
+            <summary>
+            Desired playing frame rate.
+            </summary>
+            
+            <remarks><para>The property sets the video frame rate, which should be use during playing
+            of the video to be saved.</para>
+            
+            <para><note>The property should be set befor opening new file to take effect.</note></para>
+            
+            <para>Default frame rate is set to <b>25</b>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.Codec">
+            <summary>
+            Codec used for video compression.
+            </summary>
+            
+            <remarks><para>The property sets the FOURCC code of video compression codec, which needs to
+            be used for video encoding.</para>
+            
+            <para><note>The property should be set befor opening new file to take effect.</note></para>
+            
+            <para>Default video codec is set <b>"DIB "</b>, which means no compression.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.VFW.AVIWriter.Quality">
+            <summary>
+            Compression video quality.
+            </summary>
+            
+            <remarks><para>The property sets video quality used by codec in order to balance compression rate
+            and image quality. The quality is measured usually in the [0, 100] range.</para>
+            
+            <para><note>The property should be set befor opening new file to take effect.</note></para>
+            
+            <para>Default value is set to <b>-1</b> - default compression quality of the codec.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VFW.AVIWriter"/> class.
+            </summary>
+            
+            <remarks>Initializes Video for Windows library.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VFW.AVIWriter"/> class.
+            </summary>
+            
+            <param name="codec">Codec to use for compression.</param>
+            
+            <remarks>Initializes Video for Windows library.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.Finalize">
+            <summary>
+            Destroys the instance of the <see cref="T:Accord.Video.VFW.AVIWriter"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.Dispose">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <remarks>Frees unmanaged resources used by the object. The object becomes unusable
+            after that.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <param name="disposing">Indicates if disposing was initiated manually.</param>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.Open(System.String,System.Int32,System.Int32)">
+            <summary>
+            Create new AVI file and open it for writing.
+            </summary>
+            
+            <param name="fileName">AVI file name to create.</param>
+            <param name="width">Video width.</param>
+            <param name="height">Video height.</param>
+            
+            <remarks><para>The method opens (creates) a video files, configure video codec and prepares
+            the stream for saving video frames with a help of <see cref="M:Accord.Video.VFW.AVIWriter.AddFrame(System.Drawing.Bitmap)"/> method.</para></remarks>
+            
+            <exception cref="T:System.IO.IOException">Failed opening the specified file.</exception>
+            <exception cref="T:Accord.Video.VideoException">A error occurred while creating new video file. See exception message.</exception>
+            <exception cref="T:System.OutOfMemoryException">Insufficient memory for internal buffer.</exception>
+            <exception cref="T:System.ArgumentException">Video file resolution must be a multiple of two.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.Close">
+            <summary>
+            Close video file.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.AVIWriter.AddFrame(System.Drawing.Bitmap)">
+            <summary>
+            Add new frame to the AVI file.
+            </summary>
+            
+            <param name="frameImage">New frame image.</param>
+            
+            <remarks><para>The method adds new video frame to an opened video file. The width and heights
+            of the frame should be the same as it was specified in <see cref="M:Accord.Video.VFW.AVIWriter.Open(System.String,System.Int32,System.Int32)"/> method
+            (see <see cref="P:Accord.Video.VFW.AVIWriter.Width"/> and <see cref="P:Accord.Video.VFW.AVIWriter.Height"/> properties).</para></remarks>
+            
+            <exception cref="T:System.IO.IOException">Thrown if no video file was open.</exception>
+            <exception cref="T:System.ArgumentException">Bitmap size must be of the same as video size, which was specified on opening video file.</exception>
+            <exception cref="T:Accord.Video.VideoException">A error occurred while writing new video frame. See exception message.</exception>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32">
+            <summary>
+            Windows API functions and structures.
+            </summary>
+            
+            <remarks>The class provides Video for Windows and some other Win32 functions and structurs.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.memcpy(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copy a block of memory.
+            </summary>
+            
+            <param name="dst">Destination pointer.</param>
+            <param name="src">Source pointer.</param>
+            <param name="count">Memory block's length to copy.</param>
+            
+            <returns>Return's the value of <b>dst</b> - pointer to destination.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileInit">
+            <summary>
+            Initialize the AVIFile library.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileExit">
+            <summary>
+            Exit the AVIFile library.
+            </summary>
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileOpen(System.IntPtr@,System.String,Accord.Video.VFW.Win32.OpenFileMode,System.IntPtr)">
+            <summary>
+            Open an AVI file.
+            </summary>
+            
+            <param name="aviHandler">Opened AVI file interface.</param>
+            <param name="fileName">AVI file name.</param>
+            <param name="mode">Opening mode (see <see cref="T:Accord.Video.VFW.Win32.OpenFileMode"/>).</param>
+            <param name="handler">Handler to use (<b>null</b> to use default).</param>
+            
+            <returns>Returns zero on success or error code otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileRelease(System.IntPtr)">
+            <summary>
+            Release an open AVI stream.
+            </summary>
+            
+            <param name="aviHandler">Open AVI file interface.</param>
+            
+            <returns>Returns the reference count of the file.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileGetStream(System.IntPtr,System.IntPtr@,System.Int32,System.Int32)">
+            <summary>
+            Get stream interface that is associated with a specified AVI file
+            </summary>
+            
+            <param name="aviHandler">Handler to an open AVI file.</param>
+            <param name="streamHandler">Stream interface.</param>
+            <param name="streamType">Stream type to open.</param>
+            <param name="streamNumner">Count of the stream type. Identifies which occurrence of the specified stream type to access. </param>
+            
+            <returns></returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIFileCreateStream(System.IntPtr,System.IntPtr@,Accord.Video.VFW.Win32.AVISTREAMINFO@)">
+            <summary>
+            Create a new stream in an existing file and creates an interface to the new stream. 
+            </summary>
+            
+            <param name="aviHandler">Handler to an open AVI file.</param>
+            <param name="streamHandler">Stream interface.</param>
+            <param name="streamInfo">Pointer to a structure containing information about the new stream.</param>
+            
+            <returns>Returns zero if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamRelease(System.IntPtr)">
+            <summary>
+            Release an open AVI stream.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            
+            <returns>Returns the current reference count of the stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamSetFormat(System.IntPtr,System.Int32,Accord.Video.VFW.Win32.BITMAPINFOHEADER@,System.Int32)">
+            <summary>
+            Set the format of a stream at the specified position.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            <param name="position">Position in the stream to receive the format.</param>
+            <param name="format">Pointer to a structure containing the new format.</param>
+            <param name="formatSize">Size, in bytes, of the block of memory referenced by <b>format</b>.</param>
+            
+            <returns>Returns zero if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamStart(System.IntPtr)">
+            <summary>
+            Get the starting sample number for the stream.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            
+            <returns>Returns the number if successful or – 1 otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamLength(System.IntPtr)">
+            <summary>
+            Get the length of the stream.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            
+            <returns>Returns the stream's length, in samples, if successful or -1 otherwise. </returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamInfo(System.IntPtr,Accord.Video.VFW.Win32.AVISTREAMINFO@,System.Int32)">
+            <summary>
+            Obtain stream header information.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            <param name="streamInfo">Pointer to a structure to contain the stream information.</param>
+            <param name="infoSize">Size, in bytes, of the structure used for <b>streamInfo</b>.</param>
+            
+            <returns>Returns zero if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamGetFrameOpen(System.IntPtr,Accord.Video.VFW.Win32.BITMAPINFOHEADER@)">
+            <summary>
+            Prepare to decompress video frames from the specified video stream
+            </summary>
+            
+            <param name="streamHandler">Pointer to the video stream used as the video source.</param>
+            <param name="wantedFormat">Pointer to a structure that defines the desired video format. Specify NULL to use a default format.</param>
+            
+            <returns>Returns an object that can be used with the <see cref="M:Accord.Video.VFW.Win32.AVIStreamGetFrame(System.IntPtr,System.Int32)"/> function.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamGetFrameOpen(System.IntPtr,System.Int32)">
+            <summary>
+            Prepare to decompress video frames from the specified video stream.
+            </summary>
+            
+            <param name="streamHandler">Pointer to the video stream used as the video source.</param>
+            <param name="wantedFormat">Pointer to a structure that defines the desired video format. Specify NULL to use a default format.</param>
+            
+            <returns>Returns a <b>GetFrame</b> object that can be used with the <see cref="M:Accord.Video.VFW.Win32.AVIStreamGetFrame(System.IntPtr,System.Int32)"/> function.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamGetFrameClose(System.IntPtr)">
+            <summary>
+            Releases resources used to decompress video frames.
+            </summary>
+            
+            <param name="getFrameObject">Handle returned from the <see cref="M:Accord.Video.VFW.Win32.AVIStreamGetFrameOpen(System.IntPtr,System.Int32)"/> function.</param>
+            
+            <returns>Returns zero if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamGetFrame(System.IntPtr,System.Int32)">
+            <summary>
+            Return the address of a decompressed video frame. 
+            </summary>
+            
+            <param name="getFrameObject">Pointer to a GetFrame object.</param>
+            <param name="position">Position, in samples, within the stream of the desired frame.</param>
+            
+            <returns>Returns a pointer to the frame data if successful or NULL otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIStreamWrite(System.IntPtr,System.Int32,System.Int32,System.IntPtr,System.Int32,System.Int32,System.IntPtr,System.IntPtr)">
+            <summary>
+            Write data to a stream.
+            </summary>
+            
+            <param name="streamHandler">Handle to an open stream.</param>
+            <param name="start">First sample to write.</param>
+            <param name="samples">Number of samples to write.</param>
+            <param name="buffer">Pointer to a buffer containing the data to write. </param>
+            <param name="bufferSize">Size of the buffer referenced by <b>buffer</b>.</param>
+            <param name="flags">Flag associated with this data.</param>
+            <param name="samplesWritten">Pointer to a buffer that receives the number of samples written. This can be set to NULL.</param>
+            <param name="bytesWritten">Pointer to a buffer that receives the number of bytes written. This can be set to NULL.</param>
+            
+            <returns>Returns zero if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVISaveOptions(System.IntPtr,System.Int32,System.Int32,System.IntPtr[],System.IntPtr[])">
+            <summary>
+            Retrieve the save options for a file and returns them in a buffer.
+            </summary>
+            
+            <param name="window">Handle to the parent window for the Compression Options dialog box.</param>
+            <param name="flags">Flags for displaying the Compression Options dialog box.</param>
+            <param name="streams">Number of streams that have their options set by the dialog box.</param>
+            <param name="streamInterfaces">Pointer to an array of stream interface pointers.</param>
+            <param name="options">Pointer to an array of pointers to AVICOMPRESSOPTIONS structures.</param>
+            
+            <returns>Returns TRUE if the user pressed OK, FALSE for CANCEL, or an error otherwise.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVISaveOptionsFree(System.Int32,System.IntPtr[])">
+            <summary>
+            Free the resources allocated by the AVISaveOptions function. 
+            </summary>
+            
+            <param name="streams">Count of the AVICOMPRESSOPTIONS structures referenced in <b>options</b>.</param>
+            <param name="options">Pointer to an array of pointers to AVICOMPRESSOPTIONS structures.</param>
+            
+            <returns>Returns 0.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVIMakeCompressedStream(System.IntPtr@,System.IntPtr,Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS@,System.IntPtr)">
+            <summary>
+            Create a compressed stream from an uncompressed stream and a
+            compression filter, and returns the address of a pointer to
+            the compressed stream.
+            </summary>
+            
+            <param name="compressedStream">Pointer to a buffer that receives the compressed stream pointer.</param>
+            <param name="sourceStream">Pointer to the stream to be compressed.</param>
+            <param name="options">Pointer to a structure that identifies the type of compression to use and the options to apply.</param>
+            <param name="clsidHandler">Pointer to a class identifier used to create the stream.</param>
+            
+            <returns>Returns 0 if successful or an error otherwise.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32.RECT">
+            <summary>
+            Structure to define the coordinates of the upper-left and
+            lower-right corners of a rectangle. 
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.RECT.left">
+            <summary>
+            x-coordinate of the upper-left corner of the rectangle.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.RECT.top">
+            <summary>
+            y-coordinate of the upper-left corner of the rectangle.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.RECT.right">
+            <summary>
+            x-coordinate of the bottom-right corner of the rectangle.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.RECT.bottom">
+            <summary>
+            y-coordinate of the bottom-right corner of the rectangle.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32.AVISTREAMINFO">
+            <summary>
+            Structure, which contains information for a single stream .
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.type">
+            <summary>
+            Four-character code indicating the stream type.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.handler">
+            <summary>
+            Four-character code of the compressor handler that will compress this video stream when it is saved.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.flags">
+            <summary>
+            Applicable flags for the stream.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.Capabilities">
+            <summary>
+            Capability flags; currently unused.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.priority">
+            <summary>
+            Priority of the stream.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.language">
+            <summary>
+            Language of the stream.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.scale">
+            <summary>
+            Time scale applicable for the stream.
+            </summary>
+            
+            <remarks>Dividing <b>rate</b> by <b>scale</b> gives the playback rate in number of samples per second.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.rate">
+            <summary>
+            Rate in an integer format.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.start">
+            <summary>
+            Sample number of the first frame of the AVI file.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.length">
+            <summary>
+            Length of this stream.
+            </summary>
+            
+            <remarks>The units are defined by <b>rate</b> and <b>scale</b>.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.initialFrames">
+            <summary>
+            Audio skew. This member specifies how much to skew the audio data ahead of the video frames in interleaved files.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.suggestedBufferSize">
+            <summary>
+            Recommended buffer size, in bytes, for the stream.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.quality">
+            <summary>
+            Quality indicator of the video data in the stream.
+            </summary>
+            
+            <remarks>Quality is represented as a number between 0 and 10,000.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.sampleSize">
+            <summary>
+            Size, in bytes, of a single data sample.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.rectFrame">
+            <summary>
+            Dimensions of the video destination rectangle.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.editCount">
+            <summary>
+            Number of times the stream has been edited.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.formatChangeCount">
+            <summary>
+            Number of times the stream format has changed.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVISTREAMINFO.name">
+            <summary>
+            Description of the stream.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32.BITMAPINFOHEADER">
+            <summary>
+            Structure, which contains information about the dimensions and color format of a DIB.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.size">
+            <summary>
+            Specifies the number of bytes required by the structure.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.width">
+            <summary>
+            Specifies the width of the bitmap, in pixels.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.height">
+            <summary>
+            Specifies the height of the bitmap, in pixels.
+            </summary>
+            
+            <remarks>If <b>heigh</b>t is positive, the bitmap is a bottom-up DIB and its origin is
+            the lower-left corner. If <b>height</b> is negative, the bitmap is a top-down DIB and its
+            origin is the upper-left corner.</remarks>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.planes">
+            <summary>
+            Specifies the number of planes for the target device. This value must be set to 1.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.bitCount">
+            <summary>
+            Specifies the number of bits-per-pixel.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.compression">
+            <summary>
+            Specifies the type of compression for a compressed bottom-up bitmap (top-down DIBs cannot be compressed).
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.sizeImage">
+            <summary>
+            Specifies the size, in bytes, of the image.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.xPelsPerMeter">
+            <summary>
+            Specifies the horizontal resolution, in pixels-per-meter, of the target device for the bitmap.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.yPelsPerMeter">
+            <summary>
+            Specifies the vertical resolution, in pixels-per-meter, of the target device for the bitmap.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.colorsUsed">
+            <summary>
+            Specifies the number of color indexes in the color table that are actually used by the bitmap.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.BITMAPINFOHEADER.colorsImportant">
+            <summary>
+            Specifies the number of color indexes that are required for displaying the bitmap.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS">
+            <summary>
+            Structure, which contains information about a stream and how it is compressed and saved. 
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.type">
+            <summary>
+            Four-character code indicating the stream type.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.handler">
+            <summary>
+            Four-character code for the compressor handler that will compress this video stream when it is saved.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.keyFrameEvery">
+            <summary>
+            Maximum period between video key frames.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.quality">
+            <summary>
+            Quality value passed to a video compressor.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.bytesPerSecond">
+            <summary>
+            Video compressor data rate.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.flags">
+            <summary>
+            Flags used for compression.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.format">
+            <summary>
+            Pointer to a structure defining the data format.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.formatSize">
+            <summary>
+            Size, in bytes, of the data referenced by <b>format</b>.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.parameters">
+            <summary>
+            Video-compressor-specific data; used internally.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.parametersSize">
+            <summary>
+            Size, in bytes, of the data referenced by <b>parameters</b>.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS.interleaveEvery">
+            <summary>
+            Interleave factor for interspersing stream data with data from the first stream. 
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VFW.Win32.OpenFileMode">
+            <summary>
+            File access modes. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.mmioFOURCC(System.String)">
+            <summary>
+            .NET replacement of mmioFOURCC macros. Converts four characters to code.
+            </summary>
+            
+            <param name="str">Four characters string.</param>
+            
+            <returns>Returns the code created from provided characters.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.decode_mmioFOURCC(System.Int32)">
+            <summary>
+            Inverse to <see cref="M:Accord.Video.VFW.Win32.mmioFOURCC(System.String)"/>. Converts code to fout characters string.
+            </summary>
+            
+            <param name="code">Code to convert.</param>
+            
+            <returns>Returns four characters string.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.VFW.Win32.AVISaveOptions(System.IntPtr,Accord.Video.VFW.Win32.AVICOMPRESSOPTIONS@)">
+            <summary>
+            Version of <see cref="M:Accord.Video.VFW.Win32.AVISaveOptions(System.IntPtr,System.Int32,System.Int32,System.IntPtr[],System.IntPtr[])"/> for one stream only.
+            </summary>
+            
+            <param name="stream">Stream to configure.</param>
+            <param name="options">Stream options.</param>
+            
+            <returns>Returns TRUE if the user pressed OK, FALSE for CANCEL, or an error otherwise.</returns>
+            
+        </member>
+    </members>
+</doc>

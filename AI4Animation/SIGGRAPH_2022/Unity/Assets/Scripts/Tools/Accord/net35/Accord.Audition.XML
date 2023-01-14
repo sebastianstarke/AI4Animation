@@ -1,0 +1,673 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Audition</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Audition.BagOfAudioWords`4">
+            <summary>
+              Bag of Audio Words
+            </summary>
+            
+            <typeparam name="TFeature">
+              The <see cref="T:Accord.IFeatureDescriptor`1"/> type to be used with this class,
+              such as <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor"/>.</typeparam>
+            <typeparam name="TPoint">
+              The feature type of the <typeparamref name="TFeature"/>, such
+              as <see cref="T:double[]"/>.
+            </typeparam>
+            <typeparam name="TClustering">
+              The type of the clustering algorithm to be used to cluster the visual features
+              and form visual codewords.
+            </typeparam>
+            <typeparam name="TExtractor">
+              The type of the feature detector used to extract features from the images.
+            </typeparam>
+            
+            <remarks>
+            <para>
+              The bag-of-words (BoW) model can be used to extract finite
+              length features from otherwise varying length representations.
+              This class can uses any <see cref="T:Accord.Audio.IAudioFeatureExtractor`1">feature
+              detector</see> to determine a coded representation for a given <see cref="T:Accord.Audio.Signal"/>.</para>
+              
+            <para>
+              For a simpler, non-generic version of the Bag-of-Words model which 
+              defaults to the <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor">MFCC
+              feature extractor</see>, please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </para>
+            </remarks>
+            
+            <example>
+            <para>
+              Please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.</para>
+            </example>
+            
+            <seealso cref="T:Accord.Audition.BagOfAudioWords"/>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords`4.#ctor(`3,`2)">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+            <param name="extractor">The feature extractor to use.</param>
+            <param name="algorithm">The clustering algorithm to use.</param>
+            
+        </member>
+        <member name="T:Accord.Audition.BagOfAudioWords">
+            <summary>
+              Bag of Audio Words
+            </summary>
+            
+            <remarks>
+            <para>
+              The bag-of-words (BoW) model can be used to transform data with
+              multiple possible lengths (i.e. words in a text, pixels in an 
+              image) into finite-dimensional vectors of fixed length. Those 
+              vectors are usually referred as representations as they can be
+              used in place of the original data as if they were the data itself.
+              For example, using Bag-of-Words it becomes possible to transform
+              a set of <c>N</c> images with varying sizes and dimensions into a 
+              <c>N x C</c> matrix where <c>C</c> is the number of "visual words"
+              being used to represent each of the <c>N</c> images in the set.</para>
+              
+            <para>
+              Those rows can then be used in classification, clustering, and any
+              other machine learning tasks where a finite vector representation
+              would be required.</para>
+              
+            <para>
+              The framework can compute BoW representations for images using any
+              choice of feature extractor and clustering algorithm. By default,
+              the framework uses the <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficient">
+              MFCC features extractor</see> and the <see cref="T:Accord.MachineLearning.KMeans"/> clustering
+              algorithm.</para>
+            </remarks>
+            
+            <example>
+            <para>  
+              The first example shows how to create and use a BoW with default parameters. </para>
+              
+              <code source="Unit Tests\Accord.Tests.Audio\BagOfAudioWordsTest.cs" region="doc_learn" />
+            
+            <para>  
+              After the representations have been extracted, it is possible to use them
+              in arbitrary machine learning tasks, such as classification:</para>
+              
+              <code source="Unit Tests\Accord.Tests.Audio\BagOfAudioWordsTest.cs" region="doc_classification" />
+            </example>
+            
+            <seealso cref="T:Accord.Audition.BagOfAudioWords`2"/>
+            <seealso cref="T:Accord.Audition.BagOfAudioWords`4"/>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.#ctor(System.Int32)">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/> using a
+              <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficient">MFCC</see>
+              feature detector to identify features.
+            </summary>
+            
+            <param name="numberOfWords">The number of codewords.</param>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.#ctor(Accord.MachineLearning.IUnsupervisedLearning{Accord.MachineLearning.IClassifier{System.Double[],System.Int32},System.Double[],System.Int32})">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/> using a
+              <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficient">MFCC</see>
+              feature detector to identify features.
+            </summary>
+            
+            <param name="algorithm">The clustering algorithm to use.</param>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create(System.Int32)">
+            <summary>
+            Creates a Bag-of-Words model using MFCC and K-Means.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``2(``0,``1)">
+            <summary>
+            Creates a Bag-of-Words model using the given feature detector and clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``1(``0,System.Int32)">
+            <summary>
+            Creates a Bag-of-Words model using the given feature detector and K-Means.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``2(``0,System.Int32)">
+            <summary>
+            Creates a Bag-of-Words model using the given feature detector and K-Means.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``1(``0)">
+            <summary>
+            Creates a Bag-of-Words model using the MFCC feature extractor and the given clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``3(``0,``1)">
+            <summary>
+            Creates a Bag-of-Words model using the given feature detector and clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords.Create``4(``0,``1)">
+            <summary>
+            Creates a Bag-of-Words model using the given feature detector and clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Audition.BagOfAudioWords`1">
+            <summary>
+              Bag of Audio Words
+            </summary>
+            
+            <typeparam name="TFeature">
+              The <see cref="T:Accord.IFeatureDescriptor`1"/> type to be used with this class,
+              such as <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor"/>.</typeparam>
+            
+            <remarks>
+            <para>
+              The bag-of-words (BoW) model can be used to extract finite
+              length features from otherwise varying length representations.
+              This class can uses any <see cref="T:Accord.Audio.IAudioFeatureExtractor`1">feature
+              detector</see> to determine a coded representation for a given <see cref="T:Accord.Audio.Signal"/>.</para>
+              
+            <para>
+              For a simpler, non-generic version of the Bag-of-Words model which 
+              defaults to the <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor">MFCC
+              feature extractor</see>, please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </para>
+            </remarks>
+            
+            <example>
+            <para>
+              Please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.</para>
+            </example>
+            
+            <seealso cref="T:Accord.Audition.BagOfAudioWords"/>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords`1.#ctor(Accord.Audio.IAudioFeatureExtractor{`0},System.Int32)">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+            <param name="extractor">The feature extractor to use.</param>
+            <param name="numberOfWords">The number of codewords.</param>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords`1.#ctor(Accord.Audio.IAudioFeatureExtractor{`0},Accord.MachineLearning.IUnsupervisedLearning{Accord.MachineLearning.IClassifier{System.Double[],System.Int32},System.Double[],System.Int32})">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+            <param name="extractor">The feature extractor to use.</param>
+            <param name="algorithm">The clustering algorithm to use.</param>
+            
+        </member>
+        <member name="T:Accord.Audition.BagOfAudioWords`2">
+            <summary>
+              Bag of Audio Words
+            </summary>
+            
+            <typeparam name="TFeature">
+              The <see cref="T:Accord.IFeatureDescriptor`1"/> type to be used with this class,
+              such as <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor"/>.</typeparam>
+            <typeparam name="TPoint">
+              The feature type of the <typeparamref name="TFeature"/>, such
+              as <see cref="T:double[]"/>.
+            </typeparam>
+            
+            <remarks>
+            <para>
+              The bag-of-words (BoW) model can be used to extract finite
+              length features from otherwise varying length representations.
+              This class can uses any <see cref="T:Accord.Audio.IAudioFeatureExtractor`1">feature
+              detector</see> to determine a coded representation for a given <see cref="T:Accord.Audio.Signal"/>.</para>
+              
+            <para>
+              For a simpler, non-generic version of the Bag-of-Words model which 
+              defaults to the <see cref="T:Accord.Audio.MelFrequencyCepstrumCoefficientDescriptor">MFCC
+              feature extractor</see>, please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </para>
+            </remarks>
+            
+            <example>
+            <para>
+              Please see <see cref="T:Accord.Audition.BagOfAudioWords"/>.</para>
+            </example>
+            
+            <seealso cref="T:Accord.Audition.BagOfAudioWords"/>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords`2.#ctor(Accord.Audio.IAudioFeatureExtractor{`0},Accord.MachineLearning.IUnsupervisedLearning{Accord.MachineLearning.IClassifier{`1,System.Int32},`1,System.Int32})">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+            <param name="extractor">The feature extractor to use.</param>
+            <param name="algorithm">The clustering algorithm to use.</param>
+            
+        </member>
+        <member name="M:Accord.Audition.BagOfAudioWords`2.#ctor">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Audition.BaseBagOfAudioWords`5">
+            <summary>
+              Base class for <see cref="T:Accord.Audition.BagOfAudioWords">Bag of Visual Words</see> implementations.
+            </summary>
+            
+            <seealso cref="T:Accord.Audition.BagOfAudioWords"/>
+            <seealso cref="T:Accord.Audition.BagOfAudioWords`4"/>
+            <seealso cref="T:Accord.Audition.BagOfAudioWords`2"/>
+            <seealso cref="T:Accord.Audition.BagOfAudioWords`1"/>
+            
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.#ctor">
+            <summary>
+              Constructs a new <see cref="T:Accord.Audition.BagOfAudioWords"/>.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String,System.Double[])">
+            <summary>
+            Applies the transformation to a set of input vectors,
+            producing an associated set of output vectors.
+            </summary>
+            <param name="input">The input data to which
+            the transformation should be applied.</param>
+            <param name="result">The location to where to store the
+            result of this transformation.</param>
+            <returns>The output generated by applying this
+            transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String,System.Int32[])">
+            <summary>
+            Applies the transformation to a set of input vectors,
+            producing an associated set of output vectors.
+            </summary>
+            <param name="input">The input data to which
+            the transformation should be applied.</param>
+            <param name="result">The location to where to store the
+            result of this transformation.</param>
+            <returns>The output generated by applying this
+            transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String)">
+            <summary>
+            Applies the transformation to an input, producing an associated output.
+            </summary>
+            <param name="input">The input data to which the transformation should be applied.</param>
+            <returns>The output generated by applying this transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String[])">
+            <summary>
+            Applies the transformation to a set of input vectors,
+            producing an associated set of output vectors.
+            </summary>
+            <param name="input">The input data to which
+            the transformation should be applied.</param>
+            <returns>The output generated by applying this
+            transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String[],System.Double[][])">
+            <summary>
+            Applies the transformation to a set of input vectors,
+            producing an associated set of output vectors.
+            </summary>
+            <param name="input">The input data to which
+            the transformation should be applied.</param>
+            <param name="result">The location to where to store the
+            result of this transformation.</param>
+            <returns>The output generated by applying this
+            transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Transform(System.String[],System.Int32[][])">
+            <summary>
+            Applies the transformation to a set of input vectors,
+            producing an associated set of output vectors.
+            </summary>
+            <param name="input">The input data to which
+            the transformation should be applied.</param>
+            <param name="result">The location to where to store the
+            result of this transformation.</param>
+            <returns>The output generated by applying this
+            transformation to the given input.</returns>
+        </member>
+        <member name="M:Accord.Audition.BaseBagOfAudioWords`5.Learn(System.String[],System.Double[])">
+            <summary>
+            Learns a model that can map the given inputs to the desired outputs.
+            </summary>
+            <param name="x">The model inputs.</param>
+            <param name="weights">The weight of importance for each input sample.</param>
+            <returns>A model that has learned how to produce suitable outputs
+            given the input data <paramref name="x" />.</returns>
+        </member>
+        <member name="T:Accord.Audition.Beat.EnergyBeatDetector">
+            <summary>
+              Energy-based beat detector.
+            </summary>
+            
+            <remarks>
+            <para>
+              References:
+              <list type="bullet">
+                <item><description>
+                  Frederic Patin, Beat Detection Algorithms. Available on:
+                  http://www.gamedev.net/reference/programming/features/beatdetection. </description></item>
+              </list>
+            </para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Audition.Beat.EnergyBeatDetector.Beat">
+            <summary>
+              Raised when a beat has been detected.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audition.Beat.EnergyBeatDetector.AutoSensitivity">
+            <summary>
+              Gets or sets whether the detector should
+              compute the best sensitivity automatically.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audition.Beat.EnergyBeatDetector.Sensitivity">
+            <summary>
+              Gets or sets the sensitivity of the detector.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audition.Beat.EnergyBeatDetector.#ctor(System.Int32)">
+            <summary>
+              Creates a new Energy-based beat detector.
+            </summary>
+            
+            <param name="bufferSize">The size for the buffer.</param>
+            
+        </member>
+        <member name="M:Accord.Audition.Beat.EnergyBeatDetector.Detect(Accord.Audio.Signal)">
+            <summary>
+              Detects if there is a beat in the given signal.
+            </summary>
+            
+            <param name="signal">A signal (window).</param>
+            
+        </member>
+        <member name="T:Accord.Audition.Beat.IBeatDetector">
+            <summary>
+              Common interface for Beat detectors.
+            </summary>
+        </member>
+        <member name="E:Accord.Audition.Beat.IBeatDetector.Beat">
+            <summary>
+              Raised when a beat has been detected.
+            </summary>
+        </member>
+        <member name="T:Accord.DataSets.FreeSpokenDigitsDataset">
+            <summary>
+            Free Spoken Digits Dataset (FSDD)
+            </summary>
+            
+            <remarks>
+            <para>
+              The Free Spoken Digits Dataset (FSDD) is a simple audio/speech dataset consisting of 
+              recordings of spoken digits in wav files at 8kHz. The recordings are trimmed so that 
+              they have near minimal silence at the beginnings and ends.</para>
+            <para>
+              FSDD is an open dataset, which means it will grow over time as data is contributed. 
+              Thus in order to enable reproducibility and accurate citation in scientific journals
+              the dataset is versioned using git tags.</para>
+            <para>
+              The dataset is available under the Creative Commons Attribution-ShareAlike 4.0 International
+              license. If you use the dataset in your research, please cite it as indicated in
+              <a href="https://zenodo.org/record/1000742">https://zenodo.org/record/1000742</a> </para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Records">
+            <summary>
+              Gets a list of all recordings in the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Training">
+            <summary>
+              Gets all records in the training set.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Testing">
+            <summary>
+              Gets all records in the testing set.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Digits">
+            <summary>
+              Gets all the digits currently present in the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Speakers">
+            <summary>
+              Gets all the speakers currently present in the dataset.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.FileNames">
+            <summary>
+              Gets all the file names currently present in the dataset.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.DataSets.FreeSpokenDigitsDataset" /> class.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+            will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.GetRecord(System.Int32,System.String,System.Int32)">
+            <summary>
+              Retrieves a single record from the dataset.
+            </summary>
+            
+            <param name="digit">The digit.</param>
+            <param name="speaker">The speaker.</param>
+            <param name="index">The index.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.GetSignal(System.Int32,System.String,System.Int32)">
+            <summary>
+              Retrieves a single record from the dataset.
+            </summary>
+            
+            <param name="digit">The digit.</param>
+            <param name="speaker">The speaker.</param>
+            <param name="index">The index.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.GetSignal(Accord.DataSets.FreeSpokenDigitsDataset.Record)">
+            <summary>
+              Retrieves a single record from the dataset.
+            </summary>
+            
+            <param name="record">A record from the dataset.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.GetSignals(System.Collections.Generic.IEnumerable{Accord.DataSets.FreeSpokenDigitsDataset.Record})">
+            <summary>
+              Retrieves a collection of record from the dataset as <see cref="T:Accord.Audio.Signal">audio signals</see>.
+            </summary>
+            
+            <param name="records">The digit.</param>
+            
+        </member>
+        <member name="T:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection">
+            <summary>
+              Collection of <see cref="T:Accord.DataSets.FreeSpokenDigitsDataset"/> records.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection.FileNames">
+            <summary>
+              Gets the file names of the records in this set.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection.LocalPaths">
+            <summary>
+              Gets the local paths of the records in this set. Acessing this
+              property will force the records to be downloaded such that the
+              local paths will be valid file locations in the local disk.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection.Signals">
+            <summary>
+              Gets the <see cref="T:Accord.Audio.Signal">audio signals</see> corresponding to the
+              records in this set. This will cause all records in this set to be
+              downloaded from the Free Spoken Digits Dataset GitHub repository.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection.Digits">
+            <summary>
+              Gets the digits contained in this set.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.RecordCollection.Item(System.Int32)">
+            <summary>
+              Gets the <see cref="T:Accord.DataSets.FreeSpokenDigitsDataset.Record"/> at the specified index.
+            </summary>
+            
+            <param name="index">The index.</param>
+            
+        </member>
+        <member name="T:Accord.DataSets.FreeSpokenDigitsDataset.Record">
+            <summary>
+              Single recording from the <see cref="T:Accord.DataSets.FreeSpokenDigitsDataset"/>
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Digit">
+            <summary>
+              Gets or sets the digit being spoken.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Speaker">
+            <summary>
+              Gets or sets the name of the speaker.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Index">
+            <summary>
+              Gets or sets the index of the variation of the current <see cref="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Digit"/> spoken 
+              by the <see cref="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Speaker"/> (the same speaker could have recorded the same digit
+              multiple times).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.Url">
+            <summary>
+              Gets or sets the URL of the recording.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DataSets.FreeSpokenDigitsDataset.Record.FileName">
+            <summary>
+              Gets or sets the file name of the recording (without its path).
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.#ctor(System.Int32,System.String,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DataSets.FreeSpokenDigitsDataset.Record"/> struct.
+            </summary>
+            
+            <param name="digit">The digit.</param>
+            <param name="speaker">The speaker.</param>
+            <param name="index">The index.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.Download(System.String)">
+            <summary>
+              Downloads the recording to a base directory. The actual file path
+              where the file was stored will be given as return of this method.
+            </summary>
+            
+            <param name="localPath">The local directory where the recordings should be saved.</param>
+            
+            <returns>The file path where the recording has been saved to.</returns>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.Open(System.String)">
+            <summary>
+              Opens the recording as a <see cref="T:Accord.Audio.Signal"/>, downloading 
+              and storing the recording file to the disk if necessary.
+            </summary>
+            
+            <param name="localPath">The local directory where the recordings should be saved.</param>
+            
+            <returns>A <see cref="T:Accord.Audio.Signal"/> containing the audio recording for this entry.</returns>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.ToString">
+            <summary>
+              Returns a <see cref="T:System.String" /> that represents this instance.
+            </summary>
+            
+            <returns>A <see cref="T:System.String" /> that represents this instance.</returns>
+            
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.Equals(Accord.DataSets.FreeSpokenDigitsDataset.Record)">
+            <summary>
+            Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Record.CompareTo(Accord.DataSets.FreeSpokenDigitsDataset.Record)">
+            <summary>
+            Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+            </summary>
+            <param name="other">An object to compare with this instance.</param>
+            <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order.</returns>
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Accord.DataSets.FreeSpokenDigitsDataset.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+    </members>
+</doc>

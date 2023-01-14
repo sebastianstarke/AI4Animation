@@ -1,0 +1,213 @@
+fileFormatVersion: 2
+guid: ae46131efa44399488bc40291da7f22d
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: GermanShepherd_M_FurBase
+    100004: RigChest
+    100006: RigHead
+    100008: RigJaw1
+    100010: RigLBLeg1
+    100012: RigLBLeg2
+    100014: RigLBLeg3
+    100016: RigLBLegAnkle
+    100018: RigLBLegDigit11
+    100020: RigLEar1
+    100022: RigLEye1
+    100024: RigLEyelid1
+    100026: RigLFLeg1
+    100028: RigLFLeg2
+    100030: RigLFLeg3
+    100032: RigLFLegAnkle
+    100034: RigLFLegCollarbone
+    100036: RigLFLegDigit11
+    100038: RigLShoulderBlade
+    100040: RigNeck1
+    100042: RigNeck2
+    100044: RigNeck3
+    100046: RigNeck4
+    100048: RigPelvis
+    100050: RigRBLeg1
+    100052: RigRBLeg2
+    100054: RigRBLeg3
+    100056: RigRBLegAnkle
+    100058: RigRBLegDigit11
+    100060: RigREar1
+    100062: RigREye1
+    100064: RigREyelid1
+    100066: RigRFLeg1
+    100068: RigRFLeg2
+    100070: RigRFLeg3
+    100072: RigRFLegAnkle
+    100074: RigRFLegCollarbone
+    100076: RigRFLegDigit11
+    100078: RigRoot
+    100080: RigRShoulderBlade
+    100082: RigSpine1
+    100084: RigSpine2
+    100086: RigSpine3
+    100088: RigTail1
+    100090: RigTail2
+    100092: RigTail3
+    100094: RigTail4
+    100096: RigTail5
+    100098: RigTail6
+    100100: RigTongue1
+    100102: RigTongue2
+    100104: RigTongue3
+    400000: //RootNode
+    400002: GermanShepherd_M_FurBase
+    400004: RigChest
+    400006: RigHead
+    400008: RigJaw1
+    400010: RigLBLeg1
+    400012: RigLBLeg2
+    400014: RigLBLeg3
+    400016: RigLBLegAnkle
+    400018: RigLBLegDigit11
+    400020: RigLEar1
+    400022: RigLEye1
+    400024: RigLEyelid1
+    400026: RigLFLeg1
+    400028: RigLFLeg2
+    400030: RigLFLeg3
+    400032: RigLFLegAnkle
+    400034: RigLFLegCollarbone
+    400036: RigLFLegDigit11
+    400038: RigLShoulderBlade
+    400040: RigNeck1
+    400042: RigNeck2
+    400044: RigNeck3
+    400046: RigNeck4
+    400048: RigPelvis
+    400050: RigRBLeg1
+    400052: RigRBLeg2
+    400054: RigRBLeg3
+    400056: RigRBLegAnkle
+    400058: RigRBLegDigit11
+    400060: RigREar1
+    400062: RigREye1
+    400064: RigREyelid1
+    400066: RigRFLeg1
+    400068: RigRFLeg2
+    400070: RigRFLeg3
+    400072: RigRFLegAnkle
+    400074: RigRFLegCollarbone
+    400076: RigRFLegDigit11
+    400078: RigRoot
+    400080: RigRShoulderBlade
+    400082: RigSpine1
+    400084: RigSpine2
+    400086: RigSpine3
+    400088: RigTail1
+    400090: RigTail2
+    400092: RigTail3
+    400094: RigTail4
+    400096: RigTail5
+    400098: RigTail6
+    400100: RigTongue1
+    400102: RigTongue2
+    400104: RigTongue3
+    2100000: GermanShepherd_Eye
+    2100002: GermanShepherd
+    4300000: GermanShepherd_M_FurBase
+    9500000: //RootNode
+    13700000: GermanShepherd_M_FurBase
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GermanShepherd
+    second: {fileID: 2100000, guid: 3b829b4695c0d954c920ebd972446ae5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GermanShepherd_Eye
+    second: {fileID: 2100000, guid: 232133b2cf0391e4b8ed0b55557a9ce0, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 0
+  copyAvatar: 1
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: RigRoot
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f878bdd568efcea4b91d0f219ef65974,
+    type: 3}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

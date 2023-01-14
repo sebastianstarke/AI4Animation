@@ -1,0 +1,2835 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.IO</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.IO.Compression.LzwInputStream">
+             <summary>
+             This filter stream is used to decompress a LZW format stream.
+             Specifically, a stream that uses the LZC compression method.
+             This file format is usually associated with the .Z file extension.
+            
+             See http://en.wikipedia.org/wiki/Compress
+             See http://wiki.wxwidgets.org/Development:_Z_File_Format
+             
+             The file header consists of 3 (or optionally 4) bytes. The first two bytes
+             contain the magic marker "0x1f 0x9d", followed by a byte of flags.
+            
+             Based on Java code by Ronald Tschalar, which in turn was based on the unlzw.c
+             code in the gzip package.
+             </summary>
+             <example> This sample shows how to unzip a compressed file
+             <code>
+             using System;
+             using System.IO;
+             
+             using ICSharpCode.SharpZipLib.Core;
+             using ICSharpCode.SharpZipLib.LZW;
+             
+             class MainClass
+             {
+             	public static void Main(string[] args)
+             	{
+            			using (Stream inStream = new LzwInputStream(File.OpenRead(args[0])))
+            			using (FileStream outStream = File.Create(Path.GetFileNameWithoutExtension(args[0]))) {
+            				byte[] buffer = new byte[4096];
+            				StreamUtils.Copy(inStream, outStream, buffer);
+                                     // OR
+                                     inStream.Read(buffer, 0, buffer.Length);
+                                     // now do something with the buffer
+             		}
+             	}
+             }	
+             </code>
+             </example>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.MAGIC">
+            <summary>
+            Magic number found at start of LZW header: 0x1f 0x9d
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.MAX_BITS">
+            <summary>
+            Maximum number of bits per code
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.BIT_MASK">
+            <summary>
+            Mask for 'number of compression bits'
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.EXTENDED_MASK">
+            <summary>
+            Indicates the presence of a fourth header byte
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.RESERVED_MASK">
+            <summary>
+            Reserved bits
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.BLOCK_MODE_MASK">
+            <summary>
+            Block compression: if table is full and compression rate is dropping,
+            clear the dictionary.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.HDR_SIZE">
+            <summary>
+            LZW file header size (in bytes)
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.INIT_BITS">
+            <summary>
+            Initial number of bits per code
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.IsStreamOwner">
+            <summary>
+            Get/set flag indicating ownership of underlying stream.
+            When the flag is true <c>Stream.Close</c> will close the underlying stream also.
+            </summary>
+            <remarks>
+            The default value is true.
+            </remarks>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.#ctor(System.IO.Stream)">
+            <summary>
+            Creates a LzwInputStream
+            </summary>
+            <param name="baseInputStream">
+            The stream to read compressed data from (baseInputStream LZW format)
+            </param>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.ReadByte">
+            <summary>
+            See <see cref="M:System.IO.Stream.ReadByte"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads decompressed data into the provided buffer byte array
+            </summary>
+            <param name ="buffer">
+            The array to read and decompress data into
+            </param>
+            <param name ="offset">
+            The offset indicating where the data should be placed
+            </param>
+            <param name ="count">
+            The number of bytes to decompress
+            </param>
+            <returns>The number of bytes read. Zero signals the end of stream</returns>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.ResetBuf(System.Int32)">
+            <summary>
+            Moves the unread data in the buffer to the beginning and resets
+            the pointers.
+            </summary>
+            <param name="bitPosition"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.CanRead">
+            <summary>
+            Gets a value indicating whether the current stream supports reading
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.CanSeek">
+            <summary>
+            Gets a value of false indicating seeking is not supported for this stream.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.CanWrite">
+            <summary>
+            Gets a value of false indicating that this stream is not writeable.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.Length">
+            <summary>
+            A value representing the length of the stream in bytes.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Compression.LzwInputStream.Position">
+            <summary>
+            The current position within the stream.
+            Throws a NotSupportedException when attempting to set the position
+            </summary>
+            <exception cref="T:System.NotSupportedException">Attempting to set the position</exception>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.Flush">
+            <summary>
+            Flushes the baseInputStream
+            </summary>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Sets the position within the current stream
+            Always throws a NotSupportedException
+            </summary>
+            <param name="offset">The relative offset to seek to.</param>
+            <param name="origin">The <see cref="T:System.IO.SeekOrigin"/> defining where to seek from.</param>
+            <returns>The new position in the stream.</returns>
+            <exception cref="T:System.NotSupportedException">Any access</exception>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.SetLength(System.Int64)">
+            <summary>
+            Set the length of the current stream
+            Always throws a NotSupportedException
+            </summary>
+            <param name="value">The new length value for the stream.</param>
+            <exception cref="T:System.NotSupportedException">Any access</exception>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes a sequence of bytes to stream and advances the current position
+            This method always throws a NotSupportedException
+            </summary>
+            <param name="buffer">Thew buffer containing data to write.</param>
+            <param name="offset">The offset of the first byte to write.</param>
+            <param name="count">The number of bytes to write.</param>
+            <exception cref="T:System.NotSupportedException">Any access</exception>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.WriteByte(System.Byte)">
+            <summary>
+            Writes one byte to the current stream and advances the current position
+            Always throws a NotSupportedException
+            </summary>
+            <param name="value">The byte to write.</param>
+            <exception cref="T:System.NotSupportedException">Any access</exception>
+        </member>
+        <member name="M:Accord.IO.Compression.LzwInputStream.Dispose(System.Boolean)">
+            <summary>
+            Closes the input stream.  When <see cref="P:Accord.IO.Compression.LzwInputStream.IsStreamOwner"></see>
+            is true the underlying stream is also closed.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.isStreamOwner">
+            <summary>
+            Flag indicating wether this instance is designated the stream owner.
+            When closing if this flag is true the underlying stream is closed.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.Compression.LzwInputStream.isClosed">
+            <summary>
+            Flag indicating wether this instance has been closed or not.
+            </summary>
+        </member>
+        <member name="T:Accord.IO.CsvReader">
+            <summary>
+              Represents a reader that provides fast, non-cached, forward-only access to CSV data.  
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.CsvReader.DataReaderValidations">
+            <summary>
+              Defines the data reader validations.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DataReaderValidations.None">
+            <summary>
+              No validation.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DataReaderValidations.IsInitialized">
+            <summary>
+              Validate that the data reader is initialized.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DataReaderValidations.IsNotClosed">
+            <summary>
+              Validate that the data reader is not closed.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.CsvReader.RecordEnumerator">
+            <summary>
+            Supports a simple iteration over the records of a <see cref="T:CsvReader"/>.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.CsvReader.RecordEnumerator._reader">
+            <summary>
+            Contains the enumerated <see cref="T:CsvReader"/>.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.CsvReader.RecordEnumerator._current">
+            <summary>
+            Contains the current record.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.CsvReader.RecordEnumerator._currentRecordIndex">
+            <summary>
+            Contains the current record index.
+            </summary>
+        </member>
+        <member name="M:Accord.IO.CsvReader.RecordEnumerator.#ctor(Accord.IO.CsvReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:RecordEnumerator"/> class.
+            </summary>
+            <param name="reader">The <see cref="T:CsvReader"/> to iterate over.</param>
+            <exception cref="T:ArgumentNullException">
+            	<paramref name="reader"/> is a <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="P:Accord.IO.CsvReader.RecordEnumerator.Current">
+            <summary>
+            Gets the current record.
+            </summary>
+        </member>
+        <member name="M:Accord.IO.CsvReader.RecordEnumerator.MoveNext">
+            <summary>
+            Advances the enumerator to the next record of the CSV.
+            </summary>
+            <returns><see langword="true"/> if the enumerator was successfully advanced to the next record, <see langword="false"/> if the enumerator has passed the end of the CSV.</returns>
+        </member>
+        <member name="M:Accord.IO.CsvReader.RecordEnumerator.Reset">
+            <summary>
+            Sets the enumerator to its initial position, which is before the first record in the CSV.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.CsvReader.RecordEnumerator.System#Collections#IEnumerator#Current">
+            <summary>
+            Gets the current record.
+            </summary>
+        </member>
+        <member name="M:Accord.IO.CsvReader.RecordEnumerator.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.CsvReader.DefaultBufferSize">
+            <summary>
+              Defines the default buffer size.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DefaultDelimiter">
+            <summary>
+              Defines the default delimiter character separating each field.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DefaultQuote">
+            <summary>
+              Defines the default quote character wrapping every field.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DefaultEscape">
+            <summary>
+              Defines the default escape character letting insert quotation characters inside a quoted field.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.CsvReader.DefaultComment">
+            <summary>
+              Defines the default comment character indicating that a line is commented out.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.String,System.Boolean)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="path">The path for the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="stream">A <see cref="T:Stream"/> pointing to the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.IO.TextReader,System.Boolean)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.IO.TextReader,System.Boolean,System.Int32)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            <param name="bufferSize">The buffer size in bytes.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.IO.TextReader,System.Boolean,System.Char)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            <param name="delimiter">The delimiter character separating each field. If set to zero, the
+              delimiter will be detected from the file automatically. Default is '\0' (zero).</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.#ctor(System.IO.TextReader,System.Boolean,System.Char,System.Int32)">
+            <summary>
+              Initializes a new instance of the CsvReader class.
+            </summary>
+            
+            <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            <param name="delimiter">The delimiter character separating each field. If set to zero, the
+              delimiter will be detected from the file automatically. Default is '\0' (zero).</param>
+            <param name="bufferSize">The buffer size in bytes.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.FromUrl(System.String,System.Boolean)">
+            <summary>
+              Creates a new CsvReader to read from a Web URL.
+            </summary>
+            
+            <param name="url">The url pointing to the .csv file.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.FromText(System.String,System.Boolean)">
+            <summary>
+              Creates a new CsvReader to read from a string.
+            </summary>
+            
+            <param name="text">The text containing the fields in the CSV format.</param>
+            <param name="hasHeaders"><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</param>
+            
+        </member>
+        <member name="E:Accord.IO.CsvReader.ParseError">
+            <summary>
+              Occurs when there is an error while parsing the CSV stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.OnParseError(Accord.IO.ParseErrorEventArgs)">
+            <summary>
+              Raises the <see cref="M:ParseError"/> event.
+            </summary>
+            
+            <param name="e">The <see cref="T:Accord.IO.ParseErrorEventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Comment">
+            <summary>
+              Gets the comment character indicating that 
+              a line is commented out. Default is '#'.
+            </summary>
+            
+            <value>The comment character indicating that a line is commented out.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Escape">
+            <summary>
+              Gets the escape character letting insert quotation 
+              characters inside a quoted field. Default is '"'.
+            </summary>
+            
+            <value>The escape character letting insert quotation characters inside a quoted field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Delimiter">
+            <summary>
+              Gets the delimiter character separating each field. If
+              set to zero ('\0') the reader will try to guess the
+              delimiter character automatically from the first line
+              of the file.
+            </summary>
+            
+            <value>The delimiter character separating each field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Quote">
+            <summary>
+              Gets the quotation character wrapping 
+              every field. Default is '"'.
+            </summary>
+            
+            <value>The quotation character wrapping every field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.HasHeaders">
+            <summary>
+              Indicates if field names are located on the first non commented line.
+            </summary>
+            
+            <value><see langword="true"/> if field names are located on the first non commented line, otherwise, <see langword="false"/>.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.TrimmingOption">
+            <summary>
+              Indicates if spaces at the start and end of a field 
+              are trimmed. Default is to trim unquoted fields only.
+            </summary>
+            
+            <value><see langword="true"/> if spaces at the start and end of a field are trimmed, otherwise, <see langword="false"/>.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.BufferSize">
+            <summary>
+              Gets the buffer size.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.DefaultParseErrorAction">
+            <summary>
+              Gets or sets the default action to take when a parsing error has occured.
+            </summary>
+            
+            <value>The default action to take when a parsing error has occured.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.MissingFieldAction">
+            <summary>
+              Gets or sets the action to take when a field is missing.
+            </summary>
+            
+            <value>The action to take when a field is missing.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.SupportsMultiline">
+            <summary>
+              Gets or sets a value indicating if the reader supports multiline fields.
+            </summary>
+            
+            <value>A value indicating if the reader supports multiline field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.SkipEmptyLines">
+            <summary>
+              Gets or sets a value indicating if the reader will skip empty lines.
+            </summary>
+            
+            <value>A value indicating if the reader will skip empty lines.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.DefaultHeaderName">
+            <summary>
+              Gets or sets the default header name when it is an empty string or only whitespaces.
+              The header index will be appended to the specified name. Default is "Column".
+            </summary>
+            
+            <value>The default header name when it is an empty string or only whitespaces.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.FieldCount">
+            <summary>
+              Gets the maximum number of fields to retrieve for each record.
+            </summary>
+            
+            <value>The maximum number of fields to retrieve for each record.</value>
+            
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.EndOfStream">
+            <summary>
+              Gets a value that indicates whether the current stream position is at the end of the stream.
+            </summary>
+            
+            <value><see langword="true"/> if the current stream position is at the end of the stream; otherwise <see langword="false"/>.</value>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.GetFieldHeaders">
+            <summary>
+              Gets the field headers.
+            </summary>
+            
+            <returns>The field headers or an empty array if headers are not supported.</returns>
+            
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.CurrentRecordIndex">
+            <summary>
+              Gets the current record index in the CSV file.
+            </summary>
+            
+            <value>The current record index in the CSV file.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.MissingFieldFlag">
+            <summary>
+              Indicates if one or more field are missing for the current record.
+              Resets after each successful record read.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.ParseErrorFlag">
+            <summary>
+              Indicates if a parse error occurred for the current record.
+              Resets after each successful record read.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToTable">
+            <summary>
+              Reads the entire stream into a DataTable.
+            </summary>
+            
+            <returns>A System.DataTable containing the read values.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToTable(System.String[])">
+            <summary>
+              Reads the entire stream into a DataTable.
+            </summary>
+            
+            <returns>A System.DataTable containing the read values.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadToEnd">
+            <summary>
+              Reads the entire stream into a list of records.
+            </summary>
+            
+            <returns>A list containing all records in the file.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadLine">
+            <summary>
+              Reads the entire stream into a list of records.
+            </summary>
+            
+            <returns>A list containing all records in the file.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToMatrix">
+            <summary>
+              Reads the entire stream into a multi-dimensional matrix.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToMatrix``1">
+            <summary>
+              Reads the entire stream into a multi-dimensional matrix.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToJagged">
+            <summary>
+              Reads the entire stream into a jagged matrix.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ToJagged``1">
+            <summary>
+              Reads the entire stream into a jagged matrix.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Item(System.Int32,System.String)">
+            <summary>
+              Gets the field with the specified name and record position. <see cref="M:hasHeaders"/> must be <see langword="true"/>.
+            </summary>
+            
+            <value>
+              The field with the specified name and record position.
+            </value>
+            
+            <exception cref="T:ArgumentNullException">
+              <paramref name="field"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:InvalidOperationException">
+              The CSV does not have headers (<see cref="M:HasHeaders"/> property is <see langword="false"/>).
+            </exception>
+            <exception cref="T:ArgumentException">
+              <paramref name="field"/> not found.
+            </exception>
+            <exception cref="T:ArgumentOutOfRangeException">
+              Record index must be > 0.
+            </exception>
+            <exception cref="T:InvalidOperationException">
+              Cannot move to a previous record in forward-only mode.
+            </exception>
+            <exception cref="T:EndOfStreamException">
+              Cannot read record at <paramref name="record"/>.
+            </exception>
+            <exception cref="T:MalformedCsvException">
+              The CSV appears to be corrupt at the current position.
+            </exception>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets the field at the specified index and record position.
+            </summary>
+            <value>
+            The field at the specified index and record position.
+            A <see langword="null"/> is returned if the field cannot be found for the record.
+            </value>
+            <exception cref="T:ArgumentOutOfRangeException">
+            	<paramref name="field"/> must be included in [0, <see cref="M:FieldCount"/>[.
+            </exception>
+            <exception cref="T:ArgumentOutOfRangeException">
+            	Record index must be > 0.
+            </exception>
+            <exception cref="T:InvalidOperationException">
+            	Cannot move to a previous record in forward-only mode.
+            </exception>
+            <exception cref="T:EndOfStreamException">
+            	Cannot read record at <paramref name="record"/>.
+            </exception>
+            <exception cref="T:MalformedCsvException">
+            	The CSV appears to be corrupt at the current position.
+            </exception>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="P:Accord.IO.CsvReader.Item(System.String)">
+            <summary>
+            Gets the field with the specified name. <see cref="M:hasHeaders"/> must be <see langword="true"/>.
+            </summary>
+            <value>
+            The field with the specified name.
+            </value>
+            <exception cref="T:ArgumentNullException">
+            	<paramref name="field"/> is <see langword="null"/> or an empty string.
+            </exception>
+            <exception cref="T:InvalidOperationException">
+            The CSV does not have headers (<see cref="M:HasHeaders"/> property is <see langword="false"/>).
+            </exception>
+            <exception cref="T:ArgumentException">
+            	<paramref name="field"/> not found.
+            </exception>
+            <exception cref="T:MalformedCsvException">
+            	The CSV appears to be corrupt at the current position.
+            </exception>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="P:Accord.IO.CsvReader.Item(System.Int32)">
+            <summary>
+            Gets the field at the specified index.
+            </summary>
+            <value>The field at the specified index.</value>
+            <exception cref="T:ArgumentOutOfRangeException">
+            	<paramref name="field"/> must be included in [0, <see cref="M:FieldCount"/>[.
+            </exception>
+            <exception cref="T:InvalidOperationException">
+            	No record read yet. Call ReadLine() first.
+            </exception>
+            <exception cref="T:MalformedCsvException">
+            	The CSV appears to be corrupt at the current position.
+            </exception>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.GetFieldIndex(System.String)">
+            <summary>
+            Gets the field index for the provided header.
+            </summary>
+            <param name="header">The header to look for.</param>
+            <returns>The field index for the provided header. -1 if not found.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.CopyCurrentRecordTo(System.String[])">
+             <summary>
+               Copies the field array of the current record to a one-dimensional array, starting at the beginning of the target array.
+             </summary>
+             
+             <param name="array"> The one-dimensional <see cref="T:Array"/> that is the destination of the fields of the current record.</param>
+             
+             <exception cref="T:ArgumentNullException">
+            		<paramref name="array"/> is <see langword="null"/>.
+             </exception>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.CopyCurrentRecordTo(System.String[],System.Int32)">
+            <summary>
+              Copies the field array of the current record to a one-dimensional array, starting at the beginning of the target array.
+            </summary>
+            
+            <param name="array"> The one-dimensional <see cref="T:Array"/> that is the destination of the fields of the current record.</param>
+            <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+            
+            <exception cref="T:ArgumentNullException">
+            	<paramref name="array"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:ArgumentOutOfRangeException">
+            	<paramref name="index"/> is les than zero or is equal to or greater than the length <paramref name="array"/>. 
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            No current record.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            	The number of fields in the record is greater than the available space from <paramref name="index"/> to the end of <paramref name="array"/>.
+            </exception>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.GetCurrentRawData">
+            <summary>
+              Gets the current raw CSV data.
+            </summary>
+            
+            <remarks>Used for exception handling purposes.</remarks>
+            
+            <returns>The current raw CSV data.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.EnsureInitialize">
+            <summary>
+            Ensures that the reader is initialized.
+            </summary>
+        </member>
+        <member name="M:Accord.IO.CsvReader.IsWhiteSpace(System.Char)">
+            <summary>
+            Indicates whether the specified Unicode character is categorized as white space.
+            </summary>
+            <param name="c">A Unicode character.</param>
+            <returns><see langword="true"/> if <paramref name="c"/> is white space; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Accord.IO.CsvReader.MoveTo(System.Int64)">
+            <summary>
+              Moves to the specified record index.
+            </summary>
+            
+            <param name="record">The record index.</param>
+            
+            <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+            
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadNextRecord">
+            <summary>
+              Reads the next record.
+            </summary>
+            
+            <returns><see langword="true"/> if a record has been successfully reads; otherwise, <see langword="false"/>.</returns>
+            
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ParseNewLine(System.Int32@)">
+            <summary>
+              Parses a new line delimiter.
+            </summary>
+            
+            <param name="pos">The starting position of the parsing. Will contain the resulting end position.</param>
+            
+            <returns><see langword="true"/> if a new line delimiter was found; otherwise, <see langword="false"/>.</returns>
+            
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+              The instance has been disposed of.
+            </exception>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.IsNewLine(System.Int32)">
+            <summary>
+              Determines whether the character at the specified position is a new line delimiter.
+            </summary>
+            
+            <param name="pos">The position of the character to verify.</param>
+            
+            <returns>
+              <see langword="true"/> if the character at the specified position is a new line delimiter; otherwise, <see langword="false"/>.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadBuffer">
+            <summary>
+            Fills the buffer with data from the reader.
+            </summary>
+            <returns><see langword="true"/> if data was successfully read; otherwise, <see langword="false"/>.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadField(System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Reads the field at the specified index.
+            Any unread fields with an inferior index will also be read as part of the required parsing.
+            </summary>
+            <param name="field">The field index.</param>
+            <param name="initializing">Indicates if the reader is currently initializing.</param>
+            <param name="discardValue">Indicates if the value(s) are discarded.</param>
+            <returns>
+            The field at the specified index. 
+            A <see langword="null"/> indicates that an error occured or that the last field has been reached during initialization.
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            	<paramref name="field"/> is out of range.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            	There is no current record.
+            </exception>
+            <exception cref="T:Accord.IO.MissingFieldCsvException">
+            	The CSV data appears to be missing a field.
+            </exception>
+            <exception cref="T:Accord.IO.MalformedCsvException">
+            	The CSV data appears to be malformed.
+            </exception>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.ReadNextRecord(System.Boolean,System.Boolean)">
+            <summary>
+            Reads the next record.
+            </summary>
+            <param name="onlyReadHeaders">
+            Indicates if the reader will proceed to the next record after having read headers.
+            <see langword="true"/> if it stops after having read headers; otherwise, <see langword="false"/>.
+            </param>
+            <param name="skipToNextLine">
+            Indicates if the reader will skip directly to the next line without parsing the current one. 
+            To be used when an error occurs.
+            </param>
+            <returns><see langword="true"/> if a record has been successfully reads; otherwise, <see langword="false"/>.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.SkipEmptyAndCommentedLines(System.Int32@)">
+            <summary>
+            Skips empty and commented lines.
+            If the end of the buffer is reached, its content be discarded and filled again from the reader.
+            </summary>
+            <param name="pos">
+            The position in the buffer where to start parsing. 
+            Will contains the resulting position after the operation.
+            </param>
+            <returns><see langword="true"/> if the end of the reader has not been reached; otherwise, <see langword="false"/>.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.DoSkipEmptyAndCommentedLines(System.Int32@)">
+            <summary>
+            <para>Worker method.</para>
+            <para>Skips empty and commented lines.</para>
+            </summary>
+            <param name="pos">
+            The position in the buffer where to start parsing. 
+            Will contains the resulting position after the operation.
+            </param>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.SkipWhiteSpaces(System.Int32@)">
+            <summary>
+            Skips whitespace characters.
+            </summary>
+            <param name="pos">The starting position of the parsing. Will contain the resulting end position.</param>
+            <returns><see langword="true"/> if the end of the reader has not been reached; otherwise, <see langword="false"/>.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.SkipToNextLine(System.Int32@)">
+            <summary>
+            Skips ahead to the next NewLine character.
+            If the end of the buffer is reached, its content be discarded and filled again from the reader.
+            </summary>
+            <param name="pos">
+            The position in the buffer where to start parsing. 
+            Will contain the resulting position after the operation.
+            </param>
+            <returns><see langword="true"/> if the end of the reader has not been reached; otherwise, <see langword="false"/>.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.HandleParseError(Accord.IO.MalformedCsvException,System.Int32@)">
+            <summary>
+            Handles a parsing error.
+            </summary>
+            <param name="error">The parsing error that occured.</param>
+            <param name="pos">The current position in the buffer.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="error"/> is <see langword="null"/>.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.HandleMissingField(System.String,System.Int32,System.Int32@)">
+            <summary>
+            Handles a missing field error.
+            </summary>
+            <param name="value">The partially parsed value, if available.</param>
+            <param name="fieldIndex">The missing field index.</param>
+            <param name="currentPosition">The current position in the raw data.</param>
+            <returns>
+            The resulting value according to <see cref="M:MissingFieldAction"/>.
+            If the action is set to <see cref="T:MissingFieldAction.TreatAsParseError"/>,
+            then the parse error will be handled according to <see cref="P:Accord.IO.CsvReader.DefaultParseErrorAction"/>.
+            </returns>
+        </member>
+        <member name="M:Accord.IO.CsvReader.ValidateDataReader(Accord.IO.CsvReader.DataReaderValidations)">
+            <summary>
+            Validates the state of the data reader.
+            </summary>
+            <param name="validations">The validations to accomplish.</param>
+            <exception cref="T:System.InvalidOperationException">
+            No current record.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            This operation is invalid when the reader is closed.
+            </exception>
+        </member>
+        <member name="M:Accord.IO.CsvReader.CopyFieldToArray(System.Int32,System.Int64,System.Array,System.Int32,System.Int32)">
+            <summary>
+            Copy the value of the specified field to an array.
+            </summary>
+            <param name="field">The index of the field.</param>
+            <param name="fieldOffset">The offset in the field value.</param>
+            <param name="destinationArray">The destination array where the field value will be copied.</param>
+            <param name="destinationOffset">The destination array offset.</param>
+            <param name="length">The number of characters to copy from the field value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.IO.CsvReader.GetEnumerator">
+            <summary>
+            Returns an <see cref="T:RecordEnumerator"/>  that can iterate through CSV records.
+            </summary>
+            <returns>An <see cref="T:RecordEnumerator"/>  that can iterate through CSV records.</returns>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            The instance has been disposed of.
+            </exception>
+        </member>
+        <member name="F:Accord.IO.CsvReader._isDisposed">
+            <summary>
+            Contains the disposed status flag.
+            </summary>
+        </member>
+        <member name="F:Accord.IO.CsvReader._lock">
+            <summary>
+            Contains the locking object for multi-threading purpose.
+            </summary>
+        </member>
+        <member name="E:Accord.IO.CsvReader.Disposed">
+            <summary>
+            Occurs when the instance is disposed of.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.CsvReader.IsDisposed">
+            <summary>
+            Gets a value indicating whether the instance has been disposed of.
+            </summary>
+            <value>
+            	<see langword="true"/> if the instance has been disposed of; otherwise, <see langword="false"/>.
+            </value>
+        </member>
+        <member name="M:Accord.IO.CsvReader.OnDisposed(System.EventArgs)">
+            <summary>
+            Raises the <see cref="M:Disposed"/> event.
+            </summary>
+            <param name="e">A <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        </member>
+        <member name="M:Accord.IO.CsvReader.CheckDisposed">
+            <summary>
+            Checks if the instance has been disposed of, and if it has, throws an <see cref="T:System.ComponentModel.ObjectDisposedException"/>; otherwise, does nothing.
+            </summary>
+            <exception cref="T:System.ComponentModel.ObjectDisposedException">
+            	The instance has been disposed of.
+            </exception>
+            <remarks>
+            	Derived classes should call this method at the start of all methods and properties that should not be accessed after a call to <see cref="M:Dispose()"/>.
+            </remarks>
+        </member>
+        <member name="M:Accord.IO.CsvReader.Dispose">
+            <summary>
+            Releases all resources used by the instance.
+            </summary>
+            <remarks>
+            	Calls <see cref="M:Dispose(Boolean)"/> with the disposing parameter set to <see langword="true"/> to free unmanaged and managed resources.
+            </remarks>
+        </member>
+        <member name="M:Accord.IO.CsvReader.Close">
+            <summary>
+              Closes the <see cref="T:System.Data.IDataReader" /> Object.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvReader.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by this instance and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">
+            	<see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.
+            </param>
+        </member>
+        <member name="M:Accord.IO.CsvReader.Finalize">
+            <summary>
+            Releases unmanaged resources and performs other cleanup operations before the instance is reclaimed by garbage collection.
+            </summary>
+        </member>
+        <member name="T:Accord.IO.CsvWriter">
+            <summary>
+              Writer for CSV data.
+            </summary>
+            
+            <example>
+            <para>
+              The following example shows how to use <see cref="T:Accord.IO.CsvWriter"/> to write a matrix in .csv format.</para>
+              <code source="Unit Tests\Accord.Tests.IO\CsvWriterTest.cs" region="doc_matrix" />
+              
+            <para>
+              The following example shows how to use <see cref="T:Accord.IO.CsvWriter"/> to write a jagged array in .csv format.</para>
+              <code source="Unit Tests\Accord.Tests.IO\CsvWriterTest.cs" region="doc_jagged" />
+              
+            <para>
+              The following example shows how to use <see cref="T:Accord.IO.CsvWriter"/> to write a DataTable in .csv format.</para>
+              <code source="Unit Tests\Accord.Tests.IO\CsvWriterTest.cs" region="doc_table" />
+              
+            <para>
+              It is also possible to use <see cref="T:Accord.IO.CsvWriter"/> to write matrices (or jagged arrays) 
+              containing objects with mixed types:</para>
+              <code source="Unit Tests\Accord.Tests.IO\CsvWriterTest.cs" region="doc_objects" />
+            </example>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.Writer">
+            <summary>
+              Gets the writer.
+            </summary>
+            
+            <value>
+              The writer.
+            </value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.Comment">
+            <summary>
+              Gets or sets the comment character indicating that a line is commented out.
+            </summary>
+            
+            <value>The comment character indicating that a line is commented out.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.Escape">
+            <summary>
+              Gets or sets the escape character letting insert quotation characters inside a quoted field.
+            </summary>
+            
+            <value>The escape character letting insert quotation characters inside a quoted field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.Delimiter">
+            <summary>
+              Gets or sets the delimiter character separating each field.
+            </summary>
+            
+            <value>The delimiter character separating each field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.Quote">
+            <summary>
+              Gets or sets the quotation character wrapping every field.
+            </summary>
+            
+            <value>The quotation character wrapping every field.</value>
+            
+        </member>
+        <member name="P:Accord.IO.CsvWriter.FormatProvider">
+            <summary>
+              Gets or sets the format provider to use when converting 
+              data-types to text representations. Default is to use
+              CultureInfo.InvariantCulture.
+            </summary>
+            
+            <value>
+              The format provider.
+            </value>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.#ctor(System.String,System.Char)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.CsvWriter"/> class.
+            </summary>
+            
+            <param name="path">The path to the file to be written.</param>
+            <param name="delimiter">The field delimiter character to separate values in the CSV file.
+              If set to zero, will use the system's default text separator. Default is '\0' (zero).</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.#ctor(System.IO.TextWriter,System.Char)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.CsvWriter"/> class.
+            </summary>
+            
+            <param name="writer">A <see cref="T:TextWriter"/> pointing to the CSV file.</param>
+            <param name="delimiter">The field delimiter character to separate values in the CSV file.
+              If set to zero, will use the system's default text separator. Default is '\0' (zero).</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.ToText(System.Text.StringBuilder,System.Char)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.CsvWriter"/> 
+              class to write the CSV fields to a in-memory string.
+            </summary>
+            
+            <param name="builder">A <see cref="T:StringBuilder"/> to write to.</param>
+            <param name="delimiter">The field delimiter character to separate values in the CSV file.
+              If set to zero, will use the system's default text separator. Default is '\0' (zero).</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.WriteHeaders(System.String[])">
+            <summary>
+              Writes the column names of a data table as the headers of the CSV file.
+            </summary>
+            
+            <param name="columnNames">A list of column names to use.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.WriteHeaders(System.Data.DataTable)">
+            <summary>
+              Writes the column names of a data table as the headers of the CSV file.
+            </summary>
+            
+            <param name="table">A DataTable whose columns names will be written as headers.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Write``1(``0[0:,0:])">
+            <summary>
+              Writes the specified matrix in CSV format.
+            </summary>
+            
+            <typeparam name="T">The matrix data type.</typeparam>
+            <param name="table">The table to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Write``1(``0[][])">
+            <summary>
+              Writes the specified matrix in CSV format.
+            </summary>
+            
+            <typeparam name="T">The matrix data type.</typeparam>
+            <param name="table">The table to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Write(System.Data.DataTable)">
+            <summary>
+              Writes the specified table in a CSV format.
+            </summary>
+            
+            <param name="table">The data table to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.WriteLine``1(``0[])">
+            <summary>
+              Writes the specified fields in a CSV format.
+            </summary>
+            
+            <param name="fields">The fields to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.WriteLine``1(``0[],System.String)">
+            <summary>
+              Writes the specified fields in a CSV format.
+            </summary>
+            
+            <param name="fields">The fields to be written.</param>
+            <param name="comment">An optional comment for the line.</param>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Dispose">
+            <summary>
+              Performs application-defined tasks associated with 
+              freeing,  releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Finalize">
+            <summary>
+              Finalizes an instance of the <see cref="T:Accord.IO.CsvWriter"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.CsvWriter.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources.
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and
+              unmanaged resources; <c>false</c> to release only unmanaged resources.
+            </param>
+            
+        </member>
+        <member name="T:Accord.IO.ParseErrorEventArgs">
+            <summary>
+              Provides data for the <see cref="M:CsvReader.ParseError"/> event.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ParseErrorEventArgs.#ctor(Accord.IO.MalformedCsvException,Accord.IO.ParseErrorAction)">
+            <summary>
+              Initializes a new instance of the ParseErrorEventArgs class.
+            </summary>
+            
+            <param name="error">The error that occurred.</param>
+            <param name="defaultAction">The default action to take.</param>
+            
+        </member>
+        <member name="P:Accord.IO.ParseErrorEventArgs.Error">
+            <summary>
+              Gets the error that occurred.
+            </summary>
+            
+            <value>The error that occurred.</value>
+            
+        </member>
+        <member name="P:Accord.IO.ParseErrorEventArgs.Action">
+            <summary>
+              Gets or sets the action to take.
+            </summary>
+            
+            <value>The action to take.</value>
+            
+        </member>
+        <member name="T:Accord.IO.MalformedCsvException">
+            <summary>
+              Represents the exception that is thrown when a CSV file is malformed.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor">
+            <summary>
+              Initializes a new instance of the MalformedCsvException class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the MalformedCsvException class.
+            </summary>
+            
+            <param name="message">The message that describes the error.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor(System.String,System.Exception)">
+            <summary>
+              Initializes a new instance of the MalformedCsvException class.
+            </summary>
+            
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor(System.String,System.Int32,System.Int64,System.Int32)">
+            <summary>
+              Initializes a new instance of the MalformedCsvException class.
+            </summary>
+            
+            <param name="rawData">The raw data when the error occured.</param>
+            <param name="currentPosition">The current position in the raw data.</param>
+            <param name="currentRecordIndex">The current record index.</param>
+            <param name="currentFieldIndex">The current field index.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor(System.String,System.Int32,System.Int64,System.Int32,System.Exception)">
+            <summary>
+              Initializes a new instance of the MalformedCsvException class.
+            </summary>
+            
+            <param name="rawData">The raw data when the error occured.</param>
+            <param name="currentPosition">The current position in the raw data.</param>
+            <param name="currentRecordIndex">The current record index.</param>
+            <param name="currentFieldIndex">The current field index.</param>
+            <param name="innerException">The exception that is the cause of the current exception.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the MalformedCsvException class with serialized data.
+            </summary>
+            <param name="info">The <see cref="T:SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:StreamingContext"/> that contains contextual information about the source or destination.</param>
+        </member>
+        <member name="P:Accord.IO.MalformedCsvException.RawData">
+            <summary>
+              Gets the raw data when the error occurred.
+            </summary>
+            
+            <value>The raw data when the error occurred.</value>
+            
+        </member>
+        <member name="P:Accord.IO.MalformedCsvException.CurrentPosition">
+            <summary>
+              Gets the current position in the raw data.
+            </summary>
+            
+            <value>The current position in the raw data.</value>
+            
+        </member>
+        <member name="P:Accord.IO.MalformedCsvException.CurrentRecordIndex">
+            <summary>
+              Gets the current record index.
+            </summary>
+            
+            <value>The current record index.</value>
+            
+        </member>
+        <member name="P:Accord.IO.MalformedCsvException.CurrentFieldIndex">
+            <summary>
+              Gets the current field index.
+            </summary>
+            
+            <value>The current record index.</value>
+            
+        </member>
+        <member name="P:Accord.IO.MalformedCsvException.Message">
+            <summary>
+              Gets a message that describes the current exception.
+            </summary>
+            
+            <value>A message that describes the current exception.</value>
+            
+        </member>
+        <member name="M:Accord.IO.MalformedCsvException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+              When overridden in a derived class, sets the <see cref="T:SerializationInfo"/> with information about the exception.
+            </summary>
+            
+            <param name="info">The <see cref="T:SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:StreamingContext"/> that contains contextual information about the source or destination.</param>
+            
+        </member>
+        <member name="T:Accord.IO.MissingFieldCsvException">
+            <summary>
+              Represents the exception that is thrown when a there is a missing field in a record of the CSV file.
+            </summary>
+            
+            <remarks>
+              MissingFieldException would have been a better name, but there is already a <see cref="T:System.MissingFieldException"/>.
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class.
+            </summary>
+            
+            <param name="message">The message that describes the error.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor(System.String,System.Exception)">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class.
+            </summary>
+            
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor(System.String,System.Int32,System.Int64,System.Int32)">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class.
+            </summary>
+            
+            <param name="rawData">The raw data when the error occured.</param>
+            <param name="currentPosition">The current position in the raw data.</param>
+            <param name="currentRecordIndex">The current record index.</param>
+            <param name="currentFieldIndex">The current field index.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor(System.String,System.Int32,System.Int64,System.Int32,System.Exception)">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class.
+            </summary>
+            
+            <param name="rawData">The raw data when the error occured.</param>
+            <param name="currentPosition">The current position in the raw data.</param>
+            <param name="currentRecordIndex">The current record index.</param>
+            <param name="currentFieldIndex">The current field index.</param>
+            <param name="innerException">The exception that is the cause of the current exception.</param>
+            
+        </member>
+        <member name="M:Accord.IO.MissingFieldCsvException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+              Initializes a new instance of the MissingFieldCsvException class with serialized data.
+            </summary>
+            
+            <param name="info">The <see cref="T:SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:StreamingContext"/> that contains contextual information about the source or destination.</param>
+            
+        </member>
+        <member name="T:Accord.IO.UnipenReader">
+            <summary>
+              Reader for UNIPEN files (such as Pendigits dataset).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.UnipenReader.Lexicon">
+            <summary>
+              Gets the lexicon information that is usually included at the header of the file.
+              This should represent the different class labels that each sample can belong to.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.UnipenReader.Hierarchy">
+            <summary>
+              Gets the hierarchy iniformation that is usually included at the header of the file.
+              This usually gives a description of what the <see cref="P:Accord.IO.UnipenReader.Lexicon">class labels</see> represent.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.#ctor(System.String,System.Boolean)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.UnipenReader"/>.
+            </summary>
+            
+            <param name="path">The path for the IDX file.</param>
+            <param name="compressed">Pass <c>true</c> if the stream contains a compressed (.gz) file. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.UnipenReader"/>.
+            </summary>
+            
+            <param name="input">The input stream containing the UNIPEN file.</param>
+            <param name="compressed">Pass <c>true</c> if the stream contains a compressed (.Z) file. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.Read(System.String@,System.String@)">
+            <summary>
+              Reads the next sequence.
+            </summary>
+            
+            <param name="label">The class label of the sample that has been read.</param>
+            <param name="comment">The comment associated with the sample that has just been read.</param>
+            
+            <returns>The sequence of (X,Y) coordinates stored in the file.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.ReadToEnd">
+            <summary>
+              Reads all samples in the file, starting from the current position.
+            </summary>
+            
+            <returns>
+              An array containing all samples from the current point until the end of the stream.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+              resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.IO.UnipenReader.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.IO.IdxReader"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.IdxDataType">
+            <summary>
+              Data types which can be contained in a IDX data file.
+            </summary>
+            
+            <seealso cref="T:Accord.IO.IdxReader"/>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.UnsignedByte">
+            <summary>
+              byte (0x08)
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.SignedByte">
+            <summary>
+             sbyte (0x09)
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.Short">
+            <summary>
+             short (0x0B)
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.Integer">
+            <summary>
+              int (0x0C)
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.Float">
+            <summary>
+              float (0x0D)
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.IdxDataType.Double">
+            <summary>
+              double (0x0E)
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.IdxReader">
+            <summary>
+              Reader for IDX files (such as MNIST's digit database).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.IdxReader.Magic">
+            <summary>
+              MNIST's magic number. See remarks for more details
+            </summary>
+            
+            <remarks>
+            <para>
+              The magic number is an integer (MSB first). The first 2 bytes 
+              are always 0. The third byte codes the type of the data. The 
+              4-th byte codes the number of dimensions of the vector/matrix:
+              1 for vectors, 2 for matrices.
+            </para>
+            
+            <list type="table">
+              <listheader>
+                <term>Code</term>
+                <description>Meaning</description>
+              </listheader>
+              <item>
+                <term>0x08</term><description>unsigned byte</description></item>
+              <item>
+                <term>0x09</term><description>signed byte</description></item>
+              <item>
+                <term>0x0B</term><description>short (2 bytes)</description></item>
+              <item>
+                <term>0x0C</term><description>int (4 bytes)</description></item>
+              <item>
+                <term>0x0D</term><description>float (4 bytes)</description></item>
+              <item>
+                <term>0x0E</term><description>double (8 bytes)</description></item>
+              </list>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.IO.IdxReader.DataType">
+            <summary>
+              Gets the type of the data stored in this file.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.IdxReader.Dimensions">
+            <summary>
+              Gets the number of dimensions for the samples.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.IdxReader.Samples">
+            <summary>
+              Gets the number of samples stored in this file.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.IdxReader.BaseStream">
+            <summary>
+              Returns the underlying stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.#ctor(System.String)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.IdxReader"/>.
+            </summary>
+            
+            <param name="path">The path for the IDX file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.#ctor(System.String,System.Boolean)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.IdxReader"/>.
+            </summary>
+            
+            <param name="path">The path for the IDX file.</param>
+            <param name="compressed">
+              Pass <c>true</c> if the stream contains 
+              a compressed (.gz) file. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.#ctor(System.Byte[],System.Boolean)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.IdxReader"/>.
+            </summary>
+            
+            <param name="file">The byte array representing the contents of the IDX file.</param>
+            <param name="compressed">
+              Pass <c>true</c> if the stream contains 
+              a compressed (.gz) file. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+              Creates a new <see cref="T:Accord.IO.IdxReader"/>.
+            </summary>
+            
+            <param name="input">The input stream containing the IDX file.</param>
+            <param name="compressed">
+              Pass <c>true</c> if the stream contains 
+              a compressed (.gz) file. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.Read(System.Array)">
+            <summary>
+              Reads the next sample into the given array.
+            </summary>
+            
+            <param name="array">The array to contain the samples.</param>
+            
+            <returns>How many bytes were read.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadValue">
+            <summary>
+              Reads the next sample as a value.
+            </summary>
+            
+            <returns>A single number containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadVector">
+            <summary>
+              Reads the next sample as a vector.
+            </summary>
+            
+            <returns>A unidimensional array containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadMatrix">
+            <summary>
+              Reads the next sample as a matrix.
+            </summary>
+            
+            <returns>A multidimensional array containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.TryReadValue``1(``0@)">
+            <summary>
+              Reads the next sample as a value.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>A single number containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadVector``1">
+            <summary>
+              Reads the next sample as a vector.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>A unidimensional array containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadMatrix``1">
+            <summary>
+              Reads the next sample as a matrix.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>A multidimensional array containing the sample.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadToEndAsMatrices``1">
+            <summary>
+              Reads all samples in the file, starting from the current position, as matrices.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>
+              An array containing all samples from the current point until the end of the stream.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadToEndAsVectors``1">
+            <summary>
+              Reads all samples in the file, starting from the current position, as vectors.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>
+              An array containing all samples from the current point until the end of the stream.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.ReadToEndAsValues``1">
+            <summary>
+              Reads all samples in the file, starting from the current position, as vectors.
+            </summary>
+            
+            <typeparam name="T">The data type to be used.</typeparam>
+            
+            <returns>
+              An array containing all samples from the current point until the end of the stream.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.Translate(Accord.IO.IdxDataType)">
+            <summary>
+              Translates the given <see cref="T:Accord.IO.IdxDataType"/> to a .NET <see cref="T:System.Type"/>.
+            </summary>
+            
+            <param name="type">The type to be translated.</param>
+            
+            <returns>
+              A .NET <see cref="T:System.Type"/> that represents the <see cref="T:Accord.IO.IdxDataType"/>.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+              resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.IO.IdxReader.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.IO.IdxReader"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.ExcelReader">
+            <summary>
+              Excel file reader using Microsoft Jet Database Engine.
+            </summary>
+            
+            <remarks>
+            <para>
+              This class requires the Microsoft Access Database Engine
+              to work. The download is available from Microsoft under
+              the name "Microsoft Access Database Engine 2010 Redistributable",
+              available in both 32-bit (x86) and 64-bit (x64) versions.</para>
+              
+            <para>
+              By default, the redistributable package will only install 
+              if it is the same as the current version of Microsoft Office
+              installed in the machine (i.e. ACE 32-bit can not be installed
+              with 64-bit office and vice-versa). To overcome this limitation
+              and install both versions of the ACE drivers, specify /passive
+              as a command line argument when installing the packages.
+            </para>
+            </remarks>
+            
+            <example>
+            <code>
+            // Create a new reader, opening a given path
+            ExcelReader reader = new ExcelReader(path);
+            
+            // Afterwards, we can query the file for all
+            // worksheets within the specified workbook:
+            string[] sheets = reader.GetWorksheetList();
+            
+            // Finally, we can request an specific sheet:
+            DataTable table = reader.GetWorksheet(sheets[1]);
+            
+            // Now, we have loaded the Excel file into a DataTable. We
+            // can go further and transform it into a matrix to start
+            // running other algorithms on it: 
+            
+            double[,] matrix = table.ToMatrix();
+            
+            // We can also do it retrieving the name for each column:
+            string[] columnNames; matrix = table.ToMatrix(out columnNames);
+            
+            // Or we can extract specific columns into single arrays:
+            double[] column = table.Columns[0].ToArray();
+            
+            // PS: you might need to import the Accord.Math namespace in
+            //   order to be able to call the ToMatrix extension methods. 
+            </code>
+            </example>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="stream">The stream containing the spreadsheet file.</param>
+            <param name="xlsx">True if the file should be treated as .xlsx file, false otherwise. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.IO.Stream,System.Boolean,System.Boolean)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="stream">The stream containing the spreadsheet file.</param>
+            <param name="xlsx">True if the file should be treated as .xlsx file, false otherwise. Default is true.</param>
+            <param name="hasHeaders">True if the spreadsheet contains headers, false otherwise. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="stream">The stream containing the spreadsheet file.</param>
+            <param name="xlsx">True if the file should be treated as .xlsx file, false otherwise. Default is true.</param>
+            <param name="hasHeaders">True if the spreadsheet contains headers, false otherwise. Default is true.</param>
+            <param name="hasMixedData">True to read "intermixed" data columns as text, false otherwise. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.String)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="path">The path of for the spreadsheet file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.String,System.Boolean)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="path">The path of for the spreadsheet file.</param>
+            <param name="hasHeaders">True if the spreadsheet contains headers, false otherwise. Default is true.</param>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.#ctor(System.String,System.Boolean,System.Boolean)">
+            <summary>
+              Creates a new spreadsheet reader.
+            </summary>
+            
+            <param name="path">The path of for the spreadsheet file.</param>
+            <param name="hasHeaders">True if the spreadsheet contains headers, false otherwise. Default is true.</param>
+            <param name="hasMixedData">True to read "intermixed" data columns as text, false otherwise. Default is true.</param>
+            
+        </member>
+        <member name="P:Accord.IO.ExcelReader.Provider">
+            <summary>
+              Gets the data provider used by the reader.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.ExcelReader.Version">
+            <summary>
+              Gets the Excel version used by the reader.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.ExcelReader.HasHeaders">
+            <summary>
+              Gets whether the workbook has column headers.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.ExcelReader.HasMixedData">
+            <summary>
+              Gets whether the data contains mixed string and numeric data.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.ExcelReader.WorksheetNames">
+            <summary>
+              Gets the names of the distinct sheets
+              that are contained in the Excel file.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.GetWorksheetList">
+            <summary>
+              Gets the list of worksheets in the spreadsheet.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.GetColumnsList(System.String)">
+            <summary>
+              Gets the list of columns in a worksheet.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.GetWorksheet(System.String)">
+            <summary>
+              Gets an worksheet as a data table.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.GetWorksheet(System.Int32)">
+            <summary>
+              Gets an worksheet as a data table.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.ExcelReader.GetWorksheet">
+            <summary>
+              Gets the entire worksheet as a data set.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.MissingFieldAction">
+            <summary>
+              Specifies the action to take when a field is missing.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.MissingFieldAction.ParseError">
+            <summary>
+              Treat as a parsing error.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.MissingFieldAction.ReplaceByEmpty">
+            <summary>
+              Replaces by an empty value.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.MissingFieldAction.ReplaceByNull">
+            <summary>
+              Replaces by a null value (<see langword="null"/>).
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.ParseErrorAction">
+            <summary>
+              Specifies the action to take when a parsing error has occurred.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ParseErrorAction.RaiseEvent">
+            <summary>
+              Raises the <see cref="M:CsvReader.ParseError"/> event.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ParseErrorAction.AdvanceToNextLine">
+            <summary>
+              Tries to advance to next line.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ParseErrorAction.ThrowException">
+            <summary>
+              Throws an exception.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.Resources.ExceptionMessage">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.BufferSizeTooSmall">
+            <summary>
+              Looks up a localized string similar to Buffer size must be 1 or more..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.CannotMovePreviousRecordInForwardOnly">
+            <summary>
+              Looks up a localized string similar to Cannot move to a previous record in forward-only mode..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.CannotReadRecordAtIndex">
+            <summary>
+              Looks up a localized string similar to Cannot read record at index &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.EnumerationFinishedOrNotStarted">
+            <summary>
+              Looks up a localized string similar to Enumeration has either not started or has already finished..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.EnumerationVersionCheckFailed">
+            <summary>
+              Looks up a localized string similar to Collection was modified; enumeration operation may not execute..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.FieldHeaderNotFound">
+            <summary>
+              Looks up a localized string similar to &apos;{0}&apos; field header not found..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.FieldIndexOutOfRange">
+            <summary>
+              Looks up a localized string similar to Field index must be included in [0, FieldCount[. Specified field index was : &apos;{0}&apos;..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.MalformedCsvException">
+            <summary>
+              Looks up a localized string similar to The CSV appears to be corrupt near record &apos;{0}&apos; field &apos;{1} at position &apos;{2}&apos;. Current raw data : &apos;{3}&apos;..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.MissingFieldActionNotSupported">
+            <summary>
+              Looks up a localized string similar to &apos;{0}&apos; is not a supported missing field action..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.NoCurrentRecord">
+            <summary>
+              Looks up a localized string similar to No current record..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.NoHeaders">
+            <summary>
+              Looks up a localized string similar to The CSV does not have headers (CsvReader.HasHeaders property is false)..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.NotEnoughSpaceInArray">
+            <summary>
+              Looks up a localized string similar to The number of fields in the record is greater than the available space from index to the end of the destination array..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.ParseErrorActionInvalidInsideParseErrorEvent">
+            <summary>
+              Looks up a localized string similar to &apos;{0}&apos; is not a valid ParseErrorAction while inside a ParseError event..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.ParseErrorActionNotSupported">
+            <summary>
+              Looks up a localized string similar to &apos;{0}&apos; is not a supported ParseErrorAction..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.ReaderClosed">
+            <summary>
+              Looks up a localized string similar to This operation is invalid when the reader is closed..
+            </summary>
+        </member>
+        <member name="P:Accord.IO.Resources.ExceptionMessage.RecordIndexLessThanZero">
+            <summary>
+              Looks up a localized string similar to Record index must be 0 or more..
+            </summary>
+        </member>
+        <member name="T:Accord.IO.SparseFormat">
+            <summary>
+              Provides static methods to save and load files saved in LibSVM's sparse format. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Load(System.String,Accord.Math.Sparse{System.Double}[]@,System.Boolean[]@,Accord.IO.SerializerCompression)">
+            <summary>
+              Loads an array of sparse samples from a file in the disk.
+            </summary>
+            
+            <param name="path">The path to the file containing the samples to be loaded.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Load(System.IO.Stream,Accord.Math.Sparse{System.Double}[]@,System.Boolean[]@,Accord.IO.SerializerCompression)">
+            <summary>
+              Loads an array of sparse samples from a stream.
+            </summary>
+            
+            <param name="stream">The stream from where the file will be loaded.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Save(Accord.Math.Sparse{System.Double}[],System.Boolean[],System.String,Accord.IO.SerializerCompression)">
+            <summary>
+              Saves an array of sparse samples to a file in the disk.
+            </summary>
+            
+            <param name="path">The disk path under which the file will be saved.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Save(System.Double[][],System.Boolean[],System.String,Accord.IO.SerializerCompression)">
+            <summary>
+              Saves an array of dense samples to a file in the disk.
+            </summary>
+            
+            <param name="path">The disk path under which the file will be saved.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Save(Accord.Math.Sparse{System.Double}[],System.Boolean[],System.IO.Stream,Accord.IO.SerializerCompression)">
+            <summary>
+              Saves an array of sparse samples to a stream.
+            </summary>
+            
+            <param name="stream">The stream where the file will be saved.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseFormat.Save(System.Double[][],System.Boolean[],System.IO.Stream,Accord.IO.SerializerCompression)">
+            <summary>
+              Saves an array of dense samples to a stream.
+            </summary>
+            
+            <param name="stream">The stream where the file will be saved.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            <param name="compression">The type of compression to use. Default is None.</param>
+            
+        </member>
+        <member name="T:Accord.IO.SparseWriter">
+            <summary>
+              Writer for data files containing samples in libsvm's sparse format.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseWriter.BaseStream">
+            <summary>
+              Returns the underlying stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseWriter.Intercept">
+            <summary>
+              Gets or sets whether to include an intercept term
+              (bias) value at the beginning of each new sample.
+              Default is <c>null</c> (don't include anything).
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseWriter"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseWriter"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be written.</param>
+            <param name="encoding">The character encoding to use.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.#ctor(System.IO.Stream)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseWriter"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.#ctor(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseWriter"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be read.</param>
+            <param name="encoding">The character encoding to use.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(System.Double[][],System.Boolean[])">
+            <summary>
+              Writes the given feature vectors and associated output label/value to the file.
+            </summary>
+            
+            <param name="features">The array of feature vectors to be written.</param>
+            <param name="outputs">The array of output values to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(Accord.Math.Sparse{System.Double}[],System.Boolean[])">
+            <summary>
+              Writes the given feature vectors and associated output label/value to the file.
+            </summary>
+            
+            <param name="features">The array of feature vectors to be written.</param>
+            <param name="outputs">The array of output values to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(System.Double[],System.Double)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(System.Double[],System.Boolean)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(System.Double[],System.Double,System.String)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            <param name="comment">An optional comment describing the feature.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(Accord.Math.Sparse{System.Double},System.Double)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(Accord.Math.Sparse{System.Double},System.Double,System.String)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            <param name="comment">An optional comment describing the feature.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(Accord.Math.Sparse{System.Double},System.Boolean)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Write(Accord.Math.Sparse{System.Double},System.Boolean,System.String)">
+            <summary>
+              Writes the given feature vector and associated output label/value to the file.
+            </summary>
+            
+            <param name="feature">The feature vector to be written.</param>
+            <param name="output">The output value to be written.</param>
+            <param name="comment">An optional comment describing the feature.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+              resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseWriter.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.IO.SparseReader"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.SparseReader">
+             <summary>
+               Reader for data files containing samples in libsvm's sparse format.
+             </summary>
+             
+             <example>
+               <para>
+               The following example shows how to read all sparse samples from a file
+               and retrieve them as a dense multidimensional vector.</para>
+               
+               <code>
+               // Suppose we are going to read a sparse sample file containing
+               //  samples which have an actual dimension of 4. Since the samples
+               //  are in a sparse format, each entry in the file will probably
+               //  have a much lesser number of elements.
+               //
+               int sampleSize = 4;
+            
+               // Create a new Sparse Sample Reader to read any given file,
+               //  passing the correct dense sample size in the constructor
+               //
+               SparseReader reader = new SparseReader(file, Encoding.Default, sampleSize);
+               
+               // Declare a vector to obtain the label
+               //  of each of the samples in the file
+               //
+               int[] labels = null;
+               
+               // Declare a vector to obtain the description (or comments)
+               //  about each of the samples in the file, if present.
+               //
+               string[] descriptions = null;
+               
+               // Read the sparse samples and store them in a dense vector array
+               double[][] samples = reader.ReadToEnd(out labels, out descriptions);
+               </code>
+               
+               <para>Additionally, it is also possible to read each sample
+               individually and sequentially. For this, we can use a while
+               loop until we reach the end of the stream.</para>
+               
+               <code>
+               // Suppose we are going to read a sparse sample file containing
+               //  samples which have an actual dimension of 4. Since the samples
+               //  are in a sparse format, each entry in the file will probably
+               //  have a much lesser number of elements.
+               //
+               int sampleSize = 4;
+            
+               // Create a new Sparse Sample Reader to read any given file,
+               //  passing the correct dense sample size in the constructor
+               //
+               SparseReader reader = new SparseReader(file, Encoding.Default, sampleSize);
+            
+               // Declare some variables to receive each sample
+               //
+               int label = 0;
+               string description;
+               double[] sample;
+               
+               // Read a single sample from the file
+               sample = reader.ReadDense(out label, out description);
+               
+               // Read all other samples from the file
+               while (!reader.EndOfStream)
+               {
+                   sample = reader.ReadDense(out label, out description);
+               }
+               </code>
+             </example>
+             
+        </member>
+        <member name="P:Accord.IO.SparseReader.BaseStream">
+            <summary>
+              Returns the underlying stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseReader.Intercept">
+            <summary>
+              Gets or sets whether to include an intercept term
+              (bias) value at the beginning of each new sample.
+              Default is <c>null</c> (don't include anything).
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseReader.SampleDescriptions">
+            <summary>
+              Gets the description associated with the last read values.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseReader.Dimensions">
+            <summary>
+              Obsolete. Please use <see cref="P:Accord.IO.SparseReader.NumberOfInputs"/> instead.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.IO.SparseReader.NumberOfInputs">
+            <summary>
+              Gets the number of features present in this dataset. Please 
+              note that, when using the sparse representation, it is not
+              strictly necessary to know this value.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.String,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be read.</param>
+            <param name="sampleSize">The size of the feature vectors stored in the file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be read.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.Stream,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be read.</param>
+            <param name="sampleSize">The size of the feature vectors stored in the file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.String,System.Text.Encoding,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be read.</param>
+            <param name="encoding">The character encoding to use.</param>
+            <param name="sampleSize">The size of the feature vectors stored in the file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="path">The complete file path to be read.</param>
+            <param name="encoding">The character encoding to use.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.Stream)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be read.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.Stream,System.Text.Encoding,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be read.</param>
+            <param name="encoding">The character encoding to use.</param>
+            <param name="sampleSize">The size of the feature vectors stored in the file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.Stream,System.Text.Encoding)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="stream">The file stream to be read.</param>
+            <param name="encoding">The character encoding to use.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.StreamReader,System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="reader">A StreamReader containing the file to be read.</param>
+            <param name="sampleSize">The size of the feature vectors stored in the file.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.#ctor(System.IO.StreamReader)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.IO.SparseReader"/> class.
+            </summary>
+            
+            <param name="reader">A StreamReader containing the file to be read.</param>
+            
+        </member>
+        <member name="P:Accord.IO.SparseReader.EndOfStream">
+            <summary>
+              Gets a value that indicates whether the current
+              stream position is at the end of the stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadLine">
+            <summary>
+              Reads one line from the feature file, returning the array of values 
+              for the sparse vector and its corresponding label.
+            </summary>
+            
+            <returns>A tuple containing the array of values in the format 
+             "index:value" as the first item and their corresponding label
+             as the second item.</returns>
+             
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadSparse">
+            <summary>
+              Reads a sample from the file and returns it as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              its associated output value.
+            </summary>
+            
+            <returns>A tuple containing the sparse vector as the first item
+              and its associated output value as the second item.</returns>
+              
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(Accord.Math.Sparse{System.Double}@,System.Double@)">
+            <summary>
+              Reads a sample from the file and returns it as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              its associated output value.
+            </summary>
+            
+            <returns>A tuple containing the sparse vector as the first item
+              and its associated output value as the second item.</returns>
+              
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(Accord.Math.Sparse{System.Double}@,System.Int32@)">
+            <summary>
+              Reads a sample from the file and returns it as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              its associated output value.
+            </summary>
+            
+            <returns>A tuple containing the sparse vector as the first item
+              and its associated output value as the second item.</returns>
+              
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(Accord.Math.Sparse{System.Double}@,System.Boolean@)">
+            <summary>
+              Reads a sample from the file and returns it as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              its associated output value.
+            </summary>
+            
+            <returns>A tuple containing the sparse vector as the first item
+              and its associated output value as the second item.</returns>
+              
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadSparse(System.Int32)">
+            <summary>
+              Reads <paramref name="count"/> samples from the file and returns
+              them as a <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="count">The number of samples to read.</param>
+            
+            <returns>A tuple containing the sparse vectors as the first item
+              and their associated output values as the second item.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(System.Int32,Accord.Math.Sparse{System.Double}[]@,System.Double[]@)">
+            <summary>
+              Reads <paramref name="count"/> samples from the file and returns
+              them as a <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="count">The number of samples to read.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(System.Int32,Accord.Math.Sparse{System.Double}[]@,System.Int32[]@)">
+            <summary>
+              Reads <paramref name="count"/> samples from the file and returns
+              them as a <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="count">The number of samples to read.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Read(System.Int32,Accord.Math.Sparse{System.Double}[]@,System.Boolean[]@)">
+            <summary>
+              Reads <paramref name="count"/> samples from the file and returns
+              them as a <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="count">The number of samples to read.</param>
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadSparseToEnd">
+            <summary>
+              Reads all samples from the file and returns them as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <returns>A tuple containing the sparse vectors as the first item
+              and their associated output values as the second item.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadToEnd(Accord.Math.Sparse{System.Double}[]@,System.Double[]@)">
+            <summary>
+              Reads all samples from the file and returns them as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadToEnd(Accord.Math.Sparse{System.Double}[]@,System.Boolean[]@)">
+            <summary>
+              Reads all samples from the file and returns them as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadToEnd(Accord.Math.Sparse{System.Double}[]@,System.Int32[]@)">
+            <summary>
+              Reads all samples from the file and returns them as a
+              <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="samples">The samples that have been read from the file.</param>
+            <param name="outputs">The output labels associated with each sample in <paramref name="samples"/>.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadDense">
+            <summary>
+              Reads a sample from the file and returns it as a
+              dense vector, together with its associated output value.
+            </summary>
+            
+            <returns>A tuple containing the dense vector as the first item
+              and its associated output value as the second item.</returns>
+              
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadDense(System.Int32)">
+            <summary>
+              Reads <paramref name="count"/> samples from the file and returns
+              them as a <see cref="T:Accord.Math.Sparse`1"/> sparse vector, together with
+              their associated output values.
+            </summary>
+            
+            <param name="count">The number of samples to read.</param>
+            
+            <returns>A tuple containing the sparse vectors as the first item
+              and their associated output values as the second item.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.ReadDenseToEnd">
+            <summary>
+              Reads all samples from the file and returns them as a
+              dense vector, together with their associated output values.
+            </summary>
+            
+            <returns>A tuple containing the dense vectors as the first item
+              and their associated output values as the second item.</returns>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+              resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.IO.SparseReader.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.IO.SparseReader"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.IO.ValueTrimmingOptions">
+            <summary>
+              Field trimming options.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ValueTrimmingOptions.None">
+            <summary>
+              Do not trim any fields.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ValueTrimmingOptions.UnquotedOnly">
+            <summary>
+              Only trim unquoted fields.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ValueTrimmingOptions.QuotedOnly">
+            <summary>
+              Only Trim quoted fields.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.IO.ValueTrimmingOptions.All">
+            <summary>
+              Trim all fields (quoted and unquoted).
+            </summary>
+            
+        </member>
+    </members>
+</doc>

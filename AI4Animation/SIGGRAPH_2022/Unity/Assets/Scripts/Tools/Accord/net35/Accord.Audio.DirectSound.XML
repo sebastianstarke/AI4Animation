@@ -1,0 +1,1218 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Audio.DirectSound</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.DirectSound.AudioCaptureDevice">
+             <summary>
+               Audio source for local audio capture device (i.e. a microphone).
+             </summary>
+             
+             <remarks>
+               <para>This <see cref="T:Accord.Audio.IAudioSource">audio source</see> captures audio data
+               obtained from a local audio capture device such as the microphone. The audio
+               is captured using DirectSound through SlimDX.</para>
+               
+               <para>For instructions on how to list capture devices, please see
+               the <see cref="T:Accord.DirectSound.AudioDeviceCollection"/> documentation page.</para>
+             </remarks>
+             
+             <example>
+               <para>Sample usage:</para>
+               
+               <code>
+               // Create default capture device
+               AudioCaptureDevice source = new AudioCaptureDevice();
+              
+               // Specify capturing options
+               source.DesiredFrameSize = 4096;
+               source.SampleRate = 22050;
+              
+               // Specify the callback function which will be
+               // called once a sample is completely available
+               source.NewFrame += source_NewFrame;
+            
+               // Start capturing
+               source.Start();
+               
+               // ...
+               
+               // The callback function should determine what
+               // should be done with the samples being caught
+               private void source_NewFrame(object sender, NewFrameEventArgs eventArgs)
+               {
+                   // Read current frame...
+                   Signal s = eventArgs.Signal;
+            
+                   // Process/play/record it
+                   // ...
+               }
+               </code>
+               
+               <para>For more details regarding usage, please check one of 
+               the Audio sample applications accompanying the framework. </para>
+             </example>
+             
+             <seealso cref="T:Accord.DirectSound.AudioDeviceCollection"/>
+             <seealso cref="T:Accord.DirectSound.AudioOutputDevice"/>
+             
+        </member>
+        <member name="E:Accord.DirectSound.AudioCaptureDevice.NewFrame">
+            <summary>
+              New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from audio source.</para>
+            
+            <para><note>Since audio source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed audio frame, because the audio source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.DirectSound.AudioCaptureDevice.AudioSourceError">
+            <summary>
+              Audio source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            audio source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.Source">
+            <summary>
+              Audio source.
+            </summary>
+            
+            <remarks>Audio source is represented by Guid of audio capture device.</remarks>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.Format">
+            <summary>
+              Gets or sets the sample format used by the device.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.DesiredFrameSize">
+            <summary>
+              Gets or sets the desired frame size.
+            </summary>
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.Channels">
+            <summary>
+              Gets the number of audio channels captured by
+              the device. Currently, only a single channel 
+              is supported.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.FramesReceived">
+            <summary>
+              Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the audio source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.BytesReceived">
+            <summary>
+              Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the audio source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.UserData">
+            <summary>
+              User data.
+            </summary>
+            
+            <remarks>The property allows to associate user data with audio source object.</remarks>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.IsRunning">
+            <summary>
+              State of the audio source.
+            </summary>
+            
+            <remarks>Current state of audio source object - running or not.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DirectSound.AudioCaptureDevice"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.#ctor(Accord.DirectSound.AudioDeviceInfo)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DirectSound.AudioCaptureDevice"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.#ctor(System.Guid)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DirectSound.AudioCaptureDevice"/> class.
+            </summary>
+            
+            <param name="device">Global identifier of the audio capture device.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.#ctor(System.Guid,System.String)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.DirectSound.AudioCaptureDevice"/> class.
+            </summary>
+            
+            <param name="device">Global identifier of the audio capture device.</param>
+            <param name="name">The device name or description string.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Start">
+            <summary>
+              Start audio source.
+            </summary>
+            
+            <remarks>Starts audio source and return execution to caller. audio source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.DirectSound.AudioCaptureDevice.NewFrame"/> event.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.SignalToStop">
+            <summary>
+              Signals audio source to stop its work.
+            </summary>
+            
+            <remarks>Signals audio source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.WaitForStop">
+            <summary>
+              Wait for audio source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signaled to stop using
+            <see cref="M:Accord.DirectSound.AudioCaptureDevice.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Stop">
+            <summary>
+              Stop audio source.
+            </summary>
+            
+            <remarks><para>Stops audio source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.DirectSound.AudioCaptureDevice.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.DirectSound.AudioCaptureDevice.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Free">
+            <summary>
+              Free resource.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.WorkerThread">
+            <summary>
+              Worker thread.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.OnNewFrame(System.Array)">
+            <summary>
+              Notifies client about new block of frames.
+            </summary>
+            
+            <param name="frame">New frame's audio.</param>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.CanSeek">
+            <summary>
+              Gets whether this audio source supports seeking.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Seek(System.Int32)">
+            <summary>
+               This source does not support seeking.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioCaptureDevice.SampleRate">
+            <summary>
+              Gets or sets the desired sample rate for this capturing device.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.DirectSound.AudioCaptureDevice"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Dispose">
+            <summary>
+              Performs application-defined tasks associated with
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioCaptureDevice.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing">
+              <c>true</c> to release both managed and unmanaged resources;
+              <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="T:Accord.DirectSound.AudioDeviceCategory">
+            <summary>
+              Audio Device Category.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.DirectSound.AudioDeviceCategory.Capture">
+            <summary>
+              Capture audio device, such as a microphone or audio-in.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.DirectSound.AudioDeviceCategory.Output">
+            <summary>
+              Output audio device, such as speakers or headphone jacks.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DirectSound.AudioDeviceCollection">
+            <summary>
+              Audio Device Collection
+            </summary>
+            
+            <remarks>
+              Objects of this class may be used to iterate through available audio
+              devices present in the system. For example, by creating a <see cref=
+              "T:Accord.DirectSound.AudioDeviceCollection"/> specifying <see cref="F:Accord.DirectSound.AudioDeviceCategory.Output">
+              AudioDeviceCategory.Output</see> to its constructor, it will be possible
+              to iterate through all available output devices detected by DirectSound.
+              To list capture devices, use <see cref="F:Accord.DirectSound.AudioDeviceCategory.Capture">
+              AudioDeviceCategory.Capture</see> instead.</remarks>
+              
+             <example>
+               <para>The source code below shows a typical usage of AudioDeviceCollection.</para>
+              
+               <code>
+               // Create a new AudioDeviceCollection to list output devices:
+               var collection = new AudioDeviceCollection(AudioDeviceCategory.Output);
+              
+               // Print all devices available in the system
+               foreach (var device in collection)
+                  Console.WriteLine(device.ToString());
+                
+               // Get the default audio device in the system
+               var defaultDevice = collection.Default;
+              </code>
+             </example>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioDeviceCollection.Default">
+            <summary>
+              Gets the default audio device of the chosen
+              <see cref="P:Accord.DirectSound.AudioDeviceCollection.Category">category</see>.
+            </summary>
+            
+            <value>The default audio device of the chosen <see cref="P:Accord.DirectSound.AudioDeviceCollection.Category">category</see>.</value>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioDeviceCollection.Category">
+            <summary>
+              Gets the <see cref="T:Accord.DirectSound.AudioDeviceCategory">category</see>
+              of the audio devices listed by this collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioDeviceCollection.#ctor(Accord.DirectSound.AudioDeviceCategory)">
+            <summary>
+              Creates a <see cref="T:Accord.DirectSound.AudioDeviceCollection"/> class containing
+              devices of the given <see cref="T:Accord.DirectSound.AudioDeviceCategory">category</see>.
+            </summary>
+            
+            <param name="category">The category of the devices.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioDeviceCollection.GetEnumerator">
+            <summary>
+              Returns an enumerator that iterates through the device collection.
+            </summary>
+            
+            <returns>
+              A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that 
+              can be used to iterate through the collection.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioDeviceCollection.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+              Returns an enumerator that iterates through the device collection.
+            </summary>
+            
+            <returns>
+              An <see cref="T:System.Collections.IEnumerator"/> object that 
+              can be used to iterate through the collection.
+            </returns>
+            
+        </member>
+        <member name="T:Accord.DirectSound.AudioOutputDevice">
+             <summary>
+               Audio output device for local audio playback (i.e. a sound card port).
+             </summary>
+             
+             <remarks>
+               <para>This <see cref="T:Accord.Audio.IAudioOutput">audio output</see> sends audio data
+               to a local output device such as a sound card. The audio is reproduced
+               using DirectSound through SlimDX.</para>
+               
+               <para>For instructions on how to list output devices, please see
+               the <see cref="T:Accord.DirectSound.AudioDeviceCollection"/> documentation page.</para>
+             </remarks>
+             
+             <example>
+               <para>Sample usage:</para>
+               
+               <code>
+               // To create an audio output device, DirectSound requires a handle to
+               // the parent form of the application (or other application handle). In
+               // Windows.Forms, this could be achieved by providing the Handle property
+               // of the currently displayed form.
+               
+               int sampleRate = 22000; // 22kHz
+               int channels = 2;       // stereo
+               
+               // Create the audio output device with the desired values
+               AudioOutputDevice output = new AudioOutputDevice(Handle, sampleRate, channels);
+               
+               // The output device works at real time, and as such, forms a queue of audio
+               // samples to be played (more specifically, a buffer). When this buffer starts
+               // to get empty, the output will ask the application for more samples of it
+               // should stop playing. To ask for more samples, the output device will fire
+               // an event which should be handled by the user:
+            
+               output.NewFrameRequested += output_NewFrameRequested;
+               
+               // It is also possible to configure an event to be fired when the device
+               // has stopped playing and when it has just started playing a frame. Those
+               // are mainly used for reporting status to GUI controls.
+               output.Stopped += output_Stopped;
+               output.FramePlayingStarted += output_FramePlayingStarted;
+               
+               // Start playing
+               output.Play();
+               </code>
+               
+               <para>For more details regarding usage, please check one of 
+               the Audio sample applications accompanying the framework. </para>
+             </example>
+             
+             <seealso cref="T:Accord.DirectSound.AudioDeviceCollection"/>
+             <seealso cref="T:Accord.DirectSound.AudioCaptureDevice"/>
+             
+        </member>
+        <member name="P:Accord.DirectSound.AudioOutputDevice.IsRunning">
+            <summary>
+              Gets a value indicating whether this instance is playing audio.
+            </summary>
+            
+            <value>
+              <c>true</c> if this instance is running; otherwise, <c>false</c>.
+            </value>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioOutputDevice.SamplingRate">
+            <summary>
+              Gets the sampling rate for the current output device.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioOutputDevice.Channels">
+            <summary>
+              Gets the number of channels for the current output device.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioOutputDevice.Owner">
+            <summary>
+              Gets the parent owner form for the device.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioOutputDevice.Output">
+            <summary>
+              Audio output.
+            </summary>
+            
+            <remarks>Audio output is represented by Guid of audio output device.</remarks>
+            
+        </member>
+        <member name="E:Accord.DirectSound.AudioOutputDevice.FramePlayingStarted">
+            <summary>
+              Raised when a frame starts playing.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.DirectSound.AudioOutputDevice.NewFrameRequested">
+            <summary>
+              Raised when a frame starts playing.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.DirectSound.AudioOutputDevice.Stopped">
+            <summary>
+              Indicates all frames have been played and the audio finished.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.DirectSound.AudioOutputDevice.AudioOutputError">
+            <summary>
+              Audio output error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            audio output object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.#ctor(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+              Constructs a new Audio Output Device.
+            </summary>
+            
+            <param name="owner">The owner window handle.</param>
+            <param name="samplingRate">The sampling rate of the device.</param>
+            <param name="channels">The number of channels of the device.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.#ctor(System.Guid,System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+              Constructs a new Audio Output Device.
+            </summary>
+            
+            <param name="device">Global identifier of the audio output device.</param>
+            <param name="owner">The owner window handle.</param>
+            <param name="samplingRate">The sampling rate of the device.</param>
+            <param name="channels">The number of channels of the device.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Play(System.Single[])">
+            <summary>
+              Starts playing the current buffer.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Play">
+            <summary>
+              Starts playing the current buffer.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.WorkerThread">
+            <summary>
+              Worker thread.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Stop">
+            <summary>
+              Stops playing the current buffer.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.SignalToStop">
+            <summary>
+              Signals audio output to stop its work.
+            </summary>
+            
+            <remarks>Signals audio output to stop its background thread, stop to
+            ask for new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.WaitForStop">
+            <summary>
+              Wait for audio output has stopped.
+            </summary>
+            
+            <remarks>Waits for output stopping after it was signaled to stop using
+            <see cref="M:Accord.DirectSound.AudioOutputDevice.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Dispose">
+            <summary>
+              Performs application-defined tasks associated with 
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+            resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioOutputDevice.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.DirectSound.WaveFileAudioSource"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.DirectSound.AudioDeviceInfo">
+            <summary>
+              Audio device information.
+            </summary>
+            
+            <remarks>
+              This class holds information about a particular audio device,
+              such as a microphone, audio card port or anything else which
+              could be detected by DirectSound. Objects from this class
+              are typically obtained through a <see cref="T:Accord.DirectSound.AudioDeviceCollection"/>
+              collection.
+            </remarks>
+            
+            <see cref="T:Accord.DirectSound.AudioDeviceCollection"/>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioDeviceInfo.Description">
+            <summary>
+              Gets the description of the device.
+            </summary>
+            
+            <value>The description of the device.</value>
+            
+        </member>
+        <member name="P:Accord.DirectSound.AudioDeviceInfo.Guid">
+            <summary>
+              Gets the unique id of the device.
+            </summary>
+            
+            <value>The <see cref="P:Accord.DirectSound.AudioDeviceInfo.Guid">Global Unique Identifier</see> of the device.</value>
+            
+        </member>
+        <member name="M:Accord.DirectSound.AudioDeviceInfo.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> representing the audio device.
+            </summary>
+            
+            <returns>
+            A <see cref="T:System.String"/> that represents the audio device.
+            </returns>
+            
+        </member>
+        <member name="T:Accord.DirectSound.WaveFileAudioSource">
+             <summary>
+               Read audio samples from a Wave file.
+             </summary>
+             
+             <remarks>
+               <para>This <see cref="T:Accord.Audio.IAudioSource">audio source</see> reads audio samples
+               from Wave files. Internally, it uses the <see cref="T:Accord.Audio.Formats.WaveDecoder"/> class
+               to automatically decode Wave files into <see cref="T:Accord.Audio.Signal">audio signals</see>.</para>
+             </remarks>
+             
+             <example>
+               <para>Sample usage:</para>
+               
+               <code>
+               // Create the Wave file audio source
+               WaveFileAudioSource source = new WaveFileAudioSource("audiofile.wav");
+               
+               // Specify the callback function which will be
+               // called once a sample is completely available
+               source.NewFrame += source_NewFrame;
+            
+               // Start capturing
+               source.Start();
+               
+               // ...
+               
+               // The callback function should determine what
+               // should be done with the samples being caught
+               private void source_NewFrame(object sender, NewFrameEventArgs eventArgs)
+               {
+                   // Read current frame...
+                   Signal s = eventArgs.Signal;
+            
+                   // Process/play/record it
+                   // ...
+               }
+               </code>
+             </example>
+             
+             <seealso cref="T:Accord.Audio.Formats.WaveDecoder"/>
+             <seealso cref="T:Accord.DirectSound.AudioOutputDevice"/>
+             
+        </member>
+        <member name="E:Accord.DirectSound.WaveFileAudioSource.NewFrame">
+            <summary>
+              Event raised when a new frame has arrived.
+            </summary>
+            
+        </member>
+        <member name="E:Accord.DirectSound.WaveFileAudioSource.AudioSourceError">
+            <summary>
+              Event raised when an error occurs in the audio source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.Source">
+            <summary>
+              Gets or sets the file source path.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.DesiredFrameSize">
+            <summary>
+              Gets or sets the desired frame size to use when reading this source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.Channels">
+            <summary>
+              Gets the number of audio channels in the wave file.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.FramesReceived">
+            <summary>
+              Gets the quantity of frames received.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.BytesReceived">
+            <summary>
+              Gets the quantity of bytes received.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.UserData">
+            <summary>
+              Gets or sets a user-defined tag associated with this object.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.IsRunning">
+            <summary>
+              Gets whether this source is active or not.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Start">
+            <summary>
+              Starts reading from the source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.SignalToStop">
+            <summary>
+              Signals the source to stop.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.WaitForStop">
+            <summary>
+              Blocks the calling thread until the source has stopped.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Stop">
+            <summary>
+              Stops the source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.#ctor(System.String)">
+            <summary>
+              Constructs a new Wave file audio source.
+            </summary>
+            
+            <param name="fileName">The path for the underlying source.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.#ctor(System.IO.Stream)">
+            <summary>
+              Constructs a new Wave file audio source.
+            </summary>
+            
+            <param name="stream">The stream containing a Wave file.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Free">
+             <summary>
+               Free resource.
+             </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.WorkerThread">
+            <summary>
+              Worker thread.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.CanSeek">
+            <summary>
+              Gets whether the current source supports seeking.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Seek(System.Int32)">
+            <summary>
+              Navigates to a given position within the source.
+            </summary>
+            
+            <param name="frameIndex">The frame position to navigate to.</param>
+            
+        </member>
+        <member name="P:Accord.DirectSound.WaveFileAudioSource.SampleRate">
+            <summary>
+              Gets the sampling rate for this source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Dispose">
+            <summary>
+              Performs application-defined tasks associated with 
+              freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Dispose(System.Boolean)">
+            <summary>
+              Releases unmanaged and - optionally - managed resources
+            </summary>
+            
+            <param name="disposing"><c>true</c> to release both managed and
+            unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+            
+        </member>
+        <member name="M:Accord.DirectSound.WaveFileAudioSource.Finalize">
+            <summary>
+              Releases unmanaged resources and performs other cleanup operations before the
+              <see cref="T:Accord.DirectSound.WaveFileAudioSource"/> is reclaimed by garbage collection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Audio.Extensions">
+            <summary>
+              Extension methods.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Extensions.ToWaveFormat(Accord.Audio.SampleFormat)">
+            <summary>
+              Converts a sample format into an appropriate <see cref="T:SharpDX.Multimedia.WaveFormatEncoding"/>.
+            </summary>
+            
+            <param name="sampleFormat">The sample format.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Extensions.ToSampleFormat(SharpDX.Multimedia.WaveFormatEncoding,System.Int32)">
+            <summary>
+              Converts a <see cref="T:SharpDX.Multimedia.WaveFormatEncoding"/> and bits per sample information
+              into an appropriate <see cref="T:Accord.Audio.SampleFormat"/>.
+            </summary>
+            
+            <param name="tag">The wave format tag.</param>
+            <param name="bitsPerSample">The bits per sample.</param>
+            
+        </member>
+        <member name="T:Accord.Audio.Formats.WaveDecoder">
+            <summary>
+              Wave audio file decoder.
+            </summary>
+            
+            <example>
+            <code>
+            // Let's decode a Wave audio file
+            UnmanagedMemoryStream sourceStream = ...
+            
+            // Create a decoder for the source stream
+            WaveDecoder sourceDecoder = new WaveDecoder(sourceStream);
+            
+            // At this point, we can query some properties of the audio file:
+            int channels =  sourceDecoder.Channels;
+            int samples  =  sourceDecoder.Samples;
+            int frames   =  sourceDecoder.Frames;
+            int duration =  sourceDecoder.Duration;
+            int rate     =  sourceDecoder.SampleRate;
+            int bps      =  sourceDecoder.BitsPerSample;
+            
+            // Decode the signal in the source stream
+            Signal sourceSignal = sourceDecoder.Decode();
+            </code>
+            </example>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Position">
+            <summary>
+              Gets the current frame within
+              the current decoder stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Channels">
+            <summary>
+              Gets the number of channels of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Frames">
+            <summary>
+              Gets the number of frames of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Samples">
+            <summary>
+              Gets the number of samples of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.SampleRate">
+            <summary>
+              Gets the sample rate for
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Stream">
+            <summary>
+              Gets the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Bytes">
+            <summary>
+              Gets the total number of bytes
+              read by this Wave encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.Duration">
+            <summary>
+              Gets the total time span duration (in
+              milliseconds) read by this encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.AverageBitsPerSecond">
+            <summary>
+              Gets the average bits per second
+              of the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveDecoder.BitsPerSample">
+            <summary>
+              Gets the bits per sample of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.#ctor">
+            <summary>
+              Constructs a new Wave decoder.
+            </summary>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.#ctor(System.IO.Stream)">
+            <summary>
+              Constructs a new Wave decoder.
+            </summary>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.#ctor(System.String)">
+            <summary>
+              Constructs a new Wave decoder.
+            </summary>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Open(SharpDX.Multimedia.SoundStream)">
+            <summary>
+              Opens the specified stream.
+            </summary>
+            
+            <param name="stream">Stream to open.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Open(System.IO.Stream)">
+            <summary>
+              Open specified stream.
+            </summary>
+            
+            <param name="stream">Stream to open.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Open(System.String)">
+            <summary>
+              Open specified stream.
+            </summary>
+            
+            <param name="path">Path of file to open as stream.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Seek(System.Int32)">
+            <summary>
+              Navigates to a position in this Wave stream.
+            </summary>
+            
+            <param name="frameIndex">The index of the sample to navigate to.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Decode">
+            <summary>
+              Decodes the Wave stream into a Signal object.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Decode(System.Int32)">
+            <summary>
+              Decodes the Wave stream into a Signal object.
+            </summary>
+            
+            <param name="frames">The number of frames to decode.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Decode(System.Int32,System.Int32)">
+            <summary>
+            Decodes the Wave stream into a Signal object.
+            </summary>
+            
+            <param name="index">Audio frame index to start decoding.</param>
+            <param name="frames">The number of frames to decode.</param>
+            
+            <returns>Returns the decoded signal.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.Close">
+            <summary>
+              Closes the underlying stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.read(System.Single[],System.Int32)">
+            <summary>
+              Reads a maximum of count samples from the current stream, and writes the data to buffer, beginning at index.
+            </summary>
+            <param name="buffer">
+               When this method returns, this parameter contains the specified byte array with the values between index and (index + count -1) replaced by the 8 bit frames read from the current source.
+            </param>
+            <param name="count">The amount of frames to read.</param>
+            <returns>The number of reads performed on the stream.</returns>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.read(System.Int16[],System.Int32)">
+            <summary>
+              Reads a maximum of count frames from the current stream, and writes the data to buffer, beginning at index.
+            </summary>
+            <param name="buffer">
+               When this method returns, this parameter contains the specified byte array with the values between index and (index + count -1) replaced by the 8 bit frames read from the current source.
+            </param>
+            <param name="count">The amount of frames to read.</param>
+            <returns>The number of reads performed on the stream.</returns>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.read(System.Int32[],System.Int32)">
+            <summary>
+              Reads a maximum of count frames from the current stream, and writes the data to buffer, beginning at index.
+            </summary>
+            <param name="buffer">
+               When this method returns, this parameter contains the specified byte array with the values between index and (index + count -1) replaced by the 8 bit frames read from the current source.
+            </param>
+            <param name="count">The amount of frames to read.</param>
+            <returns>The number of reads performed on the stream.</returns>
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveDecoder.read(System.Byte[],System.Int32)">
+            <summary>
+              Reads a maximum of count frames from the current stream, and writes the data to buffer, beginning at index.
+            </summary>
+            <param name="buffer">
+               When this method returns, this parameter contains the specified byte array with the values between index and (index + count -1) replaced by the 8 bit frames read from the current source.
+            </param>
+            <param name="count">The amount of frames to read.</param>
+            <returns>The number of reads performed on the stream.</returns>
+        </member>
+        <member name="T:Accord.Audio.Formats.WaveEncoder">
+            <summary>
+              Wave audio file encoder.
+            </summary>
+            
+            <example>
+            <code>
+            // Create a stream to hold our encoded audio
+            MemoryStream destinationStream = new MemoryStream();
+            
+            // Create a encoder for the destination stream
+            WaveEncoder encoder = new WaveEncoder(destinationStream);
+            
+            // Encode the signal to the destination stream
+            encoder.Encode(sourceSignal);
+            </code>
+            </example>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Stream">
+            <summary>
+              Gets the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Channels">
+            <summary>
+              Gets the number of channels
+              of the active Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Frames">
+            <summary>
+              Gets the total number of frames
+              written by this Wave encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Samples">
+            <summary>
+              Gets the total number of samples
+              written by this Wave encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.SampleRate">
+            <summary>
+              Gets the sample rate of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Bytes">
+            <summary>
+              Gets the total number of bytes
+              written by this Wave encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Duration">
+            <summary>
+              Gets the total time span duration (in
+              milliseconds) written by this encoder.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.AverageBitsPerSecond">
+            <summary>
+              Gets the average bits per second
+              of the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.BitsPerSample">
+            <summary>
+              Gets the bits per sample of
+              the underlying Wave stream.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Audio.Formats.WaveEncoder.Format">
+            <summary>
+              Gets the sample format used by the encoder.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.#ctor">
+            <summary>
+              Constructs a new Wave encoder.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.#ctor(System.IO.FileStream)">
+            <summary>
+              Constructs a new Wave encoder.
+            </summary>
+            
+            <param name="stream">A file stream to store the encoded data.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.#ctor(System.IO.Stream)">
+             <summary>
+               Constructs a new Wave encoder.
+             </summary>
+             
+             <param name="stream">A stream to store the encoded data.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.#ctor(System.String)">
+            <summary>
+              Constructs a new Wave encoder.
+            </summary>
+            
+            <param name="path">The path to a file to store the encoded data.</param>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.Open(System.IO.FileStream)">
+            <summary>
+              Opens the specified stream.
+            </summary>
+            
+            <param name="stream">Stream to open.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.Open(System.IO.Stream)">
+            <summary>
+              Open specified stream.
+            </summary>
+            
+            <param name="stream">Stream to open.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.Open(System.String)">
+            <summary>
+              Open specified stream.
+            </summary>
+            
+            <param name="path">Path of file to open as stream.</param>
+            
+            <returns>Returns number of frames found in the specified stream.</returns>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.Close">
+            <summary>
+              Closes the underlying stream.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Audio.Formats.WaveEncoder.Encode(Accord.Audio.Signal)">
+            <summary>
+              Encodes the Wave stream into a Signal object.
+            </summary>
+            
+        </member>
+    </members>
+</doc>
