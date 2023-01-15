@@ -21,13 +21,17 @@ conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 
 The input/output data provided to the model is a matrix where each row
 is one data sample containing the joint velocity features at each frame.
-Each data sample is of shape dimensionality J*T*3, where J are number of
-joints (i.e. 26) , T is the time window frames (i.e. 121), and 3 are the 
-XYZ velocity values transformed into local root space of the character,
-which is calculated as ((V_i in R_i) - (V_(i-1) in R_(i-1))) / dt,
-where V is the velocity and R is the root transformation at frame i.
+Each data sample is of shape dimensionality k*d, where k are the number
+of joints (i.e. 26) and d are the 3 XYZ velocity values transformed into 
+the local root space of the character, which is calculated as:
 
-Data Sample: J_1 T_-60 X, ..., J_1 T_+60 X, J_1 T_-60 Y, ..., J_1 T_+60 Y ..., J_N T_-60 Z, ..., J_N T_+60 Z
+V_i = ((P_i in R_i) - (P_(i-1) in R_(i-1))) / dt
+
+where P is the position and R is the root transformation at frame i 
+and i-1 respectively. This creates a training data file with shape 
+N x k*d where N are the number of frames (rows) and k*d columns.
+
+Data Sample Format: J1X, J1Y, J1Z, ..., JkX, JkY, JkZ
 
 For more information, open the Unity project, open the "AssetPipeline"
 editor window and drag&drop the "DeepPhasePipeline" asset into it. Then
