@@ -30,6 +30,7 @@ namespace AI4Animation {
 		private Precomputable<Vector3> PrecomputedPositions = null;
 		private Precomputable<Quaternion> PrecomputedRotations = null;
 		private Precomputable<Vector3> PrecomputedVelocities = null;
+		private Precomputable<float> PrecomputedRegularLengths = null;
 
 		public override void DerivedResetPrecomputation() {
 			SmoothingWindow = null;
@@ -40,6 +41,7 @@ namespace AI4Animation {
 			PrecomputedPositions = new Precomputable<Vector3>(this);
 			PrecomputedRotations = new Precomputable<Quaternion>(this);
 			PrecomputedVelocities = new Precomputable<Vector3>(this);
+			PrecomputedRegularLengths = new Precomputable<float>(this);
 		}
 
 		public override TimeSeries.Component DerivedExtractSeries(TimeSeries global, float timestamp, bool mirrored, params object[] parameters) {
@@ -53,24 +55,24 @@ namespace AI4Animation {
 		}
 
 		protected override void DerivedInitialize() {
-			// MotionAsset.Hierarchy.Bone h = Asset.Source.FindBoneContains("Hips");
-			// Hips = h == null ? 0 : h.Index;
-			// MotionAsset.Hierarchy.Bone n = Asset.Source.FindBoneContains("Neck");
-			// Neck = n == null ? 0 : n.Index;
-			// MotionAsset.Hierarchy.Bone ls = Asset.Source.FindBoneContains("LeftShoulder");
-			// LeftShoulder = ls == null ? 0 : ls.Index;
-			// MotionAsset.Hierarchy.Bone rs = Asset.Source.FindBoneContains("RightShoulder");
-			// RightShoulder = rs == null ? 0 : rs.Index;
-			// MotionAsset.Hierarchy.Bone lh = Asset.Source.FindBoneContainsAny("LeftHip", "LeftUpLeg");
-			// LeftHip = lh == null ? 0 : lh.Index;
-			// MotionAsset.Hierarchy.Bone rh = Asset.Source.FindBoneContainsAny("RightHip", "RightUpLeg");
-			// RightHip = rh == null ? 0 : rh.Index;
-			// MotionAsset.Hierarchy.Bone head = Asset.Source.FindBoneContainsAny("Head");
-			// Head = head == null ? 0 : head.Index;
-			// MotionAsset.Hierarchy.Bone lw = Asset.Source.FindBoneContainsAny("LeftWrist");
-			// LeftWrist = lw == null ? 0 : lw.Index;
-			// MotionAsset.Hierarchy.Bone rw = Asset.Source.FindBoneContainsAny("RightWrist");
-			// RightWrist = rw == null ? 0 : rw.Index;
+			MotionAsset.Hierarchy.Bone h = Asset.Source.FindBoneContains("Hips");
+			Hips = h == null ? 0 : h.Index;
+			MotionAsset.Hierarchy.Bone n = Asset.Source.FindBoneContains("Neck");
+			Neck = n == null ? 0 : n.Index;
+			MotionAsset.Hierarchy.Bone ls = Asset.Source.FindBoneContains("LeftShoulder");
+			LeftShoulder = ls == null ? 0 : ls.Index;
+			MotionAsset.Hierarchy.Bone rs = Asset.Source.FindBoneContains("RightShoulder");
+			RightShoulder = rs == null ? 0 : rs.Index;
+			MotionAsset.Hierarchy.Bone lh = Asset.Source.FindBoneContainsAny("LeftHip", "LeftUpLeg");
+			LeftHip = lh == null ? 0 : lh.Index;
+			MotionAsset.Hierarchy.Bone rh = Asset.Source.FindBoneContainsAny("RightHip", "RightUpLeg");
+			RightHip = rh == null ? 0 : rh.Index;
+			MotionAsset.Hierarchy.Bone head = Asset.Source.FindBoneContainsAny("Head");
+			Head = head == null ? 0 : head.Index;
+			MotionAsset.Hierarchy.Bone lw = Asset.Source.FindBoneContainsAny("LeftHand");
+			LeftWrist = lw == null ? 0 : lw.Index;
+			MotionAsset.Hierarchy.Bone rw = Asset.Source.FindBoneContainsAny("RightHand");
+			RightWrist = rw == null ? 0 : rw.Index;
 			Ground = LayerMask.GetMask("Ground");
 		}
 
@@ -246,6 +248,20 @@ namespace AI4Animation {
 				return Quaternion.identity;
 			}
 		}
+
+		public float GetRootLength(float timestamp, bool mirrored) {
+		return PrecomputedRegularLengths.Get(timestamp, mirrored, () => Compute());
+
+        float Compute() {
+            SmoothingWindow = SmoothingWindow == null ? Asset.GetTimeWindow(MotionEditor.GetInstance().PastWindow + MotionEditor.GetInstance().FutureWindow, 1f) : SmoothingWindow;
+            float value = 0f;
+            for(int i=0; i<SmoothingWindow.Length; i++) {
+                value += GetRootVelocity(timestamp + SmoothingWindow[i], mirrored).magnitude;
+            }
+            return value / SmoothingWindow.Length;
+        }
+    }
+
 		#endif
 
 		public class Series : TimeSeries.Component {
