@@ -2,10 +2,10 @@ import sys
 sys.path.append("../")
 
 import Library.Utility as utility
-import Library.Plotting as plot
 import Library.AdamWR.adamw as adamw
 import Library.AdamWR.cyclic_scheduler as cyclic_scheduler
 import PAE as model
+import Plotting as plot
 
 import numpy as np
 import torch
@@ -21,7 +21,6 @@ if __name__ == '__main__':
     #Start Parameter Section
     window = 2.0 #time duration of the time window
     fps = 60 #fps of the motion capture data
-    keys = 13 #optional, used to rescale the FT window to resolution for motion controller training afterwards, here 6 past + 1 current + 6 future keys
     joints = 26 #joints of the character skeleton
 
     frames = int(window * fps) + 1
@@ -35,8 +34,8 @@ if __name__ == '__main__':
     restart_period = 10
     restart_mult = 2
 
-    plotting_interval = 250 #update visualization at every n-th batch (visualization only)
-    pca_sequence_count = 20 #number of motion sequences visualized in the PCA (visualization only)
+    plotting_interval = 500 #update visualization at every n-th batch (visualization only)
+    pca_sequence_count = 100 #number of motion sequences visualized in the PCA (visualization only)
     test_sequence_ratio = 0.01 #ratio of randomly selected test sequences (visualization only)
     #End Parameter Section
 
@@ -53,7 +52,7 @@ if __name__ == '__main__':
 
         shape = gather.shape
 
-        batch = utility.ReadBatchFromFile(DataFile, gather.flatten(), feature_dim)
+        batch = utility.ReadBatchFromMatrix(Data, gather.flatten())
 
         batch = batch.reshape(shape[0], shape[1], -1)
         batch = batch.swapaxes(1,2)
@@ -63,17 +62,24 @@ if __name__ == '__main__':
     def Item(value):
         return value.detach().cpu()
 
-    Path = "Dataset"
-    DataFile = Path+"/Data.bin"
-    Shape = utility.LoadTxtAsInt(Path+"/DataShape.txt")
-    Sequences = utility.LoadSequences(Path+"/Sequences.txt", True, Shape[0])
+    Load = "Dataset"
     Save = "Training"
     utility.MakeDirectory(Save)
+
+    Data = Load+"/Data.bin"
+    Shape = utility.LoadTxtAsInt(Load+"/DataShape.txt")
+    Sequences = utility.LoadSequences(Load+"/Sequences.txt", True, Shape[0])
+
+    # Sequences = utility.LoadSequences(Path+"/Sequences.txt", True, 100000)
+    # Sequences = Sequences[np.where(Sequences == 1)]
 
     sample_count = Shape[0]
     feature_dim = Shape[1]
     gather_padding = (int((frames-1)/2))
     gather_window = np.arange(frames) - gather_padding
+
+    #Pre-load Data Matrix
+    Data = utility.ReadBinary(Data, sample_count, feature_dim)
 
     #Start Generate Data Sequences
     print("Generating Data Sequences")
@@ -118,7 +124,6 @@ if __name__ == '__main__':
         input_channels=input_channels,
         embedding_channels=phase_channels,
         time_range=frames,
-        key_range=keys,
         window=window
     ))
 
@@ -138,6 +143,7 @@ if __name__ == '__main__':
             train_indices = I[i:i+batch_size]
 
             #Run model prediction
+            network.train()
             train_batch = LoadBatches(train_indices)
             yPred, latent, signal, params = network(train_batch)
 
@@ -166,6 +172,8 @@ if __name__ == '__main__':
             )
 
             if loss_history.Counter == 0:
+                network.eval()
+
                 plot.Functions(ax1[0], Item(train_batch[0]).reshape(network.input_channels,frames), -1.0, 1.0, -5.0, 5.0, title="Motion Curves" + " " + str(network.input_channels) + "x" + str(frames), showAxes=False)
                 plot.Functions(ax1[1], Item(latent[0]), -1.0, 1.0, -2.0, 2.0, title="Latent Convolutional Embedding" + " " + str(phase_channels) + "x" + str(frames), showAxes=False)
                 plot.Circles(ax1[2], Item(params[0][0]).squeeze(), Item(params[2][0]).squeeze(), title="Learned Phase Timing"  + " " + str(phase_channels) + "x" + str(2), showAxes=False)
@@ -176,8 +184,7 @@ if __name__ == '__main__':
                 plot.Distribution(ax3[1], dist_freqs, title="Frequency Distribution")
 
                 indices = gather_window + random.choice(test_sequences)
-                test_batch = LoadBatches(indices)
-                _, _, _, params = network(test_batch)
+                _, _, _, params = network(LoadBatches(indices))
 
                 for i in range(phase_channels):
                     phase = params[0][:,i]
@@ -196,13 +203,12 @@ if __name__ == '__main__':
                 pivot = 0
                 for i in range(pca_sequence_count):
                     indices = gather_window + random.choice(test_sequences)
-                    test_batch = LoadBatches(indices)
-                    _, _, _, params = network(test_batch)
+                    _, _, _, params = network(LoadBatches(indices))
                     a = Item(params[2]).squeeze()
                     p = Item(params[0]).squeeze()
                     b = Item(params[3]).squeeze()
-                    m_x = a * np.sin(2.0 * np.pi * p)
-                    m_y = a * np.cos(2.0 * np.pi * p)
+                    m_x = a * np.sin(2.0 * np.pi * p) + b
+                    m_y = a * np.cos(2.0 * np.pi * p) + b
                     manifold = torch.hstack((m_x, m_y))
                     pca_indices.append(pivot + np.arange(len(indices)))
                     pca_batches.append(manifold)
@@ -220,13 +226,14 @@ if __name__ == '__main__':
 
         #Save Phase Parameters
         print("Saving Parameters")
+        network.eval()
         E = np.arange(sample_count)
         with open(Save+'/Parameters_'+str(epoch+1)+'.txt', 'w') as file:
             for i in range(0, sample_count, batch_size):
                 utility.PrintProgress(i, sample_count)
                 eval_indices = E[i:i+batch_size]
-                train_batch = LoadBatches(eval_indices)
-                _, _, _, params = network(train_batch)
+                eval_batch = LoadBatches(eval_indices)
+                _, _, _, params = network(eval_batch)
                 p = utility.ToNumpy(params[0]).squeeze()
                 f = utility.ToNumpy(params[1]).squeeze()
                 a = utility.ToNumpy(params[2]).squeeze()

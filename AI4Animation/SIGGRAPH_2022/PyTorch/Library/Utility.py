@@ -3,12 +3,73 @@ import os.path
 import numpy as np
 import array
 import torch
+import torch.nn as nn
 import time
 import random
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
 VERBOSE_STEP = 1000
+
+class LN(nn.Module):
+    def __init__(self, dim, epsilon=1e-5):
+        super().__init__()
+        self.epsilon = epsilon
+
+        self.alpha = nn.Parameter(torch.ones([1, dim, 1]), requires_grad=True)
+        self.beta = nn.Parameter(torch.zeros([1, dim, 1]), requires_grad=True)
+
+    def forward(self, x):
+        mean = x.mean(axis=1, keepdim=True)
+        var = ((x - mean) ** 2).mean(dim=1, keepdim=True)
+        std = (var + self.epsilon).sqrt()
+        y = (x - mean) / std
+        y = y * self.alpha + self.beta
+        return y
+
+class LN_v2(nn.Module):
+    def __init__(self, dim, epsilon=1e-5):
+        super().__init__()
+        self.epsilon = epsilon
+
+        self.alpha = nn.Parameter(torch.ones([1, 1, dim]), requires_grad=True)
+        self.beta = nn.Parameter(torch.zeros([1, 1, dim]), requires_grad=True)
+
+    def forward(self, x):
+        mean = x.mean(axis=-1, keepdim=True)
+        var = ((x - mean) ** 2).mean(dim=-1, keepdim=True)
+        std = (var + self.epsilon).sqrt()
+        y = (x - mean) / std
+        y = y * self.alpha + self.beta
+        return y
+
+class LN_v3(nn.Module):
+    def __init__(self, dim, epsilon=1e-5):
+        super().__init__()
+        self.epsilon = epsilon
+
+    def forward(self, x):
+        mean = x.mean(axis=-1, keepdim=True)
+        var = ((x - mean) ** 2).mean(dim=-1, keepdim=True)
+        std = (var + self.epsilon).sqrt()
+        y = (x - mean) / std
+        return y
+
+class LN_v4(nn.Module):
+    def __init__(self, dim, epsilon=1e-5):
+        super().__init__()
+        self.epsilon = epsilon
+
+        self.alpha = nn.Parameter(torch.ones([1, dim]), requires_grad=True)
+        self.beta = nn.Parameter(torch.zeros([1, dim]), requires_grad=True)
+
+    def forward(self, x):
+        mean = x.mean(axis=-1, keepdim=True)
+        var = ((x - mean) ** 2).mean(dim=-1, keepdim=True)
+        std = (var + self.epsilon).sqrt()
+        y = (x - mean) / std
+        y = y * self.alpha + self.beta
+        return y
 
 class BinaryLoader():
     def __init__(self, file, maxStack=10):
@@ -89,6 +150,8 @@ def ElapsedTime(timestamp, output=False, formatted=False):
     else:
         return elapsed
 
+def GetFileID(file):
+    return os.path.basename(os.path.dirname(file))+"_"+os.path.basename(file)
 
 def CollectPointers(file, max=None):
     pointers = []
@@ -227,6 +290,40 @@ def FromDevice(x):
 
 def ToNumpy(X):
     return X.data.cpu().numpy()
+
+#batch is number
+#t is 3D translation vector of shape [batch,values]
+#r is 3D Euler angle vector of shape [batch,values]
+#device is cpu or gpu
+def CreateMatrix(batch, t, r, device):
+    sin = torch.sin(r)
+    cos = torch.cos(r)
+    sinx = sin[:,0]
+    cosx = cos[:,0]
+    siny = sin[:,1]
+    cosy = cos[:,1]
+    sinz = sin[:,2]
+    cosz = cos[:,2]
+
+    r00 = cosy * cosz
+    r01 = sinx * siny * cosz - cosx * sinz
+    r02 = cosx * siny * cosz + sinx * sinz
+    r10 = cosy * sinz
+    r11 = sinx * siny * sinz + cosx * cosz
+    r12 = cosx * siny * sinz - sinx * cosz
+    r20 = -sinx
+    r21 = sinx * cosy
+    r22 = cosx * cosy
+
+    rx = torch.stack((r00, r10, r20, torch.zeros((batch), dtype=torch.float32, device=device)), 1)
+    ry = torch.stack((r01, r11, r21, torch.zeros((batch), dtype=torch.float32, device=device)), 1)
+    rz = torch.stack((r02, r12, r22, torch.zeros((batch), dtype=torch.float32, device=device)), 1)
+
+    t = torch.stack((t[:,0], t[:,1], t[:,2], torch.ones((batch), dtype=torch.float32, device=device)), 1)
+
+    m = torch.stack((rx, ry, rz, t), 2)
+    
+    return m
 
 def LoadAsListOfInts(path, debug=False):
     file = open(path, 'r')
@@ -376,14 +473,6 @@ def Gaussian(N, std, sym=True):
         w = w[:-1]
     return w
 
-def GMSELoss():
-    def fn(output, target):
-        filter = ToDevice(torch.tensor(Gaussian(26*3*121, 26*3*121/6.0), requires_grad=True))
-        filter = filter.unsqueeze(0)
-        loss = torch.mean(filter * (output - target)**2)
-        return loss
-    return fn
-
 def Rescale(value, valueMin, valueMax, resultMin, resultMax):
     if valueMax-valueMin != 0.0:
         return (value-valueMin)/(valueMax-valueMin)*(resultMax-resultMin) + resultMin
@@ -398,6 +487,26 @@ def RainbowColor(index, count):
         Rescale(np.sin(frequency*index + 4.0) * (127.0) + 128.0, 0.0, 255.0, 0.0, 1.0),
         1.0
     )
+
+def GetLabelIndicesExclude(file, name):
+    indices = []
+    with open(file, "r") as f:
+        i = 0
+        for x in f:
+            if name not in x:
+                indices.append(i)
+            i += 1
+    return None if len(indices) == 0 else torch.tensor(indices)
+
+def GetLabelIndicesContain(file, name):
+    indices = []
+    with open(file, "r") as f:
+        i = 0
+        for x in f:
+            if name in x:
+                indices.append(i)
+            i += 1
+    return None if len(indices) == 0 else torch.tensor(indices)
 
 # def Gaussian_Noise(x, std, dims=None):
 #     if std==0:
