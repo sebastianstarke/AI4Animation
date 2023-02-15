@@ -47,10 +47,10 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 
 <p align="left">
     <a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">
-    <img  width="50%" src="Media/SIGGRAPH_2022/Thumbnail.png">
+    <img  width="47%" src="Media/SIGGRAPH_2022/Thumbnail.png">
     </a>
     <a href="https://www.youtube.com/watch?v=3ASGrxNDd0k">
-    <img align="right" width="50%" src="Media/SIGGRAPH_2022/PAEthumbnail.png">
+    <img align="right" width="47%" src="Media/SIGGRAPH_2022/PAEthumbnail.png">
     </a>
 </p>
 
