@@ -41,12 +41,17 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
 -
 <a href="https://www.ianxmason.com/posts/PAE/">Explanation and Addendum</a>
 -
+<a href="https://youtu.be/3ASGrxNDd0k">Tutorial</a>
+-
 </p>
 
-<p align="center">
-<a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">
-<img width="60%" src="Media/SIGGRAPH_2022/Thumbnail.png">
-</a>
+<p align="left">
+    <a href="https://www.youtube.com/watch?v=YhH4PYEkVnY">
+    <img  width="50%" src="Media/SIGGRAPH_2022/Thumbnail.png">
+    </a>
+    <a href="https://www.youtube.com/watch?v=3ASGrxNDd0k">
+    <img align="right" width="50%" src="Media/SIGGRAPH_2022/PAEthumbnail.png">
+    </a>
 </p>
 
 ------------
