@@ -10,7 +10,7 @@ The 'Dataset' folder contains a small subset of human dancing movements, and
 the 'PAE' folder contains the network file. You can simply run the model after
 installing the requirements via the command below (Anaconda is recommended):
 
-python Train.py
+python Network.py
 
 Requirement Instructions:
 conda create -n DeepPhaseSubmission
@@ -41,3 +41,5 @@ to have a motion editor with loaded motion assets in your scene. Training
 the network will then automatically generate the phase features in form of
 P/F/A/B variables which can be imported into Unity and automatically added
 to the motion asset files using the DeepPhaseImporter editor window.
+
+Visual step by step tutorial for learning the quadruped motion controller in the demo can be found here: https://www.youtube.com/watch?v=3ASGrxNDd0k
