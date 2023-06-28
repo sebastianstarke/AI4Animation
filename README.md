@@ -54,6 +54,13 @@ Learning the spatial-temporal structure of body movements is a fundamental probl
     </a>
 </p>
 
+<p align="center">
+-
+<a href="https://github.com/pauzii/PhaseBetweener">Motion In-Betweening System</a>
+-
+</p>
+<img src ="https://github.com/pauzii/PhaseBetweener/raw/main/Media/Teaser.png" width="100%">
+
 ------------
 **SIGGRAPH 2021**<br />
 **Neural Animation Layering for Synthesizing Martial Arts Movements**<br >
