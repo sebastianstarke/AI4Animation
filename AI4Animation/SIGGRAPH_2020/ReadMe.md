@@ -8,7 +8,7 @@ How to play the demo?
 ------------
 This repository contains the code and demo project for the local motion phases technology. An already compiled demo is available for Windows, supporting both Gamepad and Keyboard inputs, and can be downloaded here:
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip
 
 After launching the program, the menu allows you to select from 3 different demos, including interactive basketball plays, generative control sampling, and a quadruped locomotion controller. You will find details on how to control the character movements with joystick, buttons or keys inside each demo application in the info panel at the top. You can also launch the demo in Unity itself by opening the scene file at Unity -> Assets -> Demo -> Demo.unity.
 
