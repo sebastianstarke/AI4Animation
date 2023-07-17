@@ -48,7 +48,7 @@ In the demo, there will be many corner cases where the system may fail due to th
 
 The processed motion capture data is available in the .asset files, combined with the location and interaction of objects. If you wish to go from scratch or use the data in your own projects, the raw motion capture files are available here:
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip
 
 ------------
 Any question, feel free to ask. For any issues you might find, please let me know and send me a message to Sebastian.Starke@ed.ac.uk.
