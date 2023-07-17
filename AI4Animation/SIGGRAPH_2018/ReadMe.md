@@ -8,11 +8,11 @@ How to play the demo?
 ------------
 This repository contains the code and demo project for the quadruped animation paper above. The compiled demos for Windows / Linux / Mac are available at:
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip
 
 To control the character, use the \<W / A / D> keys for forward and side motion, \<S> for stopping, and \<Q / E> for turning. To control different velocity levels, press \<Left-Shift> (Canter), \<Left-Ctrl> (Trot) or \<Left-Alt> (Walk).
 Default locomotion is pace. Jumping, sitting, standing and lying can be performed via \<Space>, \<V>, \<R> or \<F> respectively.
@@ -29,7 +29,7 @@ The generated weights are automatically saved inside the Tensorflow/trained fold
 
 If you wish to start from raw motion capture data, it can be downloaded from this link:
 
-http://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip
+https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip
 
 You will then need to use the developed motion capture editor tools inside Unity to pre-process the data as you wish, i.e. adding modules and assigning motion labels as mentioned in the paper.
 
