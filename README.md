@@ -131,7 +131,7 @@ multiple locomotion modes as well as different character and object interactions
 -
 <a href="AI4Animation/SIGGRAPH_2020">Code</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip">Windows Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2020/Demo_Windows.zip">Windows Demo</a>
 -
 <a href="AI4Animation/SIGGRAPH_2020/ReadMe.md">ReadMe</a>
 -
@@ -170,7 +170,7 @@ In this research, we present the Neural State Machine, a data-driven deep learni
 -
 <a href="AI4Animation/SIGGRAPH_Asia_2019">Code & Demo</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip">Mocap Data</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_Asia_2019/MotionCapture.zip">Mocap Data</a>
 -
 <a href="AI4Animation/SIGGRAPH_Asia_2019/ReadMe.md">ReadMe</a>
 -
@@ -209,13 +209,13 @@ This year, we will be presenting our recent research on quadruped animation and 
 -
 <a href="AI4Animation/SIGGRAPH_2018">Code</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2018/MotionCapture.zip">Mocap Data</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2018/Demo_Mac.zip">Mac Demo</a>
 -
 <a href="AI4Animation/SIGGRAPH_2018/ReadMe.md">ReadMe</a>
 -
@@ -263,11 +263,11 @@ and store the parameters via the custom inspector button.
 -
 <a href="AI4Animation/SIGGRAPH_2017">Code (Unity)</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Windows.zip">Windows Demo</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Linux.zip">Linux Demo</a>
 -
-<a href="https://www.starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2017/Demo_Mac.zip">Mac Demo</a>
 -
 </p>
 
