@@ -1,12 +1,75 @@
 AI4Animation: Deep Learning for Character Control
 ============
 
-This project explores the opportunities of deep learning for character animation and control as part of my Ph.D. research at the University of Edinburgh in the School of Informatics, supervised by <a href="http://homepages.inf.ed.ac.uk/tkomura">Taku Komura</a>. Over the last couple years, this project has become a comprehensive framework for data-driven character animation, including data processing, network training and runtime control, developed in Unity3D / Tensorflow / PyTorch. This repository demonstrates using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games. Further advances on this research will continue being added to this project.
+This repository explores the opportunities of deep learning for character animation and control. It aims to be a comprehensive framework for data-driven character animation, including data processing, neural network training and runtime control, developed in Unity3D / PyTorch. The various projects below demonstrate such capabilities using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games, as well as embodied avatar motions in AR/VR. Further advances on this research will continue being added to this project.
+
+------------
+**SIGGRAPH 2024**<br />
+**Categorical Codebook Matching for Embodied Character Controllers**<br >
+<sub>
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>, 
+<a href="https://www.linkedin.com/in/paul-starke-0787211b4/">Paul Starke</a>, 
+<a href="https://www.linkedin.com/in/nicky-sijia-he-92240590/">Nicky He</a>, 
+<a href="https://www.linkedin.com/in/taku-komura-571b32b/">Taku Komura</a>,
+<a href="https://www.linkedin.com/in/yuting-ye-77a75332/">Yuting Ye</a>, 
+ACM Trans. Graph. 43, 4, Article 142.
+<sub>
+------------
+<img src ="Media/SIGGRAPH_2024/Teaser.png" width="100%">
+
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=wNqpSk4FhSw">
-<img width="60%" src="Media/Other/ThesisFastForward.jpg">
-</a>
+Translating motions from a real user onto a virtual embodied avatar is a key challenge for character animation in the metaverse. In this work, we present a novel generative framework that enables mapping from a set of sparse sensor signals to a full body avatar motion in real-time while faithfully preserving the motion context of the user. In contrast to existing techniques that require training a motion prior and its mapping from control to motion separately, our framework is able to learn the motion manifold as well as how to sample from it at the same time in an end-to-end manner. To achieve that, we introduce a technique called codebook matching which matches the probability distribution between two categorical codebooks for the inputs and outputs for synthesizing the character motions. We demonstrate this technique can successfully handle ambiguity in motion generation and produce high quality character controllers from unstructured motion capture data. Our method is especially useful for interactive applications like virtual reality or video games where high accuracy and responsiveness are needed.
+</p>
+
+
+<p align="center">
+-
+<a href="https://youtu.be/NyLRcY0c0p4">Video</a>
+-
+<a href="Media/SIGGRAPH_2024/Paper.pdf">Paper</a>
+-
+Code & Demo (coming soon)
+-
+Dataset (coming soon)
+-
+</p>
+
+<img src ="Media/SIGGRAPH_2024/Architecture.png">
+
+
+Unlike existing methods for kinematic character control that learn a direct mapping between inputs and outputs or utilize a motion prior that is trained on the motion data alone, our framework learns from both the inputs and outputs simultaneously to form a motion manifold that is informed about the control signals.
+To learn such setup in a supervised manner, we propose a technique that we call Codebook Matching which enforces similarity
+between both latent probability distributions $Z_𝑋$ and $Z_𝑌$.
+In the context of motion generation, instead of directly predicting the motions outputs from the control inputs, we only predict their probabilities for each of them to appear.
+By introducing a matching loss between both categorical probability distributions, our codebook matching technique allows to substitute $Z_𝑌$ by $Z_𝑋$ during test time.
+
+$$
+Training:
+\begin{cases}
+    Y \rightarrow Z_Y \rightarrow Y
+    \\
+    X \rightarrow Z_X
+    \\
+    Z_X \sim Z_Y
+\end{cases}
+
+Inference: 
+X \rightarrow Z_X \rightarrow Y
+$$
+
+Our method is not limited to three-point inputs but we can also use it to generate embodied character movements with additional joystick or button controls by what we call hybrid control mode. In this setting, the user, engineer or artist can additionally tell the character where to go via a simple goal location while preserving the original context of motion from three-point tracking signals. This changes the scope of applications we can address by walking / running / crouching in the virtual world while standing or even sitting in the real world.
+
+<img src ="Media/SIGGRAPH_2024/Collection.png">
+
+Furthermore, our codebook matching architecture shares many similarities with motion matching and is able to learn a similar structure in an end-to-end manner. While motion matching can bypass ambiguity in the mapping from control to motion by selecting among candidates with similar query distances, our setup selects possible outcomes from predicted probabilities and naturally projects against valid output motions if their probabilities are similar. However, in contrast to database searches, our codebook matching is able to effectively compress the motion data where same motions map to same codes, and can bypass ambiguity issues which existing learning-based methods such as standard feed-forward networks (MLP) or variational models (CVAE) may struggle with. We demonstrate such capabilities by reconstructing the ambiguous toy example functions in the figure below.
+
+<img src ="Media/SIGGRAPH_2024/ToyExample.png">
+
+<p align="center">
+    <a href="https://youtu.be/NyLRcY0c0p4">
+    <img src="Media/SIGGRAPH_2024/Thumbnail.png", width=100%>
+    </a>
 </p>
 
 ------------
@@ -279,11 +342,13 @@ and store the parameters via the custom inspector button.
 
 ------------
 
-Processing Pipeline
+Thesis Fast Forward Presentation from SIGGRAPH 2020
 ============
-In progress. More information will be added soon.
-
-<img src ="Media/ProcessingPipeline/Editor.png" width="100%">
+<p align="center">
+<a href="https://www.youtube.com/watch?v=wNqpSk4FhSw">
+<img width="100%" src="Media/Other/ThesisFastForward.jpg">
+</a>
+</p>
 
 Copyright Information
 ============
