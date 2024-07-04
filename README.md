@@ -44,7 +44,7 @@ between both latent probability distributions $Z_𝑋$ and $Z_𝑌$.
 In the context of motion generation, instead of directly predicting the motions outputs from the control inputs, we only predict their probabilities for each of them to appear.
 By introducing a matching loss between both categorical probability distributions, our codebook matching technique allows to substitute $Z_𝑌$ by $Z_𝑋$ during test time.
 
-$$
+```math
 Training:
 \begin{cases}
     Y \rightarrow Z_Y \rightarrow Y
@@ -56,7 +56,7 @@ Training:
 
 Inference: 
 X \rightarrow Z_X \rightarrow Y
-$$
+```
 
 Our method is not limited to three-point inputs but we can also use it to generate embodied character movements with additional joystick or button controls by what we call hybrid control mode. In this setting, the user, engineer or artist can additionally tell the character where to go via a simple goal location while preserving the original context of motion from three-point tracking signals. This changes the scope of applications we can address by walking / running / crouching in the virtual world while standing or even sitting in the real world.
 
