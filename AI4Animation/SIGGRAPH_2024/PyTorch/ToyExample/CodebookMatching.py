@@ -9,7 +9,7 @@ import torch.nn as nn
 from torch.nn.parameter import Parameter
 import torch.nn.functional as F
 
-import CVQ as cvq
+# import CVQ as cvq
 import matplotlib.pyplot as plt
 
 class Model(nn.Module):
@@ -28,14 +28,10 @@ class Model(nn.Module):
         self.D = codebook_dim
 
     def sample_gumbel(self, tensor, scale, eps=1e-20):
-        samples = torch.rand_like(tensor)
-
-        #There is a sampling bug here, the sampling should not scale but define an entire uniform vector.
-        #Scaling to zero is the boundary-noise which can be instable.
-        samples = scale.reshape(-1,1,1,1) * samples
-        
-        samples = -torch.log(-torch.log(samples + eps) + eps)
-        return samples
+        scale = scale.reshape(-1,1,1,1) #This is noise scale between 0 and 1
+        noise = torch.rand_like(tensor) - 0.5 #This is random noise between -0.5 and 0.5
+        samples = scale * noise + 0.5 #This is noise rescaled between 0 and 1 where 0.5 is default for 0 noise
+        return -torch.log(-torch.log(samples + eps) + eps)
     
     def gumbel_softmax_sample(self, logits, temperature, scale):
         y = logits + self.sample_gumbel(logits, scale)
@@ -69,23 +65,6 @@ class Model(nn.Module):
         z_hard = z_hard.reshape(-1, self.C*self.D)
         return z_soft, z_hard
     
-    def softmax(self, z):
-        z = z.reshape(-1, self.C, self.D)
-        z = F.softmax(z, dim=-1)
-
-        z_soft = z
-
-        shape = z.size()
-        _, ind = z.max(dim=-1)
-        z_hard = torch.zeros_like(z).view(-1, shape[-1])
-        z_hard.scatter_(1, ind.view(-1, 1), 1)
-        z_hard = z_hard.view(*shape)
-        z_hard = (z_hard - z).detach() + z
-
-        z_soft = z_soft.reshape(-1, self.C*self.D)
-        z_hard = z_hard.reshape(-1, self.C*self.D)
-        return z_soft, z_hard
-    
     def forward(self, x, k, t=None): #x = input, k = k-th nearest neighbor, t = output
         #training
         if t is not None:
@@ -95,7 +74,7 @@ class Model(nn.Module):
 
             #Encode Y
             target_logits = self.Encoder(torch.cat((t,x), dim=-1))
-            target_soft, target_hard = self.softmax(target_logits)
+            target_soft, target_hard = self.sample(target_logits, torch.ones(1, device=x.device))
 
             #Encode X
             estimate_logits = self.Estimator(x)
@@ -103,11 +82,11 @@ class Model(nn.Module):
 
             #Calculate Loss
             mse_function = nn.MSELoss()
-            # matching_loss = mse_function(estimate_soft, target_soft)
-            matching_loss = mse_function(torch.pdist(target_hard.swapaxes(0,1), p=2), torch.pdist(estimate_hard.swapaxes(0,1), p=2))
+            matching_loss = mse_function(estimate_soft, target_soft)
+            # matching_loss = mse_function(torch.pdist(target_soft.swapaxes(0,1), p=2), torch.pdist(estimate_soft.swapaxes(0,1), p=2))
             
             #Quantize
-            code = target_hard
+            code = target_soft
             if self.Quantizer != None:
                 code, vq_loss = self.Quantizer(code)
             else:
@@ -188,8 +167,8 @@ if __name__ == '__main__':
 
         estimator=utility.LinearEncoder(input_dim, estimator_dim, estimator_dim, codebook_size, dropout),
 
-        quantizer=cvq.VectorQuantizer(embed_channels=codebook_channels, embed_dim=codebook_dim, beta=0.25, distance='l2', anchor='closest', first_batch=False, contras_loss=True),
-        # quantizer=None,
+        # quantizer=cvq.VectorQuantizer(embed_channels=codebook_channels, embed_dim=codebook_dim, beta=0.25, distance='l2', anchor='closest', first_batch=False, contras_loss=True),
+        quantizer=None,
 
         decoder=utility.LinearEncoder(codebook_size, decoder_dim, decoder_dim, output_dim, 0.0),
 
@@ -247,7 +226,7 @@ if __name__ == '__main__':
             loss_history.Add(
                 (Item(mse_loss).item(), "MSE Loss"),
                 (Item(matching_loss).item(), "Matching Loss"),
-                (Item(vq_loss).item(), "Quantization Loss"),
+                # (Item(vq_loss).item(), "Quantization Loss"),
             )
 
             if loss_history.Counter == 0:
