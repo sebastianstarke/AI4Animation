@@ -23,15 +23,21 @@ Translating motions from a real user onto a virtual embodied avatar is a key cha
 </p>
 
 
-<p align="center">
+<p align="center" style="font-size:1.25em;">
 -
 <a href="https://youtu.be/NyLRcY0c0p4">Video</a>
 -
 <a href="Media/SIGGRAPH_2024/Paper.pdf">Paper</a>
 -
-Code & Demo (coming soon)
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2024/Cranberry_Dataset.zip">Dataset</a>
 -
-Dataset (coming soon)
+<a href="AI4Animation/SIGGRAPH_2024/">Code (+VR Demo)</a>
+-
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2024/Demo_Win.zip">Windows Demo</a>
+-
+<a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2024/Demo_Mac.zip">Mac Demo</a>
+-
+<a href="AI4Animation/SIGGRAPH_2024/ReadMe.md">ReadMe</a>
 -
 </p>
 

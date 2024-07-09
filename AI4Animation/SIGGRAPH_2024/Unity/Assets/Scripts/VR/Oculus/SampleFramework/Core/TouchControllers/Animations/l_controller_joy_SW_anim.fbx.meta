@@ -1,0 +1,217 @@
+fileFormatVersion: 2
+guid: 8bc36ffcda54dee4a8784581a5886ba2
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: lctrl:b_button01
+  - first:
+      1: 100004
+    second: lctrl:b_button02
+  - first:
+      1: 100006
+    second: lctrl:b_button03
+  - first:
+      1: 100008
+    second: lctrl:b_hold
+  - first:
+      1: 100010
+    second: lctrl:b_stick
+  - first:
+      1: 100012
+    second: lctrl:b_stick_IGNORE
+  - first:
+      1: 100014
+    second: lctrl:b_trigger
+  - first:
+      1: 100016
+    second: lctrl:left_touch_controller_world
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: lctrl:b_button01
+  - first:
+      4: 400004
+    second: lctrl:b_button02
+  - first:
+      4: 400006
+    second: lctrl:b_button03
+  - first:
+      4: 400008
+    second: lctrl:b_hold
+  - first:
+      4: 400010
+    second: lctrl:b_stick
+  - first:
+      4: 400012
+    second: lctrl:b_stick_IGNORE
+  - first:
+      4: 400014
+    second: lctrl:b_trigger
+  - first:
+      4: 400016
+    second: lctrl:left_touch_controller_world
+  - first:
+      74: 7400000
+    second: l_controller_joy_SW_anim
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 0
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: l_controller_joy_SW_anim
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: lctrl:left_touch_controller_world
+        weight: 0
+      - path: lctrl:left_touch_controller_world/lctrl:b_button01
+        weight: 0
+      - path: lctrl:left_touch_controller_world/lctrl:b_button02
+        weight: 0
+      - path: lctrl:left_touch_controller_world/lctrl:b_button03
+        weight: 0
+      - path: lctrl:left_touch_controller_world/lctrl:b_hold
+        weight: 0
+      - path: lctrl:left_touch_controller_world/lctrl:b_stick
+        weight: 1
+      - path: lctrl:left_touch_controller_world/lctrl:b_stick/lctrl:b_stick_IGNORE
+        weight: 1
+      - path: lctrl:left_touch_controller_world/lctrl:b_trigger
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 1bf8f52eeebe8e149b9d6e3477251532,
+    type: 3}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 2
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

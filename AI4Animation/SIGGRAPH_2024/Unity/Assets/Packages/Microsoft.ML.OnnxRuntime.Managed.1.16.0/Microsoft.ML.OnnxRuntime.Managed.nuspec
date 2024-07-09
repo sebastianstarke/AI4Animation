@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.ML.OnnxRuntime.Managed</id>
+    <version>1.16.0</version>
+    <authors>Microsoft</authors>
+    <license type="file">LICENSE.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>ORT_icon_for_light_bg.png</icon>
+    <projectUrl>https://github.com/Microsoft/onnxruntime</projectUrl>
+    <description>This package contains ONNX Runtime for .Net platforms</description>
+    <releaseNotes>Release Def:
+        Branch: refs/heads/rel-1.16.0
+        Commit: e7a0495a874251e9747b2ce0683e0580282c54df
+        Build: https://aiinfra.visualstudio.com/Lotus/_build/results?buildId=356670</releaseNotes>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>ONNX ONNX Runtime Machine Learning</tags>
+    <repository type="git" url="https://github.com/microsoft/onnxruntime" commit="e7a0495a874251e9747b2ce0683e0580282c54df" />
+    <dependencies>
+      <group targetFramework="MonoAndroid11.0" />
+      <group targetFramework="Xamarin.iOS1.0" />
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0-android31.0">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0-ios16.1">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.InteropServices.NFloat.Internal" version="6.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0-macos13.0">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.InteropServices.NFloat.Internal" version="6.0.1" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Memory" version="4.5.5" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Java.Interop" targetFramework="MonoAndroid11.0" />
+      <frameworkAssembly assemblyName="System.Drawing.Common.dll" targetFramework="Xamarin.iOS1.0" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

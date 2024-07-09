@@ -1,0 +1,1208 @@
+fileFormatVersion: 2
+guid: 8b83018900d13bb4f8e0ad895cb004e5
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: b_button_oculus
+  - first:
+      1: 100002
+    second: b_button_x
+  - first:
+      1: 100004
+    second: b_button_y
+  - first:
+      1: 100006
+    second: b_thumbstick
+  - first:
+      1: 100008
+    second: b_trigger_front
+  - first:
+      1: 100010
+    second: b_trigger_grip
+  - first:
+      1: 100012
+    second: left_laser_begin
+  - first:
+      1: 100014
+    second: left_oculus_controller_world
+  - first:
+      1: 100016
+    second: //RootNode
+  - first:
+      1: 100018
+    second: left_quest2_mesh
+  - first:
+      1: 100020
+    second: pasted__laser_end_pointer
+  - first:
+      1: 100022
+    second: l_rainier_mesh
+  - first:
+      4: 400000
+    second: b_button_oculus
+  - first:
+      4: 400002
+    second: b_button_x
+  - first:
+      4: 400004
+    second: b_button_y
+  - first:
+      4: 400006
+    second: b_thumbstick
+  - first:
+      4: 400008
+    second: b_trigger_front
+  - first:
+      4: 400010
+    second: b_trigger_grip
+  - first:
+      4: 400012
+    second: left_laser_begin
+  - first:
+      4: 400014
+    second: left_oculus_controller_world
+  - first:
+      4: 400016
+    second: //RootNode
+  - first:
+      4: 400018
+    second: left_quest2_mesh
+  - first:
+      4: 400020
+    second: pasted__laser_end_pointer
+  - first:
+      4: 400022
+    second: l_rainier_mesh
+  - first:
+      21: 2100000
+    second: bothControllerMAT
+  - first:
+      43: 4300000
+    second: left_quest2_mesh
+  - first:
+      43: 4300002
+    second: l_rainier_mesh
+  - first:
+      74: 7400000
+    second: left_quest2_controller_animation
+  - first:
+      74: 7400002
+    second: left_quest2_controller_stickW
+  - first:
+      74: 7400004
+    second: left_quest2_controller_stickE
+  - first:
+      74: 7400006
+    second: left_quest2_controller_trigger
+  - first:
+      74: 7400008
+    second: left_quest2_controller_stickN
+  - first:
+      74: 7400010
+    second: left_quest2_controller_stickSE
+  - first:
+      74: 7400012
+    second: left_quest2_controller_stickSW
+  - first:
+      74: 7400014
+    second: left_quest2_controller_stickNW
+  - first:
+      74: 7400016
+    second: left_quest2_controller_stickNE
+  - first:
+      74: 7400018
+    second: left_quest2_controller_grip
+  - first:
+      74: 7400020
+    second: left_quest2_controller_stickS
+  - first:
+      74: 7400022
+    second: left_quest2_controller_button01
+  - first:
+      74: 7400024
+    second: left_quest2_controller_button02
+  - first:
+      74: 7400026
+    second: left_quest2_controller_button03
+  - first:
+      74: 7400028
+    second: left_quest2_controller_button01_neutral
+  - first:
+      74: 7400030
+    second: left_quest2_controller_button03_neutral
+  - first:
+      74: 7400032
+    second: left_quest2_controller_button02_neutral
+  - first:
+      74: 7400034
+    second: left_quest2_controller_trigger_neutral
+  - first:
+      74: 7400036
+    second: left_quest2_controller_grip_neutral
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: left_quest2_mesh
+  - first:
+      137: 13700002
+    second: l_rainier_mesh
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bothControllerMAT
+    second: {fileID: 2100000, guid: d7292a5e1ae17a64c95f3081d2c6be5a, type: 2}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 0
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: left_quest2_controller_animation
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 54
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickW
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 40
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickE
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 42
+      lastFrame: 43
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_trigger
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 20
+      lastFrame: 21
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickN
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 36
+      lastFrame: 37
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickSE
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 50
+      lastFrame: 51
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickSW
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 44
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickNW
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 46
+      lastFrame: 47
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickNE
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 48
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_grip
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 26
+      lastFrame: 27
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_stickS
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 38
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button01
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 6
+      lastFrame: 7
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 1
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button02
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 10
+      lastFrame: 11
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 1
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button03
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 30
+      lastFrame: 31
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 1
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button01_neutral
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 1
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button02_neutral
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 1
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_button03_neutral
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 1
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_trigger_neutral
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 1
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: left_quest2_controller_grip_neutral
+      takeName: Take 001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: l_rainier_mesh
+        weight: 0
+      - path: left_laser_begin
+        weight: 0
+      - path: left_laser_begin/pasted__laser_end_pointer
+        weight: 0
+      - path: left_oculus_controller_world
+        weight: 0
+      - path: left_oculus_controller_world/b_button_oculus
+        weight: 0
+      - path: left_oculus_controller_world/b_button_x
+        weight: 0
+      - path: left_oculus_controller_world/b_button_y
+        weight: 0
+      - path: left_oculus_controller_world/b_thumbstick
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_front
+        weight: 0
+      - path: left_oculus_controller_world/b_trigger_grip
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

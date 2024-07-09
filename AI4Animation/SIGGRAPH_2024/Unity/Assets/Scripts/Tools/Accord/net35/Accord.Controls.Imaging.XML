@@ -1,0 +1,1411 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Controls.Imaging</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Controls.ColorSlider">
+            <summary>
+            Color slider control.
+            </summary>
+            
+            <remarks><para>The control represent a color slider, which allows selecting
+            one or two values in the [0, 255] range. The application of this control
+            includes mostly areas of image processing and computer vision, where it is required
+            to select color threshold or ranges for different type of color filtering.</para>
+            
+            <para>Depending on the control's <see cref="P:Accord.Controls.ColorSlider.Type"/>, it has different look and may suite
+            different tasks. See documentation to <see cref="T:Accord.Controls.ColorSlider.ColorSliderType"/> for information
+            about available type and possible control's looks.</para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.ColorSlider.ValuesChanged">
+            <summary>
+            An event, to notify about changes of <see cref="P:Accord.Controls.ColorSlider.Min"/> or <see cref="P:Accord.Controls.ColorSlider.Max"/> properties.
+            </summary>
+            
+            <remarks><para>The event is fired after changes of <see cref="P:Accord.Controls.ColorSlider.Min"/> or <see cref="P:Accord.Controls.ColorSlider.Max"/> property,
+            which is caused by user dragging the corresponding control’s arrow (slider).</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.ColorSlider.ColorSliderType">
+             <summary>
+             Enumeration of color slider types.
+             </summary>
+             
+             <remarks>
+             <para>The <see cref="F:Accord.Controls.ColorSlider.ColorSliderType.Gradient"/> slider's type supposes the control's
+             background filled with gradient startting from <see cref="P:Accord.Controls.ColorSlider.StartColor"/> color and ending
+             with <see cref="P:Accord.Controls.ColorSlider.EndColor"/> color. The <see cref="P:Accord.Controls.ColorSlider.FillColor"/> color does not have
+             impact on control's look.</para>
+             
+             <para>This type allows as one-arrow, as two-arrows control.</para>
+             
+             <para><b>Sample control's look:</b></para>
+             <img src="..\images\controls\slider_gradient.png" width="258" height="17" />    
+             
+             <para>The <see cref="F:Accord.Controls.ColorSlider.ColorSliderType.InnerGradient"/> slider's type supposes the control's
+             background filled with gradient startting from <see cref="P:Accord.Controls.ColorSlider.StartColor"/> color and ending
+             with <see cref="P:Accord.Controls.ColorSlider.EndColor"/> color. In addition the areas, which are outside of
+             [<see cref="P:Accord.Controls.ColorSlider.Min"/>, <see cref="P:Accord.Controls.ColorSlider.Max"/>] range, are filled with <see cref="P:Accord.Controls.ColorSlider.FillColor"/> color.</para>
+             
+             <para>This type allows only two-arrows control.</para>
+             
+             <para><b>Sample control's look:</b></para>
+             <img src="..\images\controls\slider_inner_gradient.png" width="258" height="17" />
+             
+             <para>The <see cref="F:Accord.Controls.ColorSlider.ColorSliderType.OuterGradient"/> slider's type supposes the
+             control's background filled with gradient startting from <see cref="P:Accord.Controls.ColorSlider.StartColor"/> color
+             and ending with <see cref="P:Accord.Controls.ColorSlider.EndColor"/> color. In addition the area, which is inside of
+             [<see cref="P:Accord.Controls.ColorSlider.Min"/>, <see cref="P:Accord.Controls.ColorSlider.Max"/>] range, is filled with <see cref="P:Accord.Controls.ColorSlider.FillColor"/> color.</para>
+             
+             <para>This type allows only two-arrows control.</para>
+             
+             <para><b>Sample control's look:</b></para>
+             <img src="..\images\controls\slider_outer_gradient.png" width="258" height="17" />
+             
+             <para>The <see cref="F:Accord.Controls.ColorSlider.ColorSliderType.Threshold"/> slider's type supposes filling areas
+             outside of [<see cref="P:Accord.Controls.ColorSlider.Min"/>, <see cref="P:Accord.Controls.ColorSlider.Max"/>] range with <see cref="P:Accord.Controls.ColorSlider.StartColor"/> and
+             inside the range with <see cref="P:Accord.Controls.ColorSlider.EndColor"/>. The <see cref="P:Accord.Controls.ColorSlider.FillColor"/> color does not
+             have impact on control's look.</para>
+             
+             <para>This type allows as one-arrow, as two-arrows control.</para>
+             
+             <para><b>Sample control's look:</b></para>
+             <img src="..\images\controls\slider_threshold.png" width="258" height="17" />
+             </remarks>
+            
+        </member>
+        <member name="F:Accord.Controls.ColorSlider.ColorSliderType.Gradient">
+            <summary>
+            Gradient color slider type.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.ColorSlider.ColorSliderType.InnerGradient">
+            <summary>
+            Inner gradient color slider type.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.ColorSlider.ColorSliderType.OuterGradient">
+            <summary>
+            Outer gradient color slider type.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.ColorSlider.ColorSliderType.Threshold">
+            <summary>
+            Threshold color slider type.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.StartColor">
+             <summary>
+             Start color for gradient filling.
+             </summary>
+            
+             <remarks>See documentation to <see cref="T:Accord.Controls.ColorSlider.ColorSliderType"/> enumeration for information about
+             the usage of this property.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.EndColor">
+             <summary>
+             End color for gradient filling.
+             </summary>
+            
+             <remarks>See documentation to <see cref="T:Accord.Controls.ColorSlider.ColorSliderType"/> enumeration for information about
+             the usage of this property.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.FillColor">
+             <summary>
+             Color to fill control's background in filtered zones.
+             </summary>
+            
+             <remarks>See documentation to <see cref="T:Accord.Controls.ColorSlider.ColorSliderType"/> enumeration for information about
+             the usage of this property.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.Type">
+             <summary>
+             Specifies control's type.
+             </summary>
+             
+             <remarks>See documentation to <see cref="T:Accord.Controls.ColorSlider.ColorSliderType"/> enumeration for information about
+             the usage of this property.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.Min">
+            <summary>
+            Minimum selected value, [0, 255].
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.Max">
+            <summary>
+            Maximum selected value, [0, 255].
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.ColorSlider.DoubleArrow">
+            <summary>
+            Single or Double arrow slider control.
+            </summary>
+            
+            <remarks><para>The property specifies if the slider has one or two selection arrows (sliders).</para>
+            
+            <para>The single arrow allows only to specify one value, which is set by <see cref="P:Accord.Controls.ColorSlider.Min"/>
+            property. The single arrow slider is useful for applications, where it is required to select
+            color threshold, for example.</para>
+            
+            <para>The double arrow allows to specify two values, which are set by <see cref="P:Accord.Controls.ColorSlider.Min"/>
+            and <see cref="P:Accord.Controls.ColorSlider.Max"/> properties. The double arrow slider is useful for applications, where it is
+            required to select filtering color range, for example.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSlider.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.ColorSlider"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ColorSlider.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <param name="disposing">Specifies if disposing was invoked by user's code.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.HistogramEventArgs">
+            <summary>
+            Arguments of histogram events.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.HistogramEventArgs.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.HistogramEventArgs"/> class.
+            </summary>
+            
+            <param name="pos">Histogram's index under mouse pointer.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HistogramEventArgs.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.HistogramEventArgs"/> class.
+            </summary>
+            
+            <param name="min">Min histogram's index in selection.</param>
+            <param name="max">Max histogram's index in selection.</param>
+            
+        </member>
+        <member name="P:Accord.Controls.HistogramEventArgs.Min">
+            <summary>
+            Min histogram's index in selection.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HistogramEventArgs.Max">
+            <summary>
+            Max histogram's index in selection.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HistogramEventArgs.Position">
+            <summary>
+            Histogram's index under mouse pointer.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.HistogramEventHandler">
+            <summary>
+            Delegate for histogram events handlers.
+            </summary>
+            
+            <param name="sender">Sender object.</param>
+            <param name="e">Event arguments.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.Histogram">
+            <summary>
+            Histogram control.
+            </summary>
+            
+            <remarks><para>The control displays histograms represented with integer arrays,
+            where each array's element keeps occurrence number of the corresponding element.
+            </para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create array with histogram values
+            int[] histogramValues = new int[] { 3, 8, 53, 57, 79, 69, ... };
+            // set values to histogram control
+            histogram.Values = histogramValues;
+            </code>
+            
+            <para><b>Sample control's look:</b></para>
+            <img src="..\images\controls\histogram.jpg" width="324" height="77" />
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Histogram.Color">
+            <summary>
+            Histogram's color.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.Histogram.AllowSelection">
+            <summary>
+            Allow mouse selection or not.
+            </summary>
+            
+            <remarks>In the case if mouse selection is allowed, the control will
+            fire <see cref="E:Accord.Controls.Histogram.SelectionChanged"/> and <see cref="E:Accord.Controls.Histogram.PositionChanged"/> events
+            and provide information about the selection.</remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Histogram.IsLogarithmicView">
+            <summary>
+            Logarithmic view or not.
+            </summary>
+            
+            <remarks><para>In the case if logarihmic view is selected, then the control
+            will display base 10 logarithm of values.</para>
+            
+            <para>By default the property is set to <b>false</b> - none logarithmic view.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Histogram.IsVertical">
+             <summary>
+             Vertical view or not.
+             </summary>
+            
+             <remarks><para>The property determines if histogram should be displayed vertically or
+             not (horizontally).</para>
+             
+             <para>By default the property is set to <b>false</b> - horizontal view.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.Histogram.Values">
+            <summary>
+            Histogram values.
+            </summary>
+            
+            <remarks>Non-negative histogram values.</remarks>
+            
+            <exception cref="T:System.ArgumentException">Histogram values should be non-negative.</exception>
+            
+        </member>
+        <member name="E:Accord.Controls.Histogram.PositionChanged">
+            <summary>
+            Mouse position changed event.
+            </summary>
+            
+            <remarks>The event is fired only if the <see cref="P:Accord.Controls.Histogram.AllowSelection"/> property is set
+            to true. The passed to event handler <see cref="T:Accord.Controls.HistogramEventArgs"/> class is initialized
+            with <see cref="P:Accord.Controls.HistogramEventArgs.Position"/> property only, which is histogram value's
+            index pointed by mouse.</remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.Histogram.SelectionChanged">
+            <summary>
+            Mouse selection changed event.
+            </summary>
+            
+            <remarks>The event is fired only if the <see cref="P:Accord.Controls.Histogram.AllowSelection"/> property is set
+            to true. The passed to event handler <see cref="T:Accord.Controls.HistogramEventArgs"/> class is initialized
+            with <see cref="P:Accord.Controls.HistogramEventArgs.Min"/> and <see cref="P:Accord.Controls.HistogramEventArgs.Max"/> properties
+            only, which represent selection range - min and max indexes.</remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.Histogram.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.Histogram"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.Histogram.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <param name="disposing">Indicates if disposing was initiated manually.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.Histogram.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paint the control.
+            </summary>
+            
+            <param name="e">Data for Paint event.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.HuePicker">
+            <summary>
+            Hue picker control.
+            </summary>
+            
+            <remarks><para>The control allows selecting hue value (or range) from HSL color space. Hue values
+            are integer values in the [0, 359] range.</para>
+            
+            <para>If control's type is set to <see cref="F:Accord.Controls.HuePicker.HuePickerType.Value"/>, then it allows selecting single
+            hue value and looks like this:<br />
+            <img src="..\images\controls\hue_picker1.png" width="220" height="220" />
+            </para>
+            
+            <para>If control's type is set to <see cref="F:Accord.Controls.HuePicker.HuePickerType.Range"/>, then it allows selecting range
+            of hue values and looks like this:<br />
+            <img src="..\images\controls\hue_picker2.png" width="220" height="220" />
+            </para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.HuePicker.ValuesChanged">
+            <summary>
+            An event, to notify about changes of <see cref="P:Accord.Controls.HuePicker.Min"/> or <see cref="P:Accord.Controls.HuePicker.Max"/> properties.
+            </summary>
+            
+            <remarks><para>The event is fired after changes of its <see cref="P:Accord.Controls.HuePicker.Value"/>, <see cref="P:Accord.Controls.HuePicker.Min"/> or
+            <see cref="P:Accord.Controls.HuePicker.Max"/> properties, which is caused by user dragging the corresponding hue picker's bullets.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.HuePicker.HuePickerType">
+            <summary>
+            Enumeration of hue picker types.
+            </summary>
+            
+            <remarks>
+            <para>The <see cref="F:Accord.Controls.HuePicker.HuePickerType.Value"/> type provides single bullet to drag, which allows
+            selecting single hue value. The value is accessible through <see cref="F:Accord.Controls.HuePicker.HuePickerType.Value"/> property.</para>
+            
+            <para>The <see cref="F:Accord.Controls.HuePicker.HuePickerType.Range"/> type provides two bullets to drag, which correspond
+            to minimum and maximum values of the hue range. These values are accessible through
+            <see cref="P:Accord.Controls.HuePicker.Min"/> and <see cref="P:Accord.Controls.HuePicker.Max"/> properties.</para>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Controls.HuePicker.HuePickerType.Value">
+            <summary>
+            Selecting single hue value.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.HuePicker.HuePickerType.Range">
+            <summary>
+            Selecting hue values range.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HuePicker.Value">
+            <summary>
+            Selected value of the hue picker control in <see cref="F:Accord.Controls.HuePicker.HuePickerType.Value"/> mode.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HuePicker.Min">
+            <summary>
+            Minimum selected value of the hue picker control in <see cref="F:Accord.Controls.HuePicker.HuePickerType.Range"/> mode.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HuePicker.Max">
+            <summary>
+            Maximum selected value of the hue picker control in <see cref="F:Accord.Controls.HuePicker.HuePickerType.Range"/> mode.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.HuePicker.Type">
+            <summary>
+            Current type of the hue picker control.
+            </summary>
+            
+            <remarks><para>See <see cref="T:Accord.Controls.HuePicker.HuePickerType"/> enumeration for description of the available types.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.HuePicker.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.HuePicker"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.HuePicker.Dispose(System.Boolean)">
+            <summary>
+            Dispose the object.
+            </summary>
+            
+            <param name="disposing">Specifies if disposing was invoked by user's code.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.HuePicker.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paint the controls.
+            </summary>
+            
+            <param name="e">Paint event arguments.</param>
+            
+        </member>
+        <member name="T:Accord.Controls.ManipulatorControl">
+             <summary>
+             Manipulator control.
+             </summary>
+            
+             <remarks>
+             <para>The manipulator control can be used to mimic behaviour of analogue joystick using
+             regular mouse. By dragging manipulator away from control's centre, it fires <see cref="E:Accord.Controls.ManipulatorControl.PositionChanged"/>
+             event notifying about its X/Y coordinates (or about R/Theta coordinates in Polar coordinates system).
+             </para>
+             
+             <para>For example, in robotics applications the control can be used to drive robots. If user drags manipulator
+             further from centre (increasing distance between centre and manipulator), then higher power (speed) should be
+             set for robot's motors. But dragging it in different directions away from centre should result in changing
+             robot's direction: straight forward, backward, turning right or left, etc.<br />
+             <img src="..\images\controls\manipulator_round.png" width="215" height="215" />
+             </para>
+             
+             <para>Another possible application of the control is to control position of some device, etc.
+             For example, the control could be used with pan-tilt camera - by dragging control away from centre,
+             the camera may rotate in one of the directions.<br />
+             <img src="..\images\controls\manipulator_square.png" width="215" height="215" />
+             </para>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.IsSquareLook">
+            <summary>
+            Determines if the control has square or round look.
+            </summary>
+            
+            <remarks>
+            <para>The control has a square look if the property is set to <see langword="true"/>,
+            otherwise it has round look.</para>
+            
+            <para>Default value is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.DrawHorizontalAxis">
+            <summary>
+            Determines if horizontal axis should be drawn or not.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see langword="true"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.DrawVerticalAxis">
+            <summary>
+            Determines if vertical axis should be drawn or not.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.ResetPositionOnMouseRelease">
+            <summary>
+            Determines behaviour of manipulator, when mouse button is released.
+            </summary>
+            
+            <remarks>
+            <para>The property controls behaviour of manipulator on releasing mouse button. If
+            the property is set to <see langword="true"/>, then position of manipulator is reset
+            to (0, 0), when mouse button is released. Otherwise manipulator stays on the place,
+            where it was left.</para>
+            
+            <para>Default value is set to <see langword="true"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.BorderColor">
+            <summary>
+            Color used for drawing borders and axis's.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.Black"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.TopLeftBackgroundColor">
+            <summary>
+            Background color used for filling top left quarter of the control.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.White"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.TopRightBackgroundColor">
+            <summary>
+            Background color used for filling top right quarter of the control.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.White"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.BottomLeftBackgroundColor">
+            <summary>
+            Background color used for filling bottom left quarter of the control.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.LightGray"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.BottomRightBackgroundColor">
+            <summary>
+            Background color used for filling bottom right quarter of the control.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.LightGray"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.ManipulatorColor">
+            <summary>
+            Color used for filling manipulator.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.LightSeaGreen"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.ManipulatorControl.PositionEventArgs">
+             <summary>
+             Class, which summarizes arguments of manipulator's position change event.
+             </summary>
+            
+             <remarks><para>Properties of this class allow to get:
+             <list type="bullet">
+             <item>X/Y coordinates of manipulator in
+             <a href="http://en.wikipedia.org/wiki/Cartesian_coordinate_system">Cartesian coordinate system</a>,
+             where X axis is directed from center of the control to the right and Y axis is directed from
+             center to the top. Both coordinates are measured in [-1, 1] range.</item>
+             <item>Theta and R coordinates of manipulator in
+             <a href="http://en.wikipedia.org/wiki/Polar_coordinate_system">Polar coordinate system</a>.</item>
+             </list>
+             </para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.PositionEventArgs.X">
+            <summary>
+            X coordinate of manipulator, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.PositionEventArgs.Y">
+            <summary>
+            Y coordinate of manipulator, [-1, 1].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.PositionEventArgs.Theta">
+            <summary>
+            Theta coordinate of manipulator in Polar coordinate system, [0, 359].
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.PositionEventArgs.R">
+            <summary>
+            R (radius) coordinate of manipulator in Polar coordinate system, [0, 1].
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ManipulatorControl.PositionEventArgs.#ctor(System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.ManipulatorControl.PositionEventArgs"/> class.
+            </summary>
+            
+            <param name="x">X coordinate of manipulator, [-1, 1].</param>
+            <param name="y">Y coordinate of manipulator, [-1, 1].</param>
+            
+        </member>
+        <member name="P:Accord.Controls.ManipulatorControl.ManipulatorPosition">
+            <summary>
+            Current manipulator's position.
+            </summary>
+            
+            <remarks><para>The property equals to current manipulator's position. Both X and Y values
+            are in the [-1, 1] range and represented in
+            <a href="http://en.wikipedia.org/wiki/Cartesian_coordinate_system">Cartesian coordinate system</a>.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.ManipulatorControl.PositionChangedHandler">
+            <summary>
+            Delegate used for notification about manipulator's position changes.
+            </summary>
+            
+            <param name="sender">Event sender - object sending the event.</param>
+            <param name="eventArgs">Event arguments - current manipulator's position.</param>
+            
+        </member>
+        <member name="E:Accord.Controls.ManipulatorControl.PositionChanged">
+            <summary>
+            Event used for notification about manipulator's position changes.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ManipulatorControl.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.ManipulatorControl"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ManipulatorControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.ManipulatorControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.PictureBox">
+            <summary>
+            Picture box control for displaying an image.
+            </summary>
+            
+            <remarks><para>This control is inherited from System.Windows.Forms.PictureBox and is
+            aimed to resolve one of its issues - inability to display images with high color depth,
+            like 16 bpp grayscale, 48 bpp and 64 bpp color images. .NET framework does not handle
+            16 bpp grayscale images at all, throwing exception when user tries to display them. Color
+            images with 48 bpp and 64 bpp are "kind of" supported, but only maximum of 13 bits for each
+            color plane are allowed. Therefore this control is created, which allows to display as
+            16 bpp grayscale images, as 48 bpp and 64 bpp color images.</para>
+            
+            <para><note>To display high color depth images, the control does internal conversion of them
+            to lower color depth images - 8 bpp grayscale, 24 bpp and 32 bpp color images respectively. In
+            the case source image already has low color depth, it is displayed without any conversions.
+            </note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.PictureBox.Image">
+            <summary>
+            Gets or sets the image that the PictureBox displays.
+            </summary>
+            
+            <remarks><para>The property is used to set image to be displayed or to get currently
+            displayed image.</para>
+            
+            <para><note>In the case if source image has high color depth, like 16 bpp grayscale image,
+            48 bpp or 64 bpp color image, it is converted to lower color depth before displaying -
+            to 8 bpp grayscale, 24 bpp or 32 bpp color image respectively.</note></para>
+            
+            <para><note>During color conversion the original source image is kept unmodified, but internal
+            converted copy is created. The property always returns original source image.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.SliderControl">
+             <summary>
+             Slider control.
+             </summary>
+            
+             <remarks>
+             <para>The control represents a slider, which can be dragged in the [-1, 1] range.
+             Default position of the slider is set 0, which corresponds to center of the control.<br />
+             <img src="..\images\controls\slider_control.png" width="227" height="56" />
+             </para>
+             </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.ResetPositionOnMouseRelease">
+            <summary>
+            Determines behaviour of manipulator, when mouse button is released.
+            </summary>
+            
+            <remarks>
+            <para>The property controls behaviour of manipulator on releasing mouse button. If
+            the property is set to <see langword="true"/>, then position of manipulator is reset
+            to 0, when mouse button is released. Otherwise manipulator stays on the place,
+            where it was left.</para>
+            
+            <para>Default value is set to <see langword="true"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.BorderColor">
+            <summary>
+            Color used for drawing borders.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.Black"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.PositiveAreaBrush">
+            <summary>
+            Background color used for filling area corresponding to positive values.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.White"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.NegativeAreaBrush">
+            <summary>
+            Background color used for filling area corresponding to negative values.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.LightGray"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.ManipulatorColor">
+            <summary>
+            Color used for filling manipulator.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see cref="P:System.Drawing.Color.LightSeaGreen"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.IsHorizontal">
+            <summary>
+            Defines if control has horizontal or vertical look.
+            </summary>
+            
+            <remarks>
+            <para>Default value is set to <see langword="true"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.SliderControl.ManipulatorPosition">
+            <summary>
+            Current manipulator's position, [-1, 1].
+            </summary>
+            
+            <remarks><para>The property equals to current manipulator's position.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.SliderControl.PositionChangedHandler">
+            <summary>
+            Delegate used for notification about manipulator's position changes.
+            </summary>
+            
+            <param name="sender">Event sender - object sending the event.</param>
+            <param name="position">Current position of manipulator.</param>
+            
+        </member>
+        <member name="E:Accord.Controls.SliderControl.PositionChanged">
+            <summary>
+            Event used for notification about manipulator's position changes.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SliderControl.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.SliderControl"/> class.
+            </summary>
+        </member>
+        <member name="F:Accord.Controls.SliderControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.SliderControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.SliderControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.VideoSourcePlayer">
+            <summary>
+            Video source player control.
+            </summary>
+            
+            <remarks><para>The control is aimed to play video sources, which implement
+            <see cref="T:Accord.Video.IVideoSource"/> interface. To start playing a video
+            the <see cref="P:Accord.Controls.VideoSourcePlayer.VideoSource"/> property should be initialized first and then
+            <see cref="M:Accord.Controls.VideoSourcePlayer.Start"/> method should be called. In the case if user needs to
+            perform some sort of image processing with video frames before they are displayed,
+            the <see cref="E:Accord.Controls.VideoSourcePlayer.NewFrame"/> event may be used.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // set new frame event handler if we need processing of new frames
+            playerControl.NewFrame += new VideoSourcePlayer.NewFrameHandler( this.playerControl_NewFrame );
+            
+            // create video source
+            IVideoSource videoSource = new ...
+            // start playing it
+            playerControl.VideoSource = videoSource;
+            playerControl.Start( );
+            ...
+            
+            // new frame event handler
+            private void playerControl_NewFrame( object sender, ref Bitmap image )
+            {
+                // process new frame somehow ...
+                
+                // Note: it may be even changed, so the control will display the result
+                // of image processing done here
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.VideoSourcePlayer.AutoSizeControl">
+            <summary>
+            Auto size control or not.
+            </summary>
+            
+            <remarks><para>The property specifies if the control should be autosized or not.
+            If the property is set to <see langword="true"/>, then the control will change its size according to
+            video size and control will change its position automatically to be in the center
+            of parent's control.</para>
+            
+            <para><note>Setting the property to <see langword="true"/> has no effect if
+            <see cref="P:System.Windows.Forms.Control.Dock"/> property is set to <see cref="F:System.Windows.Forms.DockStyle.Fill"/>.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.VideoSourcePlayer.KeepAspectRatio">
+            <summary>
+            Gets or sets whether the player should keep the aspect ratio of the images being shown.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.VideoSourcePlayer.BorderColor">
+            <summary>
+            Control's border color.
+            </summary>
+            
+            <remarks><para>Specifies color of the border drawn around video frame.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Controls.VideoSourcePlayer.VideoSource">
+            <summary>
+            Video source to play.
+            </summary>
+            
+            <remarks><para>The property sets the video source to play. After setting the property the
+            <see cref="M:Accord.Controls.VideoSourcePlayer.Start"/> method should be used to start playing the video source.</para>
+            
+            <para><note>Trying to change video source while currently set video source is still playing
+            will generate an exception. Use <see cref="P:Accord.Controls.VideoSourcePlayer.IsRunning"/> property to check if current video
+            source is still playing or <see cref="M:Accord.Controls.VideoSourcePlayer.Stop"/> or <see cref="M:Accord.Controls.VideoSourcePlayer.SignalToStop"/> and <see cref="M:Accord.Controls.VideoSourcePlayer.WaitForStop"/>
+            methods to stop current video source.</note></para>
+            </remarks>
+            
+            <exception cref="T:System.Exception">Video source can not be changed while current video source is still running.</exception>
+            
+        </member>
+        <member name="P:Accord.Controls.VideoSourcePlayer.IsRunning">
+            <summary>
+            State of the current video source.
+            </summary>
+            
+            <remarks><para>Current state of the current video source object - running or not.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Controls.VideoSourcePlayer.NewFrameHandler">
+            <summary>
+            Delegate to notify about new frame.
+            </summary>
+            
+            <param name="sender">Event sender.</param>
+            <param name="image">New frame.</param>
+            
+        </member>
+        <member name="E:Accord.Controls.VideoSourcePlayer.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>The event is fired on each new frame received from video source. The
+            event is fired right after receiving and before displaying, what gives user a chance to
+            perform some image processing on the new frame and/or update it.</para>
+            
+            <para><note>Users should not keep references of the passed to the event handler image.
+            If user needs to keep the image, it should be cloned, since the original image will be disposed
+            by the control when it is required.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Controls.VideoSourcePlayer.PlayingFinished">
+            <summary>
+            Playing finished event.
+            </summary>
+            
+            <remarks><para>The event is fired when/if video playing finishes. The reason of video
+            stopping is provided as an argument to the event handler.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Controls.VideoSourcePlayer"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.Start">
+            <summary>
+            Start video source and displaying its frames.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>The method stops video source by calling its <see cref="M:Accord.Video.IVideoSource.Stop"/>
+            method, which abourts internal video source's thread. Use <see cref="M:Accord.Controls.VideoSourcePlayer.SignalToStop"/> and
+            <see cref="M:Accord.Controls.VideoSourcePlayer.WaitForStop"/> for more polite video source stopping, which gives a chance for
+            video source to perform proper shut down and clean up.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.SignalToStop">
+            <summary>
+            Signal video source to stop. 
+            </summary>
+            
+            <remarks><para>Use <see cref="M:Accord.Controls.VideoSourcePlayer.WaitForStop"/> method to wait until video source
+            stops.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.WaitForStop">
+            <summary>
+            Wait for video source has stopped. 
+            </summary>
+            
+            <remarks><para>Waits for video source stopping after it was signaled to stop using
+            <see cref="M:Accord.Controls.VideoSourcePlayer.SignalToStop"/> method. If <see cref="M:Accord.Controls.VideoSourcePlayer.SignalToStop"/> was not called, then
+            it will be called automatically.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.GetCurrentVideoFrame">
+            <summary>
+            Get clone of current video frame displayed by the control.
+            </summary>
+            
+            <returns>Returns copy of the video frame, which is currently displayed
+            by the control - the last video frame received from video source. If the
+            control did not receive any video frames yet, then the method returns
+            <see langword="null"/>.</returns>
+            
+        </member>
+        <member name="F:Accord.Controls.VideoSourcePlayer.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.VideoSourcePlayer.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.AngleBox">
+            <summary>
+              Angle Box control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.AngleBox.Angle">
+            <summary>
+              Gets or sets the angle to be displayed.
+            </summary>
+            
+            <value>The angle.</value>
+            
+        </member>
+        <member name="M:Accord.Controls.AngleBox.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.AngleBox"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.AngleBox.OnResize(System.EventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.
+            </summary>
+            
+            <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.AngleBox.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.Paint"/> event.
+            </summary>
+            
+            <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.AngleBox.Dispose(System.Boolean)">
+            <summary> 
+              Clean up any resources being used.
+            </summary>
+            
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+            
+        </member>
+        <member name="F:Accord.Controls.AngleBox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.AngleBox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.PointBox">
+            <summary>
+              Point Box control.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Controls.PointBox.PointX">
+            <summary>
+              Gets or sets the x-coordinate
+              of the displayed point.
+            </summary>
+            
+            <value>The point's x-coordinate.</value>
+            
+        </member>
+        <member name="P:Accord.Controls.PointBox.PointY">
+            <summary>
+              Gets or sets the y-coordinate
+              of the displayed point.
+            </summary>
+            
+            <value>The point's y-coordinate.</value>
+            
+        </member>
+        <member name="M:Accord.Controls.PointBox.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.PointBox"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.PointBox.OnResize(System.EventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.
+            </summary>
+            
+            <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.PointBox.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.Paint"/> event.
+            </summary>
+            
+            <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.PointBox.Dispose(System.Boolean)">
+            <summary> 
+              Clean up any resources being used.
+            </summary>
+            
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+            
+        </member>
+        <member name="F:Accord.Controls.PointBox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.PointBox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:Accord.Controls.ImageBox">
+            <summary>
+              Displays images in a similar way to System.Windows.Forms.MessageBox.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[],System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="imageWidth">The width of the image.</param>
+            <param name="imageHeight">The height of the image.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[0:,0:])">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[],System.Int32,System.Int32,System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="imageWidth">The width of the image.</param>
+            <param name="imageHeight">The height of the image.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[],System.Int32,System.Int32,System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="imageWidth">The width of the image.</param>
+            <param name="imageHeight">The height of the image.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[0:,0:],System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Double[0:,0:],System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,System.Double[0:,0:],System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(Accord.Imaging.UnmanagedImage)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Drawing.Image)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Drawing.Image,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Drawing.Image,System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Drawing.Image,System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(Accord.Imaging.UnmanagedImage,System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.Drawing.Image,System.Windows.Forms.PictureBoxSizeMode,System.Drawing.Color)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            <param name="backColor">The background color to use in the window. 
+              Default is <see cref="P:System.Drawing.Color.Black"/>.</param>
+              
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,System.Drawing.Image)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,System.Drawing.Image,System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,Accord.Imaging.UnmanagedImage,System.Windows.Forms.PictureBoxSizeMode)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,System.Drawing.Image,System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,Accord.Imaging.UnmanagedImage,System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Show(System.String,Accord.Imaging.UnmanagedImage,System.Windows.Forms.PictureBoxSizeMode,System.Int32,System.Int32,System.Drawing.Color)">
+            <summary>
+              Displays an image on the screen.
+            </summary>
+            
+            <param name="title">The text to display in the title bar of the image box.</param>
+            <param name="image">The image to show.</param>
+            <param name="sizeMode">How to display the image inside the image box.</param>
+            <param name="width">The width of the image box.</param>
+            <param name="height">The height of the image box.</param>
+            <param name="backColor">The background color to use in the window. 
+              Default is <see cref="P:System.Drawing.Color.Black"/>.</param>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.SetTitle(System.String)">
+            <summary>
+              Sets the window title of the data grid box.
+              
+            </summary>
+            <param name="text">The desired title text for the window.</param>
+            
+            <returns>This instance, for fluent programming.</returns>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Hold">
+            <summary>
+              Holds the execution until the window has been closed.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.Controls.ImageBox"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Controls.ImageBox.OnPreviewKeyDown(System.Windows.Forms.PreviewKeyDownEventArgs)">
+            <summary>
+              Raises the <see cref="E:System.Windows.Forms.Control.PreviewKeyDown"/> event.
+            </summary>
+            
+        </member>
+        <member name="F:Accord.Controls.ImageBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:Accord.Controls.ImageBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Accord.Controls.ImageBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Controls.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Accord.Controls.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>MathNet.Filtering</id>
+    <version>0.7.0</version>
+    <title>Math.NET Filtering</title>
+    <authors>Christoph Ruegg</authors>
+    <owners>Christoph Ruegg</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://filtering.mathdotnet.com/</projectUrl>
+    <description>Math.NET Filtering, providing methods and algorithms for signal processing and filtering in science, engineering and every day use. Supports .Net Framework 4.0 or higher and .Net Standard 1.3 or higher, on Windows, Linux and Mac.</description>
+    <releaseNotes>Bilinear Transform ~Nico Caprioli
+Butterworth Designer and IIR Coefficients ~Nico Caprioli</releaseNotes>
+    <copyright>Copyright Math.NET Project</copyright>
+    <tags>math filter signal FIR IIR median kalman design</tags>
+    <repository type="git" url="https://github.com/mathnet/mathnet-filtering" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.0">
+        <dependency id="MathNet.Numerics" version="4.9.1" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="MathNet.Numerics" version="4.9.1" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard1.3">
+        <dependency id="MathNet.Numerics" version="4.9.1" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="MathNet.Numerics" version="4.9.1" exclude="Build,Analyzers" />
+        <dependency id="System.ValueTuple" version="4.5.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.0" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0" />
+      <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.0" />
+      <frameworkAssembly assemblyName="System.Runtime.Serialization" targetFramework=".NETFramework4.0" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

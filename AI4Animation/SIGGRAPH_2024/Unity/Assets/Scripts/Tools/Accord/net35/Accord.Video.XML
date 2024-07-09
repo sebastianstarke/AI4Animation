@@ -1,0 +1,1483 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Video</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Video.AsyncVideoSource">
+            <summary>
+            Proxy video source for asynchronous processing of another nested video source.
+            </summary>
+            
+            <remarks><para>The class represents a simple proxy, which wraps the specified <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource"/>
+            with the aim of asynchronous processing of received video frames. The class intercepts <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/>
+            event from the nested video source and fires it to clients from its own thread, which is different from the thread
+            used by nested video source for video acquisition. This allows clients to perform processing of video frames
+            without blocking video acquisition thread, which continue to run and acquire next video frame while current is still
+            processed.</para>
+            
+            <para>For example, let’s suppose that it takes 100 ms for the nested video source to acquire single frame, so the original
+            frame rate is 10 frames per second. Also let’s assume that we have an image processing routine, which also takes
+            100 ms to process a single frame. If the acquisition and processing are done sequentially, then resulting
+            frame rate will drop to 5 frames per second. However, if doing both in parallel, then there is a good chance to
+            keep resulting frame rate equal (or close) to the original frame rate.</para>
+            
+            <para>The class provides a bonus side effect - easer debugging of image processing routines, which are put into
+            <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event handler. In many cases video source classes fire their <see cref="E:Accord.Video.IVideoSource.NewFrame"/>
+            event from a try/catch block, which makes it very hard to spot error made in user's code - the catch block simply
+            hides exception raised in user’s code. The <see cref="T:Accord.Video.AsyncVideoSource"/> does not have any try/catch blocks around
+            firing of <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event, so always user gets exception in the case it comes from his code. At the same time
+            nested video source is not affected by the user's exception, since it runs in different thread.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // usage of AsyncVideoSource is the same as usage of any
+            // other video source class, so code change is very little
+            
+            // create nested video source, for example JPEGStream
+            JPEGStream stream = new JPEGStream( "some url" );
+            // create async video source
+            AsyncVideoSource asyncSource = new AsyncVideoSource( stream );
+            // set NewFrame event handler
+            asyncSource.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            asyncSource.Start( );
+            // ...
+            
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.AsyncVideoSource.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>This event is fired from a different thread other than the video acquisition thread created
+            by <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource"/>. This allows nested video frame to continue acquisition of the next
+            video frame while clients perform processing of the current video frame.</note></para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.AsyncVideoSource.VideoSourceError">
+             <summary>
+             Video source error event.
+             </summary>
+             
+             <remarks><para>This event is used to notify clients about any type of errors occurred in
+             video source object, for example internal exceptions.</para>
+             
+             <para><note>Unlike <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event, this event is simply redirected to the corresponding
+             event of the <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource"/>, so it is fired from the thread of the nested video source.</note></para>
+             </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.AsyncVideoSource.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            
+            <para><note>Unlike <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event, this event is simply redirected to the corresponding
+            event of the <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource"/>, so it is fired from the thread of the nested video source.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.NestedVideoSource">
+            <summary>
+            Nested video source which is the target for asynchronous processing.
+            </summary>
+            
+            <remarks><para>The property is set through the class constructor.</para>
+            
+            <para>All calls to this object are actually redirected to the nested video source. The only
+            exception is the <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event, which is handled differently. This object gets
+            <see cref="E:Accord.Video.IVideoSource.NewFrame"/> event from the nested class and then fires another
+            <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> event, but from a different thread.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.SkipFramesIfBusy">
+            <summary>
+            Specifies if the object should skip frames from the nested video source when it is busy. 
+            </summary>
+            
+            <remarks><para>Specifies if the object should skip frames from the nested video source
+            in the case if it is still busy processing the previous video frame in its own thread.</para>
+            
+            <para>Default value is set to <see langword="false"/>.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.Source">
+            <summary>
+            Video source string.
+            </summary>
+            
+            <remarks><para>The property is redirected to the corresponding property of <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource"/>,
+            so check its documentation to find what it means.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks><para>Number of frames the <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource">nested video source</see> received from
+            the moment of the last access to the property.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.BytesReceived">
+             <summary>
+             Received bytes count.
+             </summary>
+             
+             <remarks><para>Number of bytes the <see cref="P:Accord.Video.AsyncVideoSource.NestedVideoSource">nested video source</see> received from
+             the moment of the last access to the property.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.FramesProcessed">
+            <summary>
+            Processed frames count.
+            </summary>
+            
+            <remarks><para>The property keeps the number of processed video frames since the last access to this property. 
+            </para>
+            
+            <para>The value of this property equals to <see cref="P:Accord.Video.AsyncVideoSource.FramesReceived"/> in most cases if the
+            <see cref="P:Accord.Video.AsyncVideoSource.SkipFramesIfBusy"/> property is set to <see langword="false"/> - every received frame gets processed
+            sooner or later. However, if the <see cref="P:Accord.Video.AsyncVideoSource.SkipFramesIfBusy"/> property is set to <see langword="true"/>,
+            then value of this property may be lower than the value of the <see cref="P:Accord.Video.AsyncVideoSource.FramesReceived"/> property, which
+            means that nested video source performs acquisition faster than client perform processing of the received frame
+            and some frame are skipped from processing.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.AsyncVideoSource.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks><para>Current state of the video source object - running or not.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.#ctor(Accord.Video.IVideoSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.AsyncVideoSource"/> class.
+            </summary>
+            
+            <param name="nestedVideoSource">Nested video source which is the target for asynchronous processing.</param>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.#ctor(Accord.Video.IVideoSource,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.AsyncVideoSource"/> class.
+            </summary>
+            
+            <param name="nestedVideoSource">Nested video source which is the target for asynchronous processing.</param>
+            <param name="skipFramesIfBusy">Specifies if the object should skip frames from the nested video source
+            in the case if it is still busy processing the previous video frame.</param>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks><para>Starts the nested video source and returns execution to caller. This object creates
+            an extra thread which is used to fire <see cref="E:Accord.Video.AsyncVideoSource.NewFrame"/> events, so the image processing could be
+            done on another thread without blocking video acquisition thread.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.SignalToStop">
+             <summary>
+             Signal video source to stop its work.
+             </summary>
+             
+             <remarks><para>Signals video source to stop its background thread, stop to
+             provide new frames and free resources.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.WaitForStop">
+             <summary>
+             Wait for video source has stopped.
+             </summary>
+             
+             <remarks><para>Waits for video source stopping after it was signalled to stop using
+             <see cref="M:Accord.Video.AsyncVideoSource.SignalToStop"/> method.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.AsyncVideoSource.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops nested video source by calling its <see cref="M:Accord.Video.IVideoSource.Stop"/> method.
+            See documentation of the particular video source for additional details.</para></remarks>
+            
+        </member>
+        <member name="T:Accord.Video.ByteArrayUtils">
+            <summary>
+            Some internal utilities for handling arrays.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.ByteArrayUtils.Compare(System.Byte[],System.Byte[],System.Int32)">
+            <summary>
+            Check if the array contains needle at specified position.
+            </summary>
+            
+            <param name="array">Source array to check for needle.</param>
+            <param name="needle">Needle we are searching for.</param>
+            <param name="startIndex">Start index in source array.</param>
+            
+            <returns>Returns <b>true</b> if the source array contains the needle at
+            the specified index. Otherwise it returns <b>false</b>.</returns>
+            
+        </member>
+        <member name="M:Accord.Video.ByteArrayUtils.Find(System.Byte[],System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Find subarray in the source array.
+            </summary>
+            
+            <param name="array">Source array to search for needle.</param>
+            <param name="needle">Needle we are searching for.</param>
+            <param name="startIndex">Start index in source array.</param>
+            <param name="sourceLength">Number of bytes in source array, where the needle is searched for.</param>
+            
+            <returns>Returns starting position of the needle if it was found or <b>-1</b> otherwise.</returns>
+            
+        </member>
+        <member name="T:Accord.Video.VideoException">
+            <summary>
+            Video related exception.
+            </summary>
+            
+            <remarks><para>The exception is thrown in the case of some video related issues, like
+            failure of initializing codec, compression, etc.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Video.VideoException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VideoException"/> class.
+            </summary>
+            
+            <param name="message">Exception's message.</param>
+            
+        </member>
+        <member name="T:Accord.Video.Boundary">
+            <summary>
+            Container for MJPEG stream boundaries
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Boundary.#ctor">
+            <summary>
+            Creates an empty boundary for e.g. octet streams
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Boundary.#ctor(System.String)">
+            <summary>
+            Creates instance using a string as boundary for e.g. multipart streams
+            </summary>
+            <param name="boundary">Boundary string</param>
+        </member>
+        <member name="P:Accord.Video.Boundary.Content">
+            <summary>
+            Boundary string content
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Boundary.Length">
+            <summary>
+            Length of boundary string
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Boundary.HasValue">
+            <summary>
+            True if boundary string length is non-zero
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Boundary.IsChecked">
+            <summary>
+            True if FixMalformedBoundary has been run
+            </summary>
+        </member>
+        <member name="P:Accord.Video.Boundary.IsValid">
+            <summary>
+            True if IsChecked is true and HasValue is true, or if HasValue is false
+            </summary>
+        </member>
+        <member name="M:Accord.Video.Boundary.Prepend(System.Char)">
+            <summary>
+            Adds character before boundary content
+            </summary>
+            <param name="c"></param>
+        </member>
+        <member name="M:Accord.Video.Boundary.FixMalformedBoundary(Accord.Video.MJPEGStreamParser)">
+            <summary>
+            Some IP cameras, like AirLink, claim that boundary is "myboundary",
+            when it is really "--myboundary". This corrects the issue.
+            </summary>
+            <param name="streamParser"></param>
+        </member>
+        <member name="M:Accord.Video.Boundary.FromResponse(System.Net.WebResponse)">
+            <summary>
+            Creates boundary from WebResponse
+            </summary>
+            <param name="response">Source of boundary string</param>
+            <returns>Boundary with string content</returns>
+        </member>
+        <member name="M:Accord.Video.Boundary.op_Explicit(Accord.Video.Boundary)~System.String">
+            <summary>
+            Converts boundary to string
+            </summary>
+            <param name="boundary">Boundary string content</param>
+        </member>
+        <member name="M:Accord.Video.Boundary.op_Explicit(Accord.Video.Boundary)~System.Byte[]">
+            <summary>
+            Converts boundary to byte array
+            </summary>
+            <param name="boundary">Boundary byte content</param>
+        </member>
+        <member name="T:Accord.Video.MJPEGStreamParser">
+            <summary>
+            Handles functionality related to parsing a MJPEG stream
+            </summary>
+        </member>
+        <member name="M:Accord.Video.MJPEGStreamParser.#ctor(Accord.Video.Boundary,System.Byte[],System.Int32)">
+            <summary>
+            Creates instance of MJPEG stream parser using a boundary and a JPEG magic header
+            </summary>
+            <param name="boundary"></param>
+            <param name="header"></param>
+            <param name="bufferSize"></param>
+        </member>
+        <member name="P:Accord.Video.MJPEGStreamParser.Content">
+            <summary>
+            Content of byte array buffer
+            </summary>
+        </member>
+        <member name="P:Accord.Video.MJPEGStreamParser.HasFrame">
+            <summary>
+            True if frame is detected using DetectFrame and not removed using RemoveFrame
+            </summary>
+        </member>
+        <member name="M:Accord.Video.MJPEGStreamParser.Read(System.IO.Stream)">
+            <summary>
+            Reads byte content to internal buffer from a stream
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.Video.MJPEGStreamParser.DetectFrame">
+            <summary>
+            Detects if a frame is present in the internal buffer
+            </summary>
+        </member>
+        <member name="M:Accord.Video.MJPEGStreamParser.GetFrame">
+            <summary>
+            Retrieves the frame from the internal buffer
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.Video.MJPEGStreamParser.RemoveFrame">
+            <summary>
+            Removes current frame from buffer
+            </summary>
+        </member>
+        <member name="T:Accord.Video.TimeoutStream">
+            <summary>
+            Wrapper that enables streams which do not support read and write timeouts to timeout
+            Requires .NET 4.5 or above
+            Used for .NET Standard 2.0
+            </summary>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.#ctor(System.IO.Stream)">
+            <summary>
+            Creates an instance of a TimeoutStream wrapper
+            </summary>
+            <param name="stream">Stream which may not support read or write timeouts</param>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.BaseStream">
+            <summary>
+            Stream wrapped by TimeoutStream wrapper
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.CanRead">
+            <summary>
+            Pass-through property
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.CanSeek">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.CanWrite">
+            <summary>
+            Pass-through property
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.Length">
+            <summary>
+            Pass-through property
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.CanTimeout">
+            <summary>
+            Pass-through property
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.ReadTimeout">
+            <summary>
+            Value of TimeoutStream's read timeout
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.WriteTimeout">
+            <summary>
+            Value of TimeoutStream's write timeout
+            </summary>
+        </member>
+        <member name="P:Accord.Video.TimeoutStream.Position">
+            <summary>
+            Pass-through property
+            </summary>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.Flush">
+            <summary>
+            Pass-through method
+            </summary>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads from base stream using a timeout
+            </summary>
+            <param name="buffer">Buffer byte array</param>
+            <param name="offset">Offset</param>
+            <param name="count">Number of bytes to read</param>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Pass-through method
+            </summary>
+            <param name="offset"></param>
+            <param name="origin"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.SetLength(System.Int64)">
+            <summary>
+            Pass-through method
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Accord.Video.TimeoutStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Write to base stream using a timeout
+            </summary>
+            <param name="buffer">Buffer byte array</param>
+            <param name="offset">Offset</param>
+            <param name="count">Number of bytes to write</param>
+        </member>
+        <member name="T:Accord.Video.IVideoSource">
+            <summary>
+            Video source interface.
+            </summary>
+            
+            <remarks>The interface describes common methods for different type of video sources.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.IVideoSource.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients about new available video frame.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, but video source is responsible for
+            disposing its own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.IVideoSource.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.IVideoSource.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.IVideoSource.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks>The meaning of the property depends on particular video source.
+            Depending on video source it may be a file name, URL or any other string
+            describing the video source.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.IVideoSource.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.IVideoSource.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.IVideoSource.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.IVideoSource.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.IVideoSource.NewFrame"/> event.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.IVideoSource.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.IVideoSource.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for video source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.IVideoSource.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.IVideoSource.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks>Stops video source aborting its thread.</remarks>
+            
+        </member>
+        <member name="T:Accord.Video.JPEGStream">
+            <summary>
+            JPEG video source.
+            </summary>
+            
+            <remarks><para>The video source constantly downloads JPEG files from the specified URL.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create JPEG video source
+            JPEGStream stream = new JPEGStream( "some url" );
+            // set NewFrame event handler
+            stream.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            stream.Start( );
+            // ...
+            // signal to stop
+            stream.SignalToStop( );
+            // ...
+            
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            
+            <para><note>Some cameras produce HTTP header, which does not conform strictly to
+            standard, what leads to .NET exception. To avoid this exception the <b>useUnsafeHeaderParsing</b>
+            configuration option of <b>httpWebRequest</b> should be set, what may be done using application
+            configuration file.</note></para>
+            <code>
+            &lt;configuration&gt;
+            	&lt;system.net&gt;
+            		&lt;settings&gt;
+            			&lt;httpWebRequest useUnsafeHeaderParsing="true" /&gt;
+            		&lt;/settings&gt;
+            	&lt;/system.net&gt;
+            &lt;/configuration&gt;
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.JPEGStream.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.JPEGStream.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.JPEGStream.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.SeparateConnectionGroup">
+            <summary>
+            Use or not separate connection group.
+            </summary>
+            
+            <remarks>The property indicates to open web request in separate connection group.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.PreventCaching">
+            <summary>
+            Use or not caching.
+            </summary>
+            
+            <remarks>If the property is set to <b>true</b>, then a fake random parameter will be added
+            to URL to prevent caching. It's required for clients, who are behind proxy server.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.FrameInterval">
+            <summary>
+            Frame interval.
+            </summary>
+            
+            <remarks>The property sets the interval in milliseconds betwen frames. If the property is
+            set to 100, then the desired frame rate will be 10 frames per second. Default value is 0 -
+            get new frames as fast as possible.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks>URL, which provides JPEG files.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.Login">
+            <summary>
+            Login value.
+            </summary>
+            
+            <remarks>Login required to access video source.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.Password">
+            <summary>
+            Password value.
+            </summary>
+            
+            <remarks>Password required to access video source.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.Proxy">
+            <summary>
+            Gets or sets proxy information for the request.
+            </summary>
+            
+            <remarks><para>The local computer or application config file may specify that a default
+            proxy to be used. If the Proxy property is specified, then the proxy settings from the Proxy
+            property overridea the local computer or application config file and the instance will use
+            the proxy settings specified. If no proxy is specified in a config file
+            and the Proxy property is unspecified, the request uses the proxy settings
+            inherited from Internet Explorer on the local computer. If there are no proxy settings
+            in Internet Explorer, the request is sent directly to the server.
+            </para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.RequestTimeout">
+            <summary>
+            Request timeout value.
+            </summary>
+            
+            <remarks><para>The property sets timeout value in milliseconds for web requests.</para>
+            
+            <para>Default value is set <b>10000</b> milliseconds.</para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.JPEGStream.ForceBasicAuthentication">
+            <summary>
+            Force using of basic authentication when connecting to the video source.
+            </summary>
+            
+            <remarks><para>For some IP cameras (TrendNET IP cameras, for example) using standard .NET's authentication via credentials
+            does not seem to be working (seems like camera does not request for authentication, but expects corresponding headers to be
+            present on connection request). So this property allows to force basic authentication by adding required HTTP headers when
+            request is sent.</para>
+            
+            <para>Default value is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.JPEGStream"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.JPEGStream"/> class.
+            </summary>
+            
+            <param name="source">URL, which provides JPEG files.</param>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.JPEGStream.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.JPEGStream.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.JPEGStream.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.JPEGStream.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.JPEGStream.Free">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.MJPEGStream">
+            <summary>
+            MJPEG video source.
+            </summary>
+            
+            <remarks><para>The video source downloads JPEG images from the specified URL, which represents
+            MJPEG stream.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create MJPEG video source
+            MJPEGStream stream = new MJPEGStream( "some url" );
+            // set event handlers
+            stream.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            // start the video source
+            stream.Start( );
+            // ...
+            </code>
+            
+            <para><note>Some cameras produce HTTP header, which does not conform strictly to
+            standard, what leads to .NET exception. To avoid this exception the <b>useUnsafeHeaderParsing</b>
+            configuration option of <b>httpWebRequest</b> should be set, what may be done using application
+            configuration file.</note></para>
+            <code>
+            &lt;configuration&gt;
+            	&lt;system.net&gt;
+            		&lt;settings&gt;
+            			&lt;httpWebRequest useUnsafeHeaderParsing="true" /&gt;
+            		&lt;/settings&gt;
+            	&lt;/system.net&gt;
+            &lt;/configuration&gt;
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.MJPEGStream.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.MJPEGStream.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.MJPEGStream.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.SeparateConnectionGroup">
+            <summary>
+            Use or not separate connection group.
+            </summary>
+            
+            <remarks>The property indicates to open web request in separate connection group.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+            <remarks>URL, which provides MJPEG stream.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.Login">
+            <summary>
+            Login value.
+            </summary>
+            
+            <remarks>Login required to access video source.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.Password">
+            <summary>
+            Password value.
+            </summary>
+            
+            <remarks>Password required to access video source.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.Proxy">
+            <summary>
+            Gets or sets proxy information for the request.
+            </summary>
+            
+            <remarks><para>The local computer or application config file may specify that a default
+            proxy to be used. If the Proxy property is specified, then the proxy settings from the Proxy
+            property overridea the local computer or application config file and the instance will use
+            the proxy settings specified. If no proxy is specified in a config file
+            and the Proxy property is unspecified, the request uses the proxy settings
+            inherited from Internet Explorer on the local computer. If there are no proxy settings
+            in Internet Explorer, the request is sent directly to the server.
+            </para></remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.HttpUserAgent">
+            <summary>
+            User agent to specify in HTTP request header.
+            </summary>
+            
+            <remarks><para>Some IP cameras check what is the requesting user agent and depending
+            on it they provide video in different formats or do not provide it at all. The property
+            sets the value of user agent string, which is sent to camera in request header.
+            </para>
+            
+            <para>Default value is set to "Mozilla/5.0". If the value is set to <see langword="null"/>,
+            the user agent string is not sent in request header.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks>Number of bytes the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.RequestTimeout">
+            <summary>
+            Request timeout value.
+            </summary>
+            
+            <remarks>The property sets timeout value in milliseconds for web requests.
+            Default value is 10000 milliseconds.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="P:Accord.Video.MJPEGStream.ForceBasicAuthentication">
+            <summary>
+            Force using of basic authentication when connecting to the video source.
+            </summary>
+            
+            <remarks><para>For some IP cameras (TrendNET IP cameras, for example) using standard .NET's authentication via credentials
+            does not seem to be working (seems like camera does not request for authentication, but expects corresponding headers to be
+            present on connection request). So this property allows to force basic authentication by adding required HTTP headers when
+            request is sent.</para>
+            
+            <para>Default value is set to <see langword="false"/>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.MJPEGStream"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.MJPEGStream"/> class.
+            </summary>
+            
+            <param name="source">URL, which provides MJPEG stream.</param>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.MJPEGStream.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.MJPEGStream.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.MJPEGStream.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.MJPEGStream.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.MJPEGStream.FreeThreadResources">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.ScreenCaptureStream">
+            <summary>
+            Screen capture video source.
+            </summary>
+            
+            <remarks><para>The video source constantly captures the desktop screen.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // get entire desktop area size
+            Rectangle screenArea = Rectangle.Empty;
+            foreach ( System.Windows.Forms.Screen screen in 
+                      System.Windows.Forms.Screen.AllScreens )
+            {
+                screenArea = Rectangle.Union( screenArea, screen.Bounds );
+            }
+                
+            // create screen capture video source
+            ScreenCaptureStream stream = new ScreenCaptureStream( screenArea );
+            
+            // set NewFrame event handler
+            stream.NewFrame += new NewFrameEventHandler( video_NewFrame );
+            
+            // start the video source
+            stream.Start( );
+            
+            // ...
+            // signal to stop
+            stream.SignalToStop( );
+            // ...
+            
+            private void video_NewFrame( object sender, NewFrameEventArgs eventArgs )
+            {
+                // get new frame
+                Bitmap bitmap = eventArgs.Frame;
+                // process the frame
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.ScreenCaptureStream.NewFrame">
+            <summary>
+            New frame event.
+            </summary>
+            
+            <remarks><para>Notifies clients about new available frame from video source.</para>
+            
+            <para><note>Since video source may have multiple clients, each client is responsible for
+            making a copy (cloning) of the passed video frame, because the video source disposes its
+            own original copy after notifying of clients.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="E:Accord.Video.ScreenCaptureStream.VideoSourceError">
+            <summary>
+            Video source error event.
+            </summary>
+            
+            <remarks>This event is used to notify clients about any type of errors occurred in
+            video source object, for example internal exceptions.</remarks>
+            
+        </member>
+        <member name="E:Accord.Video.ScreenCaptureStream.PlayingFinished">
+            <summary>
+            Video playing finished event.
+            </summary>
+            
+            <remarks><para>This event is used to notify clients that the video playing has finished.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.Source">
+            <summary>
+            Video source.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.Region">
+            <summary>
+            Gets or sets the screen capture region.
+            </summary>
+            
+            <remarks><para>This property specifies which region (rectangle) of the screen to capture. It may cover multiple displays
+            if those are available in the system.</para>
+            
+            <para><note>The property must be set before starting video source to have any effect.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.FrameInterval">
+            <summary>
+            Time interval between making screen shots, ms.
+            </summary>
+            
+            <remarks><para>The property specifies time interval in milliseconds between consequent screen captures.
+            Expected frame rate of the stream should be approximately 1000/FrameInteval.</para>
+            
+            <para>If the property is set to 0, then the stream will capture screen as fast as the system allows.</para>
+            
+            <para>Default value is set to <b>100</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.FramesReceived">
+            <summary>
+            Received frames count.
+            </summary>
+            
+            <remarks>Number of frames the video source provided from the moment of the last
+            access to the property.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.BytesReceived">
+            <summary>
+            Received bytes count.
+            </summary>
+            
+            <remarks><para><note>The property is not implemented for this video source and always returns 0.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Video.ScreenCaptureStream.IsRunning">
+            <summary>
+            State of the video source.
+            </summary>
+            
+            <remarks>Current state of video source object - running or not.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.#ctor(System.Drawing.Rectangle)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.ScreenCaptureStream"/> class.
+            </summary>
+            
+            <param name="region">Screen's rectangle to capture (the rectangle may cover multiple displays).</param>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.#ctor(System.Drawing.Rectangle,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.ScreenCaptureStream"/> class.
+            </summary>
+            
+            <param name="region">Screen's rectangle to capture (the rectangle may cover multiple displays).</param>
+            <param name="frameInterval">Time interval between making screen shots, ms.</param>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.Start">
+            <summary>
+            Start video source.
+            </summary>
+            
+            <remarks>Starts video source and return execution to caller. Video source
+            object creates background thread and notifies about new frames with the
+            help of <see cref="E:Accord.Video.ScreenCaptureStream.NewFrame"/> event.</remarks>
+            
+            <exception cref="T:System.ArgumentException">Video source is not specified.</exception>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.SignalToStop">
+            <summary>
+            Signal video source to stop its work.
+            </summary>
+            
+            <remarks>Signals video source to stop its background thread, stop to
+            provide new frames and free resources.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.WaitForStop">
+            <summary>
+            Wait for video source has stopped.
+            </summary>
+            
+            <remarks>Waits for source stopping after it was signalled to stop using
+            <see cref="M:Accord.Video.ScreenCaptureStream.SignalToStop"/> method.</remarks>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.Stop">
+            <summary>
+            Stop video source.
+            </summary>
+            
+            <remarks><para>Stops video source aborting its thread.</para>
+            
+            <para><note>Since the method aborts background thread, its usage is highly not preferred
+            and should be done only if there are no other options. The correct way of stopping camera
+            is <see cref="M:Accord.Video.ScreenCaptureStream.SignalToStop">signaling it stop</see> and then
+            <see cref="M:Accord.Video.ScreenCaptureStream.WaitForStop">waiting</see> for background thread's completion.</note></para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Video.ScreenCaptureStream.Free">
+            <summary>
+            Free resource.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.NewFrameEventHandler">
+            <summary>
+            Delegate for new frame event handler.
+            </summary>
+            
+            <param name="sender">Sender object.</param>
+            <param name="eventArgs">Event arguments.</param>
+            
+        </member>
+        <member name="T:Accord.Video.VideoSourceErrorEventHandler">
+            <summary>
+            Delegate for video source error event handler.
+            </summary>
+            
+            <param name="sender">Sender object.</param>
+            <param name="eventArgs">Event arguments.</param>
+            
+        </member>
+        <member name="T:Accord.Video.PlayingFinishedEventHandler">
+            <summary>
+            Delegate for playing finished event handler.
+            </summary>
+            
+            <param name="sender">Sender object.</param>
+            <param name="reason">Reason of finishing video playing.</param>
+            
+        </member>
+        <member name="T:Accord.Video.ReasonToFinishPlaying">
+            <summary>
+            Reason of finishing video playing.
+            </summary>
+            
+            <remarks><para>When video source class fire the <see cref="E:Accord.Video.IVideoSource.PlayingFinished"/> event, they
+            need to specify reason of finishing video playing. For example, it may be end of stream reached.</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Video.ReasonToFinishPlaying.EndOfStreamReached">
+            <summary>
+            Video playing has finished because it end was reached.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.ReasonToFinishPlaying.StoppedByUser">
+            <summary>
+            Video playing has finished because it was stopped by user.
+            </summary>
+        </member>
+        <member name="F:Accord.Video.ReasonToFinishPlaying.DeviceLost">
+            <summary>
+            Video playing has finished because the device was lost (unplugged).
+            </summary>
+        </member>
+        <member name="F:Accord.Video.ReasonToFinishPlaying.VideoSourceError">
+            <summary>
+            Video playing has finished because of some error happened the video source (camera, stream, file, etc.).
+            A error reporting event usually is fired to provide error information.
+            </summary>
+        </member>
+        <member name="T:Accord.Video.NewFrameEventArgs">
+            <summary>
+            Arguments for new frame event from video source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.NewFrameEventArgs.#ctor(System.Drawing.Bitmap)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.NewFrameEventArgs"/> class.
+            </summary>
+            
+            <param name="frame">New frame.</param>
+            
+        </member>
+        <member name="P:Accord.Video.NewFrameEventArgs.Frame">
+            <summary>
+            New frame from video source.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Video.VideoSourceErrorEventArgs">
+            <summary>
+            Arguments for video source error event from video source.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Video.VideoSourceErrorEventArgs.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VideoSourceErrorEventArgs"/> class.
+            </summary>
+            <param name="description">Error description.</param>
+        </member>
+        <member name="M:Accord.Video.VideoSourceErrorEventArgs.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Video.VideoSourceErrorEventArgs"/> class.
+            </summary>
+            
+            <param name="description">Error description.</param>
+            <param name="exception">Error exception.</param>
+            
+        </member>
+        <member name="P:Accord.Video.VideoSourceErrorEventArgs.Description">
+            <summary>
+            Video source error description.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Video.VideoSourceErrorEventArgs.Exception">
+            <summary>
+            Video source exception causing the error
+            </summary>
+        </member>
+        <member name="T:Accord.DataSets.TestVideos">
+            <summary>
+              Public-Domain test videos for video processing and vision applications.
+            </summary>
+            
+            <remarks>
+            <para>
+              This dataset contains sample videos from https://pixabay.com available under a CC0 Creative Commons
+              (a.k.a. public domain), meaning no they are free for commercial use and no attribution is required.</para>
+              
+            <para>Using this class, you can retrieve any of the following test videos:</para>
+            
+            <list type="bullet">
+             <list><description>walking.mp4</description></list>
+             <list><description>crowd.mp4</description></list>
+             <list><description>squirrel.mp4</description></list>
+            </list>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="https://pixabay.com">
+                  Pixabay. "Free Videos.", Hans Braxmeier and Simon Steinberger GbR, 2017.</a>
+                  </description></item>
+               </list></para>
+            </remarks>
+            
+            <example>
+            <code source="Sources\Extras\Accord.Tests.Video.FFMPEG\MatchingTrackerTest.cs" region="doc_track" />
+            </example>
+            
+            <seealso cref="T:Accord.DataSets.TestImages"/>
+            
+        </member>
+        <member name="P:Accord.DataSets.TestVideos.VideoNames">
+            <summary>
+              Gets all the video names that can be passed to
+              the <see cref="M:Accord.DataSets.TestVideos.GetVideo(System.String)"/> method.
+            </summary>
+            
+            <value>The video names in this dataset.</value>
+            
+        </member>
+        <member name="M:Accord.DataSets.TestVideos.#ctor(System.String)">
+            <summary>
+              Downloads and prepares the test videos dataset.
+            </summary>
+            
+            <param name="path">The path where datasets will be stored. If null or empty, the dataset
+            will be saved on a subfolder called "data" in the current working directory.</param>
+            
+        </member>
+        <member name="P:Accord.DataSets.TestVideos.Item(System.String)">
+            <summary>
+              Downloads the example video with the specified name and returns the file path where it has been saved.
+            </summary>
+            
+            <param name="name">The video name. For a list of all possible names, see <see cref="P:Accord.DataSets.TestVideos.VideoNames"/>.</param>
+            
+        </member>
+        <member name="M:Accord.DataSets.TestVideos.GetVideo(System.String)">
+            <summary>
+              Downloads the example video with the specified name and returns the file path where it has been saved.
+            </summary>
+            
+            <param name="name">The standard video name. For a list of all possible names, see <see cref="P:Accord.DataSets.TestVideos.VideoNames"/>.</param>
+            
+        </member>
+    </members>
+</doc>

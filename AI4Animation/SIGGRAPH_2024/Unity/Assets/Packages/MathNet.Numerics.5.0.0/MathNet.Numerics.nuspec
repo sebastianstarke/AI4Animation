@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>MathNet.Numerics</id>
+    <version>5.0.0</version>
+    <title>Math.NET Numerics</title>
+    <authors>Christoph Ruegg, Marcus Cuda, Jurgen Van Gael</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://numerics.mathdotnet.com/</projectUrl>
+    <description>Math.NET Numerics is the numerical foundation of the Math.NET project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use. Supports .NET 5.0 or higher, .NET Standard 2.0 and .NET Framework 4.6.1 or higher, on Windows, Linux and Mac.</description>
+    <releaseNotes>COMPATIBILITY: net5.0, net48 better supported with explicit builds
+COMPATIBILITY: netstandard1.x, net40, net45 no longer supported
+BREAKING: drop all which was marked as obsolete
+BREAKING: all native provider adapters moved out to separate NuGet packages
+BREAKING: switch many usages of tuples to value tuples (experimental)
+Linear Algebra: Fix sparse inplace pointwise multiplication and division ~jkalias
+Distributions: Logistic ~Bobby Ingram
+Distributions: Perf: Cauchy avoid duplicate evaluation ~Febin
+Random: NextBigIngegerSequence ~Silver-Fang
+Random: xoshiro256StarStar fix out of range exception ~Charlie Turndorf
+Precision: Perf: pre-compute negative powers ~Febin
+Optimizations: Remove static properties in LevenbergMarquardtMinimizer ~Jong Hyun Kim
+Root Finding: Newton-Raphson better handling of zero-evaluations
+Fit.Curve and FindMinimum extended to accept two more parameters
+Fixed an index out of bounds issue when calculating BFGS minimizer with one variable ~Shiney
+Fixed Sparse COO NormalizeDuplicates ~Mohamed Moussa
+Marcum-Q and Log1p functions ~CHUTORO
+Series: stable series summation
+Cubic Spline: Extrema and Stationary Points ~Eduardo Rojas
+Statistics: Weighted Descriptive and Running Statistics ~Richard Allen
+Providers: binary names and loading changes to follow conventions and better x-plat
+Providers: drop managed reference linear algebra provider
+Providers: native providers no longer inherit managed providers, managed now sealed
+Providers: MKL provider compilation switched to Intel oneAPI MKL
+Providers: support for provider packages with runtime folders
+Better support for System.Text.Json: Polynomial, DescriptiveStatistics ~Joseph Petersen
+Lots of internal cleanup, leveraging newer language features
+Data: now released always together with Numerics (no longer separate versioning)
+Control.Describe now includes CPU architecture and family identifier if know</releaseNotes>
+    <copyright>Copyright Math.NET Project</copyright>
+    <tags>math numeric statistics probability integration interpolation regression solve fit linear algebra matrix fft</tags>
+    <repository type="git" url="https://github.com/mathnet/mathnet-numerics" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="System.ValueTuple" version="4.4.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.8" />
+      <group targetFramework="net5.0" />
+      <group targetFramework="net6.0" />
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>

@@ -1,0 +1,1152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MathNet.Filtering</name>
+    </assembly>
+    <members>
+        <member name="T:MathNet.Filtering.Butterworth.Designer">
+            <summary>
+            Computes the minimum order and the cutoff frequencies, starting from the design parameters of a Butterworth filter.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.LowPass(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Designs a low-pass Butterworth filter according to the specification.
+            </summary>
+            <param name="passbandFreq">Passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="stopbandFreq">Stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>Minimum required filter order and computed cutoff frequency.</returns>
+            <exception cref="T:System.ArgumentException">Passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Passband ripple must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband corner frequency must be greater than passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be greater than passband ripple.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.HighPass(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Designs a high-pass Butterworth filter according to the specification.
+            </summary>
+            <param name="stopbandFreq">Stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="passbandFreq">Passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>Minimum required filter order and computed cutoff frequency.</returns>
+            <exception cref="T:System.ArgumentException">Passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Passband ripple must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband corner frequency must be lesser than passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be greater than passband ripple.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.BandPass(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Designs a band-pass Butterworth filter according to the specification.
+            </summary>
+            <param name="lowStopbandFreq">Lower stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="lowPassbandFreq">Lower passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="highPassbandFreq">Higher passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="highStopbandFreq">Higher stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>Minimum required filter order and computed cutoff frequency.</returns>
+            <exception cref="T:System.ArgumentException">Lower passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Lower stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Higher passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Higher stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Passband ripple must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Lower stopband corner frequency must be lesser than lower passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Lower passband corner frequency must be lesser than higher passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Higher stopband corner frequency must be greater than higher passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be greater than passband ripple.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.BandStop(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Designs a band-stop Butterworth filter according to the specification.
+            </summary>
+            <param name="lowPassbandFreq">Lower passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="lowStopbandFreq">Lower stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="highStopbandFreq">Higher stopband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="highPassbandFreq">Higher passband corner frequency, normalized to Nyquist frequency.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>Minimum required filter order and computed cutoff frequency.</returns>
+            <exception cref="T:System.ArgumentException">Lower passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Lower stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Higher passband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Higher stopband corner frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Passband ripple must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Lower stopband corner frequency must be greater than lower passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Lower stopband corner frequency must be lesser than higher passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Higher stopband corner frequency must be lesser than higher passband corner frequency.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be greater than passband ripple.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.Notch(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Designs a notch Butterworth filter according to the specification.
+            </summary>
+            <param name="centralFreq">Filter central frequency, normalized to Nyquist frequency.</param>
+            <param name="Q">Quality factor.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>Minimum required filter order and computed cutoff frequency.</returns>
+            <exception cref="T:System.ArgumentException">Central frequency is not in [0,1] range.</exception>
+            <exception cref="T:System.ArgumentException">Q must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Passband ripple must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Stopband attenuation must be a finite number.</exception>
+            <exception cref="T:System.ArgumentException">Invalid quality factor.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.Designer.CutoffFrequencies(System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the cutoff frequencies for a band-pass or a band-stop filter.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.LowPass(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the IIR coefficients for a low-pass Butterworth filter.
+            </summary>
+            <param name="passbandFreq">Passband corner frequency (in Hz).</param>
+            <param name="stopbandFreq">Stopband corner frequency (in Hz).</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>IIR coefficients.</returns>
+            <seealso cref="M:MathNet.Filtering.Butterworth.Designer.LowPass(System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.HighPass(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the IIR coefficients for a high-pass Butterworth filter.
+            </summary>
+            <param name="stopbandFreq">Stopband corner frequency (in Hz).</param>
+            <param name="passbandFreq">Passband corner frequency (in Hz).</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>IIR coefficients.</returns>
+            <seealso cref="M:MathNet.Filtering.Butterworth.Designer.HighPass(System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.BandPass(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the IIR coefficients for a band-pass Butterworth filter.
+            </summary>
+            <param name="lowStopbandFreq">Lower stopband corner frequency (in Hz).</param>
+            <param name="lowPassbandFreq">Lower passband corner frequency (in Hz).</param>
+            <param name="highPassbandFreq">Higher passband corner frequency (in Hz).</param>
+            <param name="highStopbandFreq">Higher stopband corner frequency (in Hz).</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>IIR coefficients.</returns>
+            <seealso cref="M:MathNet.Filtering.Butterworth.Designer.BandPass(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.BandStop(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the IIR coefficients for a band-stop Butterworth filter.
+            </summary>
+            <param name="lowPassbandFreq">Lower passband corner frequency (in Hz).</param>
+            <param name="lowStopbandFreq">Lower stopband corner frequency (in Hz).</param>
+            <param name="highStopbandFreq">Higher stopband corner frequency (in Hz).</param>
+            <param name="highPassbandFreq">Higher passband corner frequency (in Hz).</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>IIR coefficients.</returns>
+            <seealso cref="M:MathNet.Filtering.Butterworth.Designer.BandStop(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.Notch(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Computes the IIR coefficients for a notch Butterworth filter.
+            </summary>
+            <param name="centralFreq">Filter central frequency.</param>
+            <param name="Q">Quality factor.</param>
+            <param name="passbandRipple">Maximum allowed passband ripple.</param>
+            <param name="stopbandAttenuation">Minimum required stopband attenuation.</param>
+            <returns>IIR coefficients.</returns>
+            <seealso cref="M:MathNet.Filtering.Butterworth.Designer.Notch(System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.TransferFunction(System.UInt32)">
+            <summary>
+            Computes the transfer function for a generic Butterworth filter.
+            </summary>
+            <param name="n">Order of the filter.</param>
+            <returns>The triplet gain, zeros and poles of the transfer function</returns>
+        </member>
+        <member name="M:MathNet.Filtering.Butterworth.IirCoefficients.Coefficients(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Returns the list of IIR coefficients for a generic Butterworth filter.
+            </summary>
+            <param name="gain">Filter gain.</param>
+            <param name="zeros">Filter zeros list.</param>
+            <param name="poles">Filter poles list.</param>
+            <param name="T">Sampling time (inverse of sampling frequency).</param>
+            <returns>The list of IIR coefficients.</returns>
+        </member>
+        <member name="T:MathNet.Filtering.Channel.IChannelSource">
+            <summary>
+            Sample Provider
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Channel.IChannelSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Channel.IChannelSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.ArbitraryPeriodicSource">
+            <summary>
+            Precomputed periodic sample source
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.ArbitraryPeriodicSource.#ctor(System.Double[],System.Int32,System.Int32)">
+            <summary>
+            Create a new precomputed periodic sample source
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.ArbitraryPeriodicSource.#ctor(System.Double[])">
+            <summary>
+            Create a new precomputed periodic sample source
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.ArbitraryPeriodicSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.DataSources.ArbitraryPeriodicSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.GeneratorSource">
+            <summary>
+            Adapter for Iridium continuous (random) generators to Neodym channel sources.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.GeneratorSource.#ctor(MathNet.Numerics.Distributions.IContinuousDistribution)">
+            <summary>
+            Create a sample source from a continuous generator.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.GeneratorSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.DataSources.GeneratorSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system. Constant Zero.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.SignalGenerator">
+            <summary>
+            Generators for sinusoidal and theoretical signal vectors.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SignalGenerator.Sine(System.Double,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a Sine Signal Sample Vector.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="frequency">Frequency in samples per unit.</param>
+            <param name="phase">Optional phase offset.</param>
+            <param name="amplitude">The maximal reached peak.</param>
+            <param name="length">The count of samples to generate.</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SignalGenerator.Step(System.Int32,System.Double,System.Int32)">
+            <summary>
+            Create a Heaviside Step Signal Sample Vector.
+            </summary>
+            <param name="offset">Offset to the time axis. Zero or positive.</param>
+            <param name="amplitude">The maximal reached peak.</param>
+            <param name="length">The count of samples to generate.</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SignalGenerator.Impulse(System.Int32,System.Int32,System.Double,System.Int32)">
+            <summary>
+            Create a Dirac Delta Impulse Signal Sample Vector.
+            </summary>
+            <param name="offset">Offset to the time axis. Zero or positive.</param>
+            <param name="frequency">impulse sequence frequency. -1 for single impulse only.</param>
+            <param name="amplitude">The maximal reached peak.</param>
+            <param name="length">The count of samples to generate.</param>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.SinusoidalSource">
+            <summary>
+            Sinus sample source.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SinusoidalSource.#ctor(System.Double,System.Double,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a new on-demand sinus sample source with the given parameters.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SinusoidalSource.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Create a new on-demand sinus sample source with the given parameters an zero phase and mean.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SinusoidalSource.Precompute(System.Int32,System.Double,System.Double)">
+            <summary>
+            Creates a precomputed sinus sample source with the given parameters and zero mean.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SinusoidalSource.Precompute(System.Int32,System.Double)">
+            <summary>
+            Creates a precomputed sinus sample source with the given parameters and zero phase and mean.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.SinusoidalSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.DataSources.SinusoidalSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.StableNoiseSource">
+            <summary>
+            Sample source with skew alpha stable distributed samples.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.StableNoiseSource.#ctor(System.Random,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Create a skew alpha stable noise source.
+            </summary>
+            <param name="uniformWhiteRandomSource">Uniform white random source.</param>
+            <param name="location">mu-parameter of the stable distribution</param>
+            <param name="scale">c-parameter of the stable distribution</param>
+            <param name="exponent">alpha-parameter of the stable distribution</param>
+            <param name="skewness">beta-parameter of the stable distribution</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.StableNoiseSource.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Create a skew alpha stable noise source.
+            </summary>
+            <param name="location">mu-parameter of the stable distribution</param>
+            <param name="scale">c-parameter of the stable distribution</param>
+            <param name="exponent">alpha-parameter of the stable distribution</param>
+            <param name="skewness">beta-parameter of the stable distribution</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.StableNoiseSource.#ctor(System.Double,System.Double)">
+            <summary>
+            Create a skew alpha stable noise source.
+            </summary>
+            <param name="exponent">alpha-parameter of the stable distribution</param>
+            <param name="skewness">beta-parameter of the stable distribution</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.StableNoiseSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.DataSources.StableNoiseSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system. Constant Zero.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource">
+            <summary>
+            Sample source with independent amplitudes of normal distribution and a flat spectral density.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource.#ctor(System.Random,System.Double,System.Double)">
+            <summary>
+            Create a gaussian noise source with normally distributed amplitudes.
+            </summary>
+            <param name="uniformWhiteRandomSource">Uniform white random source.</param>
+            <param name="mean">mu-parameter of the normal distribution</param>
+            <param name="standardDeviation">sigma-parameter of the normal distribution</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource.#ctor(System.Double,System.Double)">
+            <summary>
+            Create a gaussian noise source with normally distributed amplites.
+            </summary>
+            <param name="mean">mu-parameter of the normal distribution</param>
+            <param name="standardDeviation">sigma-parameter of the normal distribution</param>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource.#ctor">
+            <summary>
+            Create a gaussian noise source with standard distributed amplitudes.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource.ReadNextSample">
+            <summary>
+            Computes and returns the next sample.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.DataSources.WhiteGaussianNoiseSource.Delay">
+            <summary>
+            Sample delay of this source in relation to the whole system. Constant Zero.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.FilterType">
+            <summary>
+            Frequency Filter Type
+            </summary>
+        </member>
+        <member name="F:MathNet.Filtering.FilterType.LowPass">
+            <summary>LowPass, lets only low frequencies pass.</summary>
+        </member>
+        <member name="F:MathNet.Filtering.FilterType.HighPass">
+            <summary>HighPass, lets only high frequencies pass.</summary>
+        </member>
+        <member name="F:MathNet.Filtering.FilterType.BandPass">
+            <summary>BandPass, lets only frequencies pass that are inside of a band.</summary>
+        </member>
+        <member name="F:MathNet.Filtering.FilterType.BandStop">
+            <summary>BandStop, lets only frequencies pass that are outside of a band.</summary>
+        </member>
+        <member name="F:MathNet.Filtering.FilterType.Other">
+            <summary>Other behavior.</summary>
+        </member>
+        <member name="T:MathNet.Filtering.FIR.FirCoefficients">
+             <summary>
+             FirCoefficients provides basic coefficient evaluation
+             algorithms for the four most important filter types for
+             Finite Impulse Response (FIR) Filters.
+            
+             Default filter order estimation:
+             transition bandwidth is 25% of the lower passband edge,
+             but not lower than 2 Hz, where possible (for bandpass,
+             highpass, and bandstop) and distance from passband edge
+             to critical frequency (DC, Nyquist) otherwise.
+             </summary>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.FirCoefficients.LowPass(System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Calculates FIR LowPass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoff">Desired cutoff frequency in samples per unit.</param>
+            <param name="dcGain">Desired DC gain. Defaults to 1.0.</param>
+            <param name="halforder">half-order Q, so that Order N = 2*Q+1. 0 for default order.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.FirCoefficients.HighPass(System.Double,System.Double,System.Int32)">
+            <summary>
+            Calculates FIR HighPass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoff">Cutoff frequency in samples per unit.</param>
+            <param name="halforder">half-order Q, so that Order N = 2*Q+1. 0 for default order.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.FirCoefficients.BandPass(System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Calculates FIR Bandpass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoffLow">Low Cutoff frequency in samples per unit.</param>
+            <param name="cutoffHigh">High Cutoff frequency in samples per unit.</param>
+            <param name="halforder">half-order Q, so that Order N = 2*Q+1. 0 for default order.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.FirCoefficients.BandStop(System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Calculates FIR Bandstop Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoffLow">Low Cutoff frequency in samples per unit.</param>
+            <param name="cutoffHigh">High Cutoff frequency in samples per unit.</param>
+            <param name="halforder">half-order Q, so that Order N = 2*Q+1. 0 for default order.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="T:MathNet.Filtering.FIR.OnlineFirFilter">
+            <summary>
+            Finite Impulse Response (FIR) Filters are based on
+            Fourier series and implemented using a discrete
+            convolution equation. FIR Filters are always
+            online, stable and causal.
+            </summary>
+            <remarks>
+            System Description: H(z) = a0 + a1*z^-1 + a2*z^-2 + ...
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.OnlineFirFilter.#ctor(System.Collections.Generic.IList{System.Double})">
+            <summary>
+            Finite Impulse Response (FIR) Filter.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.OnlineFirFilter.ProcessSample(System.Double)">
+            <summary>
+            Process a single sample.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.FIR.OnlineFirFilter.Reset">
+            <summary>
+            Reset internal state (not coefficients!).
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Helpers.MathFunctions">
+            <summary>
+            Collection of mathematical functions used across the project.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Helpers.MathFunctions.WarpFrequency(System.Double,System.Double)">
+            <summary>
+            Computes the warped frequency.
+            </summary>
+            <param name="cutoffFrequency">Digital cutoff frequency.</param>
+            <param name="samplingTime">Sampling time (computed as the reverse of the sampling frequency).</param>
+            <returns>Warped frequency.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.Helpers.MathFunctions.PolynomialCoefficients(System.Numerics.Complex[])">
+            <summary>
+            Computes the coefficients of the polynomial whose solutions are roots are given as input parameter.
+            </summary>
+            <param name="roots">Roots of the polynomial.</param>
+            <returns>Polynomial coefficients.</returns>
+        </member>
+        <member name="T:MathNet.Filtering.Helpers.Validators">
+            <summary>
+            Exposes some common validation rules. Even though those check can be implemented in-place,
+            it was deemed useful to keep them in a separate file to let the utilizers focus only on their goal.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Helpers.Validators.CheckDouble(System.Double,System.String)">
+            <summary>
+            Checks that a double is a finite number.
+            </summary>
+            <param name="value">Value to check.</param>
+            <param name="parameterName">Parameter name for presentation purposes.</param>
+            <exception cref="T:System.ArgumentException">If the parameter is NaN or Infinity.</exception>
+        </member>
+        <member name="M:MathNet.Filtering.Helpers.Validators.CheckFrequency(System.Double,System.String)">
+            <summary>
+            Checks that a frequency is normalized to the Nyquist rate, meaning that must be in [0;1] range.
+            </summary>
+            <param name="frequency">Frequency to check.</param>
+            <param name="parameterName">Parameter name for presentation purposes.</param>
+            <exception cref="T:System.ArgumentException">If the parameter is not in [0;1] range.</exception>
+            <seealso cref="M:MathNet.Filtering.Helpers.Validators.CheckDouble(System.Double,System.String)"/>
+        </member>
+        <member name="M:MathNet.Filtering.Helpers.Validators.CheckNull(System.Object,System.String)">
+            <summary>
+            Explicitly checks that an object is not null
+            </summary>
+            <param name="obj">Object to check.</param>
+            <param name="parameterName">Parameter name for presentation purposes.</param>
+            <exception cref="T:System.ArgumentNullException">If the parameter is null.</exception>
+        </member>
+        <member name="T:MathNet.Filtering.IIR.IirCoefficients">
+            <summary>
+            IirCoefficients provides basic coefficient evaluation
+            algorithms for the four most important filter types for
+            Infinite Impulse Response (IIR) Filters.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.IirCoefficients.LowPass(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates IIR LowPass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoff">Cutoff frequency in samples per unit.</param>
+            <param name="width">bandwidth in samples per unit.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.IirCoefficients.HighPass(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates IIR HighPass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoff">Cutoff frequency in samples per unit.</param>
+            <param name="width">bandwidth in samples per unit.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.IirCoefficients.BandPass(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates IIR Bandpass Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoffLow">Low Cutoff frequency in samples per unit.</param>
+            <param name="cutoffHigh">High Cutoff frequency in samples per unit.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.IirCoefficients.BandStop(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculates IIR Bandstop Filter Coefficients.
+            </summary>
+            <param name="samplingRate">Samples per unit.</param>
+            <param name="cutoffLow">Low Cutoff frequency in samples per unit.</param>
+            <param name="cutoffHigh">High Cutoff frequency in samples per unit.</param>
+            <returns>The calculated filter coefficients.</returns>
+        </member>
+        <member name="T:MathNet.Filtering.IIR.OnlineIirFilter">
+            <summary>
+            Infinite Impulse Response (IIR) Filters need much
+            less coefficients (and are thus much faster) than
+            comparable FIR Filters, but are potentially unstable.
+            IIR Filters are always online and causal. This IIR
+            Filter implements the canonic Direct Form II structure.
+            </summary>
+            <remarks>
+            System Description: H(z) = (b0 + b1*z^-1 + b2*z^-2) / (1 + a1*z^-1 + a2*z^-2)
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.OnlineIirFilter.#ctor(System.Double[])">
+            <summary>
+            Infinite Impulse Response (IIR) Filter.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.OnlineIirFilter.ProcessSample(System.Double)">
+            <summary>
+            Process a single sample.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IIR.OnlineIirFilter.Reset">
+            <summary>
+            Reset internal state (not coefficients!).
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.ImpulseResponse">
+            <summary>
+            Specifies how a filter will respond to an impulse input.
+            </summary>
+        </member>
+        <member name="F:MathNet.Filtering.ImpulseResponse.Finite">
+            <summary>
+            Impulse response always has a finite length of time and are stable, but usually have a long delay.
+            </summary>
+        </member>
+        <member name="F:MathNet.Filtering.ImpulseResponse.Infinite">
+            <summary>
+            Impulse response may have an infinite length of time and may be unstable, but usually have only a short delay.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.IOnlineFilter">
+            <summary>
+            An online filter that allows processing samples just in time.
+            Online Filters are always causal.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IOnlineFilter.ProcessSample(System.Double)">
+            <summary>
+            Process a single sample.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IOnlineFilter.ProcessSamples(System.Double[])">
+            <summary>
+            Process a whole set of samples at once.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.IOnlineFilter.Reset">
+            <summary>
+            Reset internal state (not coefficients!).
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Median.OnlineMedianFilter">
+            <summary>
+            Median-Filters are non-linear filters, returning
+            the median of a sample window as output. Median-Filters
+            perform well for de-noise applications where it's
+            important to not loose sharp steps/edges.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Median.OnlineMedianFilter.#ctor(System.Int32)">
+            <summary>
+            Create a Median Filter
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Median.OnlineMedianFilter.ProcessSample(System.Double)">
+            <summary>
+            Process a single sample.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Median.OnlineMedianFilter.Reset">
+            <summary>
+            Reset internal state.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.OnlineFilter">
+            <summary>
+            Online filters allow processing incoming samples immediately and hence
+            provide a nearly real-time response with a fixed delay.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateLowpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a filter to remove high frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateLowpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double)">
+            <summary>
+            Create a filter to remove high frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateHighpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a filter to remove low frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateHighpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double)">
+            <summary>
+            Create a filter to remove low frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateBandpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a filter to remove low and high frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateBandpass(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Double)">
+            <summary>
+            Create a filter to remove low and high frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateBandstop(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Create a filter to remove middle (all but low and high) frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateBandstop(MathNet.Filtering.ImpulseResponse,System.Double,System.Double,System.Double)">
+            <summary>
+            Create a filter to remove middle (all but low and high) frequencies in online processing scenarios.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateDenoise(System.Int32)">
+            <summary>
+            Create a filter to remove noise in online processing scenarios.
+            </summary>
+            <param name="order">
+            Window Size, should be odd. A larger number results in a smoother
+            response but also in a longer delay.
+            </param>
+            <remarks>The de-noise filter is implemented as an unweighted median filter.</remarks>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.CreateDenoise">
+            <summary>
+            Create a filter to remove noise in online processing scenarios.
+            </summary>
+            <remarks>The de-noise filter is implemented as an unweighted median filter.</remarks>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.ProcessSample(System.Double)">
+            <summary>
+            Process a single sample.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.Reset">
+            <summary>
+            Reset internal state (not coefficients!).
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.OnlineFilter.ProcessSamples(System.Double[])">
+            <summary>
+            Process a sequence of sample.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.ArgumentEvenNumberOfCoefficients">
+            <summary>
+              Looks up a localized string similar to Even number of coefficients required..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.InvalidWindowFunctionException">
+            <summary>
+              Looks up a localized string similar to Windowing function is not valid..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFCovarianceIncorrectSize">
+            <summary>
+              Looks up a localized string similar to Covariance Matrix must have same number of row/cols as state variable..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFCovarianceNotSquare">
+            <summary>
+              Looks up a localized string similar to Covariance matrix must be square..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFMeasureCovarainceMalformed">
+            <summary>
+              Looks up a localized string similar to Measurement covariance should be a square matrix with rows/cols equal to number of measurements..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFMeasurementVectorMalformed">
+            <summary>
+              Looks up a localized string similar to Measurements should be a single column matrix..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFMeasureSensitivityMalformed">
+            <summary>
+              Looks up a localized string similar to Measurement sensitivity matrix should contain same number of rows as measurement matrix and columns as there are state variables..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFNoiseCouplingMalformed">
+            <summary>
+              Looks up a localized string similar to Noise coupling matrix should have number of rows equal to number of state variables, and columns equal to process noise rows..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFNoiseCovarianceMalformed">
+            <summary>
+              Looks up a localized string similar to Noise Covariance matrix should be square..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFSquareNoiseCouplingMalformed">
+            <summary>
+              Looks up a localized string similar to Square noise covariance matrices should have same number of rows/cols as state variables..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFStateNotColumnVector">
+            <summary>
+              Looks up a localized string similar to Kalman Filter state must be a column vector..
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Properties.Resources.KFStateTransitionMalformed">
+            <summary>
+              Looks up a localized string similar to State Transition should be square matrix with same rows/cols as state variables..
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.TransferFunctions.BilinearTransform">
+            <summary>
+            Transform the list of zeros and poles (adjusting the gain accordingly) of a transfer function through the bilinear transform.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.TransferFunctions.BilinearTransform.Apply(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Applies the bilinear transform starting from the set of zeros and poles.
+            </summary>
+            <param name="gain">Transfer function gain.</param>
+            <param name="zeros">List of zeros.</param>
+            <param name="poles">List of poles.</param>
+            <param name="samplingTime">Sampling time, computed as the inverse of sampling frequency.</param>
+            <returns>Recomputed gain, list of zeros and list of poles.</returns>
+            <exception cref="T:System.ArgumentException">The gain must be a finite value.</exception>
+            <exception cref="T:System.ArgumentException">The sampling time must be a finite value.</exception>
+            <exception cref="T:System.ArgumentNullException">The list of zeros must be not null.</exception>
+            <exception cref="T:System.ArgumentNullException">The list of poles must be not null.</exception>
+            <exception cref="T:System.ArgumentException">The number of poles must at least be equal to the number of zeros.</exception>
+            <remarks>
+            For performance reasons, the method edits the input list of zeros and poles in-place when feasible,
+            so the input and output arrays might be the same object.
+            </remarks>
+        </member>
+        <member name="T:MathNet.Filtering.TransferFunctions.TransferFunctionTransformer">
+            <summary>
+            Transforms the zeros, the poles and the gain of a low-pass or band-pass prototype to the required filter type.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.TransferFunctions.TransferFunctionTransformer.LowPass(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Recomputes the gain and the list of zeros and poles for a low-pass filter.
+            </summary>
+            <param name="gain">Initial gain.</param>
+            <param name="zeros">List of zeros.</param>
+            <param name="poles">List of poles.</param>
+            <param name="wc">Cutoff frequency.</param>
+            <returns>Recomputed gain, list of zeros and list of poles.</returns>
+            <remarks>
+            For performance reasons, the method edits the input list of zeros and poles in place, so the input and output
+            arrays are actually the same object.
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.TransferFunctions.TransferFunctionTransformer.HighPass(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double)">
+            <summary>
+            Recomputes the gain and the list of zeros and poles for a high-pass filter.
+            </summary>
+            <param name="gain">Initial gain.</param>
+            <param name="zeros">List of zeros.</param>
+            <param name="poles">List of poles.</param>
+            <param name="wc">Cutoff frequency.</param>
+            <returns>Recomputed gain, list of zeros and list of poles.</returns>
+            <remarks>
+            For performance reasons, the method edits the input list of zeros and poles in place, so the input and output
+            arrays are actually the same object.
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.TransferFunctions.TransferFunctionTransformer.BandPass(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double,System.Double)">
+            <summary>
+            Recomputes the gain and the list of zeros and poles for a band-pass filter.
+            </summary>
+            <param name="gain">Initial gain.</param>
+            <param name="zeros">List of zeros.</param>
+            <param name="poles">List of poles.</param>
+            <param name="wc1">Lower cutoff frequency.</param>
+            <param name="wc2">Higher cutoff frequency.</param>
+            <returns>Recomputed gain, list of zeros and list of poles.</returns>
+            <remarks>
+            For performance reasons, the method edits the input list of zeros and poles in place, so the input and output
+            arrays are actually the same object.
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.TransferFunctions.TransferFunctionTransformer.BandStop(System.Double,System.Numerics.Complex[],System.Numerics.Complex[],System.Double,System.Double)">
+            <summary>
+            Recomputes the gain and the list of zeros and poles for a band-stop filter.
+            </summary>
+            <param name="gain">Initial gain.</param>
+            <param name="zeros">List of zeros.</param>
+            <param name="poles">List of poles.</param>
+            <param name="wc1">Lower cutoff frequency.</param>
+            <param name="wc2">Higher cutoff frequency.</param>
+            <returns>Recomputed gain, list of zeros and list of poles.</returns>
+            <remarks>
+            For performance reasons, the method edits the input list of zeros and poles in place, so the input and output
+            arrays are actually the same object.
+            </remarks>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.BartlettHannWindow">
+            <summary>
+            Bartlett-Hann window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.BartlettHannWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.BartlettWindow">
+            <summary>
+            Bartlett window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.BartlettWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.BlackmanHarrisWindow">
+            <summary>
+            Blackman-Harris window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.BlackmanHarrisWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.BlackmanNuttallWindow">
+            <summary>
+            Blackman-Nuttall window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.BlackmanNuttallWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.BlackmanWindow">
+            <summary>
+            Blackman window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.BlackmanWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.CosineWindow">
+            <summary>
+            Cosine window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.CosineWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.FlatTopWindow">
+            <summary>
+            Flat top window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.FlatTopWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.GaussWindow">
+            <summary>
+            Gauss window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.GaussWindow.#ctor(System.Double)">
+            <summary>
+            Create a new gauss window.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Windowing.GaussWindow.Sigma">
+            <summary>
+            Sigma (standard distribution of the Gaussian distribution).
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException"/>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.GaussWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.HammingWindow">
+            <summary>
+            Hamming window.
+            </summary>
+            <remarks>
+            Named after Richard Hamming.
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.HammingWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.HannWindow">
+            <summary>
+            Hann window.
+            </summary>
+            <remarks>
+            Named after Julius von Hann.
+            </remarks>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.HannWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.LanczosWindow">
+            <summary>
+            Lanczos window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.LanczosWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.NuttallWindow">
+            <summary>
+            Nuttall window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.NuttallWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.RectangularWindow">
+            <summary>
+            Uniform rectangular (dirichlet) window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.RectangularWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.TriangularWindow">
+            <summary>
+            Triangular window.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.TriangularWindow.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.IWindow">
+            <summary>
+            A windowing/apodization function.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Windowing.IWindow.Width">
+            <summary>
+            Window width, number of samples. Typically an integer power of 2.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Windowing.IWindow.Item(System.Int32)">
+            <summary>
+            Window coefficients
+            </summary>
+            <param name="sampleIndex">window sample index, between 0 and Width-1 (inclusive).</param>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.IWindow.CopyToArray">
+            <summary>
+            Copy the window coefficients to a double array.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.IWindow.Precompute">
+            <summary>
+            Compute the window for the current configuration.
+            Skipped if the window has already been computed.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windowing.Window">
+            <summary>
+            A windowing/apodization function.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.Window.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.Window.ComputeWindowCore(System.Int32)">
+            <summary>
+            Windowing function generator implementation.
+            </summary>
+            <param name="width">window size, guaranteed to be greater than or equal to 2.</param>
+            <returns>Window coefficients, array with length of 'width'</returns>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.Window.Reset">
+            <summary>
+            Reset the coefficients, triggering Precompute the next time a coefficient is requested.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.Window.Precompute">
+            <summary>
+            Compute the window for the current configuration.
+            Skipped if the window has already been computed.
+            </summary>
+        </member>
+        <member name="M:MathNet.Filtering.Windowing.Window.CopyToArray">
+            <summary>
+            Copy the window coefficients to a double array.
+            </summary>
+        </member>
+        <member name="P:MathNet.Filtering.Windowing.Window.Width">
+            <summary>
+            Window width, number of samples. Typically an integer power of 2, must be greater than 0.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException"/>
+        </member>
+        <member name="P:MathNet.Filtering.Windowing.Window.Item(System.Int32)">
+            <summary>
+            Window coefficients
+            </summary>
+            <param name="sampleIndex">window sample index, between 0 and Width-1 (inclusive).</param>
+        </member>
+        <member name="T:MathNet.Filtering.Windows.PermanentWindow`1">
+            <summary>
+            Window which is remains intact even if it propagates to the next window.
+            Still much more efficient than creating a new buffer for every window,
+            but somewhat less efficient than the volatile window.
+            Newest value is the first one at Offset in BufferA, the next older one at Offset+1,
+            wrapping around at BufferA.Length to BufferB.
+            </summary>
+        </member>
+        <member name="T:MathNet.Filtering.Windows.VolatileWindow`1">
+            <summary>
+            Window which is destroyed/modified as soon as it propagates to the next window.
+            Efficient, but needs to be consumed immediately when streaming through windows.
+            Newest value is the first one at Offset, the next older one at Offset+1,
+            wrapping around at Buffer.Length.
+            </summary>
+        </member>
+    </members>
+</doc>

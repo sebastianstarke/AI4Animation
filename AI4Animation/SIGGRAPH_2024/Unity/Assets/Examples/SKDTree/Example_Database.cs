@@ -1,0 +1,1 @@
+public class Example_Database : SKDTree.KDTree<Example_SKDTree.Value> {}

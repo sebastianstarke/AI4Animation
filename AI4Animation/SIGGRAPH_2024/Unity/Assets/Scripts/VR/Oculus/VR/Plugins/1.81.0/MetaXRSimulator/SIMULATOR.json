@@ -1,0 +1,8 @@
+{
+    "file_format_version": "1.0.0",
+    "runtime":
+    {
+        "name": "Meta OpenXR Simulator",
+        "library_path": ".\\SIMULATOR.dll"
+    }
+}

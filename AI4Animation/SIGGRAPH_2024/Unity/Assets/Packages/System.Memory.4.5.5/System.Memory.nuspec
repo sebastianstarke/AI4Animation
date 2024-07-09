@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="2.12">
+    <id>System.Memory</id>
+    <version>4.5.5</version>
+    <title>System.Memory</title>
+    <authors>Microsoft</authors>
+    <owners>microsoft,dotnetframework</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+    <projectUrl>https://dot.net/</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <description>Provides types for efficient representation and pooling of managed, stack, and native memory segments and sequences of such segments, along with primitives to parse and format UTF-8 encoded text stored in those memory segments.
+
+Commonly Used Types:
+System.Span
+System.ReadOnlySpan
+System.Memory
+System.ReadOnlyMemory
+System.Buffers.MemoryPool
+System.Buffers.ReadOnlySequence
+System.Buffers.Text.Utf8Parser
+System.Buffers.Text.Utf8Formatter
+ 
+32b491939fbd125f304031c35038b1e14b4e3958 
+When using NuGet 3.x this package requires at least version 3.4.</description>
+    <releaseNotes>https://go.microsoft.com/fwlink/?LinkID=799421</releaseNotes>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <serviceable>true</serviceable>
+    <dependencies>
+      <group targetFramework="MonoAndroid1.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="MonoTouch1.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Numerics.Vectors" version="4.5.0" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework=".NETCoreApp2.0">
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework=".NETCoreApp2.1" />
+      <group targetFramework=".NETStandard1.1">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Diagnostics.Debug" version="4.3.0" />
+        <dependency id="System.Globalization" version="4.3.0" />
+        <dependency id="System.Reflection" version="4.3.0" />
+        <dependency id="System.Resources.ResourceManager" version="4.3.0" />
+        <dependency id="System.Runtime" version="4.3.0" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+        <dependency id="System.Runtime.Extensions" version="4.3.0" />
+        <dependency id="System.Runtime.InteropServices" version="4.3.0" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Numerics.Vectors" version="4.4.0" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework=".NETPortable4.5-Profile111">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="UAP10.0.16299">
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="Windows8.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="WindowsPhoneApp8.1">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="Xamarin.iOS1.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="Xamarin.Mac2.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="Xamarin.TVOS1.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+      <group targetFramework="Xamarin.WatchOS1.0">
+        <dependency id="System.Buffers" version="4.5.1" />
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.3" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework4.6.1" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.6.1" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

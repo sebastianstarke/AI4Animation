@@ -1,0 +1,1559 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Accord.Fuzzy</name>
+    </assembly>
+    <members>
+        <member name="T:Accord.Fuzzy.Clause">
+             <summary>
+             This class represents a fuzzy clause, a linguistic expression of the type "Variable IS Value".
+             </summary>
+             
+             <remarks><para>A Fuzzy Clause is used to verify if a linguistic variable can be considered
+             as a specific value at a specific moment. Linguistic variables can only assume value of
+             their linguistic labels. Because of the nature of the Fuzzy Logic, a Variable can be 
+             several of its labels at the same time, with different membership values.</para>
+             
+             <para>For example, a linguistic variable "temperature" can be "hot" with a membership 0.3
+             and "warm" with a membership 0.7 at the same time. To obtain those memberships, Fuzzy Clauses
+             "temperature is hot" and "temperature is war" can be built.</para>
+             
+             <para>Typically Fuzzy Clauses are used to build Fuzzy Rules (<see cref="T:Accord.Fuzzy.Rule"/>).</para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // create a linguistic variable to represent temperature
+             LinguisticVariable lvTemperature = new LinguisticVariable("Temperature", 0, 80 );
+            
+             // create the linguistic labels (fuzzy sets) that compose the temperature 
+             TrapezoidalFunction function1 = new TrapezoidalFunction(10, 15, TrapezoidalFunction.EdgeType.Right);
+             FuzzySet fsCold = new FuzzySet("Cold", function1);
+             TrapezoidalFunction function2 = new TrapezoidalFunction(10, 15, 20, 25);
+             FuzzySet fsCool = new FuzzySet("Cool", function2);
+             TrapezoidalFunction function3 = new TrapezoidalFunction(20, 25, 30, 35);
+             FuzzySet fsWarm = new FuzzySet("Warm", function3);
+             TrapezoidalFunction function4 = new TrapezoidalFunction(30, 35, TrapezoidalFunction.EdgeType.Left);
+             FuzzySet fsHot  = new FuzzySet("Hot", function4);
+            
+             // adding labels to the variable
+             lvTemperature.AddLabel(fsCold);
+             lvTemperature.AddLabel(fsCool);
+             lvTemperature.AddLabel(fsWarm);
+             lvTemperature.AddLabel(fsHot);
+             
+             // creating the Clause
+             Clause fuzzyClause = new Clause(lvTemperature, fsHot);
+             // setting the numerical input of the variable to evaluate the Clause
+             lvTemperature.NumericInput = 35;
+             float result = fuzzyClause.Evaluate();
+             Console.WriteLine(result.ToString());
+             </code>    
+             </remarks>
+             
+        </member>
+        <member name="P:Accord.Fuzzy.Clause.Variable">
+            <summary>
+            Gets the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> of the <see cref="T:Accord.Fuzzy.Clause"/>.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.Clause.Label">
+            <summary>
+            Gets the <see cref="T:Accord.Fuzzy.FuzzySet"/> of the <see cref="T:Accord.Fuzzy.Clause"/>.
+            </summary>
+        </member>
+        <member name="M:Accord.Fuzzy.Clause.#ctor(Accord.Fuzzy.LinguisticVariable,Accord.Fuzzy.FuzzySet)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.Clause"/> class.
+            </summary>
+            
+            <param name="variable">Linguistic variable of the clause. </param>
+            
+            <param name="label">Label of the linguistic variable, a fuzzy set used as label into the linguistic variable.</param>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The label indicated was not found in the linguistic variable.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Clause.Evaluate">
+            <summary>
+            Evaluates the fuzzy clause.
+            </summary>
+            
+            <returns>Degree of membership [0..1] of the clause.</returns>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Clause.ToString">
+            <summary>
+            Returns the fuzzy clause in its linguistic representation.
+            </summary>
+            
+            <returns>A string representing the fuzzy clause.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.CentroidDefuzzifier">
+            <summary>
+            This class implements the centroid defuzzification method.
+            </summary>
+            
+            <remarks><para>In many applications, a Fuzzy Inference System is used to perform linguistic
+            computation, but at the end of the inference process, a numerical value is needed. It does
+            not mean that the system needs precision, but simply that a numerical value is required,
+            most of the times because it will be used to control another system that needs the number.
+            To obtain this numer, a defuzzification method is performed.</para>
+            
+            <para>This class implements the centroid defuzzification method. The output of a Fuzzy
+            Inference System is a set of rules (see <see cref="T:Accord.Fuzzy.Rule"/>) with firing strength greater
+            than zero. Those firing strength apply a constraint to the consequent fuzzy sets
+            (see <see cref="T:Accord.Fuzzy.FuzzySet"/>) of the rules. Putting all those fuzzy sets togheter results
+            in a a shape that is the linguistic output meaning. 
+            </para>
+            
+            <para>The centroid method calculates the center of the area of this shape to obtain the
+            numerical representation of the output. It uses a numerical approximation, so a number
+            of intervals must be choosen. As the number of intervals grow, the precision of the
+            numerical ouput grows. 
+            </para>
+            
+            <para>For a sample usage of the <see cref="T:Accord.Fuzzy.CentroidDefuzzifier"/> see <see cref="T:Accord.Fuzzy.InferenceSystem"/>
+            class.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.CentroidDefuzzifier.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.CentroidDefuzzifier"/> class.
+            </summary>
+            
+            <param name="intervals">Number of segments that the speech universe will be splited
+            to perform the numerical approximation of the center of area.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.CentroidDefuzzifier.Defuzzify(Accord.Fuzzy.FuzzyOutput,Accord.Fuzzy.INorm)">
+            <summary>
+            Centroid method to obtain the numerical representation of a fuzzy output. The numerical
+            value will be the center of the shape formed by the several fuzzy labels with their
+            constraints.
+            </summary>
+            
+            <param name="fuzzyOutput">A <see cref="T:Accord.Fuzzy.FuzzyOutput"/> containing the output of several
+            rules of a Fuzzy Inference System.</param>
+            <param name="normOperator">A <see cref="T:Accord.Fuzzy.INorm"/> operator to be used when constraining
+            the label to the firing strength.</param>
+            
+            <returns>The numerical representation of the fuzzy output.</returns>
+            
+            <exception cref="T:System.Exception">The numerical output is unavaliable. All memberships are zero.</exception>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.IDefuzzifier">
+            <summary>
+            Interface which specifies set of methods required to be implemented by all defuzzification methods 
+            that can be used in Fuzzy Inference Systems. 
+            </summary>
+            
+            <remarks><para>In many applications, a Fuzzy Inference System is used to perform linguistic computation, 
+            but at the end of the inference process, a numerical value is needed. It does not mean that the system 
+            needs precision, but simply that a numerical value is required, most of the times because it will be used to 
+            control another system that needs the number. To obtain this numer, a defuzzification method is performed.</para>
+            
+            <para>Several deffuzification methods were proposed, and they can be created as classes that 
+            implements this interface.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.IDefuzzifier.Defuzzify(Accord.Fuzzy.FuzzyOutput,Accord.Fuzzy.INorm)">
+            <summary>
+            Defuzzification method to obtain the numerical representation of a fuzzy output.
+            </summary>
+            
+            <param name="fuzzyOutput">A <see cref="T:Accord.Fuzzy.FuzzyOutput"/> containing the output of
+            several rules of a Fuzzy Inference System.</param>
+            <param name="normOperator">A <see cref="T:Accord.Fuzzy.INorm"/> operator to be used when constraining
+            the label to the firing strength.</param>
+            
+            <returns>The numerical representation of the fuzzy output.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.FuzzyOutput">
+            <summary>
+            The class represents the output of a Fuzzy Inference System. 
+            </summary>
+            
+            <remarks><para>The class keeps set of rule's output - pairs with the output fuzzy label
+            and the rule's firing strength.
+            </para>
+            
+            
+            <para>Sample usage:</para>
+            <code>
+            // linguistic labels (fuzzy sets) that compose the distances
+            FuzzySet fsNear = new FuzzySet( "Near",
+                new TrapezoidalFunction( 15, 50, TrapezoidalFunction.EdgeType.Right ) );
+            FuzzySet fsMedium = new FuzzySet( "Medium",
+                new TrapezoidalFunction( 15, 50, 60, 100 ) );
+            FuzzySet fsFar = new FuzzySet( "Far",
+                new TrapezoidalFunction( 60, 100, TrapezoidalFunction.EdgeType.Left ) );
+                        
+            // front distance (input)
+            LinguisticVariable lvFront = new LinguisticVariable( "FrontalDistance", 0, 120 );
+            lvFront.AddLabel( fsNear );
+            lvFront.AddLabel( fsMedium );
+            lvFront.AddLabel( fsFar );
+            
+            // linguistic labels (fuzzy sets) that compose the angle
+            FuzzySet fsZero = new FuzzySet( "Zero",
+                new TrapezoidalFunction( -10, 5, 5, 10 ) );
+            FuzzySet fsLP = new FuzzySet( "LittlePositive",
+                new TrapezoidalFunction( 5, 10, 20, 25 ) );
+            FuzzySet fsP = new FuzzySet( "Positive",
+                new TrapezoidalFunction( 20, 25, 35, 40 ) );
+            FuzzySet fsVP = new FuzzySet( "VeryPositive",
+                new TrapezoidalFunction( 35, 40, TrapezoidalFunction.EdgeType.Left ) );
+            
+            // angle
+            LinguisticVariable lvAngle = new LinguisticVariable( "Angle", -10, 50 );
+            lvAngle.AddLabel( fsZero );
+            lvAngle.AddLabel( fsLP );
+            lvAngle.AddLabel( fsP );
+            lvAngle.AddLabel( fsVP );
+            
+            // the database
+            Database fuzzyDB = new Database( );
+            fuzzyDB.AddVariable( lvFront );
+            fuzzyDB.AddVariable( lvAngle );
+            
+            // creating the inference system
+            InferenceSystem IS = new InferenceSystem( fuzzyDB, new CentroidDefuzzifier( 1000 ) );
+            
+            // going straight
+            IS.NewRule( "Rule 1", "IF FrontalDistance IS Far THEN Angle IS Zero" );
+            // turning left
+            IS.NewRule( "Rule 2", "IF FrontalDistance IS Near THEN Angle IS Positive" );
+            
+            ...
+            // inference section
+            
+            // setting inputs
+            IS.SetInput( "FrontalDistance", 20 );
+            
+            // getting outputs
+            try
+            {
+                FuzzyOutput fuzzyOutput = IS.ExecuteInference ( "Angle" );
+            
+                // showing the fuzzy output
+                foreach ( FuzzyOutput.OutputConstraint oc in fuzzyOutput.OutputList )
+                {
+                    Console.WriteLine( oc.Label + " - " + oc.FiringStrength.ToString( ) );
+                }
+            }
+            catch ( Exception )
+            {
+               ...
+            }
+            </code>  
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.FuzzyOutput.OutputConstraint">
+            <summary>
+            Inner class to store the pair fuzzy label / firing strength of 
+            a fuzzy output.
+            </summary>
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzyOutput.OutputConstraint.#ctor(System.String,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.FuzzyOutput.OutputConstraint"/> class.
+            </summary>
+            
+            <param name="label">A string representing the output label of a <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            <param name="firingStrength">The firing strength of a <see cref="T:Accord.Fuzzy.Rule"/>, to be applied to its output label.</param>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzyOutput.OutputConstraint.Label">
+            <summary>
+            The <see cref="T:Accord.Fuzzy.FuzzySet"/> representing the output label of a <see cref="T:Accord.Fuzzy.Rule"/>.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzyOutput.OutputConstraint.FiringStrength">
+            <summary>
+            The firing strength of a <see cref="T:Accord.Fuzzy.Rule"/>, to be applied to its output label.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzyOutput.OutputList">
+            <summary>
+            A list with <see cref="T:Accord.Fuzzy.FuzzyOutput.OutputConstraint"/> of a Fuzzy Inference System's output.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzyOutput.OutputVariable">
+            <summary>
+            Gets the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> acting as a Fuzzy Inference System Output.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzyOutput.#ctor(Accord.Fuzzy.LinguisticVariable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.FuzzyOutput"/> class.
+            </summary>
+            
+            <param name="outputVar">A <see cref="T:Accord.Fuzzy.LinguisticVariable"/> representing a Fuzzy Inference System's output.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzyOutput.AddOutput(System.String,System.Single)">
+            <summary>
+            Adds an output to the Fuzzy Output. 
+            </summary>
+            
+            <param name="labelName">The name of a label representing a fuzzy rule's output.</param>
+            <param name="firingStrength">The firing strength [0..1] of a fuzzy rule.</param>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The label indicated was not found in the linguistic variable.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzyOutput.ClearOutput">
+            <summary>
+            Removes all the linguistic variables of the database. 
+            </summary>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.InferenceSystem">
+            <summary>
+            This class represents a Fuzzy Inference System. 
+            </summary>
+            
+            <remarks><para>A Fuzzy Inference System is a model capable of executing fuzzy computing.
+            It is mainly composed by a <see cref="T:Accord.Fuzzy.Database"/> with the linguistic variables
+            (see <see cref="T:Accord.Fuzzy.LinguisticVariable"/>) and a <see cref="T:Accord.Fuzzy.Rulebase"/>
+            with the fuzzy rules (see <see cref="T:Accord.Fuzzy.Rule"/>) that represent the behavior of the system.
+            The typical operation of a Fuzzy Inference System is:
+            <list type="bullet">
+            <item>Get the numeric inputs;</item>
+            <item>Use the <see cref="T:Accord.Fuzzy.Database"/> with the linguistic variables
+            (see <see cref="T:Accord.Fuzzy.LinguisticVariable"/>) to obtain linguistic meaning for each
+            numerical input;</item>
+            <item>Verify which rules (see <see cref="T:Accord.Fuzzy.Rule"/>) of the <see cref="T:Accord.Fuzzy.Rulebase"/> are
+            activated by the input;</item>
+            <item>Combine the consequent of the activated rules to obtain a <see cref="T:Accord.Fuzzy.FuzzyOutput"/>;</item>
+            <item>Use some defuzzifier (see <see cref="T:Accord.Fuzzy.IDefuzzifier"/>) to obtain a numerical output. </item>
+            </list>
+            </para>
+            
+            <para>The following sample usage is a Fuzzy Inference System that controls an
+            auto guided vehicle avoing frontal collisions:</para>
+            <code>
+            // linguistic labels (fuzzy sets) that compose the distances
+            FuzzySet fsNear = new FuzzySet( "Near",
+                new TrapezoidalFunction( 15, 50, TrapezoidalFunction.EdgeType.Right ) );
+            FuzzySet fsMedium = new FuzzySet( "Medium",
+                new TrapezoidalFunction( 15, 50, 60, 100 ) );
+            FuzzySet fsFar = new FuzzySet( "Far",
+                new TrapezoidalFunction( 60, 100, TrapezoidalFunction.EdgeType.Left ) );
+                        
+            // front distance (input)
+            LinguisticVariable lvFront = new LinguisticVariable( "FrontalDistance", 0, 120 );
+            lvFront.AddLabel( fsNear );
+            lvFront.AddLabel( fsMedium );
+            lvFront.AddLabel( fsFar );
+            
+            // linguistic labels (fuzzy sets) that compose the angle
+            FuzzySet fsZero = new FuzzySet( "Zero",
+                new TrapezoidalFunction( -10, 5, 5, 10 ) );
+            FuzzySet fsLP = new FuzzySet( "LittlePositive",
+                new TrapezoidalFunction( 5, 10, 20, 25 ) );
+            FuzzySet fsP = new FuzzySet( "Positive",
+                new TrapezoidalFunction( 20, 25, 35, 40 ) );
+            FuzzySet fsVP = new FuzzySet( "VeryPositive",
+                new TrapezoidalFunction( 35, 40, TrapezoidalFunction.EdgeType.Left ) );
+            
+            // angle
+            LinguisticVariable lvAngle = new LinguisticVariable( "Angle", -10, 50 );
+            lvAngle.AddLabel( fsZero );
+            lvAngle.AddLabel( fsLP );
+            lvAngle.AddLabel( fsP );
+            lvAngle.AddLabel( fsVP );
+            
+            // the database
+            Database fuzzyDB = new Database( );
+            fuzzyDB.AddVariable( lvFront );
+            fuzzyDB.AddVariable( lvAngle );
+            
+            // creating the inference system
+            InferenceSystem IS = new InferenceSystem( fuzzyDB, new CentroidDefuzzifier( 1000 ) );
+            
+            // going Straight
+            IS.NewRule( "Rule 1", "IF FrontalDistance IS Far THEN Angle IS Zero" );
+            // Turning Left
+            IS.NewRule( "Rule 2", "IF FrontalDistance IS Near THEN Angle IS Positive" );
+            
+            ...
+            // inference section
+            
+            // setting inputs
+            IS.SetInput( "FrontalDistance", 20 );
+            
+            // getting outputs
+            try
+            {
+                float newAngle = IS.Evaluate( "Angle" );
+            }
+            catch ( Exception )
+            {
+            ...
+            }
+            </code>    
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.#ctor(Accord.Fuzzy.Database,Accord.Fuzzy.IDefuzzifier)">
+            <summary>
+            Initializes a new Fuzzy <see cref="T:Accord.Fuzzy.InferenceSystem"/>.
+            </summary>
+            
+            <param name="database">A fuzzy <see cref="T:Accord.Fuzzy.Database"/> containing the system linguistic variables.</param>
+            <param name="defuzzifier">A defuzzyfier method used to evaluate the numeric uotput of the system.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.#ctor(Accord.Fuzzy.Database,Accord.Fuzzy.IDefuzzifier,Accord.Fuzzy.INorm,Accord.Fuzzy.ICoNorm)">
+            <summary>
+            Initializes a new Fuzzy <see cref="T:Accord.Fuzzy.InferenceSystem"/>.
+            </summary>
+            
+            <param name="database">A fuzzy <see cref="T:Accord.Fuzzy.Database"/> containing the system linguistic
+            variables.</param>
+            <param name="defuzzifier">A defuzzyfier method used to evaluate the numeric otput
+            of the system.</param>
+            <param name="normOperator">A <see cref="T:Accord.Fuzzy.INorm"/> operator used to evaluate the norms
+            in the <see cref="T:Accord.Fuzzy.InferenceSystem"/>. For more information of the norm evaluation see <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            <param name="conormOperator">A <see cref="T:Accord.Fuzzy.ICoNorm"/> operator used to evaluate the
+            conorms in the <see cref="T:Accord.Fuzzy.InferenceSystem"/>. For more information of the conorm evaluation see <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.NewRule(System.String,System.String)">
+            <summary>
+            Creates a new <see cref="T:Accord.Fuzzy.Rule"/> and add it to the <see cref="T:Accord.Fuzzy.Rulebase"/> of the 
+            <see cref="T:Accord.Fuzzy.InferenceSystem"/>.
+            </summary>
+            
+            <param name="name">Name of the <see cref="T:Accord.Fuzzy.Rule"/> to create.</param>
+            <param name="rule">A string representing the fuzzy rule.</param>
+            
+            <returns>The new <see cref="T:Accord.Fuzzy.Rule"/> reference. </returns>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.SetInput(System.String,System.Single)">
+            <summary>
+            Sets a numerical input for one of the linguistic variables of the <see cref="T:Accord.Fuzzy.Database"/>. 
+            </summary>
+            
+            <param name="variableName">Name of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/>.</param>
+            <param name="value">Numeric value to be used as input.</param>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The variable indicated in <paramref name="variableName"/>
+            was not found in the database.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.GetLinguisticVariable(System.String)">
+            <summary>
+            Gets one of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> of the <see cref="T:Accord.Fuzzy.Database"/>. 
+            </summary>
+            
+            <param name="variableName">Name of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> to get.</param>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The variable indicated in <paramref name="variableName"/>
+            was not found in the database.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.GetRule(System.String)">
+            <summary>
+            Gets one of the Rules of the <see cref="T:Accord.Fuzzy.Rulebase"/>. 
+            </summary>
+            
+            <param name="ruleName">Name of the <see cref="T:Accord.Fuzzy.Rule"/> to get.</param>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The rule indicated in <paramref name="ruleName"/>
+            was not found in the rulebase.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.Evaluate(System.String)">
+            <summary>
+            Executes the fuzzy inference, obtaining a numerical output for a choosen output
+            linguistic variable. 
+            </summary>
+            
+            <param name="variableName">Name of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> to evaluate.</param>
+            
+            <returns>The numerical output of the Fuzzy Inference System for the choosen variable.</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The variable indicated was not found in the database.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.InferenceSystem.ExecuteInference(System.String)">
+            <summary>
+            Executes the fuzzy inference, obtaining the <see cref="T:Accord.Fuzzy.FuzzyOutput"/> of the system for the required
+            <see cref="T:Accord.Fuzzy.LinguisticVariable"/>. 
+            </summary>
+            
+            <param name="variableName">Name of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> to evaluate.</param>
+            
+            <returns>A <see cref="T:Accord.Fuzzy.FuzzyOutput"/> containing the fuzzy output of the system for the
+            <see cref="T:Accord.Fuzzy.LinguisticVariable"/> specified in <paramref name="variableName"/>.</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The variable indicated was not found in the database.</exception>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.SingletonFunction">
+            <summary>
+            Membership function used in fuzzy singletons: fuzzy sets that have just one point with membership value 1. 
+            </summary>
+            
+            <remarks><para>Sometimes it is needed to represent crisp (classical) number in the fuzzy domain. Several approaches 
+            can be used, like adding some uncertain (fuzziness) in the original number (the number one, for instance, can be seen as a <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/>
+            with -0.5, 1.0 and 0.5 parameters). Another approach is to declare fuzzy singletons: fuzzy sets with only one point returning a none zero membership.</para>
+            
+            <para>While trapezoidal and half trapezoidal are classic functions used in fuzzy functions, this class supports any function
+            or approximation that can be represented as a sequence of lines.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating the instance
+            SingletonFunction membershipFunction = new SingletonFunction( 10 );
+            // getting membership for several points
+            for ( int i = 0; i &lt; 20; i++ )
+                Console.WriteLine( membershipFunction.GetMembership( i ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Fuzzy.SingletonFunction.support">
+            <summary>
+            The unique point where the membership value is 1.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.SingletonFunction.LeftLimit">
+            <summary>
+            The leftmost x value of the membership function, the same value of the support.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.SingletonFunction.RightLimit">
+            <summary>
+            The rightmost x value of the membership function, the same value of the support.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.SingletonFunction.#ctor(System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.SingletonFunction"/> class. 
+            </summary>
+            
+            <param name="support">Support is the only value of x where the membership function is 1.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.SingletonFunction.GetMembership(System.Single)">
+            <summary>
+            Calculate membership of a given value to the singleton function.
+            </summary>
+            
+            <param name="x">Value which membership will to be calculated.</param>
+            
+            <returns>Degree of membership {0,1} since singletons do not admit memberships different from 0 and 1. </returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.NotOperator">
+            <summary>
+            NOT operator, used to calculate the complement of a fuzzy set. 
+            </summary>
+            
+            <remarks><para>The NOT operator definition is (1 - m) for all the values of membership m of the fuzzy set.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating a fuzzy sets to represent Cool (Temperature)
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 13, 18, 23, 28 );
+            FuzzySet fsCool = new FuzzySet( "Cool", function1 );
+            
+            // getting membership
+            float m1 = fsCool.GetMembership( 15 );
+            
+            // computing the membership of "NOT Cool"
+            NotOperator NOT = new NotOperator( );
+            float result = NOT.Evaluate( m1 );
+                         
+            // show result
+            Console.WriteLine( result );
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Fuzzy.IUnaryOperator"/>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.NotOperator.Evaluate(System.Single)">
+            <summary>
+            Calculates the numerical result of the NOT operation applied to
+            a fuzzy membership value.
+            </summary>
+            
+            <param name="membership">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result of the unary operation NOT applied to <paramref name="membership"/>.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.IUnaryOperator">
+            <summary>
+            Interface with the common methods of Fuzzy Unary Operator.
+            </summary>
+            
+            <remarks><para>All fuzzy operators that act as a Unary Operator (NOT, VERY, LITTLE) must implement this interface.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.IUnaryOperator.Evaluate(System.Single)">
+            <summary>
+            Calculates the numerical result of a Unary operation applied to one
+            fuzzy membership value.
+            </summary>
+            
+            <param name="membership">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result of the operation applied to <paramref name="membership"/></returns>.
+            
+        </member>
+        <member name="T:Accord.Fuzzy.Rulebase">
+            <summary>
+            The class represents a fuzzy rulebase, a set of fuzzy rules used in a Fuzzy Inference System.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rulebase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.Rulebase"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rulebase.AddRule(Accord.Fuzzy.Rule)">
+            <summary>
+            Adds a fuzzy rule to the database. 
+            </summary>
+            
+            <param name="rule">A fuzzy <see cref="T:Accord.Fuzzy.Rule"/> to add to the database.</param>
+            
+            <exception cref="T:System.NullReferenceException">The fuzzy rule was not initialized.</exception>
+            <exception cref="T:System.ArgumentException">The fuzzy rule name already exists in the rulebase.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rulebase.ClearRules">
+            <summary>
+            Removes all the fuzzy rules of the database. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rulebase.GetRule(System.String)">
+            <summary>
+            Returns an existing fuzzy rule from the rulebase.
+            </summary>
+            
+            <param name="ruleName">Name of the fuzzy <see cref="T:Accord.Fuzzy.Rule"/> to retrieve.</param>
+            
+            <returns>Reference to named <see cref="T:Accord.Fuzzy.Rule"/>.</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The rule indicated in ruleName was not found in the rulebase.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rulebase.GetRules">
+            <summary>
+            Gets all the rules of the rulebase.
+            </summary>
+            
+            <returns>An array with all the rulebase rules.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.Database">
+            <summary>
+            The class represents a fuzzy database, a set of linguistic variables used in a Fuzzy
+            Inference System.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Database.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.Database"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Database.AddVariable(Accord.Fuzzy.LinguisticVariable)">
+            <summary>
+            Adds a linguistic variable to the database. 
+            </summary>
+            
+            <param name="variable">A linguistic variable to add.</param>
+            
+            <exception cref="T:System.NullReferenceException">The linguistic variable was not initialized.</exception>
+            <exception cref="T:System.ArgumentException">The linguistic variable name already exists in the database.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Database.ClearVariables">
+            <summary>
+            Removes all the linguistic variables of the database. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Database.GetVariable(System.String)">
+            <summary>
+            Returns an existing linguistic variable from the database.
+            </summary>
+            
+            <param name="variableName">Name of the linguistic variable to retrieve.</param>
+            
+            <returns>Reference to named <see cref="T:Accord.Fuzzy.LinguisticVariable"/>.</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The variable indicated was not found in the database.</exception>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.MaximumCoNorm">
+            <summary>
+            Maximum CoNorm, used to calculate the linguistic value of a OR operation. 
+            </summary>
+            
+            <remarks><para>The maximum CoNorm uses a maximum operator to compute the OR
+            among two fuzzy memberships.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating 2 fuzzy sets to represent Cool (Temperature) and Near (Distance)
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 13, 18, 23, 28 );
+            FuzzySet fsCool = new FuzzySet( "Cool", function1 );
+            TrapezoidalFunction function2 = new TrapezoidalFunction( 23, 28, 33, 38 );
+            FuzzySet fsNear = new FuzzySet( "Near", function2 );
+            
+            // getting memberships
+            float m1 = fsCool.GetMembership( 15 );
+            float m2 = fsNear.GetMembership( 35 );
+            
+            // computing the membership of "Cool OR Near"
+            MaximumCoNorm OR = new MaximumCoNorm( );
+            float result = OR.Evaluate( m1, m2 );
+                         
+            // show result
+            Console.WriteLine( result );
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Fuzzy.ICoNorm"/>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.MaximumCoNorm.Evaluate(System.Single,System.Single)">
+            <summary>
+            Calculates the numerical result of the OR operation applied to
+            two fuzzy membership values.
+            </summary>
+            
+            <param name="membershipA">A fuzzy membership value, [0..1].</param>
+            <param name="membershipB">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result of the binary operation OR applied to <paramref name="membershipA"/>
+            and <paramref name="membershipB"/>.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.Rule">
+             <summary>
+             This class represents a Fuzzy Rule, a linguistic expression representing some behavioral
+             aspect of a Fuzzy Inference System. 
+             </summary>
+             
+             <remarks><para>
+             A Fuzzy Rule is a fuzzy linguistic instruction that can be executed by a fuzzy system.
+             The format of the Fuzzy Rule is:
+             </para>
+             
+             <para><b>IF <i>antecedent</i> THEN <i>consequent</i></b></para>
+             
+             <para>The antecedent is composed by a set of fuzzy clauses (see <see cref="T:Accord.Fuzzy.Clause"/>) connected
+             by fuzzy operations, like <b>AND</b> or <b>OR</b>. The operator <b>NOT</b> can be used to negate expressions: </para>
+             
+             <para><b>...<i>Clause1</i> AND (<i>Clause2</i> OR <i>Clause3</i>) AND NOT <i>Clause4</i> ...</b></para>
+                 
+             <para>Fuzzy clauses are written in form <i>Variable IS Value</i>. The NOT operator can be used to negate linguistic values as well:<br />
+             <b>...<i>Variable1 IS Value1</i> AND <i>Variable2 IS NOT Value2</i> ...</b></para>
+            
+             <para>The consequent is a single of fuzzy clauses (<see cref="T:Accord.Fuzzy.Clause"/>). To perform the
+             linguistic computing, the <see cref="T:Accord.Fuzzy.Rule"/> evaluates the clauses and then applies the fuzzy
+             operators. Once this is done a value representing the confidence in the antecedent being
+             true is obtained, and this is called firing strength of the <see cref="T:Accord.Fuzzy.Rule"/>.</para>
+             
+             <para>The firing strength is used to discover with how much confidence the consequent
+             of a rule is true.</para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // create the linguistic labels (fuzzy sets) that compose the temperature 
+             TrapezoidalFunction function1 = new TrapezoidalFunction(
+                 10, 15, TrapezoidalFunction.EdgeType.Right );
+             FuzzySet fsCold = new FuzzySet( "Cold", function1 );
+             TrapezoidalFunction function2 = new TrapezoidalFunction( 10, 15, 20, 25 );
+             FuzzySet fsCool = new FuzzySet( "Cool", function2 );
+             TrapezoidalFunction function3 = new TrapezoidalFunction( 20, 25, 30, 35 );
+             FuzzySet fsWarm = new FuzzySet( "Warm", function3 );
+             TrapezoidalFunction function4 = new TrapezoidalFunction(
+                 30, 35, TrapezoidalFunction.EdgeType.Left );
+             FuzzySet fsHot = new FuzzySet( "Hot", function4 );
+             
+             // create a linguistic variable to represent steel temperature
+             LinguisticVariable lvSteel = new LinguisticVariable( "Steel", 0, 80 );
+             // adding labels to the variable
+             lvSteel.AddLabel( fsCold );
+             lvSteel.AddLabel( fsCool );
+             lvSteel.AddLabel( fsWarm );
+             lvSteel.AddLabel( fsHot );
+             
+             // create a linguistic variable to represent stove temperature
+             LinguisticVariable lvStove = new LinguisticVariable( "Stove", 0, 80 );
+             // adding labels to the variable
+             lvStove.AddLabel( fsCold );
+             lvStove.AddLabel( fsCool );
+             lvStove.AddLabel( fsWarm );
+             lvStove.AddLabel( fsHot );
+             
+             // create the linguistic labels (fuzzy sets) that compose the pressure
+             TrapezoidalFunction function5 = new TrapezoidalFunction(
+                 20, 40, TrapezoidalFunction.EdgeType.Right );
+             FuzzySet fsLow = new FuzzySet( "Low", function5 );
+             TrapezoidalFunction function6 = new TrapezoidalFunction( 20, 40, 60, 80 );
+             FuzzySet fsMedium = new FuzzySet( "Medium", function6 );
+             TrapezoidalFunction function7 = new TrapezoidalFunction(
+                 60, 80, TrapezoidalFunction.EdgeType.Left );
+             FuzzySet fsHigh = new FuzzySet( "High", function7 );
+             // create a linguistic variable to represent pressure
+             LinguisticVariable lvPressure = new LinguisticVariable( "Pressure", 0, 100 );
+             // adding labels to the variable
+             lvPressure.AddLabel( fsLow );
+             lvPressure.AddLabel( fsMedium );
+             lvPressure.AddLabel( fsHigh );
+             
+             // create a linguistic variable database
+             Database db = new Database( );
+             db.AddVariable( lvSteel );
+             db.AddVariable( lvStove );
+             db.AddVariable( lvPressure );
+             
+             // sample rules just to test the expression parsing
+             Rule r1 = new Rule( db, "Test1", "IF Steel is not Cold and Stove is Hot then Pressure is Low" );
+             Rule r2 = new Rule( db, "Test2", "IF Steel is Cold and not (Stove is Warm or Stove is Hot) then Pressure is Medium" );
+             Rule r3 = new Rule( db, "Test3", "IF Steel is Cold and Stove is Warm or Stove is Hot then Pressure is High" );
+             
+             // testing the firing strength
+             lvSteel.NumericInput = 12;
+             lvStove.NumericInput = 35;
+             float result = r1.EvaluateFiringStrength( );
+             Console.WriteLine( result.ToString( ) );
+             </code>    
+             </remarks>
+             
+        </member>
+        <member name="P:Accord.Fuzzy.Rule.Name">
+            <summary>
+            The name of the fuzzy rule.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.Rule.Output">
+            <summary>
+            The fuzzy <see cref="T:Accord.Fuzzy.Clause"/> that represents the consequent of the <see cref="T:Accord.Fuzzy.Rule"/>.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.#ctor(Accord.Fuzzy.Database,System.String,System.String,Accord.Fuzzy.INorm,Accord.Fuzzy.ICoNorm)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.Rule"/> class.
+            </summary>
+            
+            <param name="fuzzyDatabase">A fuzzy <see cref="T:Accord.Fuzzy.Database"/> containig the linguistic variables
+            (see <see cref="T:Accord.Fuzzy.LinguisticVariable"/>) that will be used in the Rule.</param>
+            
+            <param name="name">Name of this <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            
+            <param name="rule">A string representing the <see cref="T:Accord.Fuzzy.Rule"/>. It must be a "IF..THEN" statement.
+            For a more detailed  description see <see cref="T:Accord.Fuzzy.Rule"/> class.</param>
+            
+            <param name="normOperator">A class that implements a <see cref="T:Accord.Fuzzy.INorm"/> interface to
+            evaluate the AND operations of the Rule. </param>
+            
+            <param name="coNormOperator">A class that implements a <see cref="T:Accord.Fuzzy.ICoNorm"/> interface
+            to evaluate the OR operations of the Rule. </param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.#ctor(Accord.Fuzzy.Database,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.Rule"/> class using as
+            CoNorm the <see cref="T:Accord.Fuzzy.MaximumCoNorm"/> and as Norm the <see cref="T:Accord.Fuzzy.MinimumNorm"/>.
+            </summary>
+            
+            <param name="fuzzyDatabase">A fuzzy <see cref="T:Accord.Fuzzy.Database"/> containig the linguistic variables
+            (see <see cref="T:Accord.Fuzzy.LinguisticVariable"/>) that will be used in the <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            
+            <param name="name">Name of this <see cref="T:Accord.Fuzzy.Rule"/>.</param>
+            
+            <param name="rule">A string representing the <see cref="T:Accord.Fuzzy.Rule"/>. It must be a "IF..THEN"
+            statement. For a more detailed description see <see cref="T:Accord.Fuzzy.Rule"/> class.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.GetRPNExpression">
+            <summary>
+            Converts the RPN fuzzy expression into a string representation.
+            </summary>
+            
+            <returns>String representation of the RPN fuzzy expression.</returns>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.Priority(System.String)">
+            <summary>
+            Defines the priority of the fuzzy operators.
+            </summary>
+            
+            <param name="Operator">A fuzzy operator or openning parenthesis.</param>
+            
+            <returns>A number indicating the priority of the operator, and zero for openning
+            parenthesis.</returns>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.ParseRule">
+            <summary>
+            Converts the Fuzzy Rule to RPN (Reverse Polish Notation). For debug proposes, the string representation of the 
+            RPN expression can be acessed by calling <see cref="M:Accord.Fuzzy.Rule.GetRPNExpression"/> method.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.GetRuleTokens(System.String)">
+            <summary>
+            Performs a preprocessing on the rule, placing unary operators in proper position and breaking the string 
+            space separated tokens.
+            </summary>
+            
+            <param name="rule">Rule in string format.</param>
+            
+            <returns>An array of strings with tokens of the rule.</returns>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.Rule.EvaluateFiringStrength">
+            <summary>
+            Evaluates the firing strength of the Rule, the degree of confidence that the consequent of this Rule
+            must be executed.
+            </summary>
+            
+            <returns>The firing strength [0..1] of the Rule.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.LinguisticVariable">
+             <summary>
+             The class represents a linguistic variable.
+             </summary>
+             
+             <remarks><para>Linguistic variables are variables that store linguistic values (labels). Fuzzy Inference Systems (FIS)
+             use a set of linguistic variables, called the FIS database, to execute fuzzy computation (computing with words). A linguistic
+             variable has a name and is composed by a set of <see cref="T:Accord.Fuzzy.FuzzySet"/> called its linguistic labels. When declaring fuzzy 
+             statements in a FIS, a linguistic variable can be only assigned or compared to one of its labels. </para>
+             
+             <para>Let us consider, for example, a linguistic variable <b>temperature</b>. In a given application, temperature can be 
+             cold, cool, warm or hot. Those will be the variable's linguistic labels, each one a fuzzy set with its own membership 
+             function. Ideally, the labels will represent concepts related to the variable's meaning. Futhermore, fuzzy statements like
+             "temperature is warm" or "temperature is not cold" can be used to build a Fuzzy Inference Systems. 
+             </para>
+             
+             <para>Sample usage:</para>
+             <code>
+             // create a linguistic variable to represent temperature
+             LinguisticVariable lvTemperature = new LinguisticVariable( "Temperature", 0, 80 );
+            
+             // create the linguistic labels (fuzzy sets) that compose the temperature 
+             TrapezoidalFunction function1 = new TrapezoidalFunction( 10, 15, TrapezoidalFunction.EdgeType.Right );
+             FuzzySet fsCold = new FuzzySet( "Cold", function1 );
+             TrapezoidalFunction function2 = new TrapezoidalFunction( 10, 15, 20, 25 );
+             FuzzySet fsCool = new FuzzySet( "Cool", function2 );
+             TrapezoidalFunction function3 = new TrapezoidalFunction( 20, 25, 30, 35 );
+             FuzzySet fsWarm = new FuzzySet( "Warm", function3 );
+             TrapezoidalFunction function4 = new TrapezoidalFunction( 30, 35, TrapezoidalFunction.EdgeType.Left );
+             FuzzySet fsHot  = new FuzzySet( "Hot" , function4 );
+            
+             // adding labels to the variable
+             lvTemperature.AddLabel( fsCold );
+             lvTemperature.AddLabel( fsCool );
+             lvTemperature.AddLabel( fsWarm );
+             lvTemperature.AddLabel( fsHot  );
+            
+             // showing the shape of the linguistic variable - the shape of its labels memberships from start to end
+             Console.WriteLine( "Cold; Cool; Warm; Hot" );
+             for ( float x = 0; x &lt; 80; x += 0.2 )
+             {
+                 float y1 = lvTemperature.GetLabelMembership( "Cold", x );
+                 float y2 = lvTemperature.GetLabelMembership( "Cool", x );
+                 float y3 = lvTemperature.GetLabelMembership( "Warm", x );
+                 float y4 = lvTemperature.GetLabelMembership( "Hot" , x );
+            
+                 Console.WriteLine( String.Format( "{0:N}; {1:N}; {2:N}; {3:N}", y1, y2, y3, y4 ) );
+             }
+             </code>    
+             </remarks>
+             
+        </member>
+        <member name="P:Accord.Fuzzy.LinguisticVariable.NumericInput">
+            <summary>
+            Numerical value of the input of this linguistic variable.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.LinguisticVariable.Name">
+            <summary>
+            Name of the linguistic variable.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.LinguisticVariable.Start">
+            <summary>
+            Left limit of the valid variable range.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.LinguisticVariable.End">
+            <summary>
+            Right limit of the valid variable range.
+            </summary>
+        </member>
+        <member name="M:Accord.Fuzzy.LinguisticVariable.#ctor(System.String,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.LinguisticVariable"/> class.
+            </summary>
+            
+            <param name="name">Name of the linguistic variable.</param>
+            
+            <param name="start">Left limit of the valid variable range.</param>
+            
+            <param name="end">Right limit of the valid variable range.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.LinguisticVariable.AddLabel(Accord.Fuzzy.FuzzySet)">
+            <summary>
+            Adds a linguistic label to the variable. 
+            </summary>
+            
+            <param name="label">A <see cref="T:Accord.Fuzzy.FuzzySet"/> that will be a linguistic label of the linguistic variable.</param>
+            
+            <remarks>Linguistic labels are fuzzy sets (<see cref="T:Accord.Fuzzy.FuzzySet"/>). Each
+            label of the variable must have a unique name. The range of the label 
+            (left and right limits) cannot be greater than 
+            the linguistic variable range (start/end).</remarks>
+            
+            <exception cref="T:System.NullReferenceException">The fuzzy set was not initialized.</exception>
+            <exception cref="T:System.ArgumentException">The linguistic label name already exists in the linguistic variable.</exception>
+            <exception cref="T:System.ArgumentException">The left limit of the fuzzy set can not be lower than the linguistic variable's starting point.</exception>
+            <exception cref="T:System.ArgumentException">"The right limit of the fuzzy set can not be greater than the linguistic variable's ending point."</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.LinguisticVariable.ClearLabels">
+            <summary>
+            Removes all the linguistic labels of the linguistic variable. 
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.LinguisticVariable.GetLabel(System.String)">
+            <summary>
+            Returns an existing label from the linguistic variable.
+            </summary>
+            
+            <param name="labelName">Name of the label to retrieve.</param>
+            
+            <returns>Reference to named label (<see cref="T:Accord.Fuzzy.FuzzySet"/>).</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The label indicated was not found in the linguistic variable.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.LinguisticVariable.GetLabelMembership(System.String,System.Single)">
+            <summary>
+            Calculate the membership of a given value to a given label. Used to evaluate linguistics clauses like 
+            "X IS A", where X is a value and A is a linguistic label.
+            </summary>
+            
+            <param name="labelName">Label (fuzzy set) to evaluate value's membership.</param>
+            <param name="value">Value which label's membership will to be calculated.</param>
+            
+            <returns>Degree of membership [0..1] of the value to the label (fuzzy set).</returns>
+            
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">The label indicated in labelName was not found in the linguistic variable.</exception>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.FuzzySet">
+            <summary>
+            The class represents a fuzzy set.
+            </summary>
+            
+            <remarks><para>The fuzzy sets are the base for all fuzzy applications. In a classical set, the membership of 
+            a given value to the set can always be defined as true (1) or false (0). In fuzzy sets, this membership can be 
+            a value in the range [0..1], representing the imprecision existent in many real world applications.</para>
+            
+            <para>Let us consider, for example, fuzzy sets representing some temperature. In a given application, there is the 
+            need to represent a cool and warm temperature. Like in real life, the precise point when the temperature changes from 
+            cool to warm is not easy to find, and does not makes sense. If we consider the cool around 20 degrees and warm around 
+            30 degrees, it is not simple to find a break point. If we take the mean, we can consider values greater than or equal 
+            25 to be warm. But we can still consider 25 a bit cool. And a bit warm at the same time. This is where fuzzy sets can 
+            help.</para>
+            
+            <para>Fuzzy sets are often used to compose Linguistic Variables, used in Fuzzy Inference Systems.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating 2 fuzzy sets to represent Cool and Warm
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 13, 18, 23, 28 );
+            FuzzySet fsCool = new FuzzySet( "Cool", function1 );
+            TrapezoidalFunction function2 = new TrapezoidalFunction( 23, 28, 33, 38 );
+            FuzzySet fsWarm = new FuzzySet( "Warm", function2 );
+            
+            // show membership to the Cool set for some values 
+            Console.WriteLine( "COOL" );
+            for ( int i = 13; i &lt;= 28; i++ )
+                Console.WriteLine( fsCool.GetMembership( i ) );
+            
+            // show membership to the Warm set for some values 
+            Console.WriteLine( "WARM" );
+            for ( int i = 23; i &lt;= 38; i++ )
+                Console.WriteLine( fsWarm.GetMembership( i ) );
+            </code>    
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzySet.Name">
+            <summary>
+            Name of the fuzzy set.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzySet.LeftLimit">
+            <summary>
+            The leftmost x value of the fuzzy set's membership function.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.FuzzySet.RightLimit">
+            <summary>
+            The rightmost x value of the fuzzy set's membership function.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzySet.#ctor(System.String,Accord.Fuzzy.IMembershipFunction)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.FuzzySet"/> class.
+            </summary>
+            
+            <param name="name">Name of the fuzzy set.</param>
+            <param name="function">Membership function that will define the shape of the fuzzy set. </param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.FuzzySet.GetMembership(System.Single)">
+            <summary>
+            Calculate membership of a given value to the fuzzy set.
+            </summary>
+            
+            <param name="x">Value which membership needs to be calculated.</param>
+            
+            <returns>Degree of membership [0..1] of the value to the fuzzy set.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.IMembershipFunction">
+            <summary>
+            Interface which specifies set of methods required to be implemented by all membership
+            functions.
+            </summary>
+            
+            <remarks><para>All membership functions must implement this interface, which is used by
+            <see cref="T:Accord.Fuzzy.FuzzySet"/> class to calculate value's membership to a particular fuzzy set.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.IMembershipFunction.GetMembership(System.Single)">
+            <summary>
+            Calculate membership of a given value to the fuzzy set.
+            </summary>
+            
+            <param name="x">Value which membership will to be calculated.</param>
+            
+            <returns>Degree of membership [0..1] of the value to the fuzzy set.</returns>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.IMembershipFunction.LeftLimit">
+            <summary>
+            The leftmost x value of the membership function.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.IMembershipFunction.RightLimit">
+            <summary>
+            The rightmost x value of the membership function.
+            </summary>
+        </member>
+        <member name="T:Accord.Fuzzy.PiecewiseLinearFunction">
+            <summary>
+            Membership function composed by several connected linear functions.
+            </summary>
+            
+            <remarks><para>The piecewise linear is a generic function used by many specific fuzzy membership 
+            functions, like the <see cref="T:Accord.Fuzzy.TrapezoidalFunction">trappezoidal function</see>. This class must
+            be instantiated with a sequence of points representing the edges of each one of the lines composing the 
+            piecewise function.</para>
+            
+            <para><note>The x-axis points must be ordered (crescent), so the <see cref="M:Accord.Fuzzy.PiecewiseLinearFunction.GetMembership(System.Single)"/> function will use each X value 
+            as an ending point for one line and starting point of the next.</note></para>
+            
+            <para>While trapezoidal and half trapezoidal are classic functions used in fuzzy functions, this class supports any function
+            or approximation that can be represented as a sequence of lines.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating an array of points representing a typical trapezoidal function /-\
+            Point [] points = new Point[4];
+            // point where membership starts to rise
+            points[0] = new Point( 10, 0 );
+            // maximum membership (1) reached at the second point 
+            points[1] = new Point( 20, 1 );
+            // membership starts to fall at the third point 
+            points[2] = new Point( 30, 1 );
+            // membership gets to zero at the last point 
+            points[3] = new Point( 40, 0 );
+            // creating the instance
+            PiecewiseLinearFunction membershipFunction = new PiecewiseLinearFunction( points );
+            // getting membership for several points
+            for ( int i = 5; i &lt; 45; i++ )
+                Console.WriteLine( membershipFunction.GetMembership( i ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="F:Accord.Fuzzy.PiecewiseLinearFunction.points">
+            <summary>
+            Vector of (X,Y) coordinates for end/start of each line.
+            </summary>
+        </member>
+        <member name="P:Accord.Fuzzy.PiecewiseLinearFunction.LeftLimit">
+             <summary>
+             The leftmost x value of the membership function, given by the first (X,Y) coordinate.
+             </summary>
+             
+             <exception cref="T:System.NullReferenceException">Points of the membership function are not initialized.</exception>
+            
+        </member>
+        <member name="P:Accord.Fuzzy.PiecewiseLinearFunction.RightLimit">
+             <summary>
+             The rightmost x value of the membership function, given by the last (X,Y) coordinate.
+             </summary>
+             
+             <exception cref="T:System.NullReferenceException">Points of the membership function are not initialized.</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.PiecewiseLinearFunction.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.PiecewiseLinearFunction"/> class. 
+            </summary>
+            
+            <remarks><para>This constructor must be used only by inherited classes to create the
+            points vector after the instantiation.</para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.PiecewiseLinearFunction.#ctor(Accord.Point[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.PiecewiseLinearFunction"/> class.
+            </summary>
+            
+            <param name="points">Array of (X,Y) coordinates of each start/end of the lines.</param>
+            
+            <remarks><para>Specified point must be in crescent order on X axis and their Y value
+            must be in the range of [0, 1].</para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Points must be in crescent order on X axis.</exception>
+            <exception cref="T:System.ArgumentException">Y value of points must be in the range of [0, 1].</exception>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.PiecewiseLinearFunction.GetMembership(System.Single)">
+             <summary>
+             Calculate membership of a given value to the piecewise function.
+             </summary>
+             
+             <param name="x">Value which membership will to be calculated.</param>
+             
+             <returns>Degree of membership [0..1] of the value to the fuzzy set.</returns>
+             
+             <exception cref="T:System.NullReferenceException">Points of the membership function are not initialized.</exception>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.TrapezoidalFunction">
+            <summary>
+            Membership function in the shape of a trapezoid. Can be a half trapzoid if the left or the right side is missing. 
+            </summary>
+            
+            <remarks><para>Since the <see cref="T:Accord.Fuzzy.PiecewiseLinearFunction"/> can represent any piece wise linear
+            function, it can represent trapezoids too. But as trapezoids are largely used in the creation of
+            Linguistic Variables, this class simplifies the creation of them. </para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating a typical triangular fuzzy set /\
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 10, 20, 30 );
+            // creating a right fuzzy set, the rigth side of the set is fuzzy but the left is opened
+            TrapezoidalFunction function2 = new TrapezoidalFunction( 10, 20, 30, TrapezoidalFunction.EdgeType.Right );
+            </code>
+            
+            </remarks>
+        </member>
+        <member name="T:Accord.Fuzzy.TrapezoidalFunction.EdgeType">
+            <summary>
+            Enumeration used to create trapezoidal membership functions with half trapezoids.
+            </summary>
+            
+            <remarks><para>If the value is Left, the trapezoid has the left edge, but right
+            is open (/--). If the value is Right, the trapezoid has the right edge, but left
+            is open (--\).</para></remarks>
+            
+        </member>
+        <member name="F:Accord.Fuzzy.TrapezoidalFunction.EdgeType.Left">
+            <summary>
+            The fuzzy side of the trapezoid is at the left side.
+            </summary>
+        </member>
+        <member name="F:Accord.Fuzzy.TrapezoidalFunction.EdgeType.Right">
+            <summary>
+            The fuzzy side of the trapezoid is at the right side.
+            </summary>
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Int32)">
+            <summary>
+            A private constructor used only to reuse code inside of this default constructor.
+            </summary>
+            
+            <param name="size">Size of points vector to create. This size depends of the shape of the 
+            trapezoid.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With four points the shape is known as flat fuzzy number or fuzzy interval (/--\).
+            </summary>
+            
+            <param name="m1">X value where the degree of membership starts to raise.</param>
+            <param name="m2">X value where the degree of membership reaches the maximum value.</param>
+            <param name="m3">X value where the degree of membership starts to fall.</param>
+            <param name="m4">X value where the degree of membership reaches the minimum value.</param>
+            <param name="max">The maximum value that the membership will reach, [0, 1].</param>
+            <param name="min">The minimum value that the membership will reach, [0, 1].</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With four points the shape is known as flat fuzzy number or fuzzy interval (/--\).
+            </summary>
+            
+            <param name="m1">X value where the degree of membership starts to raise.</param>
+            <param name="m2">X value where the degree of membership reaches the maximum value.</param>
+            <param name="m3">X value where the degree of membership starts to fall.</param>
+            <param name="m4">X value where the degree of membership reaches the minimum value.</param>
+            
+            <remarks>
+            <para>Maximum membership value is set to <b>1.0</b> and the minimum is set to <b>0.0</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With three points the shape is known as triangular fuzzy number or just fuzzy number (/\).
+            </summary>
+            
+            <param name="m1">X value where the degree of membership starts to raise.</param>
+            <param name="m2">X value where the degree of membership reaches the maximum value and starts to fall.</param>
+            <param name="m3">X value where the degree of membership reaches the minimum value.</param>
+            <param name="max">The maximum value that the membership will reach, [0, 1].</param>
+            <param name="min">The minimum value that the membership will reach, [0, 1].</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With three points the shape is known as triangular fuzzy number or just fuzzy number (/\).
+            </summary>
+            
+            <param name="m1">X value where the degree of membership starts to raise.</param>
+            <param name="m2">X value where the degree of membership reaches the maximum value and starts to fall.</param>
+            <param name="m3">X value where the degree of membership reaches the minimum value.</param>
+            
+            <remarks>
+            <para>Maximum membership value is set to <b>1.0</b> and the minimum is set to <b>0.0</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,System.Single,System.Single,Accord.Fuzzy.TrapezoidalFunction.EdgeType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With two points and an edge this shape can be a left fuzzy number (/) or a right fuzzy number (\).
+            </summary>
+            
+            <param name="m1">Edge = Left: X value where the degree of membership starts to raise.
+            Edge = Right: X value where the function starts, with maximum degree of membership. </param>
+            <param name="m2">Edge = Left: X value where the degree of membership reaches the maximum.
+            Edge = Right: X value where the degree of membership reaches minimum value. </param>
+            <param name="max">The maximum value that the membership will reach, [0, 1].</param>
+            <param name="min">The minimum value that the membership will reach, [0, 1].</param>
+            <param name="edge">Trapezoid's <see cref="T:Accord.Fuzzy.TrapezoidalFunction.EdgeType"/>.</param>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.TrapezoidalFunction.#ctor(System.Single,System.Single,Accord.Fuzzy.TrapezoidalFunction.EdgeType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.Fuzzy.TrapezoidalFunction"/> class.
+            
+            With three points and an edge this shape can be a left fuzzy number (/--) or a right fuzzy number (--\).
+            </summary>
+            
+            <param name="m1">Edge = Left: X value where the degree of membership starts to raise.
+            Edge = Right: X value where the function starts, with maximum degree of membership. </param>
+            <param name="m2">Edge = Left: X value where the degree of membership reaches the maximum.
+            Edge = Right: X value where the degree of membership reaches minimum value. </param>
+            <param name="edge">Trapezoid's <see cref="T:Accord.Fuzzy.TrapezoidalFunction.EdgeType"/>.</param>
+            
+            <remarks>
+            <para>Maximum membership value is set to <b>1.0</b> and the minimum is set to <b>0.0</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.ProductNorm">
+            <summary>
+            Product Norm, used to calculate the linguistic value of a AND operation. 
+            </summary>
+            
+            <remarks><para>The product Norm uses a multiplication operator to compute the
+            AND among two fuzzy memberships.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating 2 fuzzy sets to represent Cool (Temperature) and Near (Distance)
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 13, 18, 23, 28 );
+            FuzzySet fsCool = new FuzzySet( "Cool", function1 );
+            TrapezoidalFunction function2 = new TrapezoidalFunction( 23, 28, 33, 38 );
+            FuzzySet fsNear = new FuzzySet( "Near", function2 );
+            
+            // getting memberships
+            float m1 = fsCool.GetMembership( 15 );
+            float m2 = fsNear.GetMembership( 35 );
+            
+            // computing the membership of "Cool AND Near"
+            ProductNorm AND = new ProductNorm( );
+            float result = AND.Evaluate( m1, m2 );
+                         
+            // show result
+            Console.WriteLine( result );
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Fuzzy.MinimumNorm"/>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.ProductNorm.Evaluate(System.Single,System.Single)">
+            <summary>
+            Calculates the numerical result of the AND operation applied to
+            two fuzzy membership values using the product rule.
+            </summary>
+            
+            <param name="membershipA">A fuzzy membership value, [0..1].</param>
+            <param name="membershipB">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result of the AND operation applied to <paramref name="membershipA"/>
+            and <paramref name="membershipB"/>.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.ICoNorm">
+            <summary>
+            Interface with the common methods of a Fuzzy CoNorm.
+            </summary>
+            
+            <remarks><para>All fuzzy operators that act as a CoNorm must implement this interface.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.ICoNorm.Evaluate(System.Single,System.Single)">
+            <summary>
+            Calculates the numerical result of a CoNorm (OR) operation applied to
+            two fuzzy membership values.
+            </summary>
+            
+            <param name="membershipA">A fuzzy membership value, [0..1].</param>
+            <param name="membershipB">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result the operation OR applied to <paramref name="membershipA"/>
+            and <paramref name="membershipB"/>.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.INorm">
+            <summary>
+            Interface with the common methods of a Fuzzy Norm.
+            </summary>
+            
+            <remarks><para>All fuzzy operators that act as a Norm must implement this interface.
+            </para></remarks>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.INorm.Evaluate(System.Single,System.Single)">
+            <summary>
+            Calculates the numerical result of a Norm (AND) operation applied to
+            two fuzzy membership values.
+            </summary>
+            
+            <param name="membershipA">A fuzzy membership value, [0..1].</param>
+            <param name="membershipB">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result the operation AND applied to <paramref name="membershipA"/>
+            and <paramref name="membershipB"/>.</returns>
+            
+        </member>
+        <member name="T:Accord.Fuzzy.MinimumNorm">
+            <summary>
+            Minimum Norm, used to calculate the linguistic value of a AND operation. 
+            </summary>
+            
+            <remarks><para>The minimum Norm uses a minimum operator to compute the AND
+            among two fuzzy memberships. </para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // creating 2 fuzzy sets to represent Cool (Temperature) and Near (Distance)
+            TrapezoidalFunction function1 = new TrapezoidalFunction( 13, 18, 23, 28 );
+            FuzzySet fsCool = new FuzzySet( "Cool", function1 );
+            TrapezoidalFunction function2 = new TrapezoidalFunction( 23, 28, 33, 38 );
+            FuzzySet fsNear = new FuzzySet( "Near", function2 );
+            
+            // getting memberships
+            float m1 = fsCool.GetMembership( 15 );
+            float m2 = fsNear.GetMembership( 35 );
+            
+            // computing the membership of "Cool AND Near"
+            MinimumNorm AND = new MinimumNorm( );
+            float result = AND.Evaluate( m1, m2 );
+                         
+            // show result
+            Console.WriteLine( result );
+            </code>
+            </remarks>
+            
+            <seealso cref="T:Accord.Fuzzy.ProductNorm"/>
+            
+        </member>
+        <member name="M:Accord.Fuzzy.MinimumNorm.Evaluate(System.Single,System.Single)">
+            <summary>
+            Calculates the numerical result of the AND operation applied to
+            two fuzzy membership values using the minimum rule.
+            </summary>
+            
+            <param name="membershipA">A fuzzy membership value, [0..1].</param>
+            
+            <param name="membershipB">A fuzzy membership value, [0..1].</param>
+            
+            <returns>The numerical result of the AND operation applied to <paramref name="membershipA"/>
+            and <paramref name="membershipB"/>.</returns>
+            
+        </member>
+    </members>
+</doc>
