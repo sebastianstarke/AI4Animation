@@ -54,6 +54,22 @@ left mouse button will likely impact the quality of those.
 
 ## VR Demo - Three Point Tracking And Hybrid Mode
 In this demo you can control your virtual character with a VR device such as Quest2 or Quest3 using the three-point inputs of headset and controller and mixing them additionally with the joystick input of the controller.
+
+### Install on Device
+1. Download the <a href="https://starke-consult.de/AI4Animation/SIGGRAPH_2024/VR Demo.zip">VR Demo</a>
+2. Install the .apk to your headset device for example via the `Meta Quest Developer Hub`.\
+The app can then be found under `Library` &rarr; `Applications` &rarr; `Installed Prototypes` on your device.
+3. You need to have both controllers and the headset active to run the app. 
+After entering the app, press X on your left controller to calibrate. The calibration done is based on your head position. 
+We have two modes, three-pt tracking mode and hybrid mode. With the hybrid mode, you can move the character with your left hand joystick. 
+
+`Controls` \
+X: Height Calibration. Make sure to look straight ahead.\
+A: Three-Point Tracking mode (driven with headset + controllers)\
+B: Hybrid mode (headset + controllers + joystick)\
+Left Hand Joystick: move the hybrid character around.
+
+### Streaming from PC
 1. Open the demo scene inside the Unity Editor in `Assets/Projects/CodebookMatching/Demo_ThreePointTracking`.
 2. Connect your VR device with a link-cable to your machine. For Quest and Windows you'll need the Quest desktop app to access link mode. Make sure to use the same Meta account on your VR device and machine.
 3. Enable link-mode on your VR device and start `PlayMode` in the Unity Editor of your machine.
