@@ -11,6 +11,8 @@ namespace DeepPhase {
 
         public Camera Camera;
 
+        public InputSystem.ControlType InputType = InputSystem.ControlType.Keyboard;
+
         public bool DrawGUI = true;
         public bool DrawDebug = true;
 
@@ -59,6 +61,7 @@ namespace DeepPhase {
 
         protected override void Setup() {	
             Controller = new InputSystem(1);
+            Controller.Control = InputType;
 
             InputSystem.Logic idle = Controller.AddLogic("Idle", () => Controller.QueryLeftJoystickVector().magnitude < 0.1f && Controller.QueryRightJoystickVector().magnitude < 0.1f);
             InputSystem.Logic move = Controller.AddLogic("Move", () => !idle.Query());
