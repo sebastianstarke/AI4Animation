@@ -1,7 +1,35 @@
 AI4Animation: Deep Learning for Character Control
 ============
 
-This repository explores the opportunities of deep learning for character animation and control. It aims to be a comprehensive framework for data-driven character animation, including data processing, neural network training and runtime control, developed in Unity3D / PyTorch. The various projects below demonstrate such capabilities using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games, as well as embodied avatar motions in AR/VR. Further advances on this research will continue being added to this project.
+This repository explores the opportunities of deep learning for character animation and control. It aims to be a comprehensive framework for data-driven character animation, including data processing, neural network training and runtime control. The various projects below demonstrate such capabilities using neural networks for animating biped locomotion, quadruped locomotion, and character-scene interactions with objects and the environment, plus sports and fighting games, as well as embodied avatar motions in AR/VR. Further advances on this research will continue being added to this project.
+
+------------
+**2026 - Python Remake (AI4AnimationPy)**<br />
+**[View repository  →](https://github.com/facebookresearch/ai4animationpy)**<br >
+<sub>
+<a href="https://www.linkedin.com/in/paul-starke-0787211b4/">Paul Starke</a>, 
+<a href="https://www.linkedin.com/in/sebastian-starke-b281a6148/">Sebastian Starke</a>
+<sub>
+------------
+
+This version brings AI4Animation to Python — removing the Unity dependency for data-processing, feature-extraction, inference, and post-processing while keeping similar game-engine-style architecture (ECS, update loops, rendering pipeline). Everything runs on NumPy or PyTorch, so training, inference, and visualization happen in one unified environment which helps streamlining the research process.
+<p align="center">
+<img src="Media/AI4AnimationPy/Workflow.png" width="60%" alt="Framework Workflow">
+</p>
+Below are some examples generated in AI4AnimationPy which can be directly run from the demos folder and supposed to give an idea what can be done with the framework:
+
+| | |
+|---|---|
+| ![Locomotion Demo](Media/AI4AnimationPy/Locomotion.gif) | ![Training Demo](Media/AI4AnimationPy/Training.gif) |
+| **Stylized Locomotion Controller** trained on style100 | **Future Motion Anticipation** with Interactive model training visualization |
+| ![ECS Demo](Media/AI4AnimationPy/ECS.gif) | ![IK Demo](Media/AI4AnimationPy/IK.gif) |
+| **ECS** — Entity hierarchy and component system | **Inverse Kinematics** — Real-time IK solving |
+| ![MocapImport Demo](Media/AI4AnimationPy/MocapImport.gif) | ![MotionEditor Demo](Media/AI4AnimationPy/MotionEditor.gif) |
+| **Motion Capture Import** — GLB/FBX/BVH/NPZ loading | **Motion Editor** — animation browsing and feature visualization|
+
+<a href="https://youtu.be/LKl7MzFENUs">
+<img src="Media/AI4AnimationPy/Thumbnail.png" width="100%" alt="AI4AnimationPy Demo Video">
+</a>
 
 ------------
 **SIGGRAPH 2024**<br />
