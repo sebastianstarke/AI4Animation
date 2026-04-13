@@ -14,18 +14,20 @@ This repository explores the opportunities of deep learning for character animat
 
 This version brings AI4Animation to Python — removing the Unity dependency for data-processing, feature-extraction, inference, and post-processing while keeping similar game-engine-style architecture (ECS, update loops, rendering pipeline). Everything runs on NumPy or PyTorch, so training, inference, and visualization happen in one unified environment which helps streamlining the research process.
 <p align="center">
-<img src="Media/AI4AnimationPy/Workflow.png" width="60%" alt="Framework Workflow">
+<img src="Media/AI4AnimationPy/Workflow.png" width="75%" alt="Framework Workflow">
 </p>
 Below are some examples generated in AI4AnimationPy which can be directly run from the demos folder and supposed to give an idea what can be done with the framework:
 
 | | |
 |---|---|
-| ![Locomotion Demo](Media/AI4AnimationPy/Locomotion.gif) | ![Training Demo](Media/AI4AnimationPy/Training.gif) |
-| **Stylized Locomotion Controller** trained on style100 | **Future Motion Anticipation** with Interactive model training visualization |
-| ![ECS Demo](Media/AI4AnimationPy/ECS.gif) | ![IK Demo](Media/AI4AnimationPy/IK.gif) |
-| **ECS** — Entity hierarchy and component system | **Inverse Kinematics** — Real-time IK solving |
-| ![MocapImport Demo](Media/AI4AnimationPy/MocapImport.gif) | ![MotionEditor Demo](Media/AI4AnimationPy/MotionEditor.gif) |
-| **Motion Capture Import** — GLB/FBX/BVH/NPZ loading | **Motion Editor** — animation browsing and feature visualization|
+| ![Locomotion Demo](Media/AI4AnimationPy/Biped_Locomotion.gif) | ![Quadruped Demo](Media/AI4AnimationPy/Quadruped_Locomotion.gif) |
+| **Stylized Biped Locomotion Controller** trained on style100 | **Quadruped Locomotion Controller** — Interactive dog locomotion with gait transitions and action poses |
+| ![Training Demo](Media/AI4AnimationPy/Training.gif) | ![ECS Demo](Media/AI4AnimationPy/ECS.gif) |
+| **Future Motion Anticipation** with Interactive model training visualization | **ECS** — Entity hierarchy and component system |
+| ![IK Demo](Media/AI4AnimationPy/IK.gif) | ![MocapImport Demo](Media/AI4AnimationPy/MocapImport.gif) |
+| **Inverse Kinematics** — Real-time IK solving | **Motion Capture Import** — GLB/FBX/BVH/NPZ loading |
+| ![MotionEditor Demo](Media/AI4AnimationPy/MotionEditor.gif) | |
+| **Motion Editor** — animation browsing and feature visualization| |
 
 <a href="https://youtu.be/LKl7MzFENUs">
 <img src="Media/AI4AnimationPy/Thumbnail.png" width="100%" alt="AI4AnimationPy Demo Video">
