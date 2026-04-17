@@ -29,9 +29,16 @@ Below are some examples generated in AI4AnimationPy which can be directly run fr
 | ![MotionEditor Demo](Media/AI4AnimationPy/MotionEditor.gif) | |
 | **Motion Editor** — animation browsing and feature visualization| |
 
-<a href="https://youtu.be/LKl7MzFENUs">
-<img src="Media/AI4AnimationPy/Thumbnail.png" width="100%" alt="AI4AnimationPy Demo Video">
-</a>
+<div align="center"><a href="https://paulstarke-ai4animationpy.hf.space/" style="display: inline-block; padding: 12px 24px; background-color: #0366d6; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px;">Play Web Demos</a> <br> <br>
+
+<p align="left">
+    <a href="https://youtu.be/LKl7MzFENUs">
+    <img  width="47%" src="Media/AI4AnimationPy/Thumbnail.png">
+    </a>
+    <a href="https://youtu.be/qifmLpNzVzI?si=DmKrpsNhBO3vsCbW">
+    <img align="right" width="47%" src="Media/AI4AnimationPy/WebDemos.png">
+    </a>
+</p>
 
 ------------
 **SIGGRAPH 2024**<br />
